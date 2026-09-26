@@ -125,7 +125,7 @@ _id_5386( var_0, var_1 )
         var_2.angles = var_0.angles;
         wait 0.1;
         var_0 delete();
-        var_2 _meth_8224( var_2.origin, var_1 );
+        var_2 physicslaunchclient( var_2.origin, var_1 );
         var_2 thread _id_50AF( var_2 );
     }
     else

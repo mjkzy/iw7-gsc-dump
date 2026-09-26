@@ -4,9 +4,9 @@
 init()
 {
     var_0 = spawnstruct();
-    var_0._id_B923 = [];
-    var_0._id_B923["allies"] = "veh_mil_air_ca_jackal_drone_atmos_periph_mp";
-    var_0._id_B923["axis"] = "veh_mil_air_ca_jackal_drone_atmos_periph_mp";
+    var_0.modelnames = [];
+    var_0.modelnames["allies"] = "veh_mil_air_ca_jackal_drone_atmos_periph_mp";
+    var_0.modelnames["axis"] = "veh_mil_air_ca_jackal_drone_atmos_periph_mp";
     var_0.vehicle = "a10_warthog_mp";
     var_0.inboundsfx = "veh_mig29_dist_loop";
     var_0.speed = 3000;
@@ -262,7 +262,7 @@ createplaneasheli( var_0, var_1, var_2 )
     var_4 = getcsplinepointposition( var_2, 0 );
     var_5 = getcsplinepointtangent( var_2, 0 );
     var_6 = vectortoangles( var_5 );
-    var_7 = spawnhelicopter( self, var_4, var_6, var_3.vehicle, var_3._id_B923[self.team] );
+    var_7 = spawnhelicopter( self, var_4, var_6, var_3.vehicle, var_3.modelnames[self.team] );
 
     if ( !isdefined( var_7 ) )
         return undefined;

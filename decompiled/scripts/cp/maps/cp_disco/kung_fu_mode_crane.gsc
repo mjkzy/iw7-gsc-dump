@@ -152,7 +152,7 @@ slide_anim()
 
 move_in_line()
 {
-    var_0 = 0.140541;
+    var_0 = 0.14054084;
     var_1 = 1300;
     var_2 = getclosestpointonnavmesh( self.origin );
     var_3 = anglestoforward( self getplayerangles() );
@@ -212,7 +212,7 @@ drop_points_on_path( var_0, var_1, var_2 )
         var_10 = var_0 + var_5 * var_4;
         var_10 = scripts\engine\utility::drop_to_ground( var_10, 30, -5000 );
 
-        if ( !_func_2AC( var_0, var_10 ) )
+        if ( !navisstraightlinereachable( var_0, var_10 ) )
         {
             var_11 = getclosestpointonnavmesh( var_10 );
 
@@ -403,7 +403,7 @@ create_valid_patch_node( var_0, var_1 )
 {
     var_2 = spawnstruct();
     var_2.origin = var_0;
-    var_2._id_56E8 = var_1 * var_1;
+    var_2.dist = var_1 * var_1;
     level.valid_patch_nodes[level.valid_patch_nodes.size] = var_2;
 }
 
@@ -432,7 +432,7 @@ is_in_valid_patch_zone( var_0 )
 
     foreach ( var_3 in level.valid_patch_nodes )
     {
-        if ( distancesquared( var_0, var_3.origin ) < var_3._id_56E8 )
+        if ( distancesquared( var_0, var_3.origin ) < var_3.dist )
             var_1 = 1;
     }
 

@@ -17,7 +17,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     thread _id_FA7D();
     thread _id_CDA4( "mp_riot_ads" );
     thread managephysicsprops();
@@ -98,16 +98,16 @@ fix_collision()
 
 _id_FA7D()
 {
-    level._id_114C3 = 600;
-    level._id_114C4 = 1200;
-    level._id_BF61 = -1.0;
+    level.tank_hitfx_throttle = 600;
+    level.tank_hitfx_throttle_max = 1200;
+    level.next_tank_hitfx_time = -1.0;
     var_0 = getentarray( "watertank_invulnerable", "targetname" );
 
     foreach ( var_2 in var_0 )
-        var_2 thread _id_12E48();
+        var_2 thread update_watertank_invulnerable();
 }
 
-_id_12E48()
+update_watertank_invulnerable()
 {
     self setcandamage( 1 );
 
@@ -118,15 +118,15 @@ _id_12E48()
         if ( !issubstr( var_4, "BULLET" ) )
             continue;
 
-        if ( !_id_37F6() )
+        if ( !can_allocate_new_tank_crack() )
             continue;
 
-        var_5 = _id_7D54( var_1, var_2, var_3 );
+        var_5 = get_watertank_hit_angle( var_1, var_2, var_3 );
 
         if ( !isdefined( var_5 ) )
             continue;
 
-        _id_1C33();
+        allocate_new_tank_crack();
         var_5 = vectortoangles( var_5 );
         playfx( level._effect["vfx_imp_glass_water_fishtank_riot"], var_3, anglestoforward( var_5 ), anglestoup( var_5 ) );
         playfx( level._effect["vfx_water_stream_fishtank_riot"], var_3, anglestoforward( var_5 ), anglestoup( var_5 ) );
@@ -134,7 +134,7 @@ _id_12E48()
     }
 }
 
-_id_7D54( var_0, var_1, var_2 )
+get_watertank_hit_angle( var_0, var_1, var_2 )
 {
     var_3 = var_0.origin;
     var_4 = var_2 - var_3;
@@ -146,17 +146,17 @@ _id_7D54( var_0, var_1, var_2 )
     return undefined;
 }
 
-_id_37F6()
+can_allocate_new_tank_crack()
 {
-    if ( gettime() < level._id_BF61 )
+    if ( gettime() < level.next_tank_hitfx_time )
         return 0;
 
     return 1;
 }
 
-_id_1C33()
+allocate_new_tank_crack()
 {
-    level._id_BF61 = gettime() + randomfloatrange( level._id_114C3, level._id_114C4 );
+    level.next_tank_hitfx_time = gettime() + randomfloatrange( level.tank_hitfx_throttle, level.tank_hitfx_throttle_max );
 }
 
 _id_CDA4( var_0 )
@@ -209,7 +209,7 @@ move_sd_startspawns()
             {
                 var_2.origin = ( -600, 2564, 176 );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
                 continue;
             }
 
@@ -217,8 +217,8 @@ move_sd_startspawns()
             {
                 var_2.origin = ( -686, 2564, 176 );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -226,8 +226,8 @@ move_sd_startspawns()
             {
                 var_2.origin = ( -790, 2564, 180 );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -235,8 +235,8 @@ move_sd_startspawns()
             {
                 var_2.origin = ( -600, 2644, 176 );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -244,8 +244,8 @@ move_sd_startspawns()
             {
                 var_2.origin = ( -686, 2644, 176 );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -253,8 +253,8 @@ move_sd_startspawns()
             {
                 var_2.origin = ( -790, 2644, 180 );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -262,8 +262,8 @@ move_sd_startspawns()
             {
                 var_2.origin = ( -600, 2724, 176 );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -271,8 +271,8 @@ move_sd_startspawns()
             {
                 var_2.origin = ( -686, 2724, 176 );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -280,8 +280,8 @@ move_sd_startspawns()
             {
                 var_2.origin = ( -790, 2724, 180 );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
             }
         }
     }

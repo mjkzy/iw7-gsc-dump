@@ -51,7 +51,7 @@ bot_set_personality( var_0 )
 bot_set_difficulty( var_0 )
 {
     if ( var_0 == "default" )
-        var_0 = _id_2D30();
+        var_0 = bot_choose_difficulty_for_default();
 
     self botsetdifficulty( var_0 );
 
@@ -62,7 +62,7 @@ bot_set_difficulty( var_0 )
     }
 }
 
-_id_2D30()
+bot_choose_difficulty_for_default()
 {
     if ( !isdefined( level.bot_difficulty_defaults ) )
     {
@@ -81,7 +81,7 @@ _id_2D30()
         }
     }
 
-    var_0 = self._id_2D32;
+    var_0 = self.bot_chosen_difficulty;
 
     if ( !isdefined( var_0 ) )
     {
@@ -151,7 +151,7 @@ _id_2D30()
     }
 
     if ( isdefined( var_0 ) )
-        self._id_2D32 = var_0;
+        self.bot_chosen_difficulty = var_0;
 
     return var_0;
 }
@@ -237,7 +237,7 @@ bot_cache_entrances_to_bombzones()
         var_2++;
     }
 
-    _id_2D18( var_0, var_1 );
+    bot_cache_entrances( var_0, var_1 );
 }
 
 bot_cache_entrances_to_flags_or_radios( var_0, var_1 )
@@ -259,7 +259,7 @@ bot_cache_entrances_to_flags_or_radios( var_0, var_1 )
         var_3[var_4] = var_1 + var_0[var_4].script_label;
     }
 
-    _id_2D18( var_2, var_3 );
+    bot_cache_entrances( var_2, var_3 );
 }
 
 entrance_visible_from( var_0, var_1, var_2 )
@@ -278,7 +278,7 @@ entrance_visible_from( var_0, var_1, var_2 )
     return sighttracepassed( var_1 + var_5, var_0 + var_5, 0, undefined );
 }
 
-_id_2D18( var_0, var_1 )
+bot_cache_entrances( var_0, var_1 )
 {
     wait 0.1;
     var_2 = [];
@@ -424,11 +424,11 @@ bot_waittill_bots_enabled( var_0 )
 {
     var_1 = 1;
 
-    while ( !_id_2D17( var_0 ) )
+    while ( !bot_bots_enabled_or_added( var_0 ) )
         wait 0.5;
 }
 
-_id_2D17( var_0 )
+bot_bots_enabled_or_added( var_0 )
 {
     if ( botautoconnectenabled() )
         return 1;
@@ -535,13 +535,13 @@ bots_exist( var_0 )
 
 bot_get_entrances_for_stance_and_index( var_0, var_1 )
 {
-    if ( !isdefined( level.entrance_points_finished_caching ) && !isdefined( self.defense_override_watch_nodes ) )
+    if ( !isdefined( level.entrance_points_finished_caching ) && !isdefined( self.defense_override_entrances ) )
         return undefined;
 
     var_2 = [];
 
-    if ( isdefined( self.defense_override_watch_nodes ) )
-        var_2 = self.defense_override_watch_nodes;
+    if ( isdefined( self.defense_override_entrances ) )
+        var_2 = self.defense_override_entrances;
     else
         var_2 = level.entrance_points[var_1];
 
@@ -862,17 +862,17 @@ bot_recent_point_of_interest()
     return var_0;
 }
 
-_id_2D66( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
+bot_draw_cylinder( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 {
 
 }
 
-_id_2D67( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
+bot_draw_cylinder_think( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 {
 
 }
 
-_id_2D65( var_0, var_1, var_2, var_3, var_4 )
+bot_draw_circle( var_0, var_1, var_2, var_3, var_4 )
 {
 
 }
@@ -920,7 +920,7 @@ bot_out_of_ammo()
 bot_get_grenade_ammo()
 {
     var_0 = 0;
-    var_1 = self getweaponslistall();
+    var_1 = self getweaponslistoffhands();
 
     foreach ( var_3 in var_1 )
         var_0 = var_0 + self getweaponammostock( var_3 );
@@ -1160,7 +1160,7 @@ bot_watch_nodes( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
                     var_11 = var_35[var_32];
                     var_38 = ( 0, 0, 1 );
                     var_39 = self geteye();
-                    var_40 = ( 0, 0, self _meth_8157() );
+                    var_40 = ( 0, 0, self getplayerviewheight() );
                     var_24 = var_11.origin + var_40;
                     var_41 = var_24 - var_39;
                     var_41 = vectornormalize( var_41 );
@@ -1177,7 +1177,7 @@ bot_watch_nodes( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 
             if ( isdefined( var_23 ) )
             {
-                var_40 = ( 0, 0, self _meth_8157() );
+                var_40 = ( 0, 0, self getplayerviewheight() );
                 var_24 = var_23.origin + var_40;
                 self botlookatpoint( var_24, 0.4, "script_search" );
             }

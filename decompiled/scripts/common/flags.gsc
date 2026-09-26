@@ -9,7 +9,7 @@ init_flags()
     level.flag = [];
     level.flags_lock = [];
     level.generic_index = 0;
-    scripts\engine\utility::init_empty_func_ref_MAYBE( "sp_stat_tracking_func" );
+    scripts\engine\utility::_id_95C6( "sp_stat_tracking_func" );
     level.flag_struct = spawnstruct();
     level.flag_struct assign_unique_id();
 }

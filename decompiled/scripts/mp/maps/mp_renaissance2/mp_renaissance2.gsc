@@ -7,7 +7,7 @@ main()
     scripts\mp\maps\mp_renaissance2\gen\mp_renaissance2_art::main();
     scripts\mp\maps\mp_renaissance2\mp_renaissance2_fx::main();
     scripts\mp\load::main();
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     scripts\mp\compass::setupminimap( "compass_map_mp_renaissance2" );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.33 );
@@ -17,7 +17,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     thread apex_not_outofbounds();
     thread oceaninmotion();
     thread setup_vista_driving_boats();
@@ -118,7 +118,7 @@ setup_vista_driving_boats()
 {
     var_0 = getentarray( "boat_vista", "targetname" );
     var_1 = 0.01;
-    var_2 = 0.0166667;
+    var_2 = 0.016666668;
     wait 5.0;
 
     foreach ( var_4 in var_0 )

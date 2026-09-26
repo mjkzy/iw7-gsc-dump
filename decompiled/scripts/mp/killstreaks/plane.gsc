@@ -66,7 +66,7 @@ planespawn( var_0, var_1, var_2, var_3, var_4 )
     var_8.lifeid = var_0;
     var_8.streakname = var_4;
     var_8.owner = var_1;
-    var_8 setmodel( var_7._id_B923[var_1.team] );
+    var_8 setmodel( var_7.modelnames[var_1.team] );
 
     if ( isdefined( var_7.compassiconfriendly ) )
         var_8 setobjectiveicons( var_7.compassiconfriendly, var_7.compassiconenemy );
@@ -172,8 +172,8 @@ modifydamage( var_0, var_1, var_2, var_3, var_4 )
 handledeathdamage( var_0, var_1, var_2, var_3 )
 {
     var_4 = level.planeconfigs[self.streakname];
-    scripts\mp\damage::onkillstreakkilled( self.streakname, var_0, var_1, var_2, var_3, var_4.scorepopup, var_4._id_52DA, var_4.callout );
-    scripts\mp\missions::_id_3DE3( var_0, self, var_1 );
+    scripts\mp\damage::onkillstreakkilled( self.streakname, var_0, var_1, var_2, var_3, var_4.scorepopup, var_4.destroyedvo, var_4.callout );
+    scripts\mp\missions::checkaachallenges( var_0, self, var_1 );
 }
 
 playplanefx()
@@ -193,7 +193,7 @@ playplanefx()
     playfxontag( level.fx_airstrike_wingtip_light_green, self, "tag_left_wingtip" );
 }
 
-_id_806A()
+getplaneflyheight()
 {
     var_0 = getent( "airstrikeheight", "targetname" );
 
@@ -210,26 +210,26 @@ _id_806A()
     }
 }
 
-_id_8069( var_0 )
+getplaneflightplan( var_0 )
 {
     var_1 = spawnstruct();
-    var_1.height = _id_806A();
+    var_1.height = getplaneflyheight();
     var_2 = getent( "airstrikeheight", "targetname" );
 
     if ( isdefined( var_2 ) && isdefined( var_2.script_noteworthy ) && var_2.script_noteworthy == "fixedposition" )
     {
         var_1.targetpos = var_2.origin;
-        var_1._id_6F25 = anglestoforward( var_2.angles );
+        var_1.flightdir = anglestoforward( var_2.angles );
 
         if ( randomint( 2 ) == 0 )
-            var_1._id_6F25 = var_1._id_6F25 * -1;
+            var_1.flightdir = var_1.flightdir * -1;
     }
     else
     {
         var_3 = anglestoforward( self.angles );
         var_4 = anglestoright( self.angles );
         var_1.targetpos = self.origin + var_0 * var_3;
-        var_1._id_6F25 = -1 * var_4;
+        var_1.flightdir = -1 * var_4;
     }
 
     return var_1;

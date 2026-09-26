@@ -46,7 +46,7 @@ blinkknifedetonate( var_0, var_1, var_2 )
 
         var_10 = spawnstruct();
         var_10.origin = var_9;
-        var_10._id_10B53 = "stand";
+        var_10.stance = "stand";
         var_10.cleararbup = 0;
         var_11 = anglestoforward( var_2 getplayerangles() );
         var_11 = var_11 * ( 1, 1, 0 );
@@ -64,7 +64,7 @@ blinkknifedetonate( var_0, var_1, var_2 )
     {
         var_10 = spawnstruct();
         var_10.origin = var_3;
-        var_10._id_10B53 = "stand";
+        var_10.stance = "stand";
         var_10.cleararbup = 1;
         var_11 = anglestoforward( var_2 getplayerangles() );
         var_11 = var_11 * ( 1, 1, 0 );
@@ -78,7 +78,7 @@ blinkknifedetonate( var_0, var_1, var_2 )
             return 1;
         }
 
-        var_10._id_10B53 = "crouch";
+        var_10.stance = "crouch";
 
         if ( blinkknife_validatedestination( var_2, var_10 ) )
         {
@@ -86,7 +86,7 @@ blinkknifedetonate( var_0, var_1, var_2 )
             return 1;
         }
 
-        var_10._id_10B53 = var_6;
+        var_10.stance = var_6;
         var_11 = anglestoforward( var_5 );
         var_11 = var_11 * ( 1, 1, 0 );
         var_12 = vectortoangles( var_11 );
@@ -105,7 +105,7 @@ blinkknifedetonate( var_0, var_1, var_2 )
         var_10.origin = var_3;
         var_10.angles = var_2.angles;
         var_10.playerangles = var_2 getplayerangles();
-        var_10._id_10B53 = "stand";
+        var_10.stance = "stand";
         var_10.cleararbup = 0;
 
         if ( blinkknife_validatedestination( var_2, var_10 ) )
@@ -114,7 +114,7 @@ blinkknifedetonate( var_0, var_1, var_2 )
             return 1;
         }
 
-        var_10._id_10B53 = "crouch";
+        var_10.stance = "crouch";
 
         if ( blinkknife_validatedestination( var_2, var_10 ) )
         {
@@ -122,7 +122,7 @@ blinkknifedetonate( var_0, var_1, var_2 )
             return 1;
         }
 
-        var_10._id_10B53 = var_6;
+        var_10.stance = var_6;
         var_11 = anglestoforward( var_5 );
         var_11 = var_11 * ( 1, 1, 0 );
         var_12 = vectortoangles( var_11 );
@@ -153,7 +153,7 @@ blinkknife_detonatesuccess( var_0, var_1, var_2, var_3 )
 
     var_0 setorigin( var_2.origin, 1, 1 );
     var_0 setplayerangles( var_2.playerangles );
-    var_0 setstance( var_2._id_10B53 );
+    var_0 setstance( var_2.stance );
     thread blinkknife_endfx( var_0 );
 
     if ( isdefined( var_3 ) )
@@ -248,7 +248,7 @@ blinkknife_validateplayer( var_0 )
 blinkknife_validatedestination( var_0, var_1 )
 {
     var_2 = physics_createcontents( [ "physicscontents_solid", "physicscontents_glass", "physicscontents_water", "physicscontents_sky", "physicscontents_vehicle", "physicscontents_sky", "physicscontents_playerclip" ] );
-    var_3 = physics_getclosestpointtocharacter( var_1.origin, var_0, 0, var_1.angles, 0, var_2, [ var_0 ], "physicsquery_closest", var_1._id_10B53 );
+    var_3 = physics_getclosestpointtocharacter( var_1.origin, var_0, 0, var_1.angles, 0, var_2, [ var_0 ], "physicsquery_closest", var_1.stance );
 
     if ( isdefined( var_3 ) && var_3.size > 0 )
         return 0;
@@ -306,7 +306,7 @@ blinkknife_endfx( var_0 )
 
 blinkknife_victimfx( var_0, var_1 )
 {
-    var_2 = var_1 _meth_8113();
+    var_2 = var_1 getcorpseentity();
 
     if ( isdefined( var_2 ) )
         var_2 hide();

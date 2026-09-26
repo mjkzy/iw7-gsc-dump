@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\zombie_dlc2::_id_DEE8();
-    scripts\asm\zombie_dlc2\mp\states::_id_2371();
+    behaviortree\zombie_dlc2::registerbehaviortree();
+    scripts\asm\zombie_dlc2\mp\states::asm_register();
     _id_AEB0();
     thread _id_FAB0();
 }

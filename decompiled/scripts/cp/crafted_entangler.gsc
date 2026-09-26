@@ -5,7 +5,7 @@ init()
 {
     var_0 = spawnstruct();
     var_0.timeout = 60.0;
-    var_0._id_9F43 = 0;
+    var_0.issentient = 0;
 
     if ( !isdefined( level._id_47B3 ) )
         level._id_47B3 = [];

@@ -161,11 +161,11 @@ use_crafting_station( var_0, var_1 )
     {
         var_1 scripts\cp\utility::play_interaction_gesture( "iw7_souvenircoin_zm" );
         var_0.blueprint_added = 1;
-        var_0._id_113AF = getent( var_0.target, "targetname" );
-        var_0._id_113AF.blueprint = spawn( "script_model", var_0._id_113AF.origin );
-        var_0._id_113AF.blueprint.angles = var_0._id_113AF.angles;
+        var_0.table = getent( var_0.target, "targetname" );
+        var_0.table.blueprint = spawn( "script_model", var_0.table.origin );
+        var_0.table.blueprint.angles = var_0.table.angles;
         var_0.active_blueprint = var_1.has_blueprint;
-        var_0._id_113AF setscriptablepartstate( "crafting_bench", "on" );
+        var_0.table setscriptablepartstate( "crafting_bench", "on" );
         var_1 playlocalsound( "zmb_item_pickup" );
         var_0.parts_added = 0;
         var_2 = undefined;
@@ -189,7 +189,7 @@ use_crafting_station( var_0, var_1 )
                 break;
         }
 
-        var_0._id_113AF.blueprint setmodel( var_2 );
+        var_0.table.blueprint setmodel( var_2 );
         var_1.has_blueprint = undefined;
         var_1.blueprint_interaction = undefined;
         var_1 setclientomnvar( "zm_hud_inventory_1", 0 );

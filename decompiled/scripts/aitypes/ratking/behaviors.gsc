@@ -862,7 +862,7 @@ trystaffprojectile( var_0 )
     if ( var_0 > var_2.staff_projectile_max_dist_sq )
         return 0;
 
-    if ( !_func_2AC( self.origin, var_1.origin, self ) )
+    if ( !navisstraightlinereachable( self.origin, var_1.origin, self ) )
     {
         self.nextstaffprojectiletime = gettime() + 500;
         return 0;
@@ -1050,7 +1050,7 @@ tryteleport( var_0 )
             return 0;
         }
 
-        var_5 = self _meth_84F9( var_4 );
+        var_5 = self getnearbynegotiationinfo( var_4 );
 
         if ( shouldtrytraversalteleport() && isdefined( var_5 ) )
         {
@@ -1622,7 +1622,7 @@ trytraversalteleport()
     if ( isdefined( self.pathgoalpos ) )
     {
         var_0 = self pathdisttogoal();
-        var_1 = self _meth_84F9( var_0 );
+        var_1 = self getnearbynegotiationinfo( var_0 );
 
         if ( isdefined( var_1 ) )
         {

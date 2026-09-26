@@ -16,7 +16,7 @@ _id_963C()
     playfxontag( level._id_A3B9._id_11888, self, "tag_engine_right" );
 }
 
-init_location()
+init_local()
 {
 
 }

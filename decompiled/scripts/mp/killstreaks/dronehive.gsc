@@ -7,7 +7,7 @@ init()
     level.dronemissilespawnarray = getentarray( "remoteMissileSpawn", "targetname" );
 
     foreach ( var_1 in level.dronemissilespawnarray )
-        var_1._id_1155F = getent( var_1.target, "targetname" );
+        var_1.targetent = getent( var_1.target, "targetname" );
 
     var_3 = [ "passive_predator", "passive_no_missiles", "passive_implosion", "passive_rapid_missiles" ];
     scripts\mp\killstreak_loot::_id_DF07( "drone_hive", var_3 );
@@ -34,14 +34,14 @@ usedronehive( var_0, var_1, var_2 )
         return 0;
 
     var_0 scripts\engine\utility::allow_weapon_switch( 0 );
-    level thread _id_B9CB( var_0 );
+    level thread monitordisownkillstreaks( var_0 );
     level thread monitorgameend( var_0 );
     level thread monitorobjectivecamera( var_0 );
-    level thread _id_E846( var_0, var_1, var_2.streakname, var_2 );
+    level thread rundronehive( var_0, var_1, var_2.streakname, var_2 );
     return 1;
 }
 
-_id_13AA4( var_0 )
+watchhostmigrationstartedinit( var_0 )
 {
     var_0 endon( "killstreak_disowned" );
     var_0 endon( "disconnect" );
@@ -105,7 +105,7 @@ watchclosetogoal( var_0 )
     var_0 thread scripts\mp\killstreaks\killstreaks::_id_11086();
 }
 
-_id_E846( var_0, var_1, var_2, var_3 )
+rundronehive( var_0, var_1, var_2, var_3 )
 {
     var_0 endon( "killstreak_disowned" );
     level endon( "game_ended" );
@@ -126,12 +126,12 @@ _id_E846( var_0, var_1, var_2, var_3 )
     level thread scripts\mp\utility::teamplayercardsplash( var_4, var_0 );
     var_0 notifyonplayercommand( "missileTargetSet", "+attack" );
     var_0 notifyonplayercommand( "missileTargetSet", "+attack_akimbo_accessible" );
-    var_8 = _id_7DFE( var_0, level.dronemissilespawnarray );
+    var_8 = getbestmissilespawnpoint( var_0, level.dronemissilespawnarray );
     var_9 = var_8.origin * ( 1, 1, 0 ) + ( 0, 0, level.mapcenter[2] + 10000 );
-    var_10 = var_8._id_1155F.origin;
+    var_10 = var_8.targetent.origin;
     var_11 = scripts\mp\utility::_magicbullet( var_5, var_9, var_10, var_0 );
     var_11 setcandamage( 1 );
-    var_11 _meth_80A2();
+    var_11 disablemissileboosting();
     var_11 setmissileminimapvisible( 1 );
     var_11.team = var_0.team;
     var_11.lifeid = var_1;
@@ -154,7 +154,7 @@ _id_E846( var_0, var_1, var_2, var_3 )
 
     missileeyes( var_0, var_11 );
     var_0 setclientomnvar( "ui_predator_missile", 1 );
-    var_11 thread _id_13AA4( var_0 );
+    var_11 thread watchhostmigrationstartedinit( var_0 );
     var_11 thread watchhostmigrationfinishedinit( var_0 );
     var_11 thread scripts\mp\killstreaks\utility::watchsupertrophynotify( var_0 );
     var_0 scripts\mp\matchdata::logkillstreakevent( var_2, var_11.origin );
@@ -169,7 +169,7 @@ _id_E846( var_0, var_1, var_2, var_3 )
     }
 
     if ( scripts\mp\killstreaks\utility::_id_A69F( var_3, "passive_rapid_missiles" ) )
-        var_11._id_12BA7 = 1;
+        var_11.unlimitedammo = 1;
 
     var_13 = 2;
     var_0 setclientomnvar( "ui_predator_missiles_left", var_11.missilesleft );
@@ -185,7 +185,7 @@ _id_E846( var_0, var_1, var_2, var_3 )
         if ( !isdefined( var_11 ) )
             break;
 
-        if ( scripts\mp\utility::istrue( var_11._id_12BA7 ) )
+        if ( scripts\mp\utility::istrue( var_11.unlimitedammo ) )
         {
             if ( scripts\mp\utility::istrue( var_11.lasttimefired ) )
             {
@@ -229,7 +229,7 @@ _id_E846( var_0, var_1, var_2, var_3 )
         }
     }
 
-    level thread _id_E474( var_0 );
+    level thread returnplayer( var_0 );
     scripts\mp\utility::printgameaction( "killstreak ended - drone_hive", var_0 );
 }
 
@@ -257,7 +257,7 @@ resetmissiles( var_0, var_1 )
     self setclientomnvar( "ui_predator_missiles_left", var_0.missilesleft );
 }
 
-_id_B9EE()
+monitorlockedtarget()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -267,7 +267,7 @@ _id_B9EE()
     for (;;)
     {
         var_2 = [];
-        var_0 = scripts\mp\killstreaks\utility::_id_7E92();
+        var_0 = scripts\mp\killstreaks\utility::getenemytargets();
 
         foreach ( var_4 in var_0 )
         {
@@ -283,7 +283,7 @@ _id_B9EE()
         if ( var_2.size )
         {
             var_1 = sortbydistance( var_2, self.origin );
-            self._id_AA25 = var_1[0];
+            self.lasttargetlocked = var_1[0];
             scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 0.25 );
         }
 
@@ -330,7 +330,7 @@ spawnswitchblade( var_0, var_1, var_2, var_3 )
 
 getclosesttargetinview( var_0, var_1 )
 {
-    var_2 = scripts\mp\killstreaks\utility::_id_7E92( var_0 );
+    var_2 = scripts\mp\killstreaks\utility::getenemytargets( var_0 );
     var_3 = undefined;
     var_4 = undefined;
 
@@ -436,7 +436,7 @@ monitorboost( var_0 )
     }
 }
 
-_id_7DFE( var_0, var_1 )
+getbestmissilespawnpoint( var_0, var_1 )
 {
     var_2 = [];
 
@@ -462,7 +462,7 @@ _id_7DFE( var_0, var_1 )
 
     foreach ( var_9 in var_6 )
     {
-        var_9._id_101E4 = 0;
+        var_9.sightedenemies = 0;
 
         for ( var_10 = 0; var_10 < var_2.size; var_10++ )
         {
@@ -478,7 +478,7 @@ _id_7DFE( var_0, var_1 )
 
             if ( bullettracepassed( var_11.origin + ( 0, 0, 32 ), var_9.origin, 0, var_11 ) )
             {
-                var_9._id_101E4 = var_9._id_101E4 + 1;
+                var_9.sightedenemies = var_9.sightedenemies + 1;
                 return var_9;
             }
 
@@ -486,10 +486,10 @@ _id_7DFE( var_0, var_1 )
             scripts\mp\hostmigration::waittillhostmigrationdone();
         }
 
-        if ( var_9._id_101E4 == var_2.size )
+        if ( var_9.sightedenemies == var_2.size )
             return var_9;
 
-        if ( var_9._id_101E4 > var_7._id_101E4 )
+        if ( var_9.sightedenemies > var_7.sightedenemies )
             var_7 = var_9;
     }
 
@@ -517,12 +517,12 @@ unfreezecontrols( var_0, var_1, var_2 )
     var_0 scripts\mp\utility::freezecontrolswrapper( 0 );
 }
 
-_id_B9CB( var_0 )
+monitordisownkillstreaks( var_0 )
 {
     var_0 endon( "disconnect" );
     var_0 endon( "end_kill_streak" );
     var_0 waittill( "killstreak_disowned" );
-    level thread _id_E474( var_0 );
+    level thread returnplayer( var_0 );
 }
 
 monitorgameend( var_0 )
@@ -531,7 +531,7 @@ monitorgameend( var_0 )
     var_0 endon( "end_kill_streak" );
     level waittill( "game_ended" );
     var_1 = 1;
-    level thread _id_E474( var_0, 0, var_1 );
+    level thread returnplayer( var_0, 0, var_1 );
 }
 
 monitorobjectivecamera( var_0 )
@@ -539,7 +539,7 @@ monitorobjectivecamera( var_0 )
     var_0 endon( "end_kill_streak" );
     var_0 endon( "disconnect" );
     level waittill( "objective_cam" );
-    level thread _id_E474( var_0, 1 );
+    level thread returnplayer( var_0, 1 );
 }
 
 monitordeath( var_0, var_1 )
@@ -548,8 +548,8 @@ monitordeath( var_0, var_1 )
     var_0 waittill( "death" );
     scripts\mp\hostmigration::waittillhostmigrationdone();
 
-    if ( isdefined( var_0._id_114F1 ) )
-        var_0._id_114F1 delete();
+    if ( isdefined( var_0.targeffect ) )
+        var_0.targeffect delete();
 
     if ( isdefined( var_0.entitynumber ) )
         level.rockets[var_0.entitynumber] = undefined;
@@ -570,7 +570,7 @@ stopmissilesoundonspawn()
     self stoplocalsound( "trinity_rocket_plr_lfe" );
 }
 
-_id_E474( var_0, var_1, var_2 )
+returnplayer( var_0, var_1, var_2 )
 {
     if ( !isdefined( var_0 ) )
         return;

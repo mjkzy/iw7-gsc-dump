@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\karatemaster::_id_DEE8();
-    scripts\asm\karatemaster_dlc4\mp\states::_id_2371();
+    behaviortree\karatemaster::registerbehaviortree();
+    scripts\asm\karatemaster_dlc4\mp\states::asm_register();
     thread _id_FAB0();
 }
 

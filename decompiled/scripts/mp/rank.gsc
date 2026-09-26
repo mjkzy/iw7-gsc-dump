@@ -23,7 +23,7 @@ init()
     }
 
     scripts\mp\weaponrank::init();
-    scripts\mp\missions::_id_31D7();
+    scripts\mp\missions::buildchallegeinfo();
     level.prestigeextras = [];
     var_2 = 0;
 
@@ -165,15 +165,15 @@ onplayerconnect()
             setmatchdata( "players", var_0.clientid, "rank", var_2 );
             setmatchdata( "players", var_0.clientid, "Prestige", var_1 );
 
-            if ( !isai( var_0 ) && ( scripts\mp\utility::_id_D957() || scripts\mp\utility::matchmakinggame() ) )
+            if ( !isai( var_0 ) && ( scripts\mp\utility::privatematch() || scripts\mp\utility::matchmakinggame() ) )
                 setmatchdata( "players", var_0.clientid, "isSplitscreen", var_0 issplitscreenplayer() );
         }
 
         var_0.pers["participation"] = 0;
-        var_0._id_EC53 = 0;
+        var_0.scoreupdatetotal = 0;
         var_0.scorepointsqueue = 0;
         var_0.scoreeventqueue = [];
-        var_0._id_D702 = 0;
+        var_0.postgamepromotion = 0;
         var_0 setclientdvar( "ui_promotion", 0 );
 
         if ( !isdefined( var_0.pers["summary"] ) )
@@ -189,22 +189,22 @@ onplayerconnect()
         }
 
         var_0 setclientdvar( "ui_opensummary", 0 );
-        var_0 thread scripts\mp\missions::_id_12E71();
+        var_0 thread scripts\mp\missions::updatechallenges();
         var_0 thread onplayerspawned();
-        var_0 thread _id_C575();
+        var_0 thread onplayergiveloadout();
 
         if ( var_0 scripts\mp\utility::rankingenabled() )
         {
             var_3 = getdvarint( "online_mp_party_xpscale" );
-            var_4 = var_0 _meth_85BE() > 1;
+            var_4 = var_0 getprivatepartysize() > 1;
 
             if ( var_4 )
                 var_0 addrankxpmultiplier( var_3, "online_mp_party_xpscale" );
 
             if ( var_0 getrankedplayerdata( "mp", "prestigeDoubleWeaponXp" ) )
-                var_0._id_D882 = 1;
+                var_0.prestigedoubleweaponxp = 1;
             else
-                var_0._id_D882 = 0;
+                var_0.prestigedoubleweaponxp = 0;
         }
 
         var_0.scoreeventcount = 0;
@@ -245,7 +245,7 @@ playerupdaterank()
     if ( isai( self ) || !isdefined( self.pers["prestige"] ) )
     {
         if ( level.rankedmatch && isdefined( self.bufferedstats ) )
-            var_1 = _id_8098();
+            var_1 = getprestigelevel();
         else
             var_1 = 0;
 
@@ -260,7 +260,7 @@ playerupdaterank()
     }
 }
 
-_id_C575()
+onplayergiveloadout()
 {
     self endon( "disconnect" );
 
@@ -312,7 +312,7 @@ giverankxp( var_0, var_1, var_2 )
             var_2 = self getcurrentweapon();
     }
 
-    if ( !isdefined( level._id_72DA ) || !level._id_72DA )
+    if ( !isdefined( level.forceranking ) || !level.forceranking )
     {
         if ( level.teambased && ( !level.teamcount["allies"] || !level.teamcount["axis"] ) )
             return;
@@ -327,29 +327,29 @@ giverankxp( var_0, var_1, var_2 )
 
     if ( scripts\mp\utility::istrue( var_4 ) )
     {
-        var_5 = _id_80D4();
+        var_5 = getrankxpmultipliertotal();
         var_6 = int( var_1 * var_5 );
         var_7 = int( max( var_6 - var_1, 0 ) );
     }
 
     var_8 = getrankxp();
-    _id_93E3( var_6 );
+    incrankxp( var_6 );
 
-    if ( _id_12EFA( var_8 ) )
-        thread _id_12EFB();
+    if ( updaterank( var_8 ) )
+        thread updaterankannouncehud();
 
-    _id_11390();
+    syncxpstat();
 
-    if ( isdefined( var_2 ) && scripts\mp\weaponrank::_id_13CCA( var_2 ) )
-        thread scripts\mp\weaponrank::_id_8394( var_2, var_0, var_1 );
+    if ( isdefined( var_2 ) && scripts\mp\weaponrank::weaponshouldgetxp( var_2 ) )
+        thread scripts\mp\weaponrank::giveplayerweaponxp( var_2, var_0, var_1 );
 
-    _id_DDF7( var_0, var_1, var_7 );
-    var_9 = _id_8098();
+    recordxpgains( var_0, var_1, var_7 );
+    var_9 = getprestigelevel();
     var_10 = getrank();
     thread scripts\mp\analyticslog::logevent_giveplayerxp( var_9, var_10, var_1, var_0 );
 }
 
-_id_DDF7( var_0, var_1, var_2 )
+recordxpgains( var_0, var_1, var_2 )
 {
     var_3 = var_1 + var_2;
     var_4 = getscoreinfocategory( var_0, "group" );
@@ -387,7 +387,7 @@ _id_DDF7( var_0, var_1, var_2 )
     }
 }
 
-_id_12EFA( var_0 )
+updaterank( var_0 )
 {
     var_1 = getrank();
 
@@ -400,7 +400,7 @@ _id_12EFA( var_0 )
     return 1;
 }
 
-_id_12EFB()
+updaterankannouncehud()
 {
     self endon( "disconnect" );
     self notify( "update_rank" );
@@ -440,7 +440,7 @@ flushscorepointspopupqueue()
     self.scorepointsqueue = 0;
 }
 
-_id_6F79()
+flushscorepointspopupqueueonspawn()
 {
     self endon( "disconnect" );
     self endon( "joined_team" );
@@ -466,24 +466,24 @@ scorepointspopup( var_0, var_1 )
         if ( !scripts\mp\utility::istrue( var_1 ) || scripts\mp\utility::isinkillcam() )
         {
             queuescorepointspopup( var_0 );
-            thread _id_6F79();
+            thread flushscorepointspopupqueueonspawn();
             return;
         }
     }
 
     self notify( "scorePointsPopup" );
     self endon( "scorePointsPopup" );
-    self._id_EC53 = self._id_EC53 + var_0;
-    self setclientomnvar( "ui_points_popup", self._id_EC53 );
+    self.scoreupdatetotal = self.scoreupdatetotal + var_0;
+    self setclientomnvar( "ui_points_popup", self.scoreupdatetotal );
     self setclientomnvar( "ui_points_popup_notify", gettime() );
     wait 1.0;
-    self._id_EC53 = 0;
+    self.scoreupdatetotal = 0;
 }
 
-_id_C16F()
+notifyplayerscore()
 {
     scripts\engine\utility::waitframe();
-    level notify( "update_player_score", self, self._id_EC53 );
+    level notify( "update_player_score", self, self.scoreupdatetotal );
 }
 
 queuescoreeventpopup( var_0 )
@@ -592,7 +592,7 @@ getmatchbonusspm()
     return ( 3 + var_0 * 0.5 ) * 10;
 }
 
-_id_8098()
+getprestigelevel()
 {
     if ( isai( self ) && isdefined( self.pers["prestige_fake"] ) )
         return self.pers["prestige_fake"];
@@ -605,7 +605,7 @@ getrankxp()
     return self.pers["rankxp"];
 }
 
-_id_93E3( var_0 )
+incrankxp( var_0 )
 {
     if ( !scripts\mp\utility::rankingenabled() )
         return;
@@ -628,7 +628,7 @@ _id_93E3( var_0 )
     self.pers["rankxp"] = var_3;
 }
 
-_id_11390()
+syncxpstat()
 {
     var_0 = getrankxp();
     self setplayerdata( "mp", "progression", "playerLevel", "xp", var_0 );
@@ -645,7 +645,7 @@ addglobalrankxpmultiplier( var_0, var_1 )
     level addrankxpmultiplier( var_0, var_1 );
 }
 
-_id_7ED9()
+getglobalrankxpmultiplier()
 {
     var_0 = level getrankxpmultiplier();
 
@@ -734,7 +734,7 @@ removeteamrankxpmultiplier( var_0, var_1 )
     level.teamrankxpmultipliers[var_0][var_1] = undefined;
 }
 
-_id_81B6( var_0 )
+getteamrankxpmultiplier( var_0 )
 {
     if ( !level.teambased )
         var_0 = "all";
@@ -755,10 +755,10 @@ _id_81B6( var_0 )
     return var_1;
 }
 
-_id_80D4()
+getrankxpmultipliertotal()
 {
     var_0 = getrankxpmultiplier();
-    var_1 = _id_7ED9();
-    var_2 = _id_81B6( self.team );
+    var_1 = getglobalrankxpmultiplier();
+    var_2 = getteamrankxpmultiplier( self.team );
     return var_0 * var_1 * var_2;
 }

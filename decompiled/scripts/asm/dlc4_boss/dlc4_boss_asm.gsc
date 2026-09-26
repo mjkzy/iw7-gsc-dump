@@ -115,7 +115,7 @@ playmoveexit( var_0, var_1, var_2, var_3 )
     self scragentsetorientmode( "face angle abs", self.angles );
     var_4 = self._blackboard;
     var_4.desireddir = vectornormalize( var_4.nodes[var_4.desirednode].origin - self.origin );
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_6 = self getanimentry( var_1, var_5 );
 
     if ( self._blackboard.smoothmotion )
@@ -126,13 +126,13 @@ playmoveexit( var_0, var_1, var_2, var_3 )
     if ( self._blackboard.facecenter )
         thread staylookingatcenter( var_1 );
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 loopbossmoveanim( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self getanimentry( var_1, var_4 );
 
     if ( self._blackboard.smoothmotion )
@@ -143,12 +143,12 @@ loopbossmoveanim( var_0, var_1, var_2, var_3 )
     if ( self._blackboard.facecenter )
         thread staylookingatcenter( var_1 );
 
-    _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
 }
 
 playmovearrival( var_0, var_1, var_2, var_3 )
 {
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self getanimentry( var_1, var_4 );
 
     if ( self._blackboard.smoothmotion )
@@ -159,7 +159,7 @@ playmovearrival( var_0, var_1, var_2, var_3 )
     if ( self._blackboard.facecenter )
         thread staylookingatcenter( var_1 );
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 choosebossmoveanim( var_0, var_1, var_2 )
@@ -264,7 +264,7 @@ staylookingatcenter( var_0 )
 playstrafefireball( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self getanimentry( var_1, var_4 );
 
     if ( self._blackboard.smoothmotion )
@@ -275,7 +275,7 @@ playstrafefireball( var_0, var_1, var_2, var_3 )
     if ( self._blackboard.facecenter )
         thread staylookingatcenter( var_1 );
 
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 choosestrafefireballanim( var_0, var_1, var_2 )
@@ -322,7 +322,7 @@ playfireball( var_0, var_1, var_2, var_3 )
         self.fireballtargetpos = self.arenacenter;
 
     faceposition( self.fireballtargetpos );
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 choosefireballanim( var_0, var_1, var_2 )
@@ -508,8 +508,8 @@ unlink_from_anchor()
 playsummonanim( var_0, var_1, var_2, var_3 )
 {
     self playsound( "final_meph_eclipse" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, self._id_C081 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, self._id_C081 );
 }
 
 summon_note_handler( var_0, var_1, var_2, var_3 )
@@ -740,7 +740,7 @@ air_pound_rise_play( var_0, var_1, var_2, var_3 )
     self._id_BE6F = createnavobstaclebybounds( self.arenacenter, ( 100, 100, 100 ), ( 0, 0, 0 ) );
     self playsound( "final_meph_intro" );
     thread airpoundrisefx();
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 air_pound_attack_note_handler( var_0, var_1, var_2, var_3 )
@@ -776,7 +776,7 @@ playgroundvulidle( var_0, var_1, var_2, var_3 )
 {
     self.groundvultimer = scripts\asm\dlc4\dlc4_asm::gettunedata().ground_vul_time;
     thread playgroundvulidlehelper( var_1 );
-    _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
 }
 
 playgroundvulidlehelper( var_0 )
@@ -792,7 +792,7 @@ playgroundvulidlehelper( var_0 )
 
 groundvulteleportintransition( var_0, var_1, var_2, var_3 )
 {
-    if ( scripts\asm\asm::_id_232B( var_1, "teleport_finished" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "teleport_finished" ) )
         self.teleportedin = 1;
 
     return self.teleportedin && !self.claponarena;
@@ -806,7 +806,7 @@ playgroundvulland( var_0, var_1, var_2, var_3 )
 
     if ( level.fbd.bossstate == "LAST_STAND" )
     {
-        _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+        scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
         self.cantakedamage = 1;
         return;
     }
@@ -824,7 +824,7 @@ playgroundvulland( var_0, var_1, var_2, var_3 )
         spawnzombie( "skeleton", var_12 );
     }
 
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 playgroundvullaunch( var_0, var_1, var_2, var_3 )
@@ -905,7 +905,7 @@ loopdropmovedown( var_0, var_1, var_2, var_3 )
 {
     self.dropdowntimer = scripts\asm\dlc4\dlc4_asm::gettunedata().drop_down_time;
     thread playdropmovedownhelper( var_1 );
-    _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
 }
 
 playdropmovedownhelper( var_0 )
@@ -934,7 +934,7 @@ dropmovedowntransition( var_0, var_1, var_2, var_3 )
 
 dropmoveuptransition( var_0, var_1, var_2, var_3 )
 {
-    var_4 = self._blackboard.nodes[self._blackboard._id_4BF7].origin;
+    var_4 = self._blackboard.nodes[self._blackboard.currentnode].origin;
     var_5 = self._blackboard.dropmovearrivaldist * self._blackboard.dropmovearrivaldist;
     return distancesquared( self.origin, var_4 ) <= var_5;
 }
@@ -942,7 +942,7 @@ dropmoveuptransition( var_0, var_1, var_2, var_3 )
 playflyoverexit( var_0, var_1, var_2, var_3 )
 {
     self scragentsetanimscale( scripts\asm\dlc4\dlc4_asm::gettunedata().fly_over_speed, 1 );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 flyoverlooptransition( var_0, var_1, var_2, var_3 )
@@ -981,7 +981,7 @@ playblackholeloop( var_0, var_1, var_2, var_3 )
 {
     self.blackholetimer = scripts\asm\dlc4\dlc4_asm::gettunedata().black_hole_duration;
     thread playblackholeloophelper( var_1 );
-    _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
 }
 
 playblackholeloophelper( var_0 )
@@ -1268,7 +1268,7 @@ playpain( var_0, var_1, var_2, var_3 )
 {
     self.terminateaction = 1;
     self.vulnerable = 1;
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 playmovingpain( var_0, var_1, var_2, var_3 )
@@ -1285,7 +1285,7 @@ playlaststandloop( var_0, var_1, var_2, var_3 )
     playsoundatpos( self.arenacenter + ( 0, 0, 450 ), "cp_final_meph_final_soul_bomb_start" );
     level.dlc4_boss playloopsound( "cp_final_meph_final_soul_bomb_lp" );
     thread laststandmonitor();
-    _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
 }
 
 laststandmonitor()
@@ -1335,7 +1335,7 @@ fightending( var_0, var_1, var_2 )
 playanimandteleport( var_0, var_1, var_2, var_3 )
 {
     thread teleportwhenanimdone( var_1, var_3 );
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 teleportnotehandler( var_0, var_1, var_2, var_3 )
@@ -1376,7 +1376,7 @@ teleportwhenanimdone( var_0, var_1 )
 
     for (;;)
     {
-        if ( scripts\asm\asm::_id_232B( var_0, "end" ) )
+        if ( scripts\asm\asm::asm_eventfired( var_0, "end" ) )
         {
             if ( var_1 == "center" )
                 thread doteleporttocenter( var_0 );
@@ -1392,7 +1392,7 @@ teleportwhenanimdone( var_0, var_1 )
 
 checkteleportdone( var_0, var_1, var_2, var_3 )
 {
-    var_4 = scripts\asm\asm::_id_232B( var_1, "teleport_finished" );
+    var_4 = scripts\asm\asm::asm_eventfired( var_1, "teleport_finished" );
     return var_4;
 }
 
@@ -1433,13 +1433,13 @@ teleporttodesirednode( var_0 )
         var_1 = ( var_1[0], var_1[1], self.origin[2] );
 
     _id_11663( var_1 );
-    self._blackboard._id_4BF7 = self._blackboard.desirednode;
+    self._blackboard.currentnode = self._blackboard.desirednode;
 }
 
 _id_11663( var_0 )
 {
     self setorigin( var_0 - ( 0, 0, 1 ), 0 );
-    self._blackboard._id_4BF7 = self._blackboard.desirednode;
+    self._blackboard.currentnode = self._blackboard.desirednode;
 }
 
 facearenacenter()

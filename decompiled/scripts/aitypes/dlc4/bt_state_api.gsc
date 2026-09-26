@@ -227,7 +227,7 @@ asm_wait_state_setup( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
         var_7.timeouttime = gettime() + 2000;
 
     if ( isdefined( var_5 ) )
-        var_7._id_6393 = gettime() + var_5;
+        var_7.endtime = gettime() + var_5;
 }
 
 asm_wait_state_begin( var_0, var_1 )
@@ -260,9 +260,9 @@ asm_wait_state_tick( var_0 )
             var_4 = "timeout";
         }
     }
-    else if ( isdefined( var_1._id_6393 ) )
+    else if ( isdefined( var_1.endtime ) )
     {
-        if ( gettime() > var_1._id_6393 )
+        if ( gettime() > var_1.endtime )
         {
             var_3 = 1;
             var_4 = "end_time";
@@ -294,5 +294,5 @@ asm_wait_state_end( var_0, var_1 )
     var_2.asmstate = undefined;
     var_2.fncallback = undefined;
     var_2.bisinasmstate = undefined;
-    var_2._id_6393 = undefined;
+    var_2.endtime = undefined;
 }

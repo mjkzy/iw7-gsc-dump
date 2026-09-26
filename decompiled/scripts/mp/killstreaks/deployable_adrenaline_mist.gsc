@@ -9,10 +9,10 @@ init()
     var_0.streakname = "deployable_adrenaline_mist";
     var_0.grenadeusefunc = scripts\mp\adrenaline::_id_18A5;
     level.boxsettings["deployable_adrenaline_mist"] = var_0;
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_adrenaline_mist", ::_id_128DD );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_adrenaline_mist", ::tryusedeployable );
 }
 
-_id_128DD( var_0, var_1 )
+tryusedeployable( var_0, var_1 )
 {
     var_2 = scripts\mp\killstreaks\deployablebox::begindeployableviamarker( var_0, "deployable_adrenaline_mist" );
 

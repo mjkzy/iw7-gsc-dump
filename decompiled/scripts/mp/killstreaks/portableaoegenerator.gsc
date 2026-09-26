@@ -3,54 +3,54 @@
 
 init()
 {
-    if ( !isdefined( level._id_D671 ) )
+    if ( !isdefined( level.portableaoegeneratorsettings ) )
     {
-        level._id_D671 = [];
+        level.portableaoegeneratorsettings = [];
         level.generators = [];
     }
 }
 
-_id_FB16( var_0 )
+setweapon( var_0 )
 {
-    var_1 = level._id_D671[var_0];
+    var_1 = level.portableaoegeneratorsettings[var_0];
     self setoffhandsecondaryclass( "flash" );
     scripts\mp\utility::_giveweapon( var_1.weaponname, 0 );
     self givestartammo( var_1.weaponname );
 
-    if ( !isdefined( self._id_522E ) )
-        self._id_522E = [];
+    if ( !isdefined( self.deployedgenerators ) )
+        self.deployedgenerators = [];
 
-    thread _id_B9DE( var_0 );
+    thread monitorgeneratoruse( var_0 );
 }
 
-_id_12D67( var_0 )
+unsetweapon( var_0 )
 {
     self notify( "end_monitorUse_" + var_0 );
 }
 
-_id_51B7( var_0, var_1 )
+deletegenerator( var_0, var_1 )
 {
     if ( !isdefined( var_0 ) )
         return;
 
     foreach ( var_3 in level.players )
     {
-        if ( isdefined( var_3 ) && isdefined( var_3.ingame_cinematic_loop ) )
-            var_3.ingame_cinematic_loop[var_1] = undefined;
+        if ( isdefined( var_3 ) && isdefined( var_3.ingeneratoraoe ) )
+            var_3.ingeneratoraoe[var_1] = undefined;
     }
 
-    _id_DEF2( var_0, var_1, undefined );
+    registergenerator( var_0, var_1, undefined );
     var_0 notify( "death" );
     var_0 delete();
 }
 
-_id_DEF2( var_0, var_1, var_2 )
+registergenerator( var_0, var_1, var_2 )
 {
     if ( isdefined( var_2 ) && var_2 )
-        self._id_522E[var_1] = var_0;
+        self.deployedgenerators[var_1] = var_0;
     else
     {
-        self._id_522E[var_1] = undefined;
+        self.deployedgenerators[var_1] = undefined;
         var_2 = undefined;
     }
 
@@ -62,17 +62,17 @@ _id_DEF2( var_0, var_1, var_2 )
         var_3 = level.generators[var_1];
     }
 
-    var_4 = _id_7F0C( var_0 );
+    var_4 = getid( var_0 );
     var_3[var_4] = var_2;
 }
 
-_id_B9DE( var_0 )
+monitorgeneratoruse( var_0 )
 {
     self notify( "end_monitorUse_" + var_0 );
     self endon( "end_monitorUse_" + var_0 );
     self endon( "disconnect" );
     level endon( "game_ended" );
-    var_1 = level._id_D671[var_0];
+    var_1 = level.portableaoegeneratorsettings[var_0];
 
     for (;;)
     {
@@ -86,14 +86,14 @@ _id_B9DE( var_0 )
                 return;
             }
 
-            if ( _id_3E1B( var_2, var_1._id_CC26 ) )
+            if ( checkgeneratorplacement( var_2, var_1.placementztolerance ) )
             {
-                var_4 = self._id_522E[var_0];
+                var_4 = self.deployedgenerators[var_0];
 
                 if ( isdefined( var_4 ) )
-                    _id_51B7( var_4, var_0 );
+                    deletegenerator( var_4, var_0 );
 
-                var_5 = _id_108EA( var_0, var_2.origin );
+                var_5 = spawnnewgenerator( var_0, var_2.origin );
                 var_6 = var_2 getlinkedparent();
 
                 if ( isdefined( var_6 ) )
@@ -110,7 +110,7 @@ _id_B9DE( var_0 )
     }
 }
 
-_id_3E1B( var_0, var_1 )
+checkgeneratorplacement( var_0, var_1 )
 {
     var_0 hide();
     var_0 waittill( "missile_stuck", var_2 );
@@ -132,9 +132,9 @@ _id_3E1B( var_0, var_1 )
     return 1;
 }
 
-_id_108EA( var_0, var_1 )
+spawnnewgenerator( var_0, var_1 )
 {
-    var_2 = level._id_D671[var_0];
+    var_2 = level.portableaoegeneratorsettings[var_0];
     var_3 = spawn( "script_model", var_1 );
     var_3.health = var_2.health;
     var_3.team = self.team;
@@ -143,20 +143,20 @@ _id_108EA( var_0, var_1 )
     var_3 setmodel( var_2.placedmodel );
 
     if ( level.teambased )
-        var_3 scripts\mp\entityheadicons::setteamheadicon( self.team, ( 0, 0, var_2._id_8C79 ) );
+        var_3 scripts\mp\entityheadicons::setteamheadicon( self.team, ( 0, 0, var_2.headiconheight ) );
     else
-        var_3 scripts\mp\entityheadicons::setplayerheadicon( self, ( 0, 0, var_2._id_8C79 ) );
+        var_3 scripts\mp\entityheadicons::setplayerheadicon( self, ( 0, 0, var_2.headiconheight ) );
 
-    var_3 thread _id_13AE2( self, var_0 );
-    var_3 thread _id_139E5( self, var_0 );
-    var_3 thread _id_13B9C( self, var_0 );
+    var_3 thread watchowner( self, var_0 );
+    var_3 thread watchdamage( self, var_0 );
+    var_3 thread watchuse( self, var_0 );
     var_3 thread scripts\mp\utility::notusableforjoiningplayers( self );
 
     if ( isdefined( var_2.ondeploycallback ) )
         var_3 [[ var_2.ondeploycallback ]]( self, var_0 );
 
     var_3 thread scripts\mp\weapons::createbombsquadmodel( var_2.bombsquadmodel, "tag_origin", self );
-    _id_DEF2( var_3, var_0, 1 );
+    registergenerator( var_3, var_0, 1 );
     wait 0.05;
 
     if ( isdefined( var_3 ) && var_3 scripts\mp\utility::touchingbadtrigger() )
@@ -165,7 +165,7 @@ _id_108EA( var_0, var_1 )
     return var_3;
 }
 
-_id_13AE2( var_0, var_1 )
+watchowner( var_0, var_1 )
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -175,13 +175,13 @@ _id_13AE2( var_0, var_1 )
     else
         var_0 scripts\engine\utility::waittill_either( "killstreak_disowned", "death" );
 
-    var_0 thread _id_51B7( self, var_1 );
+    var_0 thread deletegenerator( self, var_1 );
 }
 
-_id_139E5( var_0, var_1 )
+watchdamage( var_0, var_1 )
 {
-    self._id_773C = var_1;
-    var_2 = level._id_D671[var_1];
+    self.generatortype = var_1;
+    var_2 = level.portableaoegeneratorsettings[var_1];
     scripts\mp\damage::monitordamage( var_2.health, var_2.damagefeedback, ::handledeathdamage, ::modifydamage, 0 );
 }
 
@@ -199,23 +199,23 @@ modifydamage( var_0, var_1, var_2, var_3, var_4 )
 handledeathdamage( var_0, var_1, var_2 )
 {
     var_3 = self.owner;
-    var_4 = level._id_D671[self._id_773C];
+    var_4 = level.portableaoegeneratorsettings[self.generatortype];
 
     if ( isdefined( var_3 ) && var_0 != var_3 )
         var_0 notify( "destroyed_equipment" );
 
-    if ( isdefined( var_4._id_C4F1 ) )
-        var_3 [[ var_4._id_C4F1 ]]( self, self._id_773C );
+    if ( isdefined( var_4.ondestroycallback ) )
+        var_3 [[ var_4.ondestroycallback ]]( self, self.generatortype );
 
-    var_3 thread _id_51B7( self, self._id_773C );
+    var_3 thread deletegenerator( self, self.generatortype );
 }
 
-_id_13B9C( var_0, var_1 )
+watchuse( var_0, var_1 )
 {
     self endon( "death" );
     level endon( "game_ended" );
     var_0 endon( "disconnect" );
-    var_2 = level._id_D671[var_1];
+    var_2 = level.portableaoegeneratorsettings[var_1];
     self setcursorhint( "HINT_NOICON" );
     self sethintstring( var_2.usehintstring );
     scripts\mp\utility::setselfusable( var_0 );
@@ -223,16 +223,16 @@ _id_13B9C( var_0, var_1 )
     for (;;)
     {
         self waittill( "trigger", var_3 );
-        var_3 playlocalsound( var_2._id_130D9 );
+        var_3 playlocalsound( var_2.usesound );
 
         if ( var_3 getammocount( var_2.weaponname ) == 0 && !var_3 scripts\mp\utility::isjuggernaut() )
-            var_3 _id_FB16( var_1 );
+            var_3 setweapon( var_1 );
 
-        var_3 thread _id_51B7( self, var_1 );
+        var_3 thread deletegenerator( self, var_1 );
     }
 }
 
-_id_7737()
+generatoraoetracker()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -240,35 +240,35 @@ _id_7737()
     level endon( "game_ended" );
     var_0 = randomfloat( 0.5 );
     wait( var_0 );
-    self.ingame_cinematic_loop = [];
+    self.ingeneratoraoe = [];
 
     for (;;)
     {
         wait 0.05;
 
-        if ( level.generators.size > 0 || self.ingame_cinematic_loop.size > 0 )
+        if ( level.generators.size > 0 || self.ingeneratoraoe.size > 0 )
         {
-            foreach ( var_2 in level._id_D671 )
-                _id_3DE7( var_2._id_773C );
+            foreach ( var_2 in level.portableaoegeneratorsettings )
+                checkallgeneratorsofthistype( var_2.generatortype );
         }
     }
 }
 
-_id_3DE7( var_0 )
+checkallgeneratorsofthistype( var_0 )
 {
     var_1 = level.generators[var_0];
 
     if ( isdefined( var_1 ) )
     {
-        var_2 = level._id_D671[var_0];
-        var_3 = var_2._id_2044 * var_2._id_2044;
+        var_2 = level.portableaoegeneratorsettings[var_0];
+        var_3 = var_2.aoeradius * var_2.aoeradius;
         var_4 = undefined;
 
         foreach ( var_6 in var_1 )
         {
             if ( isdefined( var_6 ) && scripts\mp\utility::isreallyalive( var_6 ) )
             {
-                if ( level.teambased && _id_B3E5( var_6.team, self.team, var_2._id_11589 ) || !level.teambased && _id_B3E4( var_6.owner, self, var_2._id_11589 ) )
+                if ( level.teambased && matchestargetteam( var_6.team, self.team, var_2.targettype ) || !level.teambased && matchesowner( var_6.owner, self, var_2.targettype ) )
                 {
                     var_7 = distancesquared( var_6.origin, self.origin );
 
@@ -282,28 +282,28 @@ _id_3DE7( var_0 )
         }
 
         var_9 = isdefined( var_4 );
-        var_10 = isdefined( self.ingame_cinematic_loop[var_0] );
+        var_10 = isdefined( self.ingeneratoraoe[var_0] );
 
         if ( var_9 && !var_10 )
-            self [[ var_2._id_C510 ]]();
+            self [[ var_2.onentercallback ]]();
         else if ( !var_9 && var_10 )
-            self [[ var_2._id_C51E ]]();
+            self [[ var_2.onexitcallback ]]();
 
-        self.ingame_cinematic_loop[var_0] = var_4;
+        self.ingeneratoraoe[var_0] = var_4;
     }
 }
 
-_id_B3E5( var_0, var_1, var_2 )
+matchestargetteam( var_0, var_1, var_2 )
 {
     return var_2 == "all" || var_2 == "friendly" && var_0 == var_1 || var_2 == "enemy" && var_0 != var_1;
 }
 
-_id_B3E4( var_0, var_1, var_2 )
+matchesowner( var_0, var_1, var_2 )
 {
     return var_2 == "all" || var_2 == "friendly" && var_0 == var_1 || var_2 == "enemy" && var_0 != var_1;
 }
 
-_id_7F0C( var_0 )
+getid( var_0 )
 {
     return var_0.owner.guid + var_0.birthtime;
 }

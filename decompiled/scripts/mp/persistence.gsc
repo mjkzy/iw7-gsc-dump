@@ -4,9 +4,9 @@
 init()
 {
     level.persistentdatainfo = [];
-    level thread _id_12E6A();
-    level thread _id_12F85();
-    level thread _id_13E05();
+    level thread updatebufferedstats();
+    level thread uploadglobalstatcounters();
+    level thread writekdhistorystats();
 }
 
 initbufferedstats()
@@ -80,7 +80,7 @@ statget( var_0 )
     return self getrankedplayerdata( "mp", var_0 );
 }
 
-_id_10E54( var_0, var_1 )
+statset( var_0, var_1 )
 {
     if ( !scripts\mp\utility::rankingenabled() )
         return;
@@ -177,7 +177,7 @@ stataddbufferedwithmax( var_0, var_1, var_2 )
     if ( var_3 < statgetbuffered( var_0 ) )
         var_3 = var_2;
 
-    _id_10E55( var_0, var_3 );
+    statsetbuffered( var_0, var_3 );
 }
 
 stataddchildbufferedwithmax( var_0, var_1, var_2, var_3 )
@@ -204,7 +204,7 @@ statgetbuffered( var_0, var_1 )
     return self.bufferedstats[var_0];
 }
 
-_id_10E37( var_0 )
+statgetsquadbuffered( var_0 )
 {
     if ( !scripts\mp\utility::rankingenabled() )
         return 0;
@@ -212,7 +212,7 @@ _id_10E37( var_0 )
     return self.squadmemberbufferedstats[var_0];
 }
 
-_id_10E55( var_0, var_1, var_2 )
+statsetbuffered( var_0, var_1, var_2 )
 {
     if ( !scripts\mp\utility::rankingenabled() && !scripts\mp\utility::istrue( var_2 ) )
         return;
@@ -220,7 +220,7 @@ _id_10E55( var_0, var_1, var_2 )
     self.bufferedstats[var_0] = var_1;
 }
 
-_id_10E58( var_0, var_1 )
+statsetsquadbuffered( var_0, var_1 )
 {
     if ( !scripts\mp\utility::rankingenabled() )
         return;
@@ -234,19 +234,19 @@ stataddbuffered( var_0, var_1, var_2 )
         return;
 
     var_3 = statgetbuffered( var_0, var_2 );
-    _id_10E55( var_0, var_3 + var_1, var_2 );
+    statsetbuffered( var_0, var_3 + var_1, var_2 );
 }
 
-_id_10E18( var_0, var_1 )
+stataddsquadbuffered( var_0, var_1 )
 {
     if ( !scripts\mp\utility::rankingenabled() )
         return;
 
-    var_2 = _id_10E37( var_0 );
-    _id_10E58( var_0, var_2 + var_1 );
+    var_2 = statgetsquadbuffered( var_0 );
+    statsetsquadbuffered( var_0, var_2 + var_1 );
 }
 
-_id_12E6A()
+updatebufferedstats()
 {
     wait 0.15;
     var_0 = 0;
@@ -262,7 +262,7 @@ _id_12E6A()
         if ( isdefined( level.players[var_0] ) )
         {
             level.players[var_0] writebufferedstats();
-            level.players[var_0] _id_12F5E();
+            level.players[var_0] updateweaponbufferedstats();
         }
 
         wait 2.0;
@@ -271,7 +271,7 @@ _id_12E6A()
     foreach ( var_2 in level.players )
     {
         var_2 writebufferedstats();
-        var_2 _id_12F5E();
+        var_2 updateweaponbufferedstats();
     }
 }
 
@@ -334,7 +334,7 @@ writebufferedstats()
     }
 }
 
-_id_13E05()
+writekdhistorystats()
 {
     if ( !scripts\mp\utility::matchmakinggame() )
         return;
@@ -345,11 +345,11 @@ _id_13E05()
     if ( scripts\mp\utility::waslastround() || !scripts\mp\utility::isroundbased() && scripts\mp\utility::hittimelimit() )
     {
         foreach ( var_1 in level.players )
-            var_1 _id_93FB( var_1.kills, var_1.deaths );
+            var_1 incrementrankedreservedhistory( var_1.kills, var_1.deaths );
     }
 }
 
-_id_93FB( var_0, var_1 )
+incrementrankedreservedhistory( var_0, var_1 )
 {
     if ( !scripts\mp\utility::rankingenabled() )
         return;
@@ -366,12 +366,12 @@ _id_93FB( var_0, var_1 )
     self setplayerdata( "mp", "kdHistoryD", 4, int( clamp( var_1, 0, 255 ) ) );
 }
 
-_id_93FC( var_0, var_1, var_2 )
+incrementweaponstat( var_0, var_1, var_2 )
 {
     if ( scripts\mp\utility::iskillstreakweapon( var_0 ) )
         return;
 
-    if ( isdefined( level._id_561D ) )
+    if ( isdefined( level.disableweaponstats ) )
         return;
 
     if ( scripts\mp\utility::rankingenabled() )
@@ -381,12 +381,12 @@ _id_93FC( var_0, var_1, var_2 )
     }
 }
 
-_id_93F9( var_0, var_1, var_2 )
+incrementattachmentstat( var_0, var_1, var_2 )
 {
-    if ( isdefined( level._id_561D ) )
+    if ( isdefined( level.disableweaponstats ) )
         return;
 
-    if ( !scripts\mp\utility::_id_2490( var_0 ) )
+    if ( !scripts\mp\utility::attachmentlogsstats( var_0 ) )
         return;
 
     if ( scripts\mp\utility::rankingenabled() )
@@ -396,18 +396,18 @@ _id_93F9( var_0, var_1, var_2 )
     }
 }
 
-_id_12F5E()
+updateweaponbufferedstats()
 {
-    if ( !isdefined( self.trackingweapon ) )
+    if ( !isdefined( self.trackingweaponname ) )
         return;
 
-    if ( self.trackingweapon == "" || self.trackingweapon == "none" )
+    if ( self.trackingweaponname == "" || self.trackingweaponname == "none" )
         return;
 
-    if ( scripts\mp\utility::iskillstreakweapon( self.trackingweapon ) || scripts\mp\utility::isenvironmentweapon( self.trackingweapon ) || scripts\mp\utility::isbombsiteweapon( self.trackingweapon ) )
+    if ( scripts\mp\utility::iskillstreakweapon( self.trackingweaponname ) || scripts\mp\utility::isenvironmentweapon( self.trackingweaponname ) || scripts\mp\utility::isbombsiteweapon( self.trackingweaponname ) )
         return;
 
-    var_0 = self.trackingweapon;
+    var_0 = self.trackingweaponname;
     var_1 = undefined;
     var_2 = getsubstr( var_0, 0, 4 );
 
@@ -442,7 +442,7 @@ _id_12F5E()
 
     if ( var_1 == "gl" || var_1 == "shotgun" || var_1 == "missglprox" || var_1 == "stickglprox" || var_1 == "shotgunglprox" || var_1 == "shotgunglr" )
     {
-        _id_CA72( var_1 );
+        perslog_attachmentstats( var_1 );
         persclear_stats();
         return;
     }
@@ -451,14 +451,14 @@ _id_12F5E()
         return;
 
     var_8 = getweaponvariantindex( var_0 );
-    _id_CA73( var_1, var_8 );
+    perslog_weaponstats( var_1, var_8 );
     var_3 = getweaponattachments( var_0 );
 
     foreach ( var_5 in var_3 )
     {
         var_10 = scripts\mp\utility::attachmentmap_tobase( var_5 );
 
-        if ( !scripts\mp\utility::_id_2490( var_10 ) )
+        if ( !scripts\mp\utility::attachmentlogsstats( var_10 ) )
             continue;
 
         switch ( var_10 )
@@ -468,7 +468,7 @@ _id_12F5E()
                 continue;
         }
 
-        _id_CA72( var_10 );
+        perslog_attachmentstats( var_10 );
     }
 
     persclear_stats();
@@ -476,7 +476,7 @@ _id_12F5E()
 
 persclear_stats()
 {
-    self.trackingweapon = "none";
+    self.trackingweaponname = "none";
     self.trackingweaponshots = 0;
     self.trackingweaponkills = 0;
     self.trackingweaponhits = 0;
@@ -484,76 +484,76 @@ persclear_stats()
     self.trackingweapondeaths = 0;
 }
 
-_id_CA73( var_0, var_1 )
+perslog_weaponstats( var_0, var_1 )
 {
     if ( self.trackingweaponshots > 0 )
     {
-        _id_93FC( var_0, "shots", self.trackingweaponshots );
-        scripts\mp\matchdata::_id_AFDC( var_0, "shots", self.trackingweaponshots, var_1 );
+        incrementweaponstat( var_0, "shots", self.trackingweaponshots );
+        scripts\mp\matchdata::logweaponstat( var_0, "shots", self.trackingweaponshots, var_1 );
     }
 
     if ( self.trackingweaponkills > 0 )
     {
-        _id_93FC( var_0, "kills", self.trackingweaponkills );
-        scripts\mp\matchdata::_id_AFDC( var_0, "kills", self.trackingweaponkills, var_1 );
+        incrementweaponstat( var_0, "kills", self.trackingweaponkills );
+        scripts\mp\matchdata::logweaponstat( var_0, "kills", self.trackingweaponkills, var_1 );
     }
 
     if ( self.trackingweaponhits > 0 )
     {
-        _id_93FC( var_0, "hits", self.trackingweaponhits );
-        scripts\mp\matchdata::_id_AFDC( var_0, "hits", self.trackingweaponhits, var_1 );
+        incrementweaponstat( var_0, "hits", self.trackingweaponhits );
+        scripts\mp\matchdata::logweaponstat( var_0, "hits", self.trackingweaponhits, var_1 );
     }
 
     if ( self.trackingweaponheadshots > 0 )
     {
-        _id_93FC( var_0, "headShots", self.trackingweaponheadshots );
-        scripts\mp\matchdata::_id_AFDC( var_0, "headShots", self.trackingweaponheadshots, var_1 );
+        incrementweaponstat( var_0, "headShots", self.trackingweaponheadshots );
+        scripts\mp\matchdata::logweaponstat( var_0, "headShots", self.trackingweaponheadshots, var_1 );
     }
 
     if ( self.trackingweapondeaths > 0 )
     {
-        _id_93FC( var_0, "deaths", self.trackingweapondeaths );
-        scripts\mp\matchdata::_id_AFDC( var_0, "deaths", self.trackingweapondeaths, var_1 );
+        incrementweaponstat( var_0, "deaths", self.trackingweapondeaths );
+        scripts\mp\matchdata::logweaponstat( var_0, "deaths", self.trackingweapondeaths, var_1 );
     }
 }
 
-_id_CA72( var_0 )
+perslog_attachmentstats( var_0 )
 {
-    if ( !scripts\mp\utility::_id_2490( var_0 ) )
+    if ( !scripts\mp\utility::attachmentlogsstats( var_0 ) )
         return;
 
     if ( self.trackingweaponshots > 0 && var_0 != "tactical" )
     {
-        _id_93F9( var_0, "shots", self.trackingweaponshots );
-        scripts\mp\matchdata::_id_AF94( var_0, "shots", self.trackingweaponshots );
+        incrementattachmentstat( var_0, "shots", self.trackingweaponshots );
+        scripts\mp\matchdata::logattachmentstat( var_0, "shots", self.trackingweaponshots );
     }
 
     if ( self.trackingweaponkills > 0 && var_0 != "tactical" )
     {
-        _id_93F9( var_0, "kills", self.trackingweaponkills );
-        scripts\mp\matchdata::_id_AF94( var_0, "kills", self.trackingweaponkills );
+        incrementattachmentstat( var_0, "kills", self.trackingweaponkills );
+        scripts\mp\matchdata::logattachmentstat( var_0, "kills", self.trackingweaponkills );
     }
 
     if ( self.trackingweaponhits > 0 && var_0 != "tactical" )
     {
-        _id_93F9( var_0, "hits", self.trackingweaponhits );
-        scripts\mp\matchdata::_id_AF94( var_0, "hits", self.trackingweaponhits );
+        incrementattachmentstat( var_0, "hits", self.trackingweaponhits );
+        scripts\mp\matchdata::logattachmentstat( var_0, "hits", self.trackingweaponhits );
     }
 
     if ( self.trackingweaponheadshots > 0 && var_0 != "tactical" )
     {
-        _id_93F9( var_0, "headShots", self.trackingweaponheadshots );
-        scripts\mp\matchdata::_id_AF94( var_0, "headShots", self.trackingweaponheadshots );
+        incrementattachmentstat( var_0, "headShots", self.trackingweaponheadshots );
+        scripts\mp\matchdata::logattachmentstat( var_0, "headShots", self.trackingweaponheadshots );
     }
 
     if ( self.trackingweapondeaths > 0 )
     {
-        _id_93F9( var_0, "deaths", self.trackingweapondeaths );
-        scripts\mp\matchdata::_id_AF94( var_0, "deaths", self.trackingweapondeaths );
+        incrementattachmentstat( var_0, "deaths", self.trackingweapondeaths );
+        scripts\mp\matchdata::logattachmentstat( var_0, "deaths", self.trackingweapondeaths );
     }
 }
 
-_id_12F85()
+uploadglobalstatcounters()
 {
     level waittill( "game_ended" );
 

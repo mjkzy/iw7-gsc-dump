@@ -63,24 +63,24 @@ wander_tick( var_0 )
     if ( isdefined( self.pathgoalpos ) && distancesquared( self.pathgoalpos, self.origin ) > var_2.wandergoalradiussq )
         return anim.running;
 
-    if ( !isdefined( var_2._id_13845 ) )
+    if ( !isdefined( var_2.waittime ) )
     {
         var_3 = scripts\asm\dlc4\dlc4_asm::gettunedata();
-        var_2._id_13845 = gettime() + randomintrange( var_3.wander_min_wait_time_ms, var_3.wander_max_wait_time_ms );
+        var_2.waittime = gettime() + randomintrange( var_3.wander_min_wait_time_ms, var_3.wander_max_wait_time_ms );
         return anim.running;
     }
-    else if ( gettime() < var_2._id_13845 )
+    else if ( gettime() < var_2.waittime )
         return anim.running;
 
     var_4 = findrandomnavpoint();
 
     if ( !isdefined( var_4 ) )
     {
-        var_2._id_13845 = gettime() + 150;
+        var_2.waittime = gettime() + 150;
         return anim.running;
     }
 
-    var_2._id_13845 = undefined;
+    var_2.waittime = undefined;
     self scragentsetgoalpos( var_4 );
     return anim.running;
 }

@@ -17,7 +17,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     level thread _id_E563();
     thread scripts\mp\animation_suite::animationsuite();
     thread fix_collision();
@@ -294,7 +294,7 @@ _id_1D9F()
         var_4.angles = ( 0, 0, 0 );
         var_4 setmodel( "shipyard_drone_01_paths" );
         var_4._id_10DC1 = var_3.origin;
-        var_4._id_10D6D = var_3.angles;
+        var_4.startangles = var_3.angles;
         var_4.running = 0;
         var_4.script_parameters = _id_1D92( var_3.script_parameters );
 
@@ -306,7 +306,7 @@ _id_1D9F()
             var_4 _id_1D94();
             var_4 hide();
             var_4.origin = var_4._id_10DC1;
-            var_4.angles = var_4._id_10D6D;
+            var_4.angles = var_4.startangles;
             var_4 scriptmodelplayanimdeltamotion( var_4.script_parameters );
             var_0[var_0.size] = var_4;
         }
@@ -386,7 +386,7 @@ _id_1DA3()
     wait( randomfloat( 8 ) );
     self scriptmodelclearanim();
     self.origin = self._id_10DC1;
-    self.angles = self._id_10D6D;
+    self.angles = self.startangles;
 
     if ( _id_4346() == 1 )
         _id_1D95();
@@ -502,7 +502,7 @@ _id_6D22()
                 var_0 dodamage( var_0.maxhealth, self.origin, var_0, undefined, "MOD_EXPLOSIVE" );
 
                 if ( isplayer( var_0 ) || isagent( var_0 ) )
-                    thread _id_57D4( var_0 _meth_8113() );
+                    thread _id_57D4( var_0 getcorpseentity() );
             }
         }
     }

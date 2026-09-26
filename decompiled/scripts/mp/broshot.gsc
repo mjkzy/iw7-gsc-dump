@@ -317,9 +317,9 @@ cleanupgamemodes()
         }
     }
 
-    if ( level.gametype == "grind" && isdefined( level._id_13FC1 ) )
+    if ( level.gametype == "grind" && isdefined( level.zonelist ) )
     {
-        foreach ( var_5 in level._id_13FC1 )
+        foreach ( var_5 in level.zonelist )
         {
             if ( isdefined( var_5 ) && isdefined( var_5.scriptable ) )
             {

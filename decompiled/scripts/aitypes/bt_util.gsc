@@ -23,11 +23,11 @@ bt_init()
         self btregistertreeinstance( self.behaviortreeasset );
     else
     {
-        self.bt._id_E87F = [];
-        self.bt._id_D8BE = [];
-        self.bt._id_BE5D = 0;
+        self.bt.runningtasks = [];
+        self.bt.prevrunningtasks = [];
+        self.bt.nativetreeisregistered = 0;
         self._id_C9D9 = level._btactions[self.behavior];
-        self [[ self._id_C9D9._id_71AD ]]();
+        self [[ self._id_C9D9.fninitroot ]]();
     }
 
     self.bt.instancedata = [];
@@ -54,16 +54,16 @@ bt_registertree( var_0, var_1 )
     {
         case "human/ally_combatant":
         case "human/enemy_combatant":
-            _id_09FD::soldier();
+            scripts\aitypes\assets::soldier();
             break;
         case "c6/base":
-            _id_09FD::_id_3353();
+            scripts\aitypes\assets::_id_3353();
             break;
         case "c12/c12":
-            _id_09FD::_id_3508();
+            scripts\aitypes\assets::_id_3508();
             break;
         case "seeker/seeker":
-            _id_09FD::_id_F10A();
+            scripts\aitypes\assets::_id_F10A();
             break;
     }
 }
@@ -75,17 +75,17 @@ bt_istreeregistered( var_0 )
 
 bt_getchildtaskid( var_0, var_1 )
 {
-    return self._id_C9D9._id_11591[var_0] + var_1;
+    return self._id_C9D9.tasktree[var_0] + var_1;
 }
 
 _id_0076( var_0 )
 {
-    return [[ self._id_C9D9._id_1158E[var_0] ]]();
+    return [[ self._id_C9D9.taskargs[var_0] ]]();
 }
 
 bt_terminateprevrunningaction( var_0, var_1, var_2, var_3 )
 {
-    var_4 = var_0._id_D8BE[var_2];
+    var_4 = var_0.prevrunningtasks[var_2];
 
     if ( !isdefined( var_4 ) )
         return;
@@ -94,14 +94,14 @@ bt_terminateprevrunningaction( var_0, var_1, var_2, var_3 )
         return;
 
     var_5 = spawnstruct();
-    var_5._id_71D2 = var_1;
+    var_5.fnterminate = var_1;
     var_5.taskid = var_2;
 
     for (;;)
     {
-        self [[ var_5._id_71D2 ]]( var_0, var_5.taskid, var_5 );
+        self [[ var_5.fnterminate ]]( var_0, var_5.taskid, var_5 );
 
-        if ( !isdefined( var_5._id_71D2 ) )
+        if ( !isdefined( var_5.fnterminate ) )
             break;
     }
 }
@@ -127,8 +127,8 @@ bt_getdemeanor()
     if ( isdefined( self.demeanoroverride ) )
         return self.demeanoroverride;
 
-    if ( isdefined( self._blackboard._id_7366 ) )
-        return self._blackboard._id_7366;
+    if ( isdefined( self._blackboard.franticstate ) )
+        return self._blackboard.franticstate;
 
     return "combat";
 }

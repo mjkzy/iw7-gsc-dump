@@ -260,7 +260,7 @@ tryuseairdrop( var_0 )
 
 _id_1AA2( var_0 )
 {
-    var_0._id_1AA0 = var_0.streakname;
+    var_0.airdroptype = var_0.streakname;
     scripts\mp\utility::incrementfauxvehiclecount();
     var_1 = scripts\mp\killstreaks\target_marker::_id_819B( var_0 );
 
@@ -270,8 +270,8 @@ _id_1AA2( var_0 )
         return 0;
     }
 
-    scripts\mp\matchdata::logkillstreakevent( var_0._id_1AA0, self.origin );
-    _id_1AA1( var_1, var_0._id_1AA0, var_0 );
+    scripts\mp\matchdata::logkillstreakevent( var_0.airdroptype, self.origin );
+    _id_1AA1( var_1, var_0.airdroptype, var_0 );
     return 1;
 }
 
@@ -289,11 +289,11 @@ _id_1A9E( var_0, var_1 )
 {
     var_1 thread airdropdetonateonstuck();
     var_1.owner = self;
-    var_0._id_1AA0 = var_0.streakname;
+    var_0.airdroptype = var_0.streakname;
     scripts\mp\utility::incrementfauxvehiclecount();
     thread _id_4FC3();
-    var_1 thread airdropmarkeractivate( var_0._id_1AA0 );
-    scripts\mp\matchdata::logkillstreakevent( var_0._id_1AA0, self.origin );
+    var_1 thread airdropmarkeractivate( var_0.airdroptype );
+    scripts\mp\matchdata::logkillstreakevent( var_0.airdroptype, self.origin );
     var_0._id_1A9E = 1;
     return 1;
 }
@@ -320,7 +320,7 @@ airdropmarkeractivate( var_0, var_1 )
     if ( issubstr( tolower( var_0 ), "juggernaut" ) )
         level doc130flyby( var_3, var_2, randomfloat( 360 ), var_0 );
     else if ( issubstr( tolower( var_0 ), "escort_airdrop" ) )
-        var_3 scripts\mp\killstreaks\escort_airdrop::_id_6CE4( var_1, var_2, randomfloat( 360 ), "escort_airdrop" );
+        var_3 scripts\mp\killstreaks\escort_airdrop::finishsupportescortusage( var_1, var_2, randomfloat( 360 ), "escort_airdrop" );
     else if ( var_0 == "dronedrop" )
         level _id_581F( var_3, var_2, randomfloat( 360 ), var_0 );
     else
@@ -329,7 +329,7 @@ airdropmarkeractivate( var_0, var_1 )
 
 _id_1A9F( var_0 )
 {
-    if ( isdefined( var_0._id_1AA0 ) && !issubstr( var_0._id_1AA0, "juggernaut" ) && !scripts\mp\utility::istrue( var_0._id_1A9E ) )
+    if ( isdefined( var_0.airdroptype ) && !issubstr( var_0.airdroptype, "juggernaut" ) && !scripts\mp\utility::istrue( var_0._id_1A9E ) )
         scripts\mp\utility::decrementfauxvehiclecount();
 }
 
@@ -627,7 +627,7 @@ cratesetupforuse( var_0, var_1, var_2, var_3 )
 {
     self setcursorhint( "HINT_NOICON" );
     self sethintstring( var_0 );
-    self _meth_84A7( "none" );
+    self sethinttag( "none" );
     self makeusable();
 
     if ( isdefined( var_3 ) )
@@ -708,11 +708,11 @@ fakererollcratesetupforuse( var_0, var_1 )
     var_8 makeusable();
     var_8 disableplayeruse( var_0 );
     var_8 setcursorhint( "HINT_NOICON" );
-    var_8 _meth_84A9( "show" );
+    var_8 sethintonobstruction( "show" );
     var_8 sethintstring( var_2 );
-    var_8 _meth_84A6( var_4 );
+    var_8 sethintdisplayfov( var_4 );
     var_8 setusefov( var_6 );
-    var_8 _meth_84A4( var_3 );
+    var_8 sethintdisplayrange( var_3 );
     var_8 setuserange( var_5 );
     var_8 setusepriority( var_7 );
     var_8 thread deleteuseent( self );
@@ -1183,7 +1183,7 @@ _id_136A7()
 
 droptimeout( var_0, var_1, var_2 )
 {
-    if ( isdefined( level.nod_gesture ) && level.nod_gesture )
+    if ( isdefined( level.nocratetimeout ) && level.nocratetimeout )
         return;
 
     level endon( "game_ended" );
@@ -1365,11 +1365,11 @@ _id_5CC7( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_9 sethoverparams( 5, 5, 2 );
     var_9 setcandamage( 1 );
     var_9 setturningability( 1.0 );
-    var_9 _meth_84E1( 1 );
-    var_9 _meth_84E0( 1 );
+    var_9 vehicle_invoketriggers( 1 );
+    var_9 vehicle_breakglass( 1 );
     var_9.streakinfo = var_5;
     var_9.helitype = "dronedrop";
-    var_9 scripts\mp\killstreaks\utility::_id_1843( var_9.helitype, "Killstreak_Air", var_0, 1 );
+    var_9 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_9.helitype, "Killstreak_Air", var_0, 1 );
     var_10 = getcratetypefordroptype( var_3 );
     var_11 = var_9 createairdropcrate( var_0, var_3, var_10, var_9.origin );
     var_11 linkto( var_9, "tag_origin", ( 0, 0, 5 ), ( 0, 0, 0 ) );
@@ -1411,8 +1411,8 @@ _id_13A01( var_0, var_1, var_2, var_3 )
     if ( isdefined( var_0.killcament ) )
         var_0.killcament unlink();
 
-    if ( isdefined( var_3._id_1349C ) )
-        var_3._id_1349C delete();
+    if ( isdefined( var_3.visual ) )
+        var_3.visual delete();
 
     var_0 thread handlenavobstacle();
     _id_5CAC();
@@ -1452,7 +1452,7 @@ watchempdamage()
         if ( isdefined( var_3 ) && var_3 == "concussion_grenade_mp" )
         {
             if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
-                var_0 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+                var_0 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
         }
 
         scripts\mp\killstreaks\utility::dodamagetokillstreak( 100, var_0, var_0, self.team, var_2, var_4, var_3 );
@@ -1464,8 +1464,8 @@ watchownerdisconnect( var_0, var_1 )
     self endon( "death" );
     self.owner waittill( "disconnect" );
 
-    if ( isdefined( var_1._id_1349C ) )
-        var_1._id_1349C delete();
+    if ( isdefined( var_1.visual ) )
+        var_1.visual delete();
 
     var_0 deletecrateold();
     _id_5CAC();
@@ -1631,10 +1631,10 @@ setupchallengelocales( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     var_6 = spawnstruct();
     var_6._id_B75B = var_1;
-    var_6._id_B491 = var_2;
-    var_6._id_B7CB = var_3;
+    var_6.maxdist = var_2;
+    var_6.minspeed = var_3;
     var_6._id_B4C9 = var_4;
-    var_6._id_1545 = var_5;
+    var_6.accel = var_5;
     level._id_109C4[var_0] = var_6;
 }
 
@@ -1648,7 +1648,7 @@ setupcaptureflares()
     setupchallengelocales( "final", 50, 1000, 10, 45, 100 );
 }
 
-_id_12F22( var_0, var_1 )
+updatespectatorcamera( var_0, var_1 )
 {
     var_2 = 9999;
     var_3 = level._id_109C4[var_0];
@@ -1656,12 +1656,12 @@ _id_12F22( var_0, var_1 )
     if ( var_1 < var_3._id_B75B )
         var_1 = var_3._id_B75B;
 
-    if ( var_1 > var_3._id_B491 )
-        var_1 = var_3._id_B491;
+    if ( var_1 > var_3.maxdist )
+        var_1 = var_3.maxdist;
 
-    var_4 = ( var_1 - var_3._id_B75B ) / ( var_3._id_B491 - var_3._id_B75B );
-    var_5 = var_3._id_B7CB + var_4 * ( var_3._id_B4C9 - var_3._id_B7CB );
-    var_6 = var_3._id_1545;
+    var_4 = ( var_1 - var_3._id_B75B ) / ( var_3.maxdist - var_3._id_B75B );
+    var_5 = var_3.minspeed + var_4 * ( var_3._id_B4C9 - var_3.minspeed );
+    var_6 = var_3.accel;
 
     if ( var_6 > var_5 )
         var_6 = var_5;
@@ -1680,7 +1680,7 @@ _id_BA1D( var_0 )
     for (;;)
     {
         var_2 = distance( self.origin, var_0 );
-        _id_12F22( "final", var_2 );
+        updatespectatorcamera( "final", var_2 );
         scripts\engine\utility::waitframe();
     }
 }
@@ -1707,16 +1707,16 @@ _id_BA1C( var_0, var_1 )
         if ( var_8 )
         {
             if ( var_5 < level._id_109C4["medium_sharpturn"]._id_B75B )
-                _id_12F22( "near_sharpturn", var_5 );
+                updatespectatorcamera( "near_sharpturn", var_5 );
             else
-                _id_12F22( "medium_sharpturn", var_5 );
+                updatespectatorcamera( "medium_sharpturn", var_5 );
         }
-        else if ( var_5 < level._id_109C4["near"]._id_B491 )
-            _id_12F22( "near", var_5 );
-        else if ( var_5 < level._id_109C4["medium"]._id_B491 )
-            _id_12F22( "medium", var_5 );
+        else if ( var_5 < level._id_109C4["near"].maxdist )
+            updatespectatorcamera( "near", var_5 );
+        else if ( var_5 < level._id_109C4["medium"].maxdist )
+            updatespectatorcamera( "medium", var_5 );
         else
-            _id_12F22( "far", var_5 );
+            updatespectatorcamera( "far", var_5 );
 
         scripts\engine\utility::waitframe();
     }
@@ -1763,7 +1763,7 @@ doflyby( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_13 notify( "drop_crate" );
     var_13 setvehgoalpos( var_12, 1 );
     var_13 vehicle_setspeed( 300, 75 );
-    var_13._id_AB32 = 1;
+    var_13.leaving = 1;
     var_13 waittill( "goal" );
     var_13 notify( "leaving" );
     var_13 notify( "delete" );
@@ -2036,7 +2036,7 @@ helisetup( var_0, var_1, var_2 )
     var_5 setmaxpitchroll( 45, 85 );
     var_5 vehicle_setspeed( 250, 175 );
     var_5.helitype = "airdrop";
-    var_5 scripts\mp\killstreaks\utility::_id_1843( var_5.helitype, "Killstreak_Air", var_0, 1 );
+    var_5 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_5.helitype, "Killstreak_Air", var_0, 1 );
     var_5 hidepart( "tag_wings" );
     return var_5;
 }
@@ -2229,7 +2229,7 @@ cratealluselogic( var_0, var_1, var_2 )
 
     if ( isdefined( self.crateuseents ) && isdefined( var_3 ) )
     {
-        self.crateuseents = scripts\mp\utility::_id_22B1( self.crateuseents, var_3 );
+        self.crateuseents = scripts\mp\utility::array_remove_keep_index( self.crateuseents, var_3 );
         var_3 delete();
     }
 
@@ -2242,7 +2242,7 @@ cratealluselogic( var_0, var_1, var_2 )
         self notify( "captured", var_0 );
 }
 
-updatecraftingomnvars()
+updatecrateusestate()
 {
     self.inuse = 0;
 
@@ -2324,7 +2324,7 @@ killstreakcratethink( var_0 )
         if ( isdefined( self.owner ) )
         {
             if ( var_4 == self.owner )
-                var_4 thread scripts\mp\missions::_id_D991( "ch_scorestreak_uses_dronepackage" );
+                var_4 thread scripts\mp\missions::processchallengedaily( "ch_scorestreak_uses_dronepackage" );
             else if ( !level.teambased || var_4.team != self.team )
             {
                 switch ( var_0 )
@@ -2353,14 +2353,14 @@ killstreakcratethink( var_0 )
                     case "dronedrop_reroll":
                     case "dronedrop":
                         var_4 thread hijacknotify( self, "dronedrop" );
-                        var_4 thread scripts\mp\missions::_id_D991( "ch_hijack" );
+                        var_4 thread scripts\mp\missions::processchallengedaily( "ch_hijack" );
                         break;
                 }
             }
             else if ( level.gametype != "grnd" )
             {
                 self.owner thread scripts\mp\awards::givemidmatchaward( "ss_use_dronedrop" );
-                self.owner thread scripts\mp\missions::_id_D991( "ch_package_share" );
+                self.owner thread scripts\mp\missions::processchallengedaily( "ch_package_share" );
             }
         }
 
@@ -2385,7 +2385,7 @@ killstreakcratethink( var_0 )
         }
 
         if ( scripts\mp\killstreaks\killstreaks::getstreakcost( self.cratetype ) > 1000 )
-            var_4 thread scripts\mp\missions::_id_D991( "ch_dronepackage_jackpot" );
+            var_4 thread scripts\mp\missions::processchallengedaily( "ch_dronepackage_jackpot" );
 
         deletecrateold();
     }
@@ -2489,7 +2489,7 @@ nukecratethink( var_0 )
     for (;;)
     {
         self waittill( "captured", var_1 );
-        var_1 thread scripts\mp\killstreaks\killstreaks::_id_729F( self.cratetype );
+        var_1 thread scripts\mp\killstreaks\killstreaks::forceactivatekillstreak( self.cratetype );
         level notify( "nukeCaptured", var_1 );
 
         if ( isdefined( level.gtnw ) && level.gtnw )
@@ -2669,7 +2669,7 @@ useholdthink( var_0, var_1, var_2, var_3 )
     self.userate = 0;
 
     if ( isdefined( var_3 ) )
-        var_3 updatecraftingomnvars();
+        var_3 updatecrateusestate();
 
     if ( isdefined( var_1 ) )
         self.usetime = var_1;
@@ -2691,7 +2691,7 @@ useholdthink( var_0, var_1, var_2, var_3 )
     self.curprogress = 0;
 
     if ( isdefined( var_3 ) )
-        var_3 updatecraftingomnvars();
+        var_3 updatecrateusestate();
 
     return var_4;
 }

@@ -14,7 +14,7 @@ _id_2927( var_0 )
     return undefined;
 }
 
-_id_2928( var_0 )
+bb_getprefixstring( var_0 )
 {
     var_1 = _id_2927( var_0 );
 
@@ -40,30 +40,30 @@ _id_9DA4( var_0, var_1, var_2, var_3 )
     return self.a.pose == var_3;
 }
 
-bb_requestsmartobject( var_0 )
+bb_requeststance( var_0 )
 {
-    self._blackboard._id_527D = var_0;
+    self._blackboard.desiredstance = var_0;
 }
 
-_id_292C()
+bb_getrequestedstance()
 {
-    return self._blackboard._id_527D;
+    return self._blackboard.desiredstance;
 }
 
-_id_2949( var_0, var_1, var_2, var_3 )
+bb_isrequestedstanceanddemeanor( var_0, var_1, var_2, var_3 )
 {
-    return self._blackboard._id_527D == var_3;
+    return self._blackboard.desiredstance == var_3;
 }
 
 bb_setisincombat( var_0 )
 {
-    self._blackboard._id_2B11 = !isdefined( var_0 ) || var_0;
+    self._blackboard.bisincombat = !isdefined( var_0 ) || var_0;
 }
 
 bb_isincombat()
 {
-    if ( isdefined( self._blackboard._id_2B11 ) )
-        return self._blackboard._id_2B11;
+    if ( isdefined( self._blackboard.bisincombat ) )
+        return self._blackboard.bisincombat;
 
     return 0;
 }
@@ -176,7 +176,7 @@ bb_getthrowgrenadetarget()
     return self._blackboard.throwgrenadetarget;
 }
 
-bb_requestfire( var_0, var_1 )
+_id_296D( var_0, var_1 )
 {
     if ( !isdefined( var_0 ) )
         self._blackboard.bfire = 1;
@@ -210,7 +210,7 @@ bb_requestfire( var_0 )
         self._blackboard._id_2AA6 = var_0;
 }
 
-_id_291C()
+bb_firerequested()
 {
     if ( isdefined( self._blackboard._id_2AA6 ) )
         return self._blackboard._id_2AA6;
@@ -233,7 +233,7 @@ bb_setshootparams( var_0, var_1 )
     }
 }
 
-_id_2985()
+bb_shootparamsvalid()
 {
     if ( isdefined( self._blackboard.shootparams ) )
     {
@@ -244,13 +244,13 @@ _id_2985()
             return 0;
 
         if ( isdefined( self._blackboard.shootparams.target ) && isdefined( self.enemy ) && self.enemy == self._blackboard.shootparams.target )
-            return scripts\engine\utility::_id_9DA3();
+            return scripts\engine\utility::iscurrentenemyvalid();
     }
 
     return 0;
 }
 
-_id_2961( var_0 )
+bb_requestcoverstate( var_0 )
 {
     self._blackboard.coverstate = var_0;
 }
@@ -263,7 +263,7 @@ bb_getrequestedcoverstate()
     return self._blackboard.coverstate;
 }
 
-_id_2948( var_0, var_1, var_2, var_3 )
+bb_isrequestedstance_refresh( var_0, var_1, var_2, var_3 )
 {
     return bb_getrequestedcoverstate() == var_3;
 }
@@ -275,17 +275,17 @@ _id_2944( var_0, var_1, var_2, var_3 )
 
 _id_295E( var_0 )
 {
-    self._blackboard._id_4720 = var_0;
+    self._blackboard.coverexposetype = var_0;
 }
 
-_id_2929()
+bb_getrequestedcoverexposetype()
 {
-    return self._blackboard._id_4720;
+    return self._blackboard.coverexposetype;
 }
 
 _id_2947( var_0, var_1, var_2, var_3 )
 {
-    return isdefined( self._blackboard._id_4720 ) && self._blackboard._id_4720 == var_3;
+    return isdefined( self._blackboard.coverexposetype ) && self._blackboard.coverexposetype == var_3;
 }
 
 _id_2946( var_0, var_1, var_2, var_3 )
@@ -298,7 +298,7 @@ _id_2943( var_0, var_1, var_2, var_3 )
     return bb_getrequestedcoverstate() != "exposed" || !_id_2947( var_0, var_1, var_2, var_3 );
 }
 
-_id_295D( var_0 )
+bb_requestcoverblindfire( var_0 )
 {
     self._blackboard._id_2996 = var_0;
 }
@@ -332,14 +332,14 @@ bb_getrequestedturret()
     return undefined;
 }
 
-_id_296E( var_0 )
+bb_requestturret( var_0 )
 {
     self._blackboard.requestedturret = var_0;
 }
 
-_id_296F( var_0 )
+bb_requestturretpose( var_0 )
 {
-    self._blackboard._id_E1AF = var_0;
+    self._blackboard.requestedturretpose = var_0;
 }
 
 bb_hasshufflenode( var_0, var_1, var_2, var_3 )
@@ -399,9 +399,9 @@ _id_2933( var_0, var_1, var_2, var_3 )
         return 0;
 
     if ( var_3 == "right" )
-        return self._blackboard._id_1016B.type == "Cover Right" && self._blackboard.shufflenode.type == "Cover Left";
+        return self._blackboard.shufflefromnode.type == "Cover Right" && self._blackboard.shufflenode.type == "Cover Left";
     else
-        return self._blackboard._id_1016B.type == "Cover Left" && self._blackboard.shufflenode.type == "Cover Right";
+        return self._blackboard.shufflefromnode.type == "Cover Left" && self._blackboard.shufflenode.type == "Cover Right";
 }
 
 bb_setanimscripted()
@@ -506,7 +506,7 @@ bb_meleechargeaborted( var_0, var_1, var_2, var_3 )
     return 1;
 }
 
-_id_2923()
+bb_getmeleechargetarget()
 {
     if ( !isdefined( self._blackboard.meleerequestedcharge ) )
         return undefined;
@@ -514,7 +514,7 @@ _id_2923()
     return self._blackboard.meleerequestedcharge_target;
 }
 
-_id_2924()
+bb_getmeleechargetargetpos()
 {
     return self._blackboard.meleerequestedcharge_targetposition;
 }
@@ -647,7 +647,7 @@ waspartjustdismembered( var_0 )
     return self._blackboard.dismemberedparts[var_0] == gettime();
 }
 
-_id_298F( var_0, var_1, var_2, var_3 )
+bb_waspartjustdismembered( var_0, var_1, var_2, var_3 )
 {
     return waspartjustdismembered( var_3 );
 }
@@ -678,7 +678,7 @@ bb_isselfdestruct()
     return isdefined( self._blackboard.selfdestruct );
 }
 
-_id_2972()
+bb_resetcovermultiswitch()
 {
     self._blackboard.selfdestructnow = 1;
 }
@@ -803,12 +803,12 @@ _id_2922()
 
 bb_setisinbadcrouchspot( var_0 )
 {
-    self._blackboard._id_2992 = var_0;
+    self._blackboard.bbadcrouchspot = var_0;
 }
 
 bb_isinbadcrouchspot()
 {
-    return isdefined( self._blackboard._id_2992 ) && self._blackboard._id_2992;
+    return isdefined( self._blackboard.bbadcrouchspot ) && self._blackboard.bbadcrouchspot;
 }
 
 bb_setcivilianstate( var_0 )
@@ -817,12 +817,12 @@ bb_setcivilianstate( var_0 )
     self._blackboard.civstatetime = gettime();
 }
 
-_id_291D( var_0 )
+bb_getcivilianstate( var_0 )
 {
     return self._blackboard.civstate;
 }
 
-_id_291E()
+bb_getcivilianstatetime()
 {
     return self._blackboard.civstatetime;
 }
@@ -834,10 +834,10 @@ _id_1005F( var_0, var_1, var_2, var_3 )
 
 bb_isshort()
 {
-    return isdefined( self._blackboard._id_FEED ) && self._blackboard._id_FEED;
+    return isdefined( self._blackboard.short ) && self._blackboard.short;
 }
 
-_id_2984( var_0 )
+bb_setshort( var_0 )
 {
-    self._blackboard._id_FEED = var_0;
+    self._blackboard.short = var_0;
 }

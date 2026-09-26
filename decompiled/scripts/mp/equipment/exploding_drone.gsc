@@ -53,7 +53,7 @@ _id_69C8( var_0 )
         var_0 = var_1;
 
     explodingdrone_awardpointsfordeath( var_0, var_1 );
-    self _meth_8593();
+    self clearscriptabledamageowner();
     self setscriptablepartstate( "beacon", "neutral", 0 );
     self setscriptablepartstate( "primaryThruster", "neutral", 0 );
     self setscriptablepartstate( "secondaryThrusters", "neutral", 0 );
@@ -86,7 +86,7 @@ _id_69C2( var_0 )
     if ( !self.issmokeversion )
         scripts\mp\utility::printgameaction( "exploding drone destroyed", var_1 );
 
-    self _meth_8593();
+    self clearscriptabledamageowner();
     self setscriptablepartstate( "beacon", "neutral", 0 );
     self setscriptablepartstate( "primaryThruster", "neutral", 0 );
     self setscriptablepartstate( "secondaryThrusters", "neutral", 0 );
@@ -181,7 +181,7 @@ _id_69D1()
     var_0 = self.owner;
     self setentityowner( var_0 );
     self setotherent( var_0 );
-    var_1 = anglestoforward( var_0 _meth_857C() );
+    var_1 = anglestoforward( var_0 getgunangles() );
     var_2 = var_0 geteye() + var_1 * 2500;
     var_3 = scripts\engine\utility::ter_op( self.issmokeversion, 0.1, 0.2 );
     wait( var_3 );
@@ -257,7 +257,7 @@ _id_69C3()
     if ( isdefined( var_3 ) && var_3 == "emp_grenade_mp" )
     {
         if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
-            var_0 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+            var_0 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
     }
 
     explodingdrone_givedamagefeedback( var_0 );

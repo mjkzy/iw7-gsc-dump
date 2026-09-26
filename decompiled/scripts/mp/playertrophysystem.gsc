@@ -52,7 +52,7 @@ _id_D441()
 
 _id_D449()
 {
-    var_0 = scripts\mp\trophy_system::_id_12804();
+    var_0 = scripts\mp\trophy_system::trophy_castcontents();
 
     for (;;)
     {
@@ -100,13 +100,13 @@ _id_D449()
 
 _id_D445( var_0 )
 {
-    scripts\mp\missions::_id_D991( "ch_trait_personal_trophy" );
+    scripts\mp\missions::processchallengedaily( "ch_trait_personal_trophy" );
     scripts\mp\killstreaks\killstreaks::givescorefortrophyblocks();
     var_0 setcandamage( 0 );
     var_0.exploding = 1;
     var_0 stopsounds();
-    scripts\mp\trophy_system::_id_12821( var_0 );
-    scripts\mp\trophy_system::_id_12817( var_0, "player_trophy_system_mp", self );
+    scripts\mp\trophy_system::trophy_startcooldownlist( var_0 );
+    scripts\mp\trophy_system::trophy_notifytrophytargetowner( var_0, "player_trophy_system_mp", self );
     var_1 = var_0.origin;
     var_2 = var_0.angles;
 

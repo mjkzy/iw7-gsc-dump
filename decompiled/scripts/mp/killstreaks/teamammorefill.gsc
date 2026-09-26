@@ -3,12 +3,12 @@
 
 init()
 {
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "team_ammo_refill", ::_id_12908 );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "team_ammo_refill", ::tryuseteamammorefill );
 }
 
-_id_12908( var_0 )
+tryuseteamammorefill( var_0 )
 {
-    var_1 = _id_83AD();
+    var_1 = giveteamammorefill();
 
     if ( var_1 )
         scripts\mp\matchdata::logkillstreakevent( "team_ammo_refill", self.origin );
@@ -16,7 +16,7 @@ _id_12908( var_0 )
     return var_1;
 }
 
-_id_83AD()
+giveteamammorefill()
 {
     if ( level.teambased )
     {

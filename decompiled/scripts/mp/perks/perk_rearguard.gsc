@@ -32,7 +32,7 @@ _id_13A34( var_0 )
     else
         var_1 = 30;
 
-    while ( var_0._id_FC96 < var_1 )
+    while ( var_0.shielddamage < var_1 )
         wait 0.05;
 
     _id_E168( "damaged", var_0 );

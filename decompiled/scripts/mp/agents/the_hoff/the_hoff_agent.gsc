@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    _id_03A9::_id_DEE8();
-    _id_0F37::_id_2371();
+    behaviortree\c6_mp::registerbehaviortree();
+    _id_0F37::asm_register();
     thread _id_FAB0();
 }
 
@@ -47,7 +47,7 @@ setupagent()
     self.footstepdetectdist = 1000;
     self.footstepdetectdistwalk = 1000;
     self.footstepdetectdistsprint = 1000;
-    self._id_1A44 = 50;
+    self.aimpitchdifftolerance = 50;
     _id_FAFE();
     thread scriptedgoalwaitforarrival();
     thread _id_899D();
@@ -91,10 +91,10 @@ _id_11570()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.25, 0.35 );
@@ -112,10 +112,10 @@ _id_1157B()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.65, 0.75 );
@@ -131,10 +131,10 @@ _id_1156F()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.65, 0.75 );
@@ -150,10 +150,10 @@ _id_11559()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.65, 0.75 );

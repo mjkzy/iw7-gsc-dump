@@ -9,7 +9,7 @@ init_ghost_n_skull_4_quest()
     scripts\cp\zombies\zombie_quest::register_quest_step( "ghostFour", 3, ::blank, ::cipher_quest, ::complete_cipher_quest, ::debug_cipher_quest, 5, "Cipher Quest" );
     scripts\cp\zombies\zombie_quest::register_quest_step( "ghostFour", 4, ::blank, ::weeping_angels_start, ::complete_weeping_angels_start, ::debug_weeping_angels_start, 5, "Weeping angles" );
     scripts\cp\zombies\zombie_quest::register_quest_step( "ghostFour", 5, ::blank, ::shoot_the_machine, ::complete_shoot_the_machine, ::debug_shoot_the_machine, 5, "Shoot the arcade machine" );
-    scripts\cp\zombies\zombie_quest::register_quest_step( "ghostFour", 6, ::blank, ::wait_for_player_activation, ::complete_clean_arcade_cabinet, ::debug_wait_for_player_activation, 5, "Wait for player activation" );
+    scripts\cp\zombies\zombie_quest::register_quest_step( "ghostFour", 6, ::blank, ::wait_for_player_activation, ::complete_wait_for_player_activation, ::debug_wait_for_player_activation, 5, "Wait for player activation" );
     init();
     init_cipher_clue_texture();
 }
@@ -909,7 +909,7 @@ wait_for_player_activation()
     }
 }
 
-complete_clean_arcade_cabinet()
+complete_wait_for_player_activation()
 {
     scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::notify_activation_progress( -1, 0.5 );
     scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::start_ghost_wave();
@@ -2467,7 +2467,7 @@ reactivate_skullbuster_cabinet()
             return;
 
         scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 0, scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::reactivate_cabinet, ::shoot_the_machine, ::complete_shoot_the_machine, ::debug_shoot_the_machine );
-        scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 1, ::blank, ::wait_for_player_activation, ::complete_clean_arcade_cabinet, ::debug_wait_for_player_activation );
+        scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 1, ::blank, ::wait_for_player_activation, ::complete_wait_for_player_activation, ::debug_wait_for_player_activation );
     }
 
     level thread scripts\cp\zombies\zombie_quest::start_quest_line( "reactivateghost" );
@@ -2533,7 +2533,7 @@ init()
     var_0.cannotplacestring = &"COOP_CRAFTABLES_CANNOT_PLACE";
     var_0.placecancelablestring = &"COOP_CRAFTABLES_PLACE_CANCELABLE";
     var_0._id_74BF = &"ZOMBIE_CRAFTING_SOUVENIRS_DETONATE";
-    var_0._id_9F43 = 0;
+    var_0.issentient = 0;
     var_0.placementheighttolerance = 30.0;
     var_0.placementradius = 16.0;
     var_0.carriedtrapoffset = ( 0, 0, 35 );
@@ -2574,14 +2574,14 @@ watch_dpad()
             break;
     }
 
-    thread _id_837E( 1, 40 );
+    thread give_rad_extractor( 1, 40 );
 }
 
-_id_837E( var_0, var_1 )
+give_rad_extractor( var_0, var_1 )
 {
     self endon( "disconnect" );
     scripts\cp\utility::clearlowermessage( "msg_power_hint" );
-    var_2 = _id_49E8( self );
+    var_2 = create_lavalamp_trap_for_player( self );
     scripts\cp\utility::remove_player_perks();
     self.carriedsentry = var_2;
     var_3 = setcarryingims( var_2, var_0, var_1 );
@@ -2652,7 +2652,7 @@ setcarryingims( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_49E8( var_0 )
+create_lavalamp_trap_for_player( var_0 )
 {
     var_1 = spawnturret( "misc_turret", var_0.origin + ( 0, 0, 25 ), "sentry_minigun_mp" );
     var_1.angles = var_0.angles;
@@ -2718,7 +2718,7 @@ _id_B53D()
         if ( scripts\engine\utility::is_true( var_0.iscarrying ) )
             continue;
 
-        var_0 thread _id_837E( 0, self.lifespan );
+        var_0 thread give_rad_extractor( 0, self.lifespan );
         self playsound( "trap_medusa_pickup" );
         scripts\cp\utility::removefromtraplist();
         self delete();
@@ -2799,7 +2799,7 @@ _id_B541( var_0, var_1 )
     self setcursorhint( "HINT_NOICON" );
     self sethintstring( level.rad_extractor_settings["crafted_rad_extractor"].hintstring );
     self makeusable();
-    self _meth_84A7( "tag_fx" );
+    self sethinttag( "tag_fx" );
     self setusefov( 120 );
     self setuserange( 96 );
     thread medusa_watch_for_player_melee( self.owner );

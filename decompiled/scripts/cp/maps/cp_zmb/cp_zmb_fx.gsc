@@ -175,5 +175,5 @@ main()
     level._effect["stimulus_glow_burst"] = loadfx( "vfx/iw7/levels/cp_town/fnf/vfx_stimulus_burst.vfx" );
     level._effect["ammo_crate_fx"] = loadfx( "vfx/iw7/levels/cp_town/craft/vfx_cp_town_ammo_idle.vfx" );
     level._effect["ammo_crate_ping"] = loadfx( "vfx/iw7/levels/cp_town/vfx_cp_town_ammo_flash.vfx" );
-    scripts\cp\_id_0A5A::main();
+    scripts\cp\cp_interaction_fx::main();
 }

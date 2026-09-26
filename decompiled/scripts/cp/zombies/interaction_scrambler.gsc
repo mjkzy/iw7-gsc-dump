@@ -24,7 +24,7 @@ init_scrambler()
 
             if ( var_7.script_noteworthy == "scrambler_trig" )
             {
-                var_4._id_1270F = var_7;
+                var_4.trig = var_7;
                 continue;
             }
 
@@ -39,8 +39,8 @@ init_scrambler()
         }
     }
 
-    var_2[0]._id_1270F enablelinkto();
-    var_2[0]._id_1270F linkto( var_2[0].body );
+    var_2[0].trig enablelinkto();
+    var_2[0].trig linkto( var_2[0].body );
 
     foreach ( var_11 in var_2[0].rockets )
         var_11 linkto( var_2[0].body );
@@ -133,7 +133,7 @@ use_scrambler( var_0, var_1 )
 kill_zombies( var_0, var_1 )
 {
     self endon( "stop_dmg" );
-    var_2 = var_0._id_1270F;
+    var_2 = var_0.trig;
 
     for (;;)
     {

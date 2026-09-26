@@ -14,8 +14,8 @@ init()
     level.uiparent.height = 0;
     level.uiparent.children = [];
     level.fontheight = 12;
-    level._id_912F["allies"] = spawnstruct();
-    level._id_912F["axis"] = spawnstruct();
+    level.hud["allies"] = spawnstruct();
+    level.hud["axis"] = spawnstruct();
     level.primaryprogressbary = -61;
     level.primaryprogressbarx = 0;
     level.primaryprogressbarheight = 9;
@@ -23,11 +23,11 @@ init()
     level.primaryprogressbartexty = -75;
     level.primaryprogressbartextx = 0;
     level.primaryprogressbarfontsize = 1.2;
-    level._id_115E4 = 32;
-    level._id_115E1 = 14;
-    level._id_115E3 = 192;
-    level._id_115E2 = 8;
-    level._id_115E0 = 1.65;
+    level.teamprogressbary = 32;
+    level.teamprogressbarheight = 14;
+    level.teamprogressbarwidth = 192;
+    level.teamprogressbartexty = 8;
+    level.teamprogressbarfontsize = 1.65;
     level.lowertextyalign = "BOTTOM";
     level.lowertexty = -140;
     level.lowertextfontsize = 1.6;

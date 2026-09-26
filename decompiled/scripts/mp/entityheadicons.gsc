@@ -3,24 +3,24 @@
 
 init()
 {
-    if ( isdefined( level._id_9801 ) )
+    if ( isdefined( level.initedentityheadicons ) )
         return;
 
-    level._id_9801 = 1;
+    level.initedentityheadicons = 1;
 
     if ( level.multiteambased )
     {
         foreach ( var_1 in level.teamnamelist )
         {
             var_2 = "entity_headicon_" + var_1;
-            game[var_2] = scripts\mp\teams::_id_BD71( var_1 );
+            game[var_2] = scripts\mp\teams::mt_getteamheadicon( var_1 );
             precacheshader( game[var_2] );
         }
     }
     else
     {
-        game["entity_headicon_allies"] = scripts\mp\teams::_id_81B0( "allies" );
-        game["entity_headicon_axis"] = scripts\mp\teams::_id_81B0( "axis" );
+        game["entity_headicon_allies"] = scripts\mp\teams::getteamheadicon( "allies" );
+        game["entity_headicon_axis"] = scripts\mp\teams::getteamheadicon( "axis" );
         precacheshader( game["entity_headicon_allies"] );
         precacheshader( game["entity_headicon_axis"] );
     }
@@ -61,83 +61,85 @@ setheadicon( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_
 
             self.entityheadicons[var_13] = undefined;
         }
+
+        return;
+    }
+
+    if ( isplayer( var_0 ) )
+    {
+        if ( isdefined( self.entityheadicons[var_0.guid] ) )
+        {
+            self.entityheadicons[var_0.guid] destroy();
+            self.entityheadicons[var_0.guid] = undefined;
+        }
+
+        if ( var_1 == "" )
+            return;
+
+        if ( isdefined( var_0.team ) )
+        {
+            if ( isdefined( self.entityheadicons[var_0.team] ) )
+            {
+                self.entityheadicons[var_0.team] destroy();
+                self.entityheadicons[var_0.team] = undefined;
+            }
+        }
+
+        var_12 = newclienthudelem( var_0 );
+        self.entityheadicons[var_0.guid] = var_12;
     }
     else
     {
-        if ( isplayer( var_0 ) )
+        if ( isdefined( self.entityheadicons[var_0] ) )
         {
-            if ( isdefined( self.entityheadicons[var_0.guid] ) )
-            {
-                self.entityheadicons[var_0.guid] destroy();
-                self.entityheadicons[var_0.guid] = undefined;
-            }
-
-            if ( var_1 == "" )
-                return;
-
-            if ( isdefined( var_0.team ) )
-            {
-                if ( isdefined( self.entityheadicons[var_0.team] ) )
-                {
-                    self.entityheadicons[var_0.team] destroy();
-                    self.entityheadicons[var_0.team] = undefined;
-                }
-            }
-
-            var_12 = newclienthudelem( var_0 );
-            self.entityheadicons[var_0.guid] = var_12;
-        }
-        else
-        {
-            if ( isdefined( self.entityheadicons[var_0] ) )
-            {
-                self.entityheadicons[var_0] destroy();
-                self.entityheadicons[var_0] = undefined;
-            }
-
-            if ( var_1 == "" )
-                return;
-
-            foreach ( var_13, var_15 in self.entityheadicons )
-            {
-                if ( var_13 == "axis" || var_13 == "allies" )
-                    continue;
-
-                var_16 = scripts\mp\utility::getplayerforguid( var_13 );
-
-                if ( var_16.team == var_0 )
-                {
-                    self.entityheadicons[var_13] destroy();
-                    self.entityheadicons[var_13] = undefined;
-                }
-            }
-
-            var_12 = newteamhudelem( var_0 );
-            self.entityheadicons[var_0] = var_12;
+            self.entityheadicons[var_0] destroy();
+            self.entityheadicons[var_0] = undefined;
         }
 
-        if ( !isdefined( var_3 ) || !isdefined( var_4 ) )
+        if ( var_1 == "" )
+            return;
+
+        foreach ( var_13, var_15 in self.entityheadicons )
         {
-            var_3 = 10;
-            var_4 = 10;
+            if ( var_13 == "axis" || var_13 == "allies" )
+                continue;
+
+            var_16 = scripts\mp\utility::getplayerforguid( var_13 );
+
+            if ( var_16.team == var_0 )
+            {
+                self.entityheadicons[var_13] destroy();
+                self.entityheadicons[var_13] = undefined;
+            }
         }
 
-        var_12.archived = var_5;
-        var_12.x = self.origin[0] + var_2[0];
-        var_12.y = self.origin[1] + var_2[1];
-        var_12.z = self.origin[2] + var_2[2];
-        var_12.alpha = 0.85;
-        var_12 setshader( var_1, var_3, var_4 );
-        var_12 setwaypoint( var_7, var_8, var_9, var_10 );
-        var_12 thread keeppositioned( self, var_2, var_6 );
-        thread destroyiconsondeath();
-
-        if ( isplayer( var_0 ) )
-            var_12 thread destroyonownerdisconnect( var_0 );
-
-        if ( isplayer( self ) )
-            var_12 thread destroyonownerdisconnect( self );
+        var_12 = newteamhudelem( var_0 );
+        self.entityheadicons[var_0] = var_12;
     }
+
+    if ( !isdefined( var_3 ) || !isdefined( var_4 ) )
+    {
+        var_3 = 10;
+        var_4 = 10;
+    }
+
+    var_12.archived = var_5;
+    var_12.x = self.origin[0] + var_2[0];
+    var_12.y = self.origin[1] + var_2[1];
+    var_12.z = self.origin[2] + var_2[2];
+    var_12.alpha = 0.85;
+    var_12 setshader( var_1, var_3, var_4 );
+    var_12 setwaypoint( var_7, var_8, var_9, var_10 );
+    var_12 thread keeppositioned( self, var_2, var_6 );
+    thread destroyiconsondeath();
+
+    if ( isplayer( var_0 ) )
+        var_12 thread destroyonownerdisconnect( var_0 );
+
+    if ( isplayer( self ) )
+        var_12 thread destroyonownerdisconnect( self );
+
+    return var_12;
 }
 
 destroyonownerdisconnect( var_0 )

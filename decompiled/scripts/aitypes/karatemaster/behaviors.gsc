@@ -236,10 +236,10 @@ shouldmelee( var_0 )
     if ( var_4 > getmovemeleedistsq() )
         return anim.failure;
 
-    var_5 = self _meth_84AC();
+    var_5 = self getnavposition();
     var_6 = getclosestpointonnavmesh( var_1.origin, self );
 
-    if ( !_func_2AC( var_5, var_6, self ) )
+    if ( !navisstraightlinereachable( var_5, var_6, self ) )
         return anim.failure;
 
     self._blackboard.meleetype = self.desiredmovemode + "_melee";
@@ -330,7 +330,7 @@ findteleportspotinfrontofsprinter( var_0, var_1 )
             continue;
         }
 
-        if ( _func_2AC( var_4, var_0.origin ) )
+        if ( navisstraightlinereachable( var_4, var_0.origin ) )
             break;
 
         var_4 = undefined;
@@ -560,7 +560,7 @@ shouldteleport( var_0 )
     if ( isdefined( self.pathgoalpos ) )
     {
         var_3 = self pathdisttogoal();
-        var_4 = self _meth_84F9( var_3 );
+        var_4 = self getnearbynegotiationinfo( var_3 );
 
         if ( isdefined( var_4 ) )
         {

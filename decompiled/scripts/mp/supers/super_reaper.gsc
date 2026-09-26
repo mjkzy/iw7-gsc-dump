@@ -10,10 +10,10 @@ _id_DD9E()
 
 _id_DD9D()
 {
-    self _meth_845E( 1 );
+    self setcamerathirdperson( 1 );
     self setchargemeleehudvisible( 1 );
     self setclientomnvar( "ui_odin", 5 );
-    self _meth_82C6( "c6reaperservo" );
+    self setclothtype( "c6reaperservo" );
     thread _id_13B7A();
     self playsoundonmovingent( "reaper_startup" );
     self.health = self.maxhealth;
@@ -21,8 +21,8 @@ _id_DD9D()
     _id_DD94();
     _id_DD99();
     _id_DD9B();
-    self._id_B62A = spawn( "script_model", self.origin );
-    self._id_B62A setmodel( "tag_origin" );
+    self.meleeorigin = spawn( "script_model", self.origin );
+    self.meleeorigin setmodel( "tag_origin" );
     thread _id_13ACC();
     thread _id_13A9F();
     thread scripts\mp\supers::watchobjuse( 125 );
@@ -35,11 +35,11 @@ _id_DD97()
     self endon( "disconnect" );
     self notify( "reaper_removed" );
     self notify( "obj_drain_end" );
-    self _meth_845E( 0 );
+    self setcamerathirdperson( 0 );
     self setchargemeleehudvisible( 0 );
     self setclientomnvar( "ui_odin", -1 );
     self thermalvisionoff();
-    self _meth_82C6( self._id_42B0 );
+    self setclothtype( self._id_42B0 );
     self playlocalsound( "reaper_shutdown" );
 
     if ( scripts\mp\utility::istrue( level.tactical ) )
@@ -50,7 +50,7 @@ _id_DD97()
     _id_DD98();
     reaper_restorerigperks();
     _id_DD9A();
-    self._id_B62A delete();
+    self.meleeorigin delete();
     return;
 }
 
@@ -188,17 +188,17 @@ _id_DD9B()
     scripts\engine\utility::allow_slide( 0 );
     scripts\engine\utility::allow_prone( 0 );
     scripts\engine\utility::allow_usability( 0 );
-    scripts\mp\utility::_id_1C47( 0 );
+    scripts\mp\utility::allow_gesture( 0 );
     scripts\mp\powers::_id_D729();
 }
 
 _id_DD9A()
 {
-    self _meth_80DB();
+    self enableweaponpickup();
     scripts\engine\utility::allow_slide( 1 );
     scripts\engine\utility::allow_prone( 1 );
     scripts\engine\utility::allow_usability( 1 );
-    scripts\mp\utility::_id_1C47( 1 );
+    scripts\mp\utility::allow_gesture( 1 );
     scripts\mp\powers::_id_D72F();
 }
 
@@ -207,12 +207,12 @@ _id_93D9()
     return scripts\engine\utility::ter_op( scripts\mp\utility::istrue( level.hardcoremode ), 19, 50 );
 }
 
-_id_A668()
+killkidnappedplayer()
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
     wait 0.05;
-    var_0 = self _meth_8113();
+    var_0 = self getcorpseentity();
 
     if ( !isdefined( var_0 ) )
         return;
@@ -227,7 +227,7 @@ _id_A668()
     if ( isdefined( var_0 ) )
     {
         var_0 hide( 1 );
-        var_0.permanentcustommovetransition = 1;
+        var_0.permhidden = 1;
     }
 }
 

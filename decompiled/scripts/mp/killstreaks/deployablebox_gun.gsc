@@ -9,10 +9,10 @@ init()
     var_0.modelbase = "mp_weapon_crate";
     var_0.modelbombsquad = "mp_weapon_crate_bombsquad";
     var_0.hintstring = &"KILLSTREAKS_HINTS_DEPLOYABLE_AMMO_USE";
-    var_0._id_3A41 = &"KILLSTREAKS_DEPLOYABLE_AMMO_TAKING";
-    var_0._id_67E5 = "deployable_ammo_taken";
+    var_0.capturingstring = &"KILLSTREAKS_DEPLOYABLE_AMMO_TAKING";
+    var_0.event = "deployable_ammo_taken";
     var_0.streakname = "deployable_ammo";
-    var_0._id_10A38 = "used_deployable_ammo";
+    var_0.splashname = "used_deployable_ammo";
     var_0.shadername = "compass_objpoint_deploy_ammo_friendly";
     var_0.headiconoffset = 20;
     var_0.lifespan = 20.0;
@@ -23,26 +23,26 @@ init()
     var_0.deployedsfx = "mp_vest_deployed_ui";
     var_0.onusesfx = "ammo_crate_use";
     var_0.onusecallback = ::onusedeployable;
-    var_0.canusecallback = ::_id_3937;
+    var_0.canusecallback = ::canusedeployable;
     var_0.nousekillstreak = 1;
     var_0.usetime = 1000;
     var_0.maxhealth = 128;
     var_0.damagefeedback = "deployable_bag";
     var_0.deathvfx = loadfx( "vfx/core/mp/killstreaks/vfx_ballistic_vest_death" );
     var_0.allowmeleedamage = 1;
-    var_0.allowhvtspawn = 0;
+    var_0.allowgrenadedamage = 0;
     var_0.maxuses = 4;
-    var_0._id_B7A5 = 20;
+    var_0.minigunchance = 20;
     var_0.minigunweapon = "iw6_minigun_mp";
-    var_0._id_1E4B = 0.5;
-    var_0._id_1E4C = 10.0;
-    var_0._id_127C8 = 200;
-    var_0._id_127C5 = 64;
-    var_0.ondeploycallback = ::_id_C4CF;
+    var_0.ammorestockcheckfreq = 0.5;
+    var_0.ammorestocktime = 10.0;
+    var_0.triggerradius = 200;
+    var_0.triggerheight = 64;
+    var_0.ondeploycallback = ::onboxdeployed;
     var_0.canuseotherboxes = 0;
     level.boxsettings["deployable_ammo"] = var_0;
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_ammo", undefined, ::_id_128DD );
-    level._id_5226 = randomintrange( 1, var_0._id_B7A5 + 1 );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_ammo", undefined, ::tryusedeployable );
+    level.deployablegunbox_bonusinxuses = randomintrange( 1, var_0.minigunchance + 1 );
     level.deployable_box["deployable_ammo"] = [];
 }
 
@@ -61,7 +61,7 @@ _id_128D7( var_0, var_1, var_2 )
     return 1;
 }
 
-_id_128DD( var_0, var_1 )
+tryusedeployable( var_0, var_1 )
 {
     var_2 = scripts\mp\killstreaks\deployablebox::begindeployableviamarker( var_0.lifeid, "deployable_ammo", var_1, var_0.weapon );
 
@@ -74,30 +74,30 @@ _id_128DD( var_0, var_1 )
 
 onusedeployable( var_0 )
 {
-    level._id_5226--;
+    level.deployablegunbox_bonusinxuses--;
 
-    if ( level._id_5226 == 0 )
+    if ( level.deployablegunbox_bonusinxuses == 0 )
     {
         var_1 = level.boxsettings[var_0.boxtype];
 
-        if ( isdefined( level._id_5222 ) )
-            [[ level._id_5222 ]]( 1 );
+        if ( isdefined( level.deployableboxgiveweaponfunc ) )
+            [[ level.deployableboxgiveweaponfunc ]]( 1 );
         else
-            _id_836B( self, var_1.minigunweapon );
+            givegun( self, var_1.minigunweapon );
 
         scripts\mp\missions::processchallenge( "ch_guninabox" );
-        level._id_5226 = randomintrange( var_1._id_B7A5, var_1._id_B7A5 + 1 );
+        level.deployablegunbox_bonusinxuses = randomintrange( var_1.minigunchance, var_1.minigunchance + 1 );
     }
     else
-        _id_8399( self );
+        giverandomgun( self );
 }
 
-_id_C4CF( var_0 )
+onboxdeployed( var_0 )
 {
-    thread _id_E2B7( var_0 );
+    thread restockammoaura( var_0 );
 }
 
-_id_8399( var_0 )
+giverandomgun( var_0 )
 {
     var_1 = [];
 
@@ -116,10 +116,10 @@ _id_8399( var_0 )
     }
 
     var_5 = scripts\mp\gametypes\sotf::getrandomattachments( var_5 );
-    _id_836B( var_0, var_5 );
+    givegun( var_0, var_5 );
 }
 
-_id_836B( var_0, var_1 )
+givegun( var_0, var_1 )
 {
     var_2 = var_0 getweaponslistprimaries();
     var_3 = 0;
@@ -143,11 +143,11 @@ _id_836B( var_0, var_1 )
     var_0 givestartammo( var_1 );
 }
 
-_id_E2B7( var_0 )
+restockammoaura( var_0 )
 {
     self endon( "death" );
     level endon( "game_eneded" );
-    var_1 = spawn( "trigger_radius", self.origin, 0, var_0._id_127C8, var_0._id_127C5 );
+    var_1 = spawn( "trigger_radius", self.origin, 0, var_0.triggerradius, var_0.triggerheight );
     var_1.owner = self;
     thread scripts\mp\weapons::deleteondeath( var_1 );
 
@@ -157,7 +157,7 @@ _id_E2B7( var_0 )
         var_1 linkto( self.moving_platform );
     }
 
-    var_2 = var_0._id_127C8 * var_0._id_127C8;
+    var_2 = var_0.triggerradius * var_0.triggerradius;
     var_3 = undefined;
 
     for (;;)
@@ -168,15 +168,15 @@ _id_E2B7( var_0 )
         {
             if ( isdefined( var_3 ) && !self.owner scripts\mp\utility::isenemy( var_3 ) )
             {
-                if ( !isdefined( var_3._id_116D0 ) || !var_3._id_116D0 )
+                if ( !isdefined( var_3.temprateset ) || !var_3.temprateset )
                     var_3 thread _id_93EF();
 
-                if ( _id_FFB8( var_3 ) )
-                    _id_17A8( var_3, var_0._id_1E4C );
+                if ( shouldaddammo( var_3 ) )
+                    addammo( var_3, var_0.ammorestocktime );
             }
         }
 
-        wait( var_0._id_1E4B );
+        wait( var_0.ammorestockcheckfreq );
     }
 }
 
@@ -191,18 +191,18 @@ _id_93EF()
     scripts\mp\powers::_id_D74E();
 }
 
-_id_FFB8( var_0 )
+shouldaddammo( var_0 )
 {
-    return !isdefined( var_0._id_5227 ) || gettime() >= var_0._id_5227;
+    return !isdefined( var_0.deployablegunnextammotime ) || gettime() >= var_0.deployablegunnextammotime;
 }
 
-_id_17A8( var_0, var_1 )
+addammo( var_0, var_1 )
 {
-    var_0._id_5227 = gettime() + var_1 * 1000;
-    scripts\mp\weapons::_id_EBD2( var_0 );
+    var_0.deployablegunnextammotime = gettime() + var_1 * 1000;
+    scripts\mp\weapons::scavengergiveammo( var_0 );
 }
 
-_id_17A9( var_0, var_1, var_2 )
+addammoovertime( var_0, var_1, var_2 )
 {
     self endon( "death" );
     var_0 endon( "death" );
@@ -211,7 +211,7 @@ _id_17A9( var_0, var_1, var_2 )
 
     for (;;)
     {
-        _id_17A8( var_0 );
+        addammo( var_0 );
         wait( var_2 );
 
         if ( distancesquared( var_0.origin, self.origin ) > var_1 )
@@ -219,7 +219,7 @@ _id_17A9( var_0, var_1, var_2 )
     }
 }
 
-_id_3937( var_0 )
+canusedeployable( var_0 )
 {
     return !scripts\mp\utility::isjuggernaut();
 }

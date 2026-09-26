@@ -3,7 +3,7 @@
 
 init()
 {
-    level._id_C1D0 = "aftermath_post";
+    level.nukevisionset = "aftermath_post";
     level._effect["mons_warp_flash"] = loadfx( "vfx/iw7/_requests/mp/vfx_vehicle_nuke_warp_flash.vfx" );
     level._effect["mons_warp_in"] = loadfx( "vfx/iw7/_requests/mp/vfx_vehicle_nuke_warp_in.vfx" );
     level._effect["mons_warp_out"] = loadfx( "vfx/iw7/_requests/mp/vfx_vehicle_nuke_warp_out.vfx" );
@@ -12,21 +12,21 @@ init()
     level._effect["mons_laser_flash"] = loadfx( "vfx/iw7/_requests/mp/vfx_nuke_initial_flash.vfx" );
     level._effect["mons_laser_smoke"] = loadfx( "vfx/iw7/_requests/mp/vfx_nuke_dust_wave.vfx" );
     level._effect["mons_screen_ash"] = loadfx( "vfx/iw7/_requests/mp/vfx_nuke_cam_att_ashfall.vfx" );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "nuke", ::_id_128F0 );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "nuke", ::tryusenukefromstruct );
     setdvarifuninitialized( "scr_nukeTimer", 10 );
     setdvarifuninitialized( "scr_nukeCancelMode", 0 );
-    level._id_C1CD = getdvarint( "scr_nukeTimer" );
-    level._id_3883 = getdvarint( "scr_nukeCancelMode" );
-    level._id_C1C5 = spawnstruct();
+    level.nuketimer = getdvarint( "scr_nukeTimer" );
+    level.cancelmode = getdvarint( "scr_nukeCancelMode" );
+    level.nukeinfo = spawnstruct();
     level.nukedetonated = undefined;
     level.nukegameover = undefined;
-    level._id_C1B2 = undefined;
+    level.nukecancel = undefined;
 
-    if ( !scripts\mp\utility::istrue( level._id_C1B2 ) )
+    if ( !scripts\mp\utility::istrue( level.nukecancel ) )
         level thread onplayerconnect();
 }
 
-_id_128F0( var_0 )
+tryusenukefromstruct( var_0 )
 {
     if ( isdefined( level.nukeincoming ) )
     {
@@ -53,11 +53,11 @@ _id_512C( var_0, var_1, var_2 )
 _id_5973( var_0 )
 {
     level endon( "nuke_cancelled" );
-    level._id_C1C5.player = self;
-    level._id_C1C5.team = self.pers["team"];
+    level.nukeinfo.player = self;
+    level.nukeinfo.team = self.pers["team"];
     level.nukeincoming = 1;
-    level._id_C1B2 = undefined;
-    level._id_D8C5 = int( getomnvar( "ui_bomb_timer" ) );
+    level.nukecancel = undefined;
+    level.prevuibombtimer = int( getomnvar( "ui_bomb_timer" ) );
     setomnvar( "ui_bomb_timer", 4 );
     thread scripts\mp\utility::teamplayercardsplash( "used_nuke", self );
     var_1 = _id_108E6();
@@ -89,7 +89,7 @@ _id_108E6()
     var_12.angles = var_11;
     var_12.team = self.team;
     var_12.owner = self;
-    var_12._id_C96C = var_9;
+    var_12.pathgoal = var_9;
     var_12 setcandamage( 0 );
     var_12 setscriptablepartstate( "body", "hide", 0 );
     return var_12;
@@ -170,8 +170,8 @@ _id_1395B( var_0 )
     self endon( "nuke_ship_exit" );
     level endon( "game_ended" );
     var_0 waittill( "disconnect" );
-    level._id_C1B2 = 1;
-    _id_C1B5();
+    level.nukecancel = 1;
+    nukecleartimer();
 
     if ( level.mapname != "mp_dome_dusk" )
         visionsetalternate( -3, 5 );
@@ -187,18 +187,18 @@ _id_13959( var_0 )
     level endon( "game_ended" );
     thread _id_1395C();
     wait 2;
-    self moveto( self._id_C96C, 5, 0.2, 2 );
+    self moveto( self.pathgoal, 5, 0.2, 2 );
     thread _id_665A();
     self waittill( "near_goal" );
     thread _id_10DD1();
-    level thread _id_512C( level._id_C1CD - 7.0, ::_id_C1B1, self );
-    level thread _id_512C( level._id_C1CD - 3.3, ::_id_C1CC, self );
-    level thread _id_512C( level._id_C1CD, ::_id_C1CB, self );
-    level thread _id_512C( level._id_C1CD, ::_id_C1CA, self );
-    level thread _id_512C( level._id_C1CD, ::_id_C1BE, self );
-    level thread _id_512C( level._id_C1CD, ::_id_C1BC, self );
-    level thread _id_512C( level._id_C1CD + 0.25, ::_id_C1CE, self );
-    level thread _id_512C( level._id_C1CD + 1.5, ::_id_C1B8, self );
+    level thread _id_512C( level.nuketimer - 7.0, ::_id_C1B1, self );
+    level thread _id_512C( level.nuketimer - 3.3, ::_id_C1CC, self );
+    level thread _id_512C( level.nuketimer, ::_id_C1CB, self );
+    level thread _id_512C( level.nuketimer, ::_id_C1CA, self );
+    level thread _id_512C( level.nuketimer, ::_id_C1BE, self );
+    level thread _id_512C( level.nuketimer, ::_id_C1BC, self );
+    level thread _id_512C( level.nuketimer + 0.25, ::_id_C1CE, self );
+    level thread _id_512C( level.nuketimer + 1.5, ::_id_C1B8, self );
     self waittill( "at_goal" );
     self scriptmodelplayanimdeltamotion( "veh_mil_air_ca_mons_mp_doors_open", 1 );
 
@@ -208,10 +208,10 @@ _id_13959( var_0 )
         level._id_C1AE hide();
     }
 
-    scripts\mp\rank::addteamrankxpmultiplier( 2, level._id_C1C5.team, "nuke" );
+    scripts\mp\rank::addteamrankxpmultiplier( 2, level.nukeinfo.team, "nuke" );
 
-    if ( level._id_3883 && var_0 )
-        level thread _id_3884( level._id_C1C5.player );
+    if ( level.cancelmode && var_0 )
+        level thread cancelnukeondeath( level.nukeinfo.player );
 }
 
 _id_10DD1()
@@ -222,7 +222,7 @@ _id_10DD1()
     if ( level.mapname != "mp_dome_dusk" )
         visionsetalternate( -1, 10 );
 
-    level thread _id_12E43();
+    level thread update_ui_timers();
 
     if ( !isdefined( level._id_C1A7 ) )
     {
@@ -230,7 +230,7 @@ _id_10DD1()
         level._id_C1A7 hide();
     }
 
-    for ( var_0 = level._id_C1CD; var_0 > 0; var_0-- )
+    for ( var_0 = level.nuketimer; var_0 > 0; var_0-- )
     {
         if ( var_0 == 1 )
             level._id_C1A7 playsound( "mp_killstreak_nuclearstrike_alarm_last" );
@@ -247,11 +247,11 @@ _id_10DD1()
 _id_665A()
 {
     self endon( "nuke_ship_exit" );
-    playfx( scripts\engine\utility::getfx( "mons_warp_in" ), self._id_C96C );
-    playsoundatpos( self._id_C96C, "ks_nuke_mons_arrive" );
+    playfx( scripts\engine\utility::getfx( "mons_warp_in" ), self.pathgoal );
+    playsoundatpos( self.pathgoal, "ks_nuke_mons_arrive" );
     wait 0.545;
     scripts\mp\shellshock::_earthquake( 0.8, 0.5, level.mapcenter, 100000 );
-    playfx( scripts\engine\utility::getfx( "mons_warp_flash" ), self._id_C96C );
+    playfx( scripts\engine\utility::getfx( "mons_warp_flash" ), self.pathgoal );
     self setscriptablepartstate( "body", "show", 0 );
     wait 0.5;
     self setscriptablepartstate( "thrusters_burst", "active", 0 );
@@ -268,7 +268,7 @@ _id_1395C()
 
     for (;;)
     {
-        var_0 = distance( self.origin, self._id_C96C );
+        var_0 = distance( self.origin, self.pathgoal );
 
         if ( var_0 <= 5000 && !isdefined( self._id_BE83 ) )
         {
@@ -309,11 +309,11 @@ getpathend()
     return var_4;
 }
 
-_id_3884( var_0 )
+cancelnukeondeath( var_0 )
 {
     level waittill( "game_ended" );
     var_0 scripts\engine\utility::waittill_any( "death", "disconnect" );
-    _id_C1B5();
+    nukecleartimer();
     level.nukeincoming = undefined;
     level notify( "nuke_cancelled" );
 }
@@ -340,15 +340,17 @@ _id_C1CB( var_0 )
     level endon( "nuke_cancelled" );
 
     if ( isdefined( level._id_C1AE ) )
-        return;
+    {
+
+    }
 }
 
-_id_C1B5( var_0 )
+nukecleartimer( var_0 )
 {
     var_1 = 0;
 
-    if ( isdefined( level._id_D8C5 ) )
-        var_1 = level._id_D8C5;
+    if ( isdefined( level.prevuibombtimer ) )
+        var_1 = level.prevuibombtimer;
 
     setomnvar( "ui_bomb_timer", var_1 );
     setomnvar( "ui_nuke_countdown_active", 0 );
@@ -358,7 +360,7 @@ _id_C1BE( var_0 )
 {
     var_0 endon( "nuke_ship_exit" );
     level endon( "nuke_cancelled" );
-    _id_C1B5();
+    nukecleartimer();
     level.nukedetonated = 1;
     var_0 playsound( "ks_nuke_mons_laser" );
     playfx( scripts\engine\utility::getfx( "mons_laser_flash" ), var_0.origin - ( 0, 0, 500 ) );
@@ -388,7 +390,7 @@ _id_C1CE( var_0 )
     level notify( "nuke_aftermath_post_started" );
     level waittill( "nuke_death" );
     var_0 scriptmodelplayanimdeltamotion( "veh_mil_air_ca_mons_mp_doors_close", 1 );
-    level thread _id_12EDA();
+    level thread updatenukevisiononhostmigration();
 
     foreach ( var_2 in level.players )
     {
@@ -414,11 +416,11 @@ _id_C1B8( var_0 )
     if ( level.gametype == "war" || level.gametype == "dm" )
         var_1 = 1;
 
-    if ( isdefined( level._id_C1C5.player ) )
+    if ( isdefined( level.nukeinfo.player ) )
     {
         foreach ( var_3 in level.characters )
         {
-            if ( _id_C1B3( var_3, var_1 ) )
+            if ( nuke_cankill( var_3, var_1 ) )
             {
                 if ( isplayer( var_3 ) )
                 {
@@ -426,27 +428,27 @@ _id_C1B8( var_0 )
 
                     if ( scripts\mp\utility::isreallyalive( var_3 ) )
                     {
-                        scripts\mp\damage::addattacker( var_3, level._id_C1C5.player, undefined, "nuke_mp", 0, undefined, undefined, undefined, undefined, undefined );
-                        var_3 thread scripts\mp\damage::finishplayerdamagewrapper( level._id_C1C5.player, level._id_C1C5.player, 999999, 0, "MOD_EXPLOSIVE", "nuke_mp", var_3.origin, ( 0, 0, 1 ), "none", 0, 0, undefined, undefined );
+                        scripts\mp\damage::addattacker( var_3, level.nukeinfo.player, undefined, "nuke_mp", 0, undefined, undefined, undefined, undefined, undefined );
+                        var_3 thread scripts\mp\damage::finishplayerdamagewrapper( level.nukeinfo.player, level.nukeinfo.player, 999999, 0, "MOD_EXPLOSIVE", "nuke_mp", var_3.origin, ( 0, 0, 1 ), "none", 0, 0, undefined, undefined );
                     }
                 }
             }
         }
 
         if ( scripts\mp\utility::istrue( var_1 ) )
-            _id_52C5();
+            destroyactiveobjects();
         else
-            _id_52C5( scripts\mp\utility::getotherteam( var_0.team ) );
+            destroyactiveobjects( scripts\mp\utility::getotherteam( var_0.team ) );
 
-        scripts\mp\utility::printgameaction( "killstreak ended - nuke", level._id_C1C5.player );
+        scripts\mp\utility::printgameaction( "killstreak ended - nuke", level.nukeinfo.player );
 
         if ( scripts\mp\utility::istrue( var_1 ) )
         {
             level.nukegameover = 1;
-            var_5 = level._id_C1C5.player;
+            var_5 = level.nukeinfo.player;
 
             if ( level.teambased )
-                var_5 = level._id_C1C5.player.team;
+                var_5 = level.nukeinfo.player.team;
 
             thread scripts\mp\gamelogic::endgame( var_5, game["end_reason"]["nuke_end"], 1 );
         }
@@ -455,9 +457,9 @@ _id_C1B8( var_0 )
     level.nukeincoming = undefined;
 }
 
-_id_C1B3( var_0, var_1 )
+nuke_cankill( var_0, var_1 )
 {
-    if ( !isdefined( level._id_C1C5 ) )
+    if ( !isdefined( level.nukeinfo ) )
         return 0;
 
     if ( scripts\mp\utility::istrue( var_1 ) )
@@ -465,13 +467,13 @@ _id_C1B3( var_0, var_1 )
 
     if ( level.teambased )
     {
-        if ( isdefined( level._id_C1C5.team ) && var_0.team == level._id_C1C5.team )
+        if ( isdefined( level.nukeinfo.team ) && var_0.team == level.nukeinfo.team )
             return 0;
     }
     else
     {
-        var_2 = isdefined( level._id_C1C5.player ) && var_0 == level._id_C1C5.player;
-        var_3 = isdefined( level._id_C1C5.player ) && isdefined( var_0.owner ) && var_0.owner == level._id_C1C5.player;
+        var_2 = isdefined( level.nukeinfo.player ) && var_0 == level.nukeinfo.player;
+        var_3 = isdefined( level.nukeinfo.player ) && isdefined( var_0.owner ) && var_0.owner == level.nukeinfo.player;
 
         if ( var_2 || var_3 )
             return 0;
@@ -510,27 +512,27 @@ onplayerspawned()
         self waittill( "spawned_player" );
 
         if ( isdefined( level.nukedetonated ) )
-            thread _id_FB0F( 0.1 );
+            thread setvisionforplayer( 0.1 );
     }
 }
 
-_id_FB0F( var_0 )
+setvisionforplayer( var_0 )
 {
     wait( var_0 );
 
     if ( level.mapname != "mp_dome_dusk" )
-        self visionsetalternateforplayer( -3, 0 );
+        self visionsetpostapplyforplayer( -3, 0 );
 
     playfxontagforclients( scripts\engine\utility::getfx( "mons_screen_ash" ), self, "tag_eye", self );
 }
 
-_id_12E43()
+update_ui_timers()
 {
     level endon( "game_ended" );
     level endon( "disconnect" );
     level endon( "nuke_cancelled" );
     level endon( "nuke_death" );
-    var_0 = level._id_C1CD * 1000 + gettime();
+    var_0 = level.nuketimer * 1000 + gettime();
     setomnvar( "ui_nuke_end_milliseconds", var_0 );
     level waittill( "host_migration_begin" );
     var_1 = scripts\mp\hostmigration::waittillhostmigrationdone();
@@ -539,30 +541,30 @@ _id_12E43()
         setomnvar( "ui_nuke_end_milliseconds", var_0 + var_1 );
 }
 
-_id_12EDA()
+updatenukevisiononhostmigration()
 {
     level endon( "game_ended" );
 
     for (;;)
     {
         level waittill( "host_migration_end" );
-        level _id_F7BC( 0 );
+        level setnukeaftermathvision( 0 );
     }
 }
 
-_id_F7BC( var_0 )
+setnukeaftermathvision( var_0 )
 {
-    if ( isdefined( level._id_C1BA ) )
-        level thread [[ level._id_C1BA ]]();
+    if ( isdefined( level.nukedeathvisionfunc ) )
+        level thread [[ level.nukedeathvisionfunc ]]();
     else if ( level.mapname != "mp_dome_dusk" )
         visionsetalternate( -3, var_0 );
 }
 
-_id_52C5( var_0 )
+destroyactiveobjects( var_0 )
 {
     var_1 = "nuke_mp";
-    var_2 = level._id_1655;
-    var_3 = scripts\mp\perks\perkfunctions::_id_7D96();
+    var_2 = level.activekillstreaks;
+    var_3 = scripts\mp\perks\perkfunctions::getactiveequipmentarray();
     var_4 = undefined;
 
     if ( isdefined( var_2 ) && isdefined( var_3 ) )
@@ -577,7 +579,7 @@ _id_52C5( var_0 )
         foreach ( var_6 in var_4 )
         {
             if ( isdefined( var_6 ) )
-                var_6 scripts\mp\killstreaks\utility::dodamagetokillstreak( 10000, level._id_C1C5.player, level._id_C1C5.player, var_0, var_6.origin, "MOD_EXPLOSIVE", var_1 );
+                var_6 scripts\mp\killstreaks\utility::dodamagetokillstreak( 10000, level.nukeinfo.player, level.nukeinfo.player, var_0, var_6.origin, "MOD_EXPLOSIVE", var_1 );
         }
     }
 }

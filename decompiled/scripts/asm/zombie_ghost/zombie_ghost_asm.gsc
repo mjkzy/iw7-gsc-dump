@@ -103,14 +103,14 @@ _id_826A( var_0, var_1, var_2, var_3, var_4 )
         var_3 = 1;
 
     self.currentanimstate = var_1;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     self.currentanimindex = var_5;
-    var_6 = scripts\asm\asm::_id_2341( var_0, var_1 );
+    var_6 = scripts\asm\asm::asm_getnotehandler( var_0, var_1 );
 
     for (;;)
     {
         self setanimstate( var_1, var_5, var_3 );
-        scripts\anim\notetracks_mp::_id_1384C( var_1, "end", var_1, var_5, var_6 );
+        scripts\anim\notetracks_mp::waituntilnotetrack( var_1, "end", var_1, var_5, var_6 );
     }
 }
 
@@ -183,9 +183,9 @@ _id_1299A( var_0 )
 _id_CECF( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    var_5 = scripts\asm\asm::_id_2341( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    var_5 = scripts\asm\asm::asm_getnotehandler( var_0, var_1 );
     self.currentanimstate = var_1;
     self.currentanimindex = var_4;
-    scripts\anim\notetracks_mp::_id_CED2( var_1, var_4, self.animplaybackrate, var_1, "end", var_5 );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack( var_1, var_4, self.animplaybackrate, var_1, "end", var_5 );
 }

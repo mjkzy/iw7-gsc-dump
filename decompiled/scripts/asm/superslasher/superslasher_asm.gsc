@@ -6,7 +6,7 @@ superslasher_init( var_0, var_1, var_2, var_3 )
     self.asm.footsteps = spawnstruct();
     self.asm.footsteps.foot = "left";
     self.asm.footsteps.time = gettime();
-    self.asm._id_4C86 = spawnstruct();
+    self.asm.customdata = spawnstruct();
     self.stopsoonnotifydist = 32;
     self.sharpturnnotifydist = 160;
     var_4 = self getanimentry( "jump_to_roof", 0 );
@@ -19,12 +19,12 @@ superslasher_init( var_0, var_1, var_2, var_3 )
 ss_play( var_0, var_1, var_2, var_3, var_4 )
 {
     self endon( var_1 + "_finished" );
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
 
     if ( !isdefined( var_4 ) )
-        var_4 = scripts\asm\asm::_id_2341( var_0, var_1 );
+        var_4 = scripts\asm\asm::asm_getnotehandler( var_0, var_1 );
 
-    scripts\anim\notetracks_mp::_id_CED2( var_1, var_5, self.moveratescale, var_1, "end", var_4 );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack( var_1, var_5, self.moveratescale, var_1, "end", var_4 );
 }
 
 superslasher_playmoveloop( var_0, var_1, var_2, var_3 )
@@ -41,7 +41,7 @@ superslasher_playmoveloop_clean( var_0, var_1, var_2, var_3 )
 ss_play_groundidle( var_0, var_1, var_2, var_3 )
 {
     self._blackboard.bidle = 1;
-    _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
 }
 
 ss_play_groundidle_clean( var_0, var_1, var_2 )
@@ -53,14 +53,14 @@ ss_play_roofidle( var_0, var_1, var_2, var_3 )
 {
     self scragentsetphysicsmode( "noclip" );
     self scragentsetorientmode( "face angle abs", level.superslasherrooftopangles );
-    _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
 }
 
 ss_play_rooftaunt( var_0, var_1, var_2, var_3 )
 {
     self scragentsetphysicsmode( "noclip" );
     self scragentsetorientmode( "face angle abs", level.superslasherrooftopangles );
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 ss_play_rooftaunt_clean( var_0, var_1, var_2 )
@@ -72,10 +72,10 @@ ss_play_jumptoground( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     self._blackboard.buninterruptibleanim = 1;
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetphysicsmode( "noclip" );
     thread ss_play_jtog_waitmigrate( var_1 );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 ss_play_jtog_waitmigrate( var_0 )
@@ -116,7 +116,7 @@ ss_play_jumpscale( var_0, var_1, var_2, var_3, var_4 )
         var_5 = var_4 - self.origin;
     }
 
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetorientmode( "face angle abs", var_6 );
     self scragentsetphysicsmode( "noclip" );
     var_8 = getmovedelta( var_2 );
@@ -126,7 +126,7 @@ ss_play_jumpscale( var_0, var_1, var_2, var_3, var_4 )
     var_12 = max( var_5[2] / var_8[2], 0 );
     var_13 = 1.0;
     self scragentsetanimscale( var_11, var_12 );
-    scripts\anim\notetracks_mp::_id_CED2( var_0, var_1, var_13, var_0, "end" );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack( var_0, var_1, var_13, var_0, "end" );
 }
 
 ss_play_jumptoroof( var_0, var_1, var_2, var_3 )
@@ -134,14 +134,14 @@ ss_play_jumptoroof( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     self._blackboard.buninterruptibleanim = 1;
     var_4 = level.superslasherrooftopspot;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_6 = self getanimentry( var_1, var_5 );
     var_7 = level.superslasherjumptoroofangles;
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetorientmode( "face angle abs", var_7 );
     self scragentsetphysicsmode( "noclip" );
     thread ss_play_jtog_waitmigrate( var_1 );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 ss_play_jumptoroof_clean( var_0, var_1, var_2 )
@@ -155,7 +155,7 @@ ss_play_jumptoroof_clean( var_0, var_1, var_2 )
         self._blackboard.bjumptogroundborked = undefined;
     }
 
-    if ( scripts\asm\asm::_id_232B( var_1, "end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "end" ) )
     {
         self.asm.turndata = spawnstruct();
         self.asm.turndata = angleclamp180( level.superslasherrooftopangles[1] - self.angles[1] );
@@ -184,7 +184,7 @@ ss_play_summonsawblades( var_0, var_1, var_2, var_3 )
 ss_play_sawcharge_start( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
 
     if ( isdefined( self._blackboard.throwsawchargetime ) )
     {
@@ -193,8 +193,8 @@ ss_play_sawcharge_start( var_0, var_1, var_2, var_3 )
         self._blackboard.throwsawchargelooptime = max( self._blackboard.throwsawchargetime - var_6, 0 );
     }
 
-    var_7 = scripts\asm\asm::_id_2341( var_0, var_1 );
-    scripts\anim\notetracks_mp::_id_CED2( var_1, var_4, self.moveratescale, var_1, "end", var_7 );
+    var_7 = scripts\asm\asm::asm_getnotehandler( var_0, var_1 );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack( var_1, var_4, self.moveratescale, var_1, "end", var_7 );
 }
 
 ss_play_sawcharge_start_clean( var_0, var_1, var_2 )
@@ -205,7 +205,7 @@ ss_play_sawcharge_start_clean( var_0, var_1, var_2 )
 ss_play_sawcharge( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    thread _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    thread scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
     wait( self._blackboard.throwsawchargelooptime );
     scripts\asm\asm::asm_fireevent( var_1, "saw_charge_loop_complete" );
 }
@@ -219,7 +219,7 @@ ss_play_throwsaw( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     var_4 = 1;
-    self.throwsawprevturnspeed = self _meth_827F();
+    self.throwsawprevturnspeed = self scragentgetmaxturnspeed();
 
     if ( isdefined( self._blackboard.throwsawtarget ) )
         thread superslasher_faceenemyhelper( self._blackboard.throwsawtarget, var_4 * 1000, var_1 );
@@ -248,10 +248,10 @@ ss_play_throwsawfan_nt( var_0, var_1, var_2, var_3 )
 ss_play_summon( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\anim\notetracks_mp::_id_CED1( var_1, var_4, self.moveratescale, 2 / self.moveratescale );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\anim\notetracks_mp::playanimnatratefortime( var_1, var_4, self.moveratescale, 2 / self.moveratescale );
     thread scripts\asm\superslasher\superslasher_actions::superslasher_summonminions( var_3 );
-    scripts\anim\notetracks_mp::_id_1384C( var_1, "end", var_1, var_4 );
+    scripts\anim\notetracks_mp::waituntilnotetrack( var_1, "end", var_1, var_4 );
 }
 
 ss_play_wires( var_0, var_1, var_2, var_3 )
@@ -264,14 +264,14 @@ ss_play_shockwave_start( var_0, var_1, var_2, var_3 )
 {
     self playsoundonmovingent( "zmb_vo_supslasher_attack_shockwave_build_start" );
     self scragentsetorientmode( "face angle abs", level.superslasherrooftopangles );
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 ss_play_shockwave_loop( var_0, var_1, var_2, var_3 )
 {
     var_4 = 1;
     self playsoundonmovingent( "zmb_vo_supslasher_attack_shockwave_build" );
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     self setanimstate( var_1, var_5, self.moveratescale );
     wait( var_4 );
     scripts\asm\asm::asm_fireevent( var_1, "shockwave_loop_complete" );
@@ -299,7 +299,7 @@ ss_play_trapped( var_0, var_1, var_2, var_3 )
 {
     thread _id_126BB( var_1, self._blackboard.trapduration );
     self playsoundonmovingent( "zmb_vo_supslasher_pain" );
-    _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
 }
 
 _id_126BB( var_0, var_1 )
@@ -323,7 +323,7 @@ ss_play_jumpmove_start( var_0, var_1, var_2, var_3 )
     var_5 = var_4 - self.origin;
     var_6 = vectortoangles( ( var_5[0], var_5[1], 0 ) );
     var_7 = length( var_5 );
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetorientmode( "face angle abs", var_6 );
     self scragentsetphysicsmode( "noclip" );
     self scragentsetanimscale( 1, 3 );
@@ -357,7 +357,7 @@ ss_play_jumpmove_start_clean( var_0, var_1, var_2 )
 {
     self scragentsetanimscale( 1, 1 );
 
-    if ( !scripts\asm\asm::_id_232B( var_1, "end" ) )
+    if ( !scripts\asm\asm::asm_eventfired( var_1, "end" ) )
         _id_A4DA();
 }
 
@@ -366,7 +366,7 @@ ss_play_jumpmove( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     var_4 = self._blackboard.jumptargetpos;
     self._blackboard.buninterruptibleanim = 1;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_6 = self getanimentry( var_1, var_5 );
     var_7 = scripts\asm\asm_mp::_id_235A( var_1, "end" );
     var_8 = self getanimentry( var_1, var_7 );
@@ -378,14 +378,14 @@ ss_play_jumpmove_clean( var_0, var_1, var_2 )
 {
     self._blackboard.buninterruptibleanim = undefined;
 
-    if ( !scripts\asm\asm::_id_232B( var_1, "end" ) )
+    if ( !scripts\asm\asm::asm_eventfired( var_1, "end" ) )
         _id_A4DA();
 }
 
 ss_play_jumpmove_end( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self getanimentry( var_1, var_4 );
     var_6 = getmovedelta( var_5 );
     var_7 = scripts\common\trace::create_default_contents( 1 );
@@ -397,9 +397,9 @@ ss_play_jumpmove_end( var_0, var_1, var_2, var_3 )
 
     var_10 = max( ( var_8[2] - self.origin[2] ) / var_6[2], 0 );
     self scragentsetanimscale( 1, var_10 );
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetphysicsmode( "noclip" );
-    scripts\anim\notetracks_mp::_id_CED2( var_1, var_4, self.moveratescale, var_1, "end", scripts\asm\asm::_id_2341( var_0, var_1 ) );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack( var_1, var_4, self.moveratescale, var_1, "end", scripts\asm\asm::asm_getnotehandler( var_0, var_1 ) );
 }
 
 ss_play_jumpmove_end_clean( var_0, var_1, var_2 )
@@ -413,7 +413,7 @@ superslasher_shouldstartarrival( var_0, var_1, var_2, var_3 )
     if ( !isdefined( self.pathgoalpos ) )
         return 0;
 
-    if ( !scripts\asm\asm::_id_232B( var_1, "cover_approach" ) )
+    if ( !scripts\asm\asm::asm_eventfired( var_1, "cover_approach" ) )
         return 0;
 
     var_4 = gettime();
@@ -439,9 +439,9 @@ superslasher_shouldstartarrival( var_0, var_1, var_2, var_3 )
     if ( isdefined( self.node ) || isdefined( self.scriptedarrivalent ) )
         var_10 = 0;
 
-    self.asm._id_11068 = _id_3722( var_0, var_2, self.pathgoalpos, var_10, 0 );
+    self.asm.stopdata = _id_3722( var_0, var_2, self.pathgoalpos, var_10, 0 );
 
-    if ( !isdefined( self.asm._id_11068 ) )
+    if ( !isdefined( self.asm.stopdata ) )
         return 0;
 
     return 1;
@@ -453,7 +453,7 @@ _id_3722( var_0, var_1, var_2, var_3, var_4 )
     var_5 = self.angles;
     var_6 = var_2 - self.origin;
     var_7 = length2dsquared( var_6 );
-    var_8 = _id_0F3C::_id_3E96( var_0, var_1 );
+    var_8 = scripts\asm\shared\mp\utility::_id_3E96( var_0, var_1 );
     var_9 = self getanimentry( var_1, var_8 );
     var_10 = getmovedelta( var_9 );
     var_11 = getangledelta3d( var_9 );
@@ -466,9 +466,9 @@ _id_3722( var_0, var_1, var_2, var_3, var_4 )
         var_14 = 1;
 
     var_16 = getclosestpointonnavmesh( var_13, self );
-    var_17 = self _meth_84AC();
+    var_17 = self getnavposition();
 
-    if ( !_func_2AC( var_17, var_16, self ) )
+    if ( !navisstraightlinereachable( var_17, var_16, self ) )
         return undefined;
 
     if ( var_14 )
@@ -498,8 +498,8 @@ _id_3722( var_0, var_1, var_2, var_3, var_4 )
 ss_play_arrival( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = self.asm._id_11068;
-    self.asm._id_11068 = undefined;
+    var_4 = self.asm.stopdata;
+    self.asm.stopdata = undefined;
     var_5 = self.angles;
 
     if ( isdefined( self.pathgoalpos ) )
@@ -516,8 +516,8 @@ ss_play_arrival( var_0, var_1, var_2, var_3 )
     }
 
     self scragentsetorientmode( "face angle abs", var_5 );
-    self _meth_8281( "anim deltas" );
-    scripts\anim\notetracks_mp::_id_CED2( var_1, var_4.animindex, self.moveplaybackrate, var_1, "end" );
+    self scragentsetanimmode( "anim deltas" );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack( var_1, var_4.animindex, self.moveplaybackrate, var_1, "end" );
 }
 
 ss_play_arrival_clean( var_0, var_1, var_2 )
@@ -527,10 +527,10 @@ ss_play_arrival_clean( var_0, var_1, var_2 )
 
 ss_play_meleecharge( var_0, var_1, var_2, var_3 )
 {
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     thread superslasher_faceenemyhelper( self.bt.meleetarget, 500, var_1 );
     self scragentsetanimscale( 2, 1 );
-    _id_0F3C::_id_B050( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::_id_B050( var_0, var_1, var_2, var_3 );
 }
 
 ss_play_meleecharge_clean( var_0, var_1, var_2 )
@@ -662,16 +662,16 @@ superslasher_chooseanim_turn( var_0, var_1, var_2 )
 ss_play_turn( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self getanimentry( var_1, var_4 );
     var_6 = getanimlength( var_5 );
     var_7 = 0.75;
     var_8 = self.asm.turndata;
     self.asm.turndata = undefined;
     self scragentsetorientmode( "face angle abs", self.angles );
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self._blackboard.bcommittedtoanim = 1;
-    scripts\anim\notetracks_mp::_id_CED1( var_1, var_4, self.moveplaybackrate, ( var_6 - var_7 ) / self.moveplaybackrate );
+    scripts\anim\notetracks_mp::playanimnatratefortime( var_1, var_4, self.moveplaybackrate, ( var_6 - var_7 ) / self.moveplaybackrate );
     scripts\asm\asm::asm_fireevent( var_1, "turn_done" );
 }
 

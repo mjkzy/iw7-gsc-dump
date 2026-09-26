@@ -47,7 +47,7 @@ _id_D686( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( self.owner ) && var_0 != self.owner )
     {
-        var_0 scripts\mp\killstreaks\killstreaks::_id_83A0();
+        var_0 scripts\mp\killstreaks\killstreaks::givescoreforequipment();
         var_0 notify( "destroyed_equipment" );
     }
 

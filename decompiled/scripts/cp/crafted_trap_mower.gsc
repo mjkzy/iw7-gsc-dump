@@ -14,7 +14,7 @@ init()
     var_0.modelplacement = "tag_origin";
     var_0.modelplacementfailed = "tag_origin";
     var_0.hintstring = &"COOP_CRAFTABLES_PICKUP";
-    var_0._id_9F43 = 0;
+    var_0.issentient = 0;
     var_0.hintstring = &"COOP_CRAFTABLES_PICKUP";
     var_0.placestring = &"CP_RAVE_MOWER_PLACEMENT";
     var_0.cannotplacestring = &"COOP_CRAFTABLES_CANNOT_PLACE";
@@ -527,7 +527,7 @@ _id_126A6( var_0 )
     self setcursorhint( "HINT_NOICON" );
     self sethintstring( level._id_47B3["crafted_trap_mower"].hintstring );
     self makeusable();
-    self _meth_84A7( "tag_fx" );
+    self sethinttag( "tag_fx" );
     self setusefov( 120 );
     self setuserange( 96 );
     thread _id_126A0( self.owner );

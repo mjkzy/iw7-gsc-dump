@@ -61,7 +61,7 @@ transponder_throw( var_0 )
     scripts\mp\weapons::ontacticalequipmentplanted( var_0, "power_transponder" );
     thread transponderrangefinder( var_0 );
     var_0 thread transponderactivate();
-    var_0 thread scripts\mp\weapons::_id_3343();
+    var_0 thread scripts\mp\weapons::c4damage();
     var_0 thread transponderdamage();
     var_0 thread scripts\mp\weapons::_id_66B4( 1 );
     var_0 thread scripts\mp\perks\perk_equipmentping::runequipmentping();
@@ -331,7 +331,7 @@ _id_897B( var_0 )
 
 _id_5616( var_0 )
 {
-    scripts\mp\powers::_id_D727( "power_transponder" );
+    scripts\mp\powers::power_disableactivation( "power_transponder" );
     thread _id_5617( var_0 );
 }
 
@@ -341,7 +341,7 @@ _id_5617( var_0 )
     self endon( "disconnect" );
     self endon( "remove_transponder" );
     var_0 waittill( "death" );
-    scripts\mp\powers::_id_D72D( "power_transponder" );
+    scripts\mp\powers::power_enableactivation( "power_transponder" );
 }
 
 _id_12694()
@@ -387,10 +387,10 @@ _id_12695( var_0, var_1, var_2 )
     var_3 = scripts\mp\utility::outlineenableforplayer( var_0, "orange", self, 0, 0, "level_script" );
     var_0 scripts\mp\hud_message::showmiscmessage( "spotted" );
     var_4 = 3.0;
-    _id_13AA0( var_3, var_0, var_4 );
+    watchhighlightfadetime( var_3, var_0, var_4 );
 }
 
-_id_13AA0( var_0, var_1, var_2 )
+watchhighlightfadetime( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
@@ -413,8 +413,8 @@ _id_12691()
     self.maxhealth = 170;
     self.health = self.maxhealth;
     level._effect["reaper_swipe_trail"] = loadfx( "vfx/iw7/_requests/mp/vfx_swipe_trail" );
-    self._id_B62A = spawn( "script_model", self.origin );
-    self._id_B62A setmodel( "tag_origin" );
+    self.meleeorigin = spawn( "script_model", self.origin );
+    self.meleeorigin setmodel( "tag_origin" );
     thread _id_13ACC();
     thread _id_AD77( var_3 );
 }
@@ -439,7 +439,7 @@ _id_13ACC( var_0 )
         var_2 = self.origin + var_1;
         var_3 = anglestoforward( self.angles );
         var_4 = anglestoright( self.angles );
-        var_5 = _id_36DB( var_0 );
+        var_5 = calcfrontposbasedonvelocity( var_0 );
         var_5 = var_5 + var_1;
         var_6 = var_2 + var_4 * 64;
         var_7 = var_2 - var_4 * 32;
@@ -447,20 +447,20 @@ _id_13ACC( var_0 )
         var_9 = var_2 + var_8 * 64;
         var_10 = rotatevector( var_4, ( 0, 135, 0 ) );
         var_11 = var_2 + var_10 * 32;
-        self._id_B62A.origin = var_6;
+        self.meleeorigin.origin = var_6;
         wait 0.05;
-        playfxontag( level._effect["reaper_swipe_trail"], self._id_B62A, "tag_origin" );
+        playfxontag( level._effect["reaper_swipe_trail"], self.meleeorigin, "tag_origin" );
         wait 0.075;
-        self._id_B62A.origin = var_9;
+        self.meleeorigin.origin = var_9;
         wait 0.075;
-        self._id_B62A.origin = var_5;
-        thread _id_20D9( var_5 );
+        self.meleeorigin.origin = var_5;
+        thread applyradiusdamageasmelee( var_5 );
         wait 0.075;
-        self._id_B62A.origin = var_11;
+        self.meleeorigin.origin = var_11;
         wait 0.075;
-        self._id_B62A.origin = var_7;
+        self.meleeorigin.origin = var_7;
         wait 0.05;
-        stopfxontag( level._effect["reaper_swipe_trail"], self._id_B62A, "tag_origin" );
+        stopfxontag( level._effect["reaper_swipe_trail"], self.meleeorigin, "tag_origin" );
     }
 }
 
@@ -487,7 +487,7 @@ _id_E164( var_0 )
     _id_40B3();
 }
 
-_id_20D9( var_0 )
+applyradiusdamageasmelee( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -497,7 +497,7 @@ _id_20D9( var_0 )
     self radiusdamage( self.origin + ( 0, 0, 36 ), var_1, 250, 135, self, "MOD_MELEE", "iw7_reaperblade_mp" );
 }
 
-_id_36DB( var_0 )
+calcfrontposbasedonvelocity( var_0 )
 {
     self endon( "removeRipper" );
     var_1 = ( 0, 0, 0 );

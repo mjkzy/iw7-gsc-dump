@@ -35,8 +35,8 @@ _id_E154( var_0 )
             scripts\mp\utility::removeperk( "specialty_radarringresist" );
             scripts\engine\utility::allow_offhand_weapons( 1 );
             scripts\engine\utility::allow_usability( 1 );
-            scripts\mp\utility::_id_1C47( 1 );
-            self._id_38ED = 1;
+            scripts\mp\utility::allow_gesture( 1 );
+            self.canpickupobject = 1;
             self setscriptablepartstate( "compassicon", "defaulticon", 0 );
             scripts\mp\utility::_id_8ECC();
             self playlocalsound( "ftl_phase_in" );
@@ -87,8 +87,8 @@ _id_6626( var_0, var_1 )
     scripts\mp\utility::giveperk( "specialty_blindeye" );
     scripts\mp\utility::giveperk( "specialty_radarringresist" );
     scripts\engine\utility::allow_usability( 0 );
-    scripts\mp\utility::_id_1C47( 0 );
-    self._id_38ED = 0;
+    scripts\mp\utility::allow_gesture( 0 );
+    self.canpickupobject = 0;
 
     if ( scripts\mp\utility::_hasperk( "specialty_tracker" ) )
     {

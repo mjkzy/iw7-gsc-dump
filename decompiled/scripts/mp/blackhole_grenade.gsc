@@ -171,7 +171,7 @@ _id_13A58( var_0, var_1 )
         if ( !scripts\mp\utility::isreallyalive( var_5 ) )
             continue;
 
-        if ( scripts\mp\utility::_id_9F72( var_5 ) )
+        if ( scripts\mp\utility::isspidergrenade( var_5 ) )
             continue;
 
         if ( !level.friendlyfire && var_5 != self && !scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self, var_5 ) ) )
@@ -374,7 +374,7 @@ bhg_destroyonemp()
     if ( isdefined( var_3 ) && var_3 == "emp_grenade_mp" )
     {
         if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
-            var_0 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+            var_0 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
     }
 
     bhg_awardpoints( var_0 );
@@ -488,9 +488,9 @@ bhg_trackimpulsefielddebuffend( var_0, var_1, var_2 )
         var_4 = undefined;
 
         if ( level.teambased )
-            var_4 = scripts\mp\utility::_id_807C( var_0.origin, 256, scripts\mp\utility::getotherteam( var_1.team ), var_1 );
+            var_4 = scripts\mp\utility::getplayersinradius( var_0.origin, 256, scripts\mp\utility::getotherteam( var_1.team ), var_1 );
         else
-            var_4 = scripts\mp\utility::_id_807C( var_0.origin, 256, undefined, var_1 );
+            var_4 = scripts\mp\utility::getplayersinradius( var_0.origin, 256, undefined, var_1 );
 
         foreach ( var_6 in var_4 )
         {
@@ -510,7 +510,7 @@ bhg_trackimpulsefielddebuffend( var_0, var_1, var_2 )
             }
 
             var_3[var_7] = var_6;
-            scripts\mp\gamescore::_id_11ACE( var_1, var_6, "blackhole_grenade_mp" );
+            scripts\mp\gamescore::trackdebuffassist( var_1, var_6, "blackhole_grenade_mp" );
         }
 
         foreach ( var_6 in var_2.players )

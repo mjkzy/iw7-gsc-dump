@@ -9,8 +9,8 @@ zombiesasquatchagentinit()
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\zombie_sasquatch::_id_DEE8();
-    scripts\asm\zombie_sasquatch\mp\states::_id_2371();
+    behaviortree\zombie_sasquatch::registerbehaviortree();
+    scripts\asm\zombie_sasquatch\mp\states::asm_register();
     thread _id_FAB0();
     _id_AE11();
 }

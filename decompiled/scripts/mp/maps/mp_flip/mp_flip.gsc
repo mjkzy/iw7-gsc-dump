@@ -7,7 +7,7 @@ main()
     scripts\mp\maps\mp_flip\gen\mp_flip_art::main();
     scripts\mp\maps\mp_flip\mp_flip_fx::main();
     scripts\mp\load::main();
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     scripts\mp\compass::setupminimap( "compass_map_mp_flip" );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.33 );

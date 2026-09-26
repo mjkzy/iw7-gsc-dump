@@ -5,8 +5,8 @@ registerscriptedagent()
 {
     scripts\mp\agents\alien_rhino\alien_rhino_tunedata::setuptunedata();
     scripts\aitypes\bt_util::init();
-    behaviortree\alien_rhino::_id_DEE8();
-    scripts\asm\alien_rhino\mp\states::_id_2371();
+    behaviortree\alien_rhino::registerbehaviortree();
+    scripts\asm\alien_rhino\mp\states::asm_register();
     thread _id_FAB0();
 }
 
@@ -73,7 +73,7 @@ setupzombiegametypevars()
     self.trap_killed_by = undefined;
     self.hastraversed = 0;
     self.attackent = undefined;
-    self._id_9342 = 1;
+    self.immune_against_repulsor = 1;
     self.aistate = "idle";
     self.movemode = "walk";
     self.sharpturnnotifydist = 100;
@@ -117,7 +117,7 @@ setupzombiegametypevars()
     self.is_cop = undefined;
     self.highlyawareradius = 200;
     self.deathmethod = undefined;
-    self._id_10A57 = undefined;
+    self.spooned = undefined;
     self.gib_fx_override = undefined;
     self._id_CE65 = undefined;
     self._id_29D2 = 1;
@@ -135,8 +135,8 @@ setupagent()
 {
     setupzombiegametypevars();
     thread scripts\mp\agents\zombie\zombie_agent::_id_12EE6();
-    self.height = self._id_18F4;
-    self.radius = self._id_18F9;
+    self.height = self.agent_height;
+    self.radius = self.agent_radius;
     self.immune_against_nuke = 1;
     self._id_B62D = 70;
     self._id_B62E = 70;
@@ -145,8 +145,8 @@ setupagent()
     self.defaultgoalradius = self.radius + 1;
     self.meleedot = 0.5;
     self._id_B601 = 90;
-    self._id_504E = 55;
-    self._id_129AF = 55;
+    self.defaultturnthreshold = 55;
+    self.turnthreshold = 55;
     self.upaimlimit = -60;
     self.downaimlimit = 60;
     self.ground_pound_damage = 50;

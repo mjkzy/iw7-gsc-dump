@@ -8,15 +8,15 @@ init()
     precachemodel( "vehicle_apache_mg" );
     precacheturret( "apache_minigun_mp" );
     precachevehicle( "apache_strafe_mp" );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "littlebird_flock", ::_id_128ED );
-    level._id_8D4F = [];
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "littlebird_flock", ::tryuselbflock );
+    level.heli_flock = [];
 }
 
-_id_128ED( var_0, var_1 )
+tryuselbflock( var_0, var_1 )
 {
     var_2 = 5;
 
-    if ( _id_8DB7() || scripts\mp\utility::currentactivevehiclecount() >= scripts\mp\utility::maxvehiclesallowed() || level.fauxvehiclecount + var_2 >= scripts\mp\utility::maxvehiclesallowed() )
+    if ( heliflockactive() || scripts\mp\utility::currentactivevehiclecount() >= scripts\mp\utility::maxvehiclesallowed() || level.fauxvehiclecount + var_2 >= scripts\mp\utility::maxvehiclesallowed() )
     {
         self iprintlnbold( &"KILLSTREAKS_TOO_MANY_VEHICLES" );
         return 0;
@@ -27,7 +27,7 @@ _id_128ED( var_0, var_1 )
     scripts\mp\utility::incrementfauxvehiclecount();
     scripts\mp\utility::incrementfauxvehiclecount();
     scripts\mp\utility::incrementfauxvehiclecount();
-    var_3 = _id_F1C9( var_0, "littlebird_flock" );
+    var_3 = selectlbstrikelocation( var_0, "littlebird_flock" );
 
     if ( !isdefined( var_3 ) || !var_3 )
     {
@@ -43,13 +43,13 @@ _id_128ED( var_0, var_1 )
     return 1;
 }
 
-_id_8DB7()
+heliflockactive()
 {
     var_0 = 0;
 
-    for ( var_1 = 0; var_1 < level._id_8D4F.size; var_1++ )
+    for ( var_1 = 0; var_1 < level.heli_flock.size; var_1++ )
     {
-        if ( isdefined( level._id_8D4F[var_1] ) )
+        if ( isdefined( level.heli_flock[var_1] ) )
         {
             var_0 = 1;
             break;
@@ -59,29 +59,29 @@ _id_8DB7()
     return var_0;
 }
 
-_id_F1C9( var_0, var_1 )
+selectlbstrikelocation( var_0, var_1 )
 {
     self playlocalsound( game["voice"][self.team] + "KS_lbd_inposition" );
     scripts\mp\utility::_beginlocationselection( var_1, "map_artillery_selector", 1, 500 );
     self endon( "stop_location_selection" );
     self waittill( "confirm_location", var_2, var_3 );
 
-    if ( _id_8DB7() || scripts\mp\utility::currentactivevehiclecount() >= scripts\mp\utility::maxvehiclesallowed() || level.fauxvehiclecount >= scripts\mp\utility::maxvehiclesallowed() )
+    if ( heliflockactive() || scripts\mp\utility::currentactivevehiclecount() >= scripts\mp\utility::maxvehiclesallowed() || level.fauxvehiclecount >= scripts\mp\utility::maxvehiclesallowed() )
     {
         self iprintlnbold( &"KILLSTREAKS_TOO_MANY_VEHICLES" );
         self notify( "cancel_location" );
         return 0;
     }
 
-    level._id_8D4F = [];
-    level._id_8D50 = [];
-    thread _id_AD8A();
-    thread _id_6CDC( var_0, var_2, ::callstrike, var_3 );
+    level.heli_flock = [];
+    level.heli_flock_victims = [];
+    thread littlebirdmadeselectionvo();
+    thread finishlbstrikeusage( var_0, var_2, ::callstrike, var_3 );
     self setblurforplayer( 0, 0.3 );
     return 1;
 }
 
-_id_AD8A()
+littlebirdmadeselectionvo()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -90,11 +90,11 @@ _id_AD8A()
     self playlocalsound( game["voice"][self.team] + "KS_lbd_inbound" );
 }
 
-_id_6CDC( var_0, var_1, var_2, var_3 )
+finishlbstrikeusage( var_0, var_1, var_2, var_3 )
 {
     self notify( "used" );
     wait 0.05;
-    thread scripts\mp\utility::_id_11079( 0 );
+    thread scripts\mp\utility::stoplocationselection( 0 );
 
     if ( isdefined( self ) )
         self thread [[ var_2 ]]( var_0, var_1, var_3 );
@@ -104,7 +104,7 @@ callstrike( var_0, var_1, var_2 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
-    thread _id_89D0();
+    thread handleownerleft();
     var_3 = getflightpath( var_1, var_2, 0 );
     var_4 = getflightpath( var_1, var_2, -520 );
     var_5 = getflightpath( var_1, var_2, 520 );
@@ -146,14 +146,14 @@ _id_58E8( var_0, var_1, var_2, var_3 )
         return;
 
     var_4 = vectortoangles( var_2["end"] - var_2["start"] );
-    var_5 = _id_1082F( var_1, var_2["start"], var_4, var_3 );
+    var_5 = spawnattacklittlebird( var_1, var_2["start"], var_4, var_3 );
     var_5.lifeid = var_0;
-    var_5._id_1D41 = 0;
+    var_5.alreadydead = 0;
     var_5 thread watchtimeout();
-    var_5 thread _id_139E8();
-    var_5 thread _id_6F4A();
-    var_5 thread _id_10DBD();
-    var_5 thread _id_B9E7();
+    var_5 thread watchdeath();
+    var_5 thread flock_handledamage();
+    var_5 thread startlbfiring1();
+    var_5 thread monitorkills();
     var_5 endon( "death" );
     var_5 setmaxpitchroll( 120, 60 );
     var_5 vehicle_setspeed( 48, 48 );
@@ -170,7 +170,7 @@ _id_58E8( var_0, var_1, var_2, var_3 )
     var_5 scripts\mp\killstreaks\helicopter::removelittlebird();
 }
 
-_id_1082F( var_0, var_1, var_2, var_3 )
+spawnattacklittlebird( var_0, var_1, var_2, var_3 )
 {
     var_4 = spawnhelicopter( var_0, var_1, var_2, "apache_strafe_mp", "vehicle_apache_mp" );
 
@@ -178,17 +178,17 @@ _id_1082F( var_0, var_1, var_2, var_3 )
         return;
 
     var_4 scripts\mp\killstreaks\helicopter::addtolittlebirdlist();
-    var_4 thread scripts\mp\killstreaks\helicopter::_id_E111();
+    var_4 thread scripts\mp\killstreaks\helicopter::removefromlittlebirdlistondeath();
     var_4.health = 999999;
     var_4.maxhealth = 2000;
     var_4.damagetaken = 0;
     var_4 setcandamage( 1 );
     var_4.owner = var_0;
     var_4.team = var_0.team;
-    var_4._id_A644 = 0;
+    var_4.killcount = 0;
     var_4.streakname = "littlebird_flock";
     var_4.helitype = "littlebird";
-    var_4._id_10955 = ::_id_3758;
+    var_4.specialdamagecallback = ::callback_vehicledamage;
     var_5 = spawnturret( "misc_turret", var_4.origin, "apache_minigun_mp" );
     var_5 linkto( var_4, "tag_turret", ( 0, 0, 0 ), ( 0, 0, 0 ) );
     var_5 setmodel( "vehicle_apache_mg" );
@@ -201,15 +201,15 @@ _id_1082F( var_0, var_1, var_2, var_3 )
     var_5.killcament = spawn( "script_model", var_6 );
     var_5.killcament setscriptmoverkillcam( "explosive" );
     var_5.killcament linkto( var_4, "tag_origin" );
-    var_4._id_B6BC = var_5;
-    var_4._id_B6BC setdefaultdroppitch( 0 );
-    var_4._id_B6BC setmode( "auto_nonai" );
-    var_4._id_B6BC setsentryowner( var_4.owner );
+    var_4.mgturret1 = var_5;
+    var_4.mgturret1 setdefaultdroppitch( 0 );
+    var_4.mgturret1 setmode( "auto_nonai" );
+    var_4.mgturret1 setsentryowner( var_4.owner );
 
     if ( level.teambased )
-        var_4._id_B6BC setturretteam( var_4.owner.team );
+        var_4.mgturret1 setturretteam( var_4.owner.team );
 
-    level._id_8D4F[var_3] = var_4;
+    level.heli_flock[var_3] = var_4;
     return var_4;
 }
 
@@ -222,7 +222,7 @@ watchtimeout()
     self notify( "death" );
 }
 
-_id_B9E7()
+monitorkills()
 {
     level endon( "game_ended" );
     self endon( "gone" );
@@ -232,12 +232,12 @@ _id_B9E7()
     for (;;)
     {
         self waittill( "killedPlayer", var_0 );
-        self._id_A644++;
-        level._id_8D50[level._id_8D50.size] = var_0;
+        self.killcount++;
+        level.heli_flock_victims[level.heli_flock_victims.size] = var_0;
     }
 }
 
-_id_10DBD()
+startlbfiring1()
 {
     self endon( "gone" );
     self endon( "death" );
@@ -245,49 +245,49 @@ _id_10DBD()
 
     for (;;)
     {
-        self._id_B6BC waittill( "turret_on_target" );
+        self.mgturret1 waittill( "turret_on_target" );
         var_0 = 1;
-        var_1 = self._id_B6BC getturrettarget( 0 );
+        var_1 = self.mgturret1 getturrettarget( 0 );
 
-        foreach ( var_3 in level._id_8D50 )
+        foreach ( var_3 in level.heli_flock_victims )
         {
             if ( var_1 == var_3 )
             {
-                self._id_B6BC cleartargetentity();
+                self.mgturret1 cleartargetentity();
                 var_0 = 0;
                 break;
             }
         }
 
         if ( var_0 )
-            self._id_B6BC shootturret();
+            self.mgturret1 shootturret();
     }
 }
 
-_id_89D0()
+handleownerleft()
 {
     level endon( "game_ended" );
     self endon( "flock_done" );
-    thread _id_C169();
+    thread notifyonflockdone();
     self waittill( "killstreak_disowned" );
 
-    for ( var_0 = 0; var_0 < level._id_8D4F.size; var_0++ )
+    for ( var_0 = 0; var_0 < level.heli_flock.size; var_0++ )
     {
-        if ( isdefined( level._id_8D4F[var_0] ) )
-            level._id_8D4F[var_0] notify( "stopFiring" );
+        if ( isdefined( level.heli_flock[var_0] ) )
+            level.heli_flock[var_0] notify( "stopFiring" );
     }
 
-    for ( var_0 = 0; var_0 < level._id_8D4F.size; var_0++ )
+    for ( var_0 = 0; var_0 < level.heli_flock.size; var_0++ )
     {
-        if ( isdefined( level._id_8D4F[var_0] ) )
+        if ( isdefined( level.heli_flock[var_0] ) )
         {
-            level._id_8D4F[var_0] notify( "death" );
+            level.heli_flock[var_0] notify( "death" );
             wait 0.1;
         }
     }
 }
 
-_id_C169()
+notifyonflockdone()
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
@@ -298,13 +298,13 @@ _id_C169()
         self endon( "joined_spectators" );
     }
 
-    while ( _id_8DB7() )
+    while ( heliflockactive() )
         wait 0.5;
 
     self notify( "flock_done" );
 }
 
-_id_6F4A()
+flock_handledamage()
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -313,14 +313,14 @@ _id_6F4A()
     {
         self waittill( "damage", var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
 
-        if ( isdefined( self._id_10955 ) )
-            self [[ self._id_10955 ]]( undefined, var_1, var_0, var_8, var_4, var_9, var_3, var_2, undefined, undefined, var_5, var_7 );
+        if ( isdefined( self.specialdamagecallback ) )
+            self [[ self.specialdamagecallback ]]( undefined, var_1, var_0, var_8, var_4, var_9, var_3, var_2, undefined, undefined, var_5, var_7 );
     }
 }
 
-_id_3758( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
+callback_vehicledamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
 {
-    if ( isdefined( self._id_1D41 ) && self._id_1D41 )
+    if ( isdefined( self.alreadydead ) && self.alreadydead )
         return;
 
     if ( !isdefined( var_1 ) || var_1 == self )
@@ -384,7 +384,7 @@ _id_3758( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
     {
         if ( isplayer( var_1 ) && ( !isdefined( self.owner ) || var_1 != self.owner ) )
         {
-            self._id_1D41 = 1;
+            self.alreadydead = 1;
             var_1 notify( "destroyed_helicopter" );
             var_1 notify( "destroyed_killstreak", var_5 );
             thread scripts\mp\utility::teamplayercardsplash( "callout_destroyed_helicopter", var_1 );
@@ -395,7 +395,7 @@ _id_3758( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
     }
 }
 
-_id_139E8()
+watchdeath()
 {
     self endon( "gone" );
     self waittill( "death" );

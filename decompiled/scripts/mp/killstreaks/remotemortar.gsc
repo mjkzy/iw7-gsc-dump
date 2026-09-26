@@ -3,16 +3,16 @@
 
 init()
 {
-    level.reminder_vo_init["laserTarget"] = loadfx( "vfx/misc/laser_glow" );
-    level.reminder_vo_init["missileExplode"] = loadfx( "vfx/core/expl/bouncing_betty_explosion" );
-    level.reminder_vo_init["deathExplode"] = loadfx( "vfx/core/expl/uav_advanced_death" );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "remote_mortar", ::_id_128FD );
-    level.reminder_reaction_pointat = undefined;
+    level.remote_mortar_fx["laserTarget"] = loadfx( "vfx/misc/laser_glow" );
+    level.remote_mortar_fx["missileExplode"] = loadfx( "vfx/core/expl/bouncing_betty_explosion" );
+    level.remote_mortar_fx["deathExplode"] = loadfx( "vfx/core/expl/uav_advanced_death" );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "remote_mortar", ::tryuseremotemortar );
+    level.remote_mortar = undefined;
 }
 
-_id_128FD( var_0, var_1 )
+tryuseremotemortar( var_0, var_1 )
 {
-    if ( isdefined( level.reminder_reaction_pointat ) )
+    if ( isdefined( level.remote_mortar ) )
     {
         self iprintlnbold( &"KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
         return 0;
@@ -28,7 +28,7 @@ _id_128FD( var_0, var_1 )
 
         return 0;
     }
-    else if ( isdefined( level.reminder_reaction_pointat ) )
+    else if ( isdefined( level.remote_mortar ) )
     {
         self iprintlnbold( &"KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
         scripts\mp\utility::clearusingremote();
@@ -36,25 +36,25 @@ _id_128FD( var_0, var_1 )
     }
 
     scripts\mp\matchdata::logkillstreakevent( "remote_mortar", self.origin );
-    return _id_10DE9( var_0 );
+    return startremotemortar( var_0 );
 }
 
-_id_10DE9( var_0 )
+startremotemortar( var_0 )
 {
-    var_1 = _id_10906( var_0, self );
+    var_1 = spawnremote( var_0, self );
 
     if ( !isdefined( var_1 ) )
         return 0;
 
-    level.reminder_reaction_pointat = var_1;
-    _id_DF87( var_1 );
+    level.remote_mortar = var_1;
+    remoteride( var_1 );
     thread scripts\mp\utility::teamplayercardsplash( "used_remote_mortar", self );
     return 1;
 }
 
-_id_10906( var_0, var_1 )
+spawnremote( var_0, var_1 )
 {
-    var_2 = spawnplane( var_1, "script_model", level._id_12AF5 gettagorigin( "tag_origin" ), "compass_objpoint_reaper_friendly", "compass_objpoint_reaper_enemy" );
+    var_2 = spawnplane( var_1, "script_model", level.uavrig gettagorigin( "tag_origin" ), "compass_objpoint_reaper_friendly", "compass_objpoint_reaper_enemy" );
 
     if ( !isdefined( var_2 ) )
         return undefined;
@@ -68,7 +68,7 @@ _id_10906( var_0, var_1 )
     var_2 thread damagetracker();
     var_2.helitype = "remote_mortar";
     var_2.uavtype = "remote_mortar";
-    var_2 scripts\mp\killstreaks\uav::_id_1867();
+    var_2 scripts\mp\killstreaks\uav::adduavmodel();
     var_3 = 6300;
     var_4 = randomint( 360 );
     var_5 = 6100;
@@ -76,29 +76,29 @@ _id_10906( var_0, var_1 )
     var_7 = sin( var_4 ) * var_5;
     var_8 = vectornormalize( ( var_6, var_7, var_3 ) );
     var_8 = var_8 * 6100;
-    var_2 linkto( level._id_12AF5, "tag_origin", var_8, ( 0, var_4 - 90, 10 ) );
+    var_2 linkto( level.uavrig, "tag_origin", var_8, ( 0, var_4 - 90, 10 ) );
     var_1 setclientdvar( "ui_reaper_targetDistance", -1 );
     var_1 setclientdvar( "ui_reaper_ammoCount", 14 );
     var_2 thread handledeath( var_1 );
-    var_2 thread _id_89F3( var_1 );
-    var_2 thread _id_89CE( var_1 );
-    var_2 thread _id_89CF( var_1 );
-    var_2 thread _id_89B7();
-    var_2 thread _id_89B6();
+    var_2 thread handletimeout( var_1 );
+    var_2 thread handleownerchangeteam( var_1 );
+    var_2 thread handleownerdisconnect( var_1 );
+    var_2 thread handleincomingstinger();
+    var_2 thread handleincomingsam();
     return var_2;
 }
 
-_id_B011( var_0 )
+lookcenter( var_0 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
     var_0 endon( "death" );
     wait 0.05;
-    var_1 = vectortoangles( level._id_12AF5.origin - var_0 gettagorigin( "tag_player" ) );
+    var_1 = vectortoangles( level.uavrig.origin - var_0 gettagorigin( "tag_player" ) );
     self setplayerangles( var_1 );
 }
 
-_id_DF87( var_0 )
+remoteride( var_0 )
 {
     scripts\mp\utility::_giveweapon( "mortar_remote_mp" );
     scripts\mp\utility::_switchtoweapon( "mortar_remote_mp" );
@@ -109,11 +109,11 @@ _id_DF87( var_0 )
         scripts\mp\utility::setthirdpersondof( 0 );
 
     self playerlinkweaponviewtodelta( var_0, "tag_player", 1.0, 40, 40, 25, 40 );
-    thread _id_B011( var_0 );
+    thread lookcenter( var_0 );
     scripts\engine\utility::allow_weapon_switch( 0 );
-    thread _id_DF88( var_0 );
-    thread remotedetonateonset( var_0 );
-    thread _id_DFB3( var_0 );
+    thread remotetargeting( var_0 );
+    thread remotefiring( var_0 );
+    thread remotezoom( var_0 );
 }
 
 waitsetthermal( var_0, var_1 )
@@ -126,32 +126,32 @@ waitsetthermal( var_0, var_1 )
     self thermalvisionfofoverlayon();
 }
 
-_id_DF88( var_0 )
+remotetargeting( var_0 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
     var_0 endon( "remote_done" );
     var_0 endon( "death" );
-    var_0._id_1155F = spawnfx( level.reminder_vo_init["laserTarget"], ( 0, 0, 0 ) );
+    var_0.targetent = spawnfx( level.remote_mortar_fx["laserTarget"], ( 0, 0, 0 ) );
 
     for (;;)
     {
         var_1 = self geteye();
         var_2 = anglestoforward( self getplayerangles() );
         var_3 = var_1 + var_2 * 15000;
-        var_4 = bullettrace( var_1, var_3, 0, var_0._id_1155F );
+        var_4 = bullettrace( var_1, var_3, 0, var_0.targetent );
 
         if ( isdefined( var_4["position"] ) )
         {
-            var_0._id_1155F.origin = var_4["position"];
-            triggerfx( var_0._id_1155F );
+            var_0.targetent.origin = var_4["position"];
+            triggerfx( var_0.targetent );
         }
 
         wait 0.05;
     }
 }
 
-remotedetonateonset( var_0 )
+remotefiring( var_0 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
@@ -160,7 +160,7 @@ remotedetonateonset( var_0 )
     var_1 = gettime();
     var_2 = var_1 - 2200;
     var_3 = 14;
-    self._id_6DB6 = 0;
+    self.firingreaper = 0;
 
     for (;;)
     {
@@ -171,23 +171,23 @@ remotedetonateonset( var_0 )
             var_3--;
             self setclientdvar( "ui_reaper_ammoCount", var_3 );
             var_2 = var_1;
-            self._id_6DB6 = 1;
+            self.firingreaper = 1;
             self playlocalsound( "reaper_fire" );
             self playrumbleonentity( "damage_heavy" );
             var_4 = self geteye();
             var_5 = anglestoforward( self getplayerangles() );
             var_6 = anglestoright( self getplayerangles() );
             var_7 = var_4 + var_5 * 100 + var_6 * -100;
-            var_8 = scripts\mp\utility::_magicbullet( "remote_mortar_missile_mp", var_7, var_0._id_1155F.origin, self );
+            var_8 = scripts\mp\utility::_magicbullet( "remote_mortar_missile_mp", var_7, var_0.targetent.origin, self );
             var_8.type = "remote_mortar";
             earthquake( 0.3, 0.5, var_4, 256 );
-            var_8 missile_settargetent( var_0._id_1155F );
+            var_8 missile_settargetent( var_0.targetent );
             var_8 missile_setflightmodedirect();
-            var_8 thread remotemissile_fx( var_0 );
-            var_8 thread _id_DF81( var_0 );
+            var_8 thread remotemissiledistance( var_0 );
+            var_8 thread remotemissilelife( var_0 );
             var_8 waittill( "death" );
             self setclientdvar( "ui_reaper_targetDistance", -1 );
-            self._id_6DB6 = 0;
+            self.firingreaper = 0;
 
             if ( var_3 == 0 )
                 break;
@@ -197,11 +197,11 @@ remotedetonateonset( var_0 )
     }
 
     self notify( "removed_reaper_ammo" );
-    remotedefusesetup( var_0 );
-    var_0 thread remoteinfo();
+    remoteendride( var_0 );
+    var_0 thread _id_DF7C();
 }
 
-_id_89F4( var_0 )
+handletogglezoom( var_0 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
@@ -216,22 +216,22 @@ _id_89F4( var_0 )
     {
         var_1 = scripts\engine\utility::waittill_any_return( "remote_mortar_toggleZoom1" );
 
-        if ( !isdefined( self.remote_detonation_monitor ) )
-            self.remote_detonation_monitor = 0;
+        if ( !isdefined( self.remote_mortar_togglezoom ) )
+            self.remote_mortar_togglezoom = 0;
 
-        self.remote_detonation_monitor = 1 - self.remote_detonation_monitor;
+        self.remote_mortar_togglezoom = 1 - self.remote_mortar_togglezoom;
     }
 }
 
-_id_DFB3( var_0 )
+remotezoom( var_0 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
     var_0 endon( "remote_done" );
     var_0 endon( "death" );
-    self.remote_detonation_monitor = undefined;
-    thread _id_89F4( var_0 );
-    var_0._id_13FCA = 0;
+    self.remote_mortar_togglezoom = undefined;
+    thread handletogglezoom( var_0 );
+    var_0.zoomed = 0;
     var_1 = 0;
 
     for (;;)
@@ -240,7 +240,7 @@ _id_DFB3( var_0 )
         {
             wait 0.05;
 
-            if ( isdefined( self.remote_detonation_monitor ) )
+            if ( isdefined( self.remote_mortar_togglezoom ) )
                 var_1 = 1;
 
             break;
@@ -251,22 +251,22 @@ _id_DFB3( var_0 )
 
     for (;;)
     {
-        if ( !var_1 && self adsbuttonpressed() || var_1 && self.remote_detonation_monitor )
+        if ( !var_1 && self adsbuttonpressed() || var_1 && self.remote_mortar_togglezoom )
         {
-            if ( var_0._id_13FCA == 0 )
+            if ( var_0.zoomed == 0 )
             {
                 scripts\mp\utility::_giveweapon( "mortar_remote_zoom_mp" );
                 scripts\mp\utility::_switchtoweapon( "mortar_remote_zoom_mp" );
-                var_0._id_13FCA = 1;
+                var_0.zoomed = 1;
             }
         }
-        else if ( !var_1 && !self adsbuttonpressed() || var_1 && !self.remote_detonation_monitor )
+        else if ( !var_1 && !self adsbuttonpressed() || var_1 && !self.remote_mortar_togglezoom )
         {
-            if ( var_0._id_13FCA == 1 )
+            if ( var_0.zoomed == 1 )
             {
                 scripts\mp\utility::_giveweapon( "mortar_remote_mp" );
                 scripts\mp\utility::_switchtoweapon( "mortar_remote_mp" );
-                var_0._id_13FCA = 0;
+                var_0.zoomed = 0;
             }
         }
 
@@ -274,7 +274,7 @@ _id_DFB3( var_0 )
     }
 }
 
-remotemissile_fx( var_0 )
+remotemissiledistance( var_0 )
 {
     level endon( "game_ended" );
     var_0 endon( "death" );
@@ -283,21 +283,21 @@ remotemissile_fx( var_0 )
 
     for (;;)
     {
-        var_1 = distance( self.origin, var_0._id_1155F.origin );
+        var_1 = distance( self.origin, var_0.targetent.origin );
         var_0.owner setclientdvar( "ui_reaper_targetDistance", int( var_1 / 12 ) );
         wait 0.05;
     }
 }
 
-_id_DF81( var_0 )
+remotemissilelife( var_0 )
 {
     self endon( "death" );
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 6 );
-    playfx( level.reminder_vo_init["missileExplode"], self.origin );
+    playfx( level.remote_mortar_fx["missileExplode"], self.origin );
     self delete();
 }
 
-remotedefusesetup( var_0 )
+remoteendride( var_0 )
 {
     if ( !scripts\mp\utility::isusingremote() )
         return;
@@ -323,7 +323,7 @@ remotedefusesetup( var_0 )
     scripts\engine\utility::allow_weapon_switch( 1 );
 }
 
-_id_89F3( var_0 )
+handletimeout( var_0 )
 {
     level endon( "game_ended" );
     var_0 endon( "disconnect" );
@@ -332,13 +332,13 @@ _id_89F3( var_0 )
     var_1 = 40.0;
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( var_1 );
 
-    while ( var_0._id_6DB6 )
+    while ( var_0.firingreaper )
         wait 0.05;
 
     if ( isdefined( var_0 ) )
-        var_0 remotedefusesetup( self );
+        var_0 remoteendride( self );
 
-    thread remoteinfo();
+    thread _id_DF7C();
 }
 
 handledeath( var_0 )
@@ -350,12 +350,12 @@ handledeath( var_0 )
     self waittill( "death" );
 
     if ( isdefined( var_0 ) )
-        var_0 remotedefusesetup( self );
+        var_0 remoteendride( self );
 
-    level thread _id_E161( self, 1 );
+    level thread removeremote( self, 1 );
 }
 
-_id_89CE( var_0 )
+handleownerchangeteam( var_0 )
 {
     level endon( "game_ended" );
     self endon( "remote_done" );
@@ -365,41 +365,41 @@ _id_89CE( var_0 )
     var_0 scripts\engine\utility::waittill_any( "joined_team", "joined_spectators" );
 
     if ( isdefined( var_0 ) )
-        var_0 remotedefusesetup( self );
+        var_0 remoteendride( self );
 
-    thread remoteinfo();
+    thread _id_DF7C();
 }
 
-_id_89CF( var_0 )
+handleownerdisconnect( var_0 )
 {
     level endon( "game_ended" );
     self endon( "remote_done" );
     self endon( "death" );
     var_0 endon( "removed_reaper_ammo" );
     var_0 waittill( "disconnect" );
-    thread remoteinfo();
+    thread _id_DF7C();
 }
 
-_id_E161( var_0, var_1 )
+removeremote( var_0, var_1 )
 {
     self notify( "remote_removed" );
 
-    if ( isdefined( var_0._id_1155F ) )
-        var_0._id_1155F delete();
+    if ( isdefined( var_0.targetent ) )
+        var_0.targetent delete();
 
     if ( isdefined( var_0 ) )
     {
         var_0 delete();
-        var_0 scripts\mp\killstreaks\uav::_id_E182();
+        var_0 scripts\mp\killstreaks\uav::removeuavmodel();
     }
 
     if ( !isdefined( var_1 ) || var_1 == 1 )
-        level.reminder_reaction_pointat = undefined;
+        level.remote_mortar = undefined;
 }
 
-remoteinfo()
+_id_DF7C()
 {
-    level.reminder_reaction_pointat = undefined;
+    level.remote_mortar = undefined;
     level endon( "game_ended" );
     self endon( "death" );
     self notify( "remote_done" );
@@ -410,15 +410,15 @@ remoteinfo()
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 3 );
     self moveto( var_0, 4, 4, 0.0 );
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 4 );
-    level thread _id_E161( self, 0 );
+    level thread removeremote( self, 0 );
 }
 
-remotedetonatebeginuse()
+remoteexplode()
 {
     self notify( "death" );
     self hide();
     var_0 = anglestoright( self.angles ) * 200;
-    playfx( level.reminder_vo_init["deathExplode"], self.origin, var_0 );
+    playfx( level.remote_mortar_fx["deathExplode"], self.origin, var_0 );
 }
 
 damagetracker()
@@ -493,14 +493,14 @@ damagetracker()
             if ( isdefined( self.owner ) )
                 self.owner stoplocalsound( "missile_incoming" );
 
-            thread remotedetonatebeginuse();
-            level.reminder_reaction_pointat = undefined;
+            thread remoteexplode();
+            level.remote_mortar = undefined;
             return;
         }
     }
 }
 
-_id_89B7()
+handleincomingstinger()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -513,11 +513,11 @@ _id_89B7()
         if ( !isdefined( var_2 ) || var_2 != self )
             continue;
 
-        var_1 thread _id_10FA8( var_2, var_0 );
+        var_1 thread stingerproximitydetonate( var_2, var_0 );
     }
 }
 
-_id_10FA8( var_0, var_1 )
+stingerproximitydetonate( var_0, var_1 )
 {
     self endon( "death" );
     var_0 endon( "death" );
@@ -542,8 +542,8 @@ _id_10FA8( var_0, var_1 )
         if ( var_5 < 3000 && var_0.numflares > 0 )
         {
             var_0.numflares--;
-            var_0 thread scripts\mp\killstreaks\flares::_id_6EAE();
-            var_6 = var_0 scripts\mp\killstreaks\flares::_id_6EA0();
+            var_0 thread scripts\mp\killstreaks\flares::flares_playfx();
+            var_6 = var_0 scripts\mp\killstreaks\flares::flares_deploy();
             self missile_settargetent( var_6 );
             var_0 = var_6;
 
@@ -583,7 +583,7 @@ _id_10FA8( var_0, var_1 )
     }
 }
 
-_id_89B6()
+handleincomingsam()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -596,11 +596,11 @@ _id_89B6()
         if ( !isdefined( var_2 ) || var_2 != self )
             continue;
 
-        level thread _id_EB18( var_2, var_0, var_1 );
+        level thread samproximitydetonate( var_2, var_0, var_1 );
     }
 }
 
-_id_EB18( var_0, var_1, var_2 )
+samproximitydetonate( var_0, var_1, var_2 )
 {
     var_0 endon( "death" );
 
@@ -640,8 +640,8 @@ _id_EB18( var_0, var_1, var_2 )
                 if ( var_8[var_6] < 3000 && var_0.numflares > 0 )
                 {
                     var_0.numflares--;
-                    var_0 thread scripts\mp\killstreaks\flares::_id_6EAE();
-                    var_9 = var_0 scripts\mp\killstreaks\flares::_id_6EA0();
+                    var_0 thread scripts\mp\killstreaks\flares::flares_playfx();
+                    var_9 = var_0 scripts\mp\killstreaks\flares::flares_deploy();
 
                     for ( var_10 = 0; var_10 < var_2.size; var_10++ )
                     {

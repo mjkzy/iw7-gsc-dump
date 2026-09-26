@@ -6,8 +6,8 @@ registerscriptedagent()
     level.zombie_ghost_hide_nodes = scripts\engine\utility::getstructarray( "zombie_ghost_hide_node", "script_noteworthy" );
     level.zombie_ghost_hover_nodes = scripts\engine\utility::getstructarray( "zombie_ghost_hover_node", "targetname" );
     scripts\aitypes\bt_util::init();
-    _id_03B4::_id_DEE8();
-    _id_0F46::_id_2371();
+    behaviortree\zombie_ghost::registerbehaviortree();
+    _id_0F46::asm_register();
     _id_AEB0();
     thread _id_FAB0();
 }

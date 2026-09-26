@@ -624,7 +624,7 @@ getclosesttargetableplayerwithinwithlos( var_0, var_1, var_2 )
         {
             var_9 = getclosestpointonnavmesh( var_7.origin );
 
-            if ( _func_2AC( var_3, var_9 ) )
+            if ( navisstraightlinereachable( var_3, var_9 ) )
             {
                 var_5 = var_8;
                 var_4 = var_7;
@@ -706,7 +706,7 @@ dosawshark_followtarget( var_0, var_1, var_2, var_3, var_4 )
             var_6 = angleclamp180( var_6 + var_14 );
             var_15 = var_5 + rotatevector( ( var_7, 0, 0 ), ( 0, var_6, 0 ) );
 
-            if ( _func_2AC( var_5, var_15 ) )
+            if ( navisstraightlinereachable( var_5, var_15 ) )
             {
                 var_16 = scripts\common\trace::ray_trace( var_15 + ( 0, 0, 24 ), var_15 - ( 0, 0, 24 ), undefined, var_11 );
                 var_5 = var_16["position"];

@@ -3538,7 +3538,7 @@ enter_rave_mode( var_0 )
     var_0 allowgroundpound( 1 );
     var_0 setinteractwithethereal( 1 );
     set_rave_vision( var_0 );
-    _id_8EA1( var_0 );
+    hide_rave_objects( var_0 );
 
     if ( isdefined( level.wave_num ) && level.wave_num >= 10 )
         level thread spawn_slasher_after_timer( 5 );
@@ -4289,7 +4289,7 @@ weapon_no_unlimited_check( var_0 )
     return var_1;
 }
 
-_id_8EA1( var_0 )
+hide_rave_objects( var_0 )
 {
     var_1 = getentarray( "rave_objects", "script_noteworthy" );
 
@@ -5748,7 +5748,7 @@ cp_rave_currency_scalar_func( var_0, var_1 )
 
 play_char_intro_music()
 {
-    if ( self issplitscreenplayer() && !self isreloading() )
+    if ( self issplitscreenplayer() && !self issplitscreenplayerprimary() )
         return;
 
     if ( scripts\cp\zombies\direct_boss_fight::should_directly_go_to_boss_fight() )
@@ -7350,7 +7350,7 @@ check_for_movement()
 
 add_to_kick_queue( var_0 )
 {
-    if ( !scripts\engine\utility::exist_in_array_MAYBE( level.kick_player_queue, var_0 ) )
+    if ( !scripts\engine\utility::_id_693B( level.kick_player_queue, var_0 ) )
         level.kick_player_queue = scripts\engine\utility::add_to_array( level.kick_player_queue, var_0 );
 }
 

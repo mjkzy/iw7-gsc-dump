@@ -594,19 +594,19 @@ player_unresolved_collision_watch()
     if ( isagent( self ) )
         self endon( "death" );
 
-    self._id_12BE5 = 0;
+    self.unresolved_collision_count = 0;
 
     for (;;)
     {
         self waittill( "unresolved_collision", var_0 );
-        self._id_12BE5++;
-        thread _id_418E();
+        self.unresolved_collision_count++;
+        thread clear_unresolved_collision_count_next_frame();
         var_1 = 3;
 
         if ( isdefined( var_0 ) && isdefined( var_0.unresolved_collision_notify_min ) )
             var_1 = var_0.unresolved_collision_notify_min;
 
-        if ( self._id_12BE5 >= var_1 )
+        if ( self.unresolved_collision_count >= var_1 )
         {
             if ( isdefined( var_0 ) )
             {
@@ -620,18 +620,18 @@ player_unresolved_collision_watch()
             else
                 unresolved_collision_nearest_node( self );
 
-            self._id_12BE5 = 0;
+            self.unresolved_collision_count = 0;
         }
     }
 }
 
-_id_418E()
+clear_unresolved_collision_count_next_frame()
 {
     self endon( "unresolved_collision" );
     scripts\engine\utility::waitframe();
 
     if ( isdefined( self ) )
-        self._id_12BE5 = 0;
+        self.unresolved_collision_count = 0;
 }
 
 unresolved_collision_owner_damage( var_0 )
@@ -670,9 +670,9 @@ unresolved_collision_owner_damage( var_0 )
 
 unresolved_collision_nearest_node( var_0, var_1 )
 {
-    if ( isdefined( level._id_C81D ) )
+    if ( isdefined( level.override_unresolved_collision ) )
     {
-        self [[ level._id_C81D ]]( var_0, var_1 );
+        self [[ level.override_unresolved_collision ]]( var_0, var_1 );
         return;
     }
 
@@ -718,14 +718,14 @@ unresolved_collision_nearest_node( var_0, var_1 )
         var_0 mover_suicide();
 }
 
-_id_12BEE( var_0 )
+unresolved_collision_void( var_0 )
 {
 
 }
 
 mover_suicide()
 {
-    if ( isdefined( level._id_9E36 ) && !isagent( self ) )
+    if ( isdefined( level.ishorde ) && !isagent( self ) )
         return;
 
     scripts\cp\utility::_suicide();
@@ -835,8 +835,8 @@ script_mover_link_to_use_object( var_0 )
         {
             var_2 = spawn( "script_model", var_0.origin );
             var_2 setmodel( "tag_origin" );
-            var_0._id_EF85 = var_2;
-            var_0 thread _id_EC11( var_2 );
+            var_0.scriptmoverlinkdummy = var_2;
+            var_0 thread sciprt_mover_use_object_wait_for_disconnect( var_2 );
         }
 
         var_0 playerlinkto( var_2 );
@@ -851,20 +851,20 @@ script_mover_unlink_from_use_object( var_0 )
 {
     var_0 unlink();
 
-    if ( isdefined( var_0._id_EF85 ) )
+    if ( isdefined( var_0.scriptmoverlinkdummy ) )
     {
         var_0 notify( "removeMoverLinkDummy" );
-        var_0._id_EF85 delete();
-        var_0._id_EF85 = undefined;
+        var_0.scriptmoverlinkdummy delete();
+        var_0.scriptmoverlinkdummy = undefined;
     }
 }
 
-_id_EC11( var_0 )
+sciprt_mover_use_object_wait_for_disconnect( var_0 )
 {
     self endon( "removeMoverLinkDummy" );
     scripts\engine\utility::waittill_any( "death", "disconnect" );
-    self._id_EF85 delete();
-    self._id_EF85 = undefined;
+    self.scriptmoverlinkdummy delete();
+    self.scriptmoverlinkdummy = undefined;
 }
 
 notify_moving_platform_invalid()
@@ -916,7 +916,7 @@ handle_moving_platform_touch( var_0 )
     {
         self waittill( "touching_platform", var_1 );
 
-        if ( isdefined( var_0._id_13139 ) && var_0._id_13139 )
+        if ( isdefined( var_0.validateaccuratetouching ) && var_0.validateaccuratetouching )
         {
             if ( !self istouching( var_1 ) )
             {

@@ -105,7 +105,7 @@ electric_trap_init()
     foreach ( var_5 in var_3 )
     {
         scripts\cp\cp_interaction::remove_from_current_interaction_list( var_5 );
-        level thread _id_13611( var_5 );
+        level thread wait_for_power( var_5 );
     }
 
     foreach ( var_8 in var_0 )
@@ -371,7 +371,7 @@ freeze_trap_init()
     level thread freeze_trap_panel_fx();
 
     foreach ( var_5 in var_3 )
-        level thread _id_13611( var_5 );
+        level thread wait_for_power( var_5 );
 
     while ( !scripts\engine\utility::is_true( var_3[0].powered_on ) )
         wait 0.1;
@@ -386,7 +386,7 @@ freeze_trap_init()
     }
 }
 
-_id_13611( var_0 )
+wait_for_power( var_0 )
 {
     if ( scripts\engine\utility::is_true( var_0.requires_power ) )
     {

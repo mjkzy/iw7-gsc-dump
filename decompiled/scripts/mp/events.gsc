@@ -82,17 +82,17 @@ onplayerconnect()
     for (;;)
     {
         level waittill( "connected", var_0 );
-        var_0._id_A653 = [];
+        var_0.killedplayers = [];
         var_0.killedby = [];
         var_0.lastkilledby = undefined;
-        var_0._id_8549 = 0;
-        var_0._id_DDC2 = 0;
-        var_0._id_DDC1 = 0;
+        var_0.greatestuniqueplayerkills = 0;
+        var_0.recentkillcount = 0;
+        var_0.recentdefendcount = 0;
         var_0.lastkilltime = 0;
         var_0.lastkilldogtime = 0;
         var_0.damagedplayers = [];
-        var_0 thread _id_B9C5();
-        var_0 thread _id_B9DF();
+        var_0 thread monitorcratejacking();
+        var_0 thread monitorhealed();
         var_0 thread events_monitorslide();
     }
 }
@@ -111,27 +111,27 @@ damagedplayer( var_0, var_1, var_2 )
     }
 }
 
-_id_A652( var_0, var_1, var_2, var_3 )
+killedplayernotifysys( var_0, var_1, var_2, var_3 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
     self notify( "killedPlayerNotify" );
     self endon( "killedPlayerNotify" );
 
-    if ( !isdefined( self._id_A67A ) )
-        self._id_A67A = 0;
+    if ( !isdefined( self.killsinaframecount ) )
+        self.killsinaframecount = 0;
 
-    self._id_A67A++;
+    self.killsinaframecount++;
 
     if ( var_3 == "MOD_PISTOL_BULLET" || var_3 == "MOD_RIFLE_BULLET" || var_3 == "MOD_HEAD_SHOT" )
     {
-        if ( !isdefined( self._id_3247 ) )
-            self._id_3247 = 1;
+        if ( !isdefined( self.bulletkillsinaframecount ) )
+            self.bulletkillsinaframecount = 1;
         else
         {
-            self._id_3247++;
+            self.bulletkillsinaframecount++;
 
-            if ( self._id_3247 >= 2 )
+            if ( self.bulletkillsinaframecount >= 2 )
             {
                 if ( scripts\mp\utility::_hasperk( "passive_collat_streak" ) )
                 {
@@ -140,7 +140,7 @@ _id_A652( var_0, var_1, var_2, var_3 )
                 }
             }
 
-            if ( self._id_3247 == 2 )
+            if ( self.bulletkillsinaframecount == 2 )
             {
                 level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_killfirm_twofer", undefined, 0.75 );
                 thread scripts\mp\awards::givemidmatchaward( "one_shot_two_kills" );
@@ -148,21 +148,21 @@ _id_A652( var_0, var_1, var_2, var_3 )
                 var_5 = getweaponbasename( var_2 );
 
                 if ( var_5 == "iw7_penetrationrail_mp" )
-                    thread scripts\mp\missions::_id_D991( "ch_sniper_ballista_collateral" );
+                    thread scripts\mp\missions::processchallengedaily( "ch_sniper_ballista_collateral" );
             }
 
-            if ( self._id_3247 == 3 )
+            if ( self.bulletkillsinaframecount == 3 )
                 level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_killfirm_threefer", undefined, 0.75 );
         }
     }
 
     waittillframeend;
-    thread _id_C165( var_0, var_1, var_2, var_3, self._id_A67A );
-    self._id_A67A = 0;
-    self._id_3247 = 0;
+    thread notifykilledplayer( var_0, var_1, var_2, var_3, self.killsinaframecount );
+    self.killsinaframecount = 0;
+    self.bulletkillsinaframecount = 0;
 }
 
-_id_C165( var_0, var_1, var_2, var_3, var_4 )
+notifykilledplayer( var_0, var_1, var_2, var_3, var_4 )
 {
     for ( var_5 = 0; var_5 < var_4; var_5++ )
     {
@@ -171,16 +171,16 @@ _id_C165( var_0, var_1, var_2, var_3, var_4 )
     }
 }
 
-_id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
+killedplayer( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     var_6 = var_1.guid;
     var_7 = self.guid;
     var_8 = gettime();
-    thread _id_A652( var_0, var_1, var_2, var_3 );
-    thread _id_12EFE( var_0, var_1, var_2 );
-    thread _id_12EF8( self );
+    thread killedplayernotifysys( var_0, var_1, var_2, var_3 );
+    thread updaterecentkills( var_0, var_1, var_2 );
+    thread updatequadfeedcounter( self );
     self.lastkilltime = gettime();
-    self._id_A9A4 = var_1;
+    self.lastkilledplayer = var_1;
 
     if ( self.deaths > 0 )
     {
@@ -227,7 +227,7 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
                 thread scripts\mp\awards::givemidmatchaward( "fist_kill" );
         }
 
-        var_12 = var_1 _meth_854D();
+        var_12 = var_1 getheldoffhand();
 
         if ( var_12 == "frag_grenade_mp" || var_12 == "cluster_grenade_mp" )
             self.modifiers["cooking"] = 1;
@@ -237,19 +237,19 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
 
         if ( level.numkills == 1 )
         {
-            _id_6DE1( var_0, var_2, var_3, var_1 );
+            firstblood( var_0, var_2, var_3, var_1 );
 
             if ( level.gametype == "sd" )
                 scripts\mp\utility::setmlgannouncement( 21, self.team, self getentitynumber() );
         }
 
         if ( self.pers["cur_death_streak"] > 3 )
-            _id_4417( var_0, var_2, var_3, var_1 );
+            comeback( var_0, var_2, var_3, var_1 );
 
         if ( var_3 == "MOD_HEAD_SHOT" )
         {
             level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_killfirm_headshot", undefined, 0.75 );
-            _id_8C9B( var_0, var_2, var_3, var_1 );
+            headshot( var_0, var_2, var_3, var_1 );
         }
 
         if ( isdefined( self.wasti ) && self.wasti && gettime() - self.spawntime <= 5000 )
@@ -260,7 +260,7 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
             var_13 = gettime() - self.deathtime;
 
             if ( var_13 < 1500 && var_13 > 0 )
-                _id_D6F7( var_0, var_1, var_2 );
+                postdeathkill( var_0, var_1, var_2 );
 
             if ( scripts\mp\utility::issimultaneouskillenabled() )
             {
@@ -276,8 +276,8 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
 
         if ( level.teambased && var_8 - var_1.lastkilltime < 1500 )
         {
-            if ( var_1._id_A9A4 != self )
-                _id_26A5( var_0, var_2, var_3, var_1 );
+            if ( var_1.lastkilledplayer != self )
+                avengedplayer( var_0, var_2, var_3, var_1 );
         }
 
         foreach ( var_16, var_15 in var_1.damagedplayers )
@@ -286,7 +286,7 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
                 continue;
 
             if ( level.teambased && var_8 - var_15 < 1750 )
-                _id_5082( var_0, var_2, var_3, var_1 );
+                defendedplayer( var_0, var_2, var_3, var_1 );
         }
 
         if ( isdefined( var_1.attackerposition ) )
@@ -301,10 +301,10 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
 
         if ( var_18 )
         {
-            if ( _id_9F03( self, var_2, var_3, var_17, var_1 ) )
-                thread _id_D63F( var_0, var_2, var_3, var_1 );
-            else if ( _id_9E84( self, var_2, var_3, var_17, var_1 ) )
-                thread _id_AFEA( var_0, var_2, var_3, var_1 );
+            if ( ispointblank( self, var_2, var_3, var_17, var_1 ) )
+                thread pointblank( var_0, var_2, var_3, var_1 );
+            else if ( islongshot( self, var_2, var_3, var_17, var_1 ) )
+                thread longshot( var_0, var_2, var_3, var_1 );
         }
 
         if ( isbackkill( self, var_1, var_3 ) )
@@ -320,7 +320,7 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
             if ( issurvivorkill( self ) )
                 thread givekillreward( "low_health_kill", var_0, var_2, var_3, var_1, "low_health_kill" );
 
-            if ( scripts\mp\utility::_id_9EE8() )
+            if ( scripts\mp\utility::isplayerads() )
                 self.modifiers["ads"] = 1;
             else if ( scripts\engine\utility::isbulletdamage( var_3 ) )
                 self.modifiers["hipfire"] = 1;
@@ -397,18 +397,18 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
 
         if ( var_18 )
         {
-            if ( scripts\mp\weapons::_id_85BE() )
+            if ( scripts\mp\weapons::grenadeheldatdeath() )
                 self.modifiers["clutchkill"] = 1;
         }
 
-        if ( isdefined( var_1._id_A6AB ) )
+        if ( isdefined( var_1.killstreaks ) )
         {
-            foreach ( var_26, var_24 in var_1._id_A6AB )
+            foreach ( var_26, var_24 in var_1.killstreaks )
             {
                 var_25 = var_26 - var_1.score;
 
                 if ( var_25 > 0 && var_25 < 100 )
-                    _id_32FA( var_0, var_1, var_2, var_3, var_1 );
+                    buzzkill( var_0, var_1, var_2, var_3, var_1 );
             }
         }
 
@@ -424,10 +424,10 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
                 thread scripts\mp\awards::givemidmatchaward( "backfire" );
         }
 
-        if ( isdefined( var_1._id_1117F ) )
+        if ( isdefined( var_1.stuckbygrenade ) )
             level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_killfirm_semtex", undefined, 0.75 );
 
-        if ( scripts\mp\weapons::_id_9FA9( var_2 ) )
+        if ( scripts\mp\weapons::isthrowingknife( var_2 ) )
             thread scripts\mp\awards::givemidmatchaward( "throwingknife_kill" );
 
         if ( level.teambased )
@@ -445,7 +445,7 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
 
             if ( var_27 )
             {
-                var_31 = scripts\engine\utility::array_sort_with_func( level.teamlist[scripts\mp\utility::getotherteam( self.team )], ::_id_9CAE );
+                var_31 = scripts\engine\utility::array_sort_with_func( level.teamlist[scripts\mp\utility::getotherteam( self.team )], ::is_score_a_greater_than_b );
 
                 if ( isdefined( var_31[0] ) && var_1 == var_31[0] )
                     thread scripts\mp\awards::givemidmatchaward( "first_place_kill" );
@@ -466,7 +466,7 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
 
             if ( var_27 )
             {
-                var_31 = scripts\engine\utility::array_sort_with_func( level.players, ::_id_9CAE );
+                var_31 = scripts\engine\utility::array_sort_with_func( level.players, ::is_score_a_greater_than_b );
 
                 if ( isdefined( var_31[0] ) && var_1 == var_31[0] )
                 {
@@ -497,7 +497,7 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
         if ( var_34 > 30 )
             thread scripts\mp\awards::givemidmatchaward( "streak_max" );
 
-        if ( isdefined( var_5 ) && scripts\mp\utility::istrue( var_5._id_9F07 ) && var_3 == "MOD_IMPACT" && !scripts\mp\weapons::_id_9FA9( var_2 ) )
+        if ( isdefined( var_5 ) && scripts\mp\utility::istrue( var_5._id_9F07 ) && var_3 == "MOD_IMPACT" && !scripts\mp\weapons::isthrowingknife( var_2 ) )
             thread scripts\mp\awards::givemidmatchaward( "item_impact" );
 
         if ( scripts\mp\utility::getgametypenumlives() >= 1 )
@@ -514,18 +514,18 @@ _id_A651( var_0, var_1, var_2, var_3, var_4, var_5 )
         if ( var_2 == "groundpound_mp" )
             level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_perk_pound", undefined, 0.75 );
 
-        _id_3E50( var_1, var_5, var_2, var_3 );
-        _id_3E51( var_1, var_2, var_3 );
-        thread _id_3E27( var_0, var_1, var_2, var_3, var_4 );
+        checksuperkillevents( var_1, var_5, var_2, var_3 );
+        checksupershutdownevents( var_1, var_2, var_3 );
+        thread checkmatchdatakills( var_0, var_1, var_2, var_3, var_4 );
     }
 
-    if ( !isdefined( self._id_A653[var_6] ) )
-        self._id_A653[var_6] = 0;
+    if ( !isdefined( self.killedplayers[var_6] ) )
+        self.killedplayers[var_6] = 0;
 
     if ( !isdefined( var_1.killedby[var_7] ) )
         var_1.killedby[var_7] = 0;
 
-    self._id_A653[var_6]++;
+    self.killedplayers[var_6]++;
     var_1.killedby[var_7]++;
     var_1.lastkilledby = self;
     scripts\mp\utility::bufferednotify( "kill_event_buffered", var_1, var_2, var_3, self.modifiers );
@@ -580,7 +580,7 @@ _id_3E24( var_0, var_1 )
     }
 }
 
-_id_3E50( var_0, var_1, var_2, var_3 )
+checksuperkillevents( var_0, var_1, var_2, var_3 )
 {
     var_4 = scripts\mp\supers::issuperinuse();
     var_5 = scripts\mp\supers::getcurrentsuperref();
@@ -593,7 +593,7 @@ _id_3E50( var_0, var_1, var_2, var_3 )
 
     if ( var_7 && var_2 != "iw7_reaperblade_mp" )
     {
-        thread _id_A655( var_0, var_1, var_2, var_3 );
+        thread killedplayerwithsuperweapon( var_0, var_1, var_2, var_3 );
 
         if ( var_3 != "MOD_MELEE" )
             scripts\mp\utility::bufferednotify( "super_kill_buffered" );
@@ -682,7 +682,7 @@ _id_3E50( var_0, var_1, var_2, var_3 )
 
                 break;
             case "super_rewind":
-                if ( var_4 == 1 || isdefined( var_6._id_A986 ) && gettime() < var_6._id_A986 + 3000 )
+                if ( var_4 == 1 || isdefined( var_6.lastfinishtime ) && gettime() < var_6.lastfinishtime + 3000 )
                 {
                     var_8 = "super_rewind_kill";
                     var_10 = 1;
@@ -690,7 +690,7 @@ _id_3E50( var_0, var_1, var_2, var_3 )
 
                 break;
             case "super_phaseshift":
-                if ( var_4 == 1 || isdefined( var_6._id_A986 ) && gettime() < var_6._id_A986 + 3000 )
+                if ( var_4 == 1 || isdefined( var_6.lastfinishtime ) && gettime() < var_6.lastfinishtime + 3000 )
                 {
                     var_8 = "super_phaseshift_kill";
                     level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_killfirm_shift", undefined, 0.75 );
@@ -699,7 +699,7 @@ _id_3E50( var_0, var_1, var_2, var_3 )
 
                 break;
             case "super_teleport":
-                if ( var_4 == 1 || isdefined( var_6._id_A986 ) && gettime() < var_6._id_A986 + 3000 )
+                if ( var_4 == 1 || isdefined( var_6.lastfinishtime ) && gettime() < var_6.lastfinishtime + 3000 )
                 {
                     var_8 = "super_teleport_kill";
                     var_10 = 1;
@@ -716,7 +716,7 @@ _id_3E50( var_0, var_1, var_2, var_3 )
 
                 break;
             case "super_invisible":
-                if ( var_4 == 1 || isdefined( var_6._id_A986 ) && gettime() < var_6._id_A986 + 2000 )
+                if ( var_4 == 1 || isdefined( var_6.lastfinishtime ) && gettime() < var_6.lastfinishtime + 2000 )
                 {
                     var_8 = "super_invisible_kill";
                     level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_perk_stealth", undefined, 0.75 );
@@ -757,7 +757,7 @@ _id_3E50( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_3E51( var_0, var_1, var_2 )
+checksupershutdownevents( var_0, var_1, var_2 )
 {
     var_3 = var_0 scripts\mp\supers::issuperinuse();
     var_4 = var_0 scripts\mp\supers::getcurrentsuperref();
@@ -769,7 +769,7 @@ _id_3E51( var_0, var_1, var_2 )
     switch ( var_4 )
     {
         case "super_armorup":
-            if ( var_3 == 1 || isdefined( var_5._id_A986 ) && gettime() - var_5._id_A986 < 1000 )
+            if ( var_3 == 1 || isdefined( var_5.lastfinishtime ) && gettime() - var_5.lastfinishtime < 1000 )
             {
                 if ( isdefined( var_0._id_219F ) && scripts\engine\utility::array_contains( var_0._id_219F, self ) )
                     thread supershutdown( var_0 );
@@ -782,17 +782,17 @@ _id_3E51( var_0, var_1, var_2 )
 
             break;
         case "super_phaseshift":
-            if ( var_3 == 1 || isdefined( var_5._id_A986 ) && gettime() - var_5._id_A986 < 2000 )
+            if ( var_3 == 1 || isdefined( var_5.lastfinishtime ) && gettime() - var_5.lastfinishtime < 2000 )
                 thread supershutdown( var_0 );
 
             break;
         case "super_teleport":
-            if ( var_3 == 1 || isdefined( var_5._id_A986 ) && gettime() - var_5._id_A986 < 2000 )
+            if ( var_3 == 1 || isdefined( var_5.lastfinishtime ) && gettime() - var_5.lastfinishtime < 2000 )
                 thread supershutdown( var_0 );
 
             break;
         case "super_invisible":
-            if ( var_3 == 1 || isdefined( var_5._id_A986 ) && gettime() - var_5._id_A986 < 2000 )
+            if ( var_3 == 1 || isdefined( var_5.lastfinishtime ) && gettime() - var_5.lastfinishtime < 2000 )
                 thread supershutdown( var_0 );
 
             break;
@@ -802,7 +802,7 @@ _id_3E51( var_0, var_1, var_2 )
 
             break;
         case "super_rewind":
-            if ( var_3 == 1 || isdefined( var_5._id_A986 ) && gettime() - var_5._id_A986 < 2000 )
+            if ( var_3 == 1 || isdefined( var_5.lastfinishtime ) && gettime() - var_5.lastfinishtime < 2000 )
                 thread supershutdown( var_0 );
 
             break;
@@ -814,10 +814,10 @@ _id_3E51( var_0, var_1, var_2 )
     }
 }
 
-_id_A655( var_0, var_1, var_2, var_3 )
+killedplayerwithsuperweapon( var_0, var_1, var_2, var_3 )
 {
-    var_4 = scripts\mp\supers::_id_8189( var_2 );
-    var_5 = self._id_DDC3[var_2];
+    var_4 = scripts\mp\supers::getsuperrefforsuperweapon( var_2 );
+    var_5 = self.recentkillsperweapon[var_2];
 
     if ( isdefined( var_5 ) && var_5 > 0 && var_5 % 2 == 0 )
         superkill( var_4, var_3 );
@@ -827,7 +827,7 @@ _id_A655( var_0, var_1, var_2, var_3 )
         var_6.numkills++;
     }
 
-    scripts\mp\missions::_id_12F33( var_2, var_1 );
+    scripts\mp\missions::updatesuperweaponkills( var_2, var_1 );
     scripts\mp\supers::combatrecordsuperkill( var_4 );
 }
 
@@ -864,12 +864,12 @@ killedkillstreak( var_0, var_1 )
     level thread scripts\mp\battlechatter_mp::saytoself( var_1, "plr_killstreak_destroy", undefined, 0.75 );
 }
 
-_id_9CAE( var_0, var_1 )
+is_score_a_greater_than_b( var_0, var_1 )
 {
     return var_0.score > var_1.score;
 }
 
-_id_9E84( var_0, var_1, var_2, var_3, var_4 )
+islongshot( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( isalive( var_0 ) && !var_0 scripts\mp\utility::isusingremote() && ( var_2 == "MOD_RIFLE_BULLET" || var_2 == "MOD_PISTOL_BULLET" || var_2 == "MOD_HEAD_SHOT" ) && !scripts\mp\utility::iskillstreakweapon( var_1 ) && !isdefined( var_0.assistedsuicide ) )
     {
@@ -911,7 +911,7 @@ _id_9E84( var_0, var_1, var_2, var_3, var_4 )
     return 0;
 }
 
-_id_9F03( var_0, var_1, var_2, var_3, var_4 )
+ispointblank( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( isalive( var_0 ) && !var_0 scripts\mp\utility::isusingremote() && ( var_2 == "MOD_RIFLE_BULLET" || var_2 == "MOD_PISTOL_BULLET" || var_2 == "MOD_HEAD_SHOT" ) && !scripts\mp\utility::iskillstreakweapon( var_1 ) && !isdefined( var_0.assistedsuicide ) )
     {
@@ -963,12 +963,12 @@ issurvivorkill( var_0 )
     return var_0.health > 0 && var_0.health < var_0.maxhealth * 0.2;
 }
 
-_id_3E27( var_0, var_1, var_2, var_3, var_4 )
+checkmatchdatakills( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( isdefined( self.lastkilledby ) && self.lastkilledby == var_1 )
     {
         self.lastkilledby = undefined;
-        _id_E48D( var_0, var_2 );
+        revenge( var_0, var_2 );
     }
 }
 
@@ -994,31 +994,31 @@ proximitykill( var_0 )
     thread scripts\mp\utility::giveunifiedpoints( "proximitykill" );
 }
 
-_id_AFEA( var_0, var_1, var_2, var_3 )
+longshot( var_0, var_1, var_2, var_3 )
 {
     self.modifiers["longshot"] = 1;
-    thread scripts\mp\matchdata::loginitialstats( var_0, "longshot" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "longshot" );
     thread scripts\mp\awards::givemidmatchaward( "longshot" );
 }
 
-_id_D63F( var_0, var_1, var_2, var_3 )
+pointblank( var_0, var_1, var_2, var_3 )
 {
     self.modifiers["pointblank"] = 1;
-    thread scripts\mp\matchdata::loginitialstats( var_0, "pointblank" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "pointblank" );
     thread scripts\mp\awards::givemidmatchaward( "pointblank" );
 }
 
-_id_8C9B( var_0, var_1, var_2, var_3 )
+headshot( var_0, var_1, var_2, var_3 )
 {
     self.modifiers["headshot"] = 1;
-    thread scripts\mp\matchdata::loginitialstats( var_0, "headshot" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "headshot" );
     thread scripts\mp\awards::givemidmatchaward( "headshot" );
 }
 
-_id_26A5( var_0, var_1, var_2, var_3 )
+avengedplayer( var_0, var_1, var_2, var_3 )
 {
     self.modifiers["avenger"] = 1;
-    thread scripts\mp\matchdata::loginitialstats( var_0, "avenger" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "avenger" );
     thread scripts\mp\awards::givemidmatchaward( "avenger" );
 }
 
@@ -1026,32 +1026,32 @@ assistedsuicide( var_0, var_1, var_2, var_3 )
 {
     self.modifiers["assistedsuicide"] = 1;
     thread scripts\mp\utility::giveunifiedpoints( "assistedsuicide", var_1 );
-    thread scripts\mp\matchdata::loginitialstats( var_0, "assistedsuicide" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "assistedsuicide" );
     thread scripts\mp\awards::givemidmatchaward( "assistedsuicide" );
 }
 
-_id_5082( var_0, var_1, var_2, var_3 )
+defendedplayer( var_0, var_1, var_2, var_3 )
 {
     self.modifiers["defender"] = 1;
-    thread scripts\mp\matchdata::loginitialstats( var_0, "defender" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "defender" );
     thread scripts\mp\awards::givemidmatchaward( "save_teammate" );
 }
 
-_id_D6F7( var_0, var_1, var_2 )
+postdeathkill( var_0, var_1, var_2 )
 {
     self.modifiers["posthumous"] = 1;
-    thread scripts\mp\matchdata::loginitialstats( var_0, "posthumous" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "posthumous" );
     thread scripts\mp\awards::givemidmatchaward( "posthumous" );
 }
 
-_id_E48D( var_0, var_1, var_2 )
+revenge( var_0, var_1, var_2 )
 {
     self.modifiers["revenge"] = 1;
-    thread scripts\mp\matchdata::loginitialstats( var_0, "revenge" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "revenge" );
     thread scripts\mp\awards::givemidmatchaward( "revenge" );
 }
 
-_id_BDC2( var_0, var_1, var_2 )
+multikill( var_0, var_1, var_2 )
 {
     var_3 = undefined;
 
@@ -1091,37 +1091,37 @@ _id_BDC2( var_0, var_1, var_2 )
             break;
     }
 
-    thread scripts\mp\matchdata::_id_AFCB( var_0, var_1 );
+    thread scripts\mp\matchdata::logmultikill( var_0, var_1 );
 
     if ( isdefined( var_3 ) )
         thread scripts\mp\awards::givemidmatchaward( var_3 );
 }
 
-_id_6DE1( var_0, var_1, var_2, var_3 )
+firstblood( var_0, var_1, var_2, var_3 )
 {
     self.modifiers["firstblood"] = 1;
-    thread scripts\mp\matchdata::loginitialstats( var_0, "firstblood" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "firstblood" );
     thread scripts\mp\utility::teamplayercardsplash( "callout_firstblood", self );
     scripts\mp\missions::processchallenge( "ch_bornready" );
     thread scripts\mp\awards::givemidmatchaward( "firstblood" );
 }
 
-_id_13D8C( var_0 )
+winningshot( var_0 )
 {
 
 }
 
-_id_32FA( var_0, var_1, var_2, var_3, var_1 )
+buzzkill( var_0, var_1, var_2, var_3, var_1 )
 {
     self.modifiers["buzzkill"] = var_1.pers["cur_kill_streak"];
-    thread scripts\mp\matchdata::loginitialstats( var_0, "buzzkill" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "buzzkill" );
     thread scripts\mp\awards::givemidmatchaward( "buzzkill" );
 }
 
-_id_4417( var_0, var_1, var_2, var_3 )
+comeback( var_0, var_1, var_2, var_3 )
 {
     self.modifiers["comeback"] = 1;
-    thread scripts\mp\matchdata::loginitialstats( var_0, "comeback" );
+    thread scripts\mp\matchdata::logkillevent( var_0, "comeback" );
     thread scripts\mp\awards::givemidmatchaward( "comeback" );
 }
 
@@ -1148,15 +1148,15 @@ disconnected()
 
     for ( var_1 = 0; var_1 < level.players.size; var_1++ )
     {
-        if ( isdefined( level.players[var_1]._id_A653[var_0] ) )
-            level.players[var_1]._id_A653[var_0] = undefined;
+        if ( isdefined( level.players[var_1].killedplayers[var_0] ) )
+            level.players[var_1].killedplayers[var_0] = undefined;
 
         if ( isdefined( level.players[var_1].killedby[var_0] ) )
             level.players[var_1].killedby[var_0] = undefined;
     }
 }
 
-_id_B9DF()
+monitorhealed()
 {
     level endon( "end_game" );
     self endon( "disconnect" );
@@ -1168,29 +1168,29 @@ _id_B9DF()
     }
 }
 
-_id_12EFE( var_0, var_1, var_2 )
+updaterecentkills( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
     self notify( "updateRecentKills" );
     self endon( "updateRecentKills" );
-    self._id_DDC2++;
+    self.recentkillcount++;
 
-    if ( scripts\mp\missions::_id_9DBA( var_1.origin ) )
+    if ( scripts\mp\missions::isdefending( var_1.origin ) )
     {
-        self._id_DDC1++;
+        self.recentdefendcount++;
 
-        if ( scripts\mp\missions::_id_9EBC( self._id_DDC1, 2 ) )
+        if ( scripts\mp\missions::isnumbermultipleof( self.recentdefendcount, 2 ) )
             thread scripts\mp\awards::givemidmatchaward( "mode_x_wipeout" );
     }
 
-    if ( !isdefined( self._id_DDC3 ) )
-        self._id_DDC3 = [];
+    if ( !isdefined( self.recentkillsperweapon ) )
+        self.recentkillsperweapon = [];
 
-    if ( !isdefined( self._id_DDC3[var_2] ) )
-        self._id_DDC3[var_2] = 1;
+    if ( !isdefined( self.recentkillsperweapon[var_2] ) )
+        self.recentkillsperweapon[var_2] = 1;
     else
-        self._id_DDC3[var_2]++;
+        self.recentkillsperweapon[var_2]++;
 
     var_3 = scripts\mp\utility::getequipmenttype( var_2 );
 
@@ -1199,22 +1199,22 @@ _id_12EFE( var_0, var_1, var_2 )
         level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_killfirm_grenade", undefined, 0.75 );
         level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_killfirm_amf", undefined, 0.75 );
 
-        if ( self._id_DDC3[var_2] > 0 && self._id_DDC3[var_2] % 2 == 0 )
+        if ( self.recentkillsperweapon[var_2] > 0 && self.recentkillsperweapon[var_2] % 2 == 0 )
             thread scripts\mp\awards::givemidmatchaward( "grenade_double" );
     }
 
-    scripts\mp\utility::bufferednotify( "update_rapid_kill_buffered", self._id_DDC2 );
+    scripts\mp\utility::bufferednotify( "update_rapid_kill_buffered", self.recentkillcount );
     wait 4.0;
 
-    if ( self._id_DDC2 > 1 )
-        _id_BDC2( var_0, self._id_DDC2, var_1 );
+    if ( self.recentkillcount > 1 )
+        multikill( var_0, self.recentkillcount, var_1 );
 
-    self._id_DDC2 = 0;
-    self._id_DDC1 = 0;
-    self._id_DDC3 = undefined;
+    self.recentkillcount = 0;
+    self.recentdefendcount = 0;
+    self.recentkillsperweapon = undefined;
 }
 
-_id_B9C5()
+monitorcratejacking()
 {
     level endon( "end_game" );
     self endon( "disconnect" );
@@ -1265,28 +1265,28 @@ _id_B9C5()
     }
 }
 
-_id_12EF8( var_0 )
+updatequadfeedcounter( var_0 )
 {
-    if ( isdefined( level._id_DB50 ) && gettime() - level._id_DB50.starttime > 5000 )
-        level._id_DB50 = undefined;
+    if ( isdefined( level.quadfeedinfo ) && gettime() - level.quadfeedinfo.starttime > 5000 )
+        level.quadfeedinfo = undefined;
 
-    if ( !isdefined( level._id_DB50 ) || level._id_DB50.player != var_0 )
+    if ( !isdefined( level.quadfeedinfo ) || level.quadfeedinfo.player != var_0 )
     {
         var_1 = spawnstruct();
         var_1.player = var_0;
         var_1.starttime = gettime();
-        var_1._id_6BC5 = 1;
-        level._id_DB50 = var_1;
+        var_1.feedcount = 1;
+        level.quadfeedinfo = var_1;
     }
     else
     {
-        var_1 = level._id_DB50;
-        var_1._id_6BC5++;
+        var_1 = level.quadfeedinfo;
+        var_1.feedcount++;
 
-        if ( var_1._id_6BC5 == 4 )
+        if ( var_1.feedcount == 4 )
         {
             var_1.player thread scripts\mp\awards::givemidmatchaward( "quad_feed" );
-            level._id_DB50 = undefined;
+            level.quadfeedinfo = undefined;
         }
     }
 }

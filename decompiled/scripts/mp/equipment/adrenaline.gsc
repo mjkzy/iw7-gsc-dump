@@ -18,7 +18,7 @@ useadrenaline()
     self playlocalsound( "mp_adrenaline_pulse" );
 
     if ( self.health < self.maxhealth )
-        scripts\mp\missions::_id_D991( "ch_tactical_adrenaline" );
+        scripts\mp\missions::processchallengedaily( "ch_tactical_adrenaline" );
     else
     {
         self.usedadrenalineatfullhp = 1;
@@ -94,7 +94,7 @@ _id_40E0()
     self.usedadrenalineatfullhp = undefined;
 }
 
-_id_7EF5()
+gethealthperframe()
 {
     return 4;
 }

@@ -7,7 +7,7 @@ main()
     scripts\mp\maps\mp_metropolis\gen\mp_metropolis_art::main();
     scripts\mp\maps\mp_metropolis\mp_metropolis_fx::main();
     scripts\mp\load::main();
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     scripts\mp\compass::setupminimap( "compass_map_mp_metropolis" );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.33 );
@@ -461,15 +461,15 @@ move_ball_startspawns()
 
 filterstartspawns()
 {
-    var_0 = level._id_10DF1;
-    level._id_10DF1 = [];
+    var_0 = level.startspawnpoints;
+    level.startspawnpoints = [];
 
     for ( var_1 = 0; var_1 < var_0.size; var_1++ )
     {
-        var_0[var_1] scripts\mp\spawnlogic::_id_108FA();
+        var_0[var_1] scripts\mp\spawnlogic::spawnpointinit();
         var_0[var_1].selected = 0;
         var_0[var_1].infront = 0;
-        level._id_10DF1[level._id_10DF1.size] = var_0[var_1];
+        level.startspawnpoints[level.startspawnpoints.size] = var_0[var_1];
     }
 
     if ( level.teambased )
@@ -536,10 +536,10 @@ spawn_oob_trigger()
     var_1 hide();
     var_2 hide();
     var_3 hide();
-    level._id_C7B3[level._id_C7B3.size] = var_0;
-    level._id_C7B3[level._id_C7B3.size] = var_1;
-    level._id_C7B3[level._id_C7B3.size] = var_2;
-    level._id_C7B3[level._id_C7B3.size] = var_3;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_0;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_1;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_2;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_3;
 }
 
 runmodespecifictriggers()

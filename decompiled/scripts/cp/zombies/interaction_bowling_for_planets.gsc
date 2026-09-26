@@ -150,7 +150,7 @@ use_bfp_game( var_0, var_1 )
 
     var_0._id_5AD7 = 0;
     scripts\engine\utility::waitframe();
-    var_0._id_10227 = 0;
+    var_0.skeeball_game_score = 0;
     var_0._id_2802 = 3;
     var_0._id_2801 = 0;
     setomnvar( "zombie_arcade_skeeball_score_" + var_0.script_location, 0 );
@@ -172,18 +172,18 @@ _id_10228( var_0, var_1 )
     var_1 setclientomnvar( "zombie_bfp_widget", 0 );
     var_1.playing_game = undefined;
 
-    if ( var_0._id_10227 >= 1 )
+    if ( var_0.skeeball_game_score >= 1 )
     {
-        var_2 = var_0._id_10227 * 1;
+        var_2 = var_0.skeeball_game_score * 1;
 
         if ( var_1.arcade_game_award_type == "soul_power" )
         {
-            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, var_0.name, 1, var_2, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["bowling_for_planets_afterlife"] );
+            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, var_0.name, 1, var_2, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["bowling_for_planets_afterlife"] );
             var_1 scripts\cp\zombies\zombie_afterlife_arcade::give_soul_power( var_1, var_2 );
         }
         else
         {
-            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, var_0.name, 0, var_2, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["bowling_for_planets"] );
+            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, var_0.name, 0, var_2, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["bowling_for_planets"] );
             var_1 scripts\cp\zombies\arcade_game_utility::give_player_tickets( var_1, var_2 );
         }
     }
@@ -250,18 +250,18 @@ _id_CE0F( var_0 )
     scripts\cp\zombies\arcade_game_utility::give_player_back_weapon( self );
     scripts\cp\zombies\arcade_game_utility::restore_player_grenades_post_game();
 
-    if ( var_0._id_10227 >= 1 )
+    if ( var_0.skeeball_game_score >= 1 )
     {
-        var_1 = var_0._id_10227 * 1;
+        var_1 = var_0.skeeball_game_score * 1;
 
         if ( self.arcade_game_award_type == "soul_power" )
         {
-            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, self, level.wave_num_at_start_of_game, var_0.name, 1, var_1, self.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["bowling_for_planets_afterlife"] );
+            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, self, level.wave_num_at_start_of_game, var_0.name, 1, var_1, self.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["bowling_for_planets_afterlife"] );
             scripts\cp\zombies\zombie_afterlife_arcade::give_soul_power( self, var_1 );
         }
         else
         {
-            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, self, level.wave_num_at_start_of_game, var_0.name, 0, var_1, self.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["bowling_for_planets"] );
+            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, self, level.wave_num_at_start_of_game, var_0.name, 0, var_1, self.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["bowling_for_planets"] );
             scripts\cp\zombies\arcade_game_utility::give_player_tickets( self, var_1 );
         }
     }
@@ -343,7 +343,7 @@ _id_11805( var_0, var_1, var_2, var_3, var_4, var_5 )
 
     if ( isdefined( var_2 ) )
     {
-        if ( !isdefined( var_2._id_46B3 ) )
+        if ( !isdefined( var_2.counted ) )
             var_0._id_2801++;
 
         var_2 delete();
@@ -373,10 +373,10 @@ _id_1397B( var_0, var_1 )
         wait 0.05;
     }
 
-    var_0._id_10227 = var_0._id_10227 + int( var_2.script_noteworthy );
+    var_0.skeeball_game_score = var_0.skeeball_game_score + int( var_2.script_noteworthy );
     var_0._id_5AD7 = 0;
     var_1 notify( "score_in_bowling_for_planet", int( var_2.script_noteworthy ) );
-    setomnvar( "zombie_arcade_skeeball_score_" + var_0.script_location, var_0._id_10227 );
+    setomnvar( "zombie_arcade_skeeball_score_" + var_0.script_location, var_0.skeeball_game_score );
     var_0._id_2801++;
-    self._id_46B3 = 1;
+    self.counted = 1;
 }

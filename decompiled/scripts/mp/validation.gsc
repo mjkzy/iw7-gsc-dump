@@ -28,33 +28,33 @@ validationerror( var_0, var_1, var_2 )
 validateloadout( var_0 )
 {
     var_1 = spawnstruct();
-    var_1._id_D640 = 0;
-    var_1._id_13D1E = [];
+    var_1.pointcost = 0;
+    var_1.wildcards = [];
     var_1.invaliditems = [];
     var_1.invaliditems[2] = [];
     var_1.invaliditems[5] = [];
     var_1.invaliditems[9] = [];
-    _id_1314B( var_1, var_0.loadoutprimary, var_0.loadoutprimaryattachments, var_0.loadoutprimarycamo, var_0.loadoutprimaryreticle, var_0.loadoutprimarylootitemid, var_0.loadoutprimaryvariantid, 0 );
-    _id_1314B( var_1, var_0.loadoutsecondary, var_0.loadoutsecondaryattachments, var_0.loadoutsecondarycamo, var_0.loadoutsecondaryreticle, var_0._id_AE9E, var_0._id_AEA5, 1 );
-    _id_13146( var_1, var_0._id_AE7B, "primary", var_0._id_AE69 );
-    _id_13146( var_1, var_0._id_AE7D, "secondary", var_0._id_AE6A );
-    _id_13145( var_1, var_0.loadoutperks, var_0.loadoutarchetype );
+    validateweapon( var_1, var_0.loadoutprimary, var_0.loadoutprimaryattachments, var_0.loadoutprimarycamo, var_0.loadoutprimaryreticle, var_0.loadoutprimarylootitemid, var_0.loadoutprimaryvariantid, 0 );
+    validateweapon( var_1, var_0.loadoutsecondary, var_0.loadoutsecondaryattachments, var_0.loadoutsecondarycamo, var_0.loadoutsecondaryreticle, var_0.loadoutsecondarylootitemid, var_0.loadoutsecondaryvariantid, 1 );
+    validatepower( var_1, var_0.loadoutpowerprimary, "primary", var_0._id_AE69 );
+    validatepower( var_1, var_0.loadoutpowersecondary, "secondary", var_0._id_AE6A );
+    validateperks( var_1, var_0.loadoutperks, var_0.loadoutarchetype );
     validatestreaks( var_1, var_0.loadoutkillstreak1, var_0.loadoutkillstreak2, var_0.loadoutkillstreak3 );
-    _id_13148( var_1, var_0.loadoutsuper, var_0.loadoutarchetype );
+    validatesuper( var_1, var_0.loadoutsuper, var_0.loadoutarchetype );
     validatearchetype( var_1, var_0.loadoutarchetype );
 
-    if ( var_1._id_D640 > 10 )
+    if ( var_1.pointcost > 10 )
     {
         validationerror( "totalPointCost" );
         var_1.invaliditems[0] = 1;
     }
 
-    _id_1314C( var_1 );
+    validatewildcards( var_1 );
     var_0 = fixinvaliditems( var_0, var_1.invaliditems );
     return var_0;
 }
 
-_id_1314B( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
+validateweapon( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 {
     var_8 = scripts\mp\utility::getweaponrootname( var_1 );
     var_9 = scripts\mp\utility::iscacsecondaryweapon( var_1 );
@@ -63,14 +63,14 @@ _id_1314B( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 
     if ( isdefined( var_1 ) && var_1 != "none" && var_1 != "iw7_fists" )
     {
-        var_0._id_D640++;
+        var_0.pointcost++;
 
         if ( var_7 )
         {
             if ( !var_9 )
             {
-                var_0._id_D640++;
-                var_0._id_13D1E["overkill"] = 1;
+                var_0.pointcost++;
+                var_0.wildcards["overkill"] = 1;
             }
         }
         else if ( var_9 )
@@ -79,7 +79,7 @@ _id_1314B( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
             var_0.invaliditems[var_11] = 1;
         }
 
-        var_12 = scripts\mp\utility::_id_13CAC( var_8 );
+        var_12 = scripts\mp\utility::weaponnumbermap( var_8 );
 
         if ( !isdefined( var_12 ) )
         {
@@ -197,18 +197,18 @@ validateattachments( var_0, var_1, var_2, var_3, var_4 )
             if ( var_13 )
             {
                 var_8++;
-                var_0._id_D640++;
+                var_0.pointcost++;
             }
             else
             {
                 var_9++;
 
                 if ( var_9 <= var_10 )
-                    var_0._id_D640++;
+                    var_0.pointcost++;
                 else
                 {
-                    var_0._id_13D1E[var_4 + "_attachment_" + ( var_9 + 1 )] = 1;
-                    var_0._id_D640 = var_0._id_D640 + 2;
+                    var_0.wildcards[var_4 + "_attachment_" + ( var_9 + 1 )] = 1;
+                    var_0.pointcost = var_0.pointcost + 2;
                 }
             }
         }
@@ -227,7 +227,7 @@ validateattachments( var_0, var_1, var_2, var_3, var_4 )
     }
 }
 
-_id_13146( var_0, var_1, var_2, var_3 )
+validatepower( var_0, var_1, var_2, var_3 )
 {
     var_4 = scripts\engine\utility::ter_op( var_2 == "primary", 7, 8 );
 
@@ -258,18 +258,18 @@ _id_13146( var_0, var_1, var_2, var_3 )
             var_0.invaliditems[var_4] = 1;
         }
 
-        var_0._id_D640++;
+        var_0.pointcost++;
     }
 
     if ( scripts\mp\utility::istrue( var_3 ) )
     {
-        var_0._id_D640 = var_0._id_D640 + 2;
+        var_0.pointcost = var_0.pointcost + 2;
         var_6 = scripts\engine\utility::ter_op( var_2 == "primary", "extra_lethal", "extra_tactical" );
-        var_0._id_13D1E[var_6] = 1;
+        var_0.wildcards[var_6] = 1;
     }
 }
 
-_id_13145( var_0, var_1, var_2 )
+validateperks( var_0, var_1, var_2 )
 {
     var_3 = [];
     var_3[1] = 0;
@@ -286,7 +286,7 @@ _id_13145( var_0, var_1, var_2 )
                 var_0.invaliditems[9][var_0.invaliditems[9].size] = var_5;
             }
 
-            var_6 = scripts\mp\perks::_id_805C( var_5 );
+            var_6 = scripts\mp\perks::getperkslot( var_5 );
 
             if ( isdefined( var_6 ) )
             {
@@ -305,11 +305,11 @@ _id_13145( var_0, var_1, var_2 )
                 }
 
                 if ( var_3[var_6] == 1 )
-                    var_0._id_D640++;
+                    var_0.pointcost++;
                 else
                 {
-                    var_0._id_13D1E["extra_perk_" + var_6] = 1;
-                    var_0._id_D640 = var_0._id_D640 + 2;
+                    var_0.wildcards["extra_perk_" + var_6] = 1;
+                    var_0.pointcost = var_0.pointcost + 2;
                 }
             }
             else if ( isdefined( level.menurigperks[var_5] ) )
@@ -391,12 +391,12 @@ validatearchetype( var_0, var_1 )
     }
 }
 
-_id_13148( var_0, var_1, var_2 )
+validatesuper( var_0, var_1, var_2 )
 {
     if ( !isdefined( var_1 ) || var_1 == "none" )
         return;
 
-    var_3 = level._id_10E4E[var_1];
+    var_3 = level.staticsuperdata[var_1];
 
     if ( !isdefined( var_3 ) )
     {
@@ -416,7 +416,7 @@ _id_13148( var_0, var_1, var_2 )
     }
 }
 
-_id_1314C( var_0 )
+validatewildcards( var_0 )
 {
 
 }
@@ -447,8 +447,8 @@ fixweapon( var_0, var_1 )
         var_0.loadoutsecondary = "none";
         var_0.loadoutsecondarycamo = "none";
         var_0.loadoutsecondaryreticle = "none";
-        var_0._id_AE9E = 0;
-        var_0._id_AEA5 = -1;
+        var_0.loadoutsecondarylootitemid = 0;
+        var_0.loadoutsecondaryvariantid = -1;
 
         for ( var_2 = 0; var_2 < scripts\mp\class::getmaxsecondaryattachments(); var_2++ )
             var_0.loadoutsecondaryattachments[var_2] = "none";
@@ -467,13 +467,13 @@ fixpower( var_0, var_1 )
 {
     if ( var_1 == "primary" )
     {
-        var_0._id_AE7B = "none";
+        var_0.loadoutpowerprimary = "none";
         var_0._id_AE7C = [];
         var_0.loadoutextrapowerprimary = 0;
     }
     else
     {
-        var_0._id_AE7D = "none";
+        var_0.loadoutpowersecondary = "none";
         var_0._id_AE7E = [];
         var_0.loadoutextrapowersecondary = 0;
     }

@@ -3,21 +3,21 @@
 
 _id_98C5( var_0 )
 {
-    self._id_10264 = 1;
-    setupdestructibledoors();
+    self.skipbloodpool = 1;
+    setupdestructibleparts();
     return anim.success;
 }
 
-setupdestructibledoors()
+setupdestructibleparts()
 {
     if ( isdefined( self._id_2AB4 ) )
-        thread _id_4D5E();
+        thread damagepartshandler();
 
     if ( isdefined( self._id_2AB5 ) )
         thread _id_5670();
 }
 
-_id_4D5E()
+damagepartshandler()
 {
     self endon( "death" );
     self endon( "terminate_ai_threads" );

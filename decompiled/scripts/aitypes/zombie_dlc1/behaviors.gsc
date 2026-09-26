@@ -3,7 +3,7 @@
 
 checkscripteddlc1( var_0 )
 {
-    return _id_0C2B::_id_3E48( var_0 );
+    return scripts\aitypes\zombie\zombie_agent::checkscripted( var_0 );
 }
 
 chaseenemydlc1( var_0 )
@@ -144,7 +144,7 @@ seekenemydlc1( var_0 )
 
         var_8 = var_6 * var_6;
 
-        if ( self._id_2AB8 || distancesquared( self _meth_827E(), var_5[0].origin ) > var_8 )
+        if ( self._id_2AB8 || distancesquared( self scragentgetgoalpos(), var_5[0].origin ) > var_8 )
         {
             var_9 = isdefined( var_5[0].zipline );
             var_10 = var_5[0].origin;

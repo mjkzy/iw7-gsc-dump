@@ -7,7 +7,7 @@ main()
     scripts\mp\maps\mp_parkour\gen\mp_parkour_art::main();
     scripts\mp\maps\mp_parkour\mp_parkour_fx::main();
     scripts\mp\load::main();
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     scripts\mp\compass::setupminimap( "compass_map_mp_parkour" );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.33 );
@@ -187,8 +187,8 @@ move_sd_startspawns()
                 var_2.angles = ( 0, -100, 0 );
                 var_3 = anglestoright( var_2.angles );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -198,8 +198,8 @@ move_sd_startspawns()
                 var_2.angles = ( 0, -100, 0 );
                 var_3 = anglestoright( var_2.angles );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -209,8 +209,8 @@ move_sd_startspawns()
                 var_2.angles = ( 0, -100, 0 );
                 var_3 = anglestoright( var_2.angles );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -220,8 +220,8 @@ move_sd_startspawns()
                 var_2.angles = ( 0, -100, 0 );
                 var_3 = anglestoright( var_2.angles );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -231,8 +231,8 @@ move_sd_startspawns()
                 var_2.angles = ( 0, -100, 0 );
                 var_3 = anglestoright( var_2.angles );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -242,7 +242,7 @@ move_sd_startspawns()
                 var_2.angles = ( 0, -100, 0 );
                 var_3 = anglestoright( var_2.angles );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -252,7 +252,7 @@ move_sd_startspawns()
                 var_2.angles = ( 0, -100, 0 );
                 var_3 = anglestoright( var_2.angles );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
                 continue;
             }
 
@@ -262,8 +262,8 @@ move_sd_startspawns()
                 var_2.angles = ( 0, -100, 0 );
                 var_3 = anglestoright( var_2.angles );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin + var_3 * 45 );
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin + var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
                 continue;
             }
 
@@ -273,7 +273,7 @@ move_sd_startspawns()
                 var_2.angles = ( 0, -100, 0 );
                 var_3 = anglestoright( var_2.angles );
                 var_2.alternates = [];
-                scripts\mp\spawnlogic::_id_17A7( var_2, var_2.origin - var_3 * 45 );
+                scripts\mp\spawnlogic::addalternatespawnpoint( var_2, var_2.origin - var_3 * 45 );
             }
         }
     }

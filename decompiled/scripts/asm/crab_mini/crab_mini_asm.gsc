@@ -49,22 +49,22 @@ shouldplayentranceanim( var_0, var_1, var_2, var_3 )
 playanimandlookatenemy( var_0, var_1, var_2, var_3 )
 {
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, scripts\mp\agents\crab_mini\crab_mini_agent::getenemy() );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 1 );
 }
 
 isanimdone( var_0, var_1, var_2, var_3 )
 {
-    if ( scripts\asm\asm::_id_232B( var_1, "end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "early_end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "early_end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "finish_early" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "finish_early" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "code_move" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "code_move" ) )
         return 1;
 
     return 0;
@@ -100,7 +100,7 @@ shouldmeleeattackhit( var_0, var_1, var_2 )
 
 playmovingmelee( var_0, var_1, var_2, var_3 )
 {
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 domeleedamageoncontact( var_0, var_1 )
@@ -258,8 +258,8 @@ playanimwithplaybackrate( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     var_4 = var_3;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, var_4 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, var_4 );
 }
 
 stopfacingenemy( var_0, var_1 )
@@ -272,7 +272,7 @@ stopfacingenemy( var_0, var_1 )
 playmovingmeleeattack( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self getanimentry( var_1, var_4 );
     var_6 = getanimlength( var_5 );
     var_7 = getnotetracktimes( var_5, "hit" );
@@ -292,15 +292,15 @@ playmovingmeleeattack( var_0, var_1, var_2, var_3 )
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, self.curmeleetarget );
     thread stopfacingenemy( var_1, var_11 );
     thread domeleedamageoncontact( var_1, self.curmeleetarget );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4 );
 }
 
 playmeleeattack( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, self.curmeleetarget );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4 );
 }
 
 choosemeleeattack( var_0, var_1, var_2 )
@@ -324,9 +324,9 @@ shoulddostuckanim( var_0, var_1, var_2, var_3 )
     return scripts\engine\utility::is_true( self.bisstuck );
 }
 
-_id_3EE4( var_0, var_1, var_2 )
+choosepainanim_covercorner( var_0, var_1, var_2 )
 {
-    return _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+    return scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 }
 
 playmovingpainanim( var_0, var_1, var_2, var_3 )
@@ -335,18 +335,18 @@ playmovingpainanim( var_0, var_1, var_2, var_3 )
 
     if ( !isdefined( self.pathgoalpos ) || self pathdisttogoal() < scripts\mp\agents\crab_mini\crab_mini_tunedata::gettunedata().min_moving_pain_dist )
     {
-        var_4 = _id_3EE4( var_0, "pain_generic", var_3 );
+        var_4 = choosepainanim_covercorner( var_0, "pain_generic", var_3 );
         self scragentsetorientmode( "face angle abs", self.angles );
-        scripts\asm\asm_mp::_id_2365( var_0, "pain_generic", var_2, var_4, 1 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, "pain_generic", var_2, var_4, 1 );
         return;
     }
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 doteleporthack( var_0, var_1, var_2, var_3 )
 {
-    var_6 = self _meth_8146();
+    var_6 = self getnegotiationendpos();
     self setorigin( var_6, 0 );
     var_6 = getgroundposition( var_6, 15 );
     self.is_traversing = undefined;

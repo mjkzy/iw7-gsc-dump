@@ -99,7 +99,7 @@ chooseanim_weaponswitch( var_0, var_1, var_2 )
     return scripts\asm\asm::asm_lookupanimfromalias( var_1, var_3 );
 }
 
-_id_12668( var_0, var_1, var_2, var_3 )
+transition_isflashed( var_0, var_1, var_2, var_3 )
 {
     return 1;
 }
@@ -185,10 +185,10 @@ getnodeyawfromoffsettable( var_0, var_1, var_2 )
     return undefined;
 }
 
-_id_1C9C()
+allowlmgarrival()
 {
     var_0 = scripts\engine\utility::weaponclass( self.weapon ) == "mg";
-    return var_0 || isdefined( self._blackboard._id_522F ) && isdefined( self.node ) && self.node == self._blackboard._id_522F;
+    return var_0 || isdefined( self._blackboard.deployedlmgnode ) && isdefined( self.node ) && self.node == self._blackboard.deployedlmgnode;
 }
 
 getnodeyawoffset( var_0, var_1 )
@@ -198,21 +198,21 @@ getnodeyawoffset( var_0, var_1 )
 
     if ( getdvarint( "ai_iw7", 0 ) == 1 )
     {
-        if ( isdefined( self._blackboard._id_98F4 ) && self._blackboard._id_98F4 || isdefined( self.asm._id_1310E ) && self.asm._id_1310E )
+        if ( isdefined( self._blackboard.inlmgstate ) && self._blackboard.inlmgstate || isdefined( self.asm.usingaturret ) && self.asm.usingaturret )
             return 0;
 
-        if ( self.asm._id_7360 && isdefined( anim._id_7365 ) && isdefined( anim._id_7365[self.asmname] ) )
+        if ( self.asm.frantic && isdefined( anim.franticnodeyaws ) && isdefined( anim.franticnodeyaws[self.asmname] ) )
         {
-            var_2 = getnodeyawfromoffsettable( anim._id_7365[self.asmname], var_0, var_1 );
+            var_2 = getnodeyawfromoffsettable( anim.franticnodeyaws[self.asmname], var_0, var_1 );
 
             if ( isdefined( var_2 ) )
                 return var_2;
 
             return 0;
         }
-        else if ( isdefined( anim._id_C05A ) && isdefined( anim._id_C05A[self.asmname] ) )
+        else if ( isdefined( anim.nodeyaws ) && isdefined( anim.nodeyaws[self.asmname] ) )
         {
-            var_2 = getnodeyawfromoffsettable( anim._id_C05A[self.asmname], var_0, var_1 );
+            var_2 = getnodeyawfromoffsettable( anim.nodeyaws[self.asmname], var_0, var_1 );
 
             if ( isdefined( var_2 ) )
                 return var_2;
@@ -281,14 +281,14 @@ getnodeforwardangles( var_0, var_1 )
     return combineangles( var_0.angles, ( 0, var_2, 0 ) );
 }
 
-_id_7FF1( var_0, var_1, var_2 )
+getnodeaimpitchoffset( var_0, var_1, var_2 )
 {
     var_3 = undefined;
 
     if ( var_2 == "exposed" )
-        var_3 = anim._id_C046[var_0];
+        var_3 = anim.nodeexposedpitches[var_0];
     else if ( var_2 == "lean" || var_2 == "leanover" )
-        var_3 = anim._id_C04D[var_0];
+        var_3 = anim.nodeleanpitches[var_0];
 
     if ( isdefined( var_3 ) )
     {
@@ -301,19 +301,19 @@ _id_7FF1( var_0, var_1, var_2 )
     return 0;
 }
 
-_id_7FF2( var_0, var_1, var_2 )
+getnodeaimyawoffset( var_0, var_1, var_2 )
 {
     var_3 = undefined;
 
-    if ( self.asm._id_7360 )
+    if ( self.asm.frantic )
     {
         if ( var_2 == "lean" )
-            var_3 = anim._id_7364[var_0];
+            var_3 = anim.franticnodeleanyaws[var_0];
         else if ( var_2 == "A" || var_2 == "full" || var_2 == "right" || var_2 == "left" )
-            var_3 = anim._id_7363[var_0];
+            var_3 = anim.franticnodeexposedyaws[var_0];
     }
     else if ( var_2 == "lean" )
-        var_3 = anim._id_C04E[var_0];
+        var_3 = anim.nodeleanyaws[var_0];
 
     if ( isdefined( var_3 ) )
     {
@@ -326,15 +326,15 @@ _id_7FF2( var_0, var_1, var_2 )
     return 0;
 }
 
-_id_C04B( var_0 )
+nodeiscoverstand3dtype( var_0 )
 {
     if ( var_0.type == "Cover Stand 3D" )
-        return !_id_C04A( var_0 );
+        return !nodeiscoverexposed3dtype( var_0 );
 
     return 0;
 }
 
-_id_C04A( var_0 )
+nodeiscoverexposed3dtype( var_0 )
 {
     if ( var_0.type == "Cover Stand 3D" )
     {
@@ -349,7 +349,7 @@ getnodetypename( var_0 )
 {
     if ( isdefined( var_0 ) )
     {
-        if ( _id_C04A( var_0 ) )
+        if ( nodeiscoverexposed3dtype( var_0 ) )
             return "Cover Exposed 3D";
         else
             return var_0.type;

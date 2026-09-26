@@ -223,7 +223,7 @@ getdodgemovescale( var_0, var_1 )
     var_2 = scripts\asm\dlc4\dlc4_asm::gettunedata();
     var_3 = scripts\asm\asm::asm_lookupanimfromalias( var_0, var_1 );
     var_4 = self getanimentry( var_0, var_3 );
-    var_5 = scripts\anim\notetracks_mp::getsafecircleradius( var_4 );
+    var_5 = scripts\anim\notetracks_mp::getsafeanimmovedeltapercentage( var_4 );
 
     if ( var_5 < var_2.min_dodge_scale )
         return undefined;

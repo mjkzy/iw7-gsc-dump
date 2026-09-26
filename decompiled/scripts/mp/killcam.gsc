@@ -32,7 +32,7 @@ setcinematiccamerastyle( var_0, var_1, var_2 )
     self setclientomnvar( "cam_scene_support", var_2 );
 }
 
-_id_7F32( var_0, var_1, var_2 )
+getkillcamentity( var_0, var_1, var_2 )
 {
     if ( !isdefined( var_0 ) || !isdefined( var_1 ) || var_0 == var_1 && !isagent( var_0 ) )
         return undefined;
@@ -74,7 +74,7 @@ _id_7F32( var_0, var_1, var_2 )
         case "iw7_minigun_c8_mp":
         case "iw7_chargeshot_c8_mp":
         case "iw7_c8offhandshield_mp":
-            if ( isdefined( var_0 ) && isdefined( var_0._id_4BE1 ) && var_0._id_4BE1 == "MANUAL" )
+            if ( isdefined( var_0 ) && isdefined( var_0.currentcombatmode ) && var_0.currentcombatmode == "MANUAL" )
                 return undefined;
 
             break;
@@ -115,7 +115,7 @@ _id_7F32( var_0, var_1, var_2 )
 
     if ( scripts\engine\utility::isdestructibleweapon( var_2 ) || scripts\mp\utility::isbombsiteweapon( var_2 ) )
     {
-        if ( isdefined( var_1.killcament ) && !var_0 scripts\mp\utility::_id_24ED() )
+        if ( isdefined( var_1.killcament ) && !var_0 scripts\mp\utility::attackerinremotekillstreak() )
             return var_1.killcament;
         else
             return undefined;
@@ -124,26 +124,26 @@ _id_7F32( var_0, var_1, var_2 )
     return var_1;
 }
 
-_id_F76C( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
+setkillcamerastyle( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 {
-    var_5._id_37CC = "unknown";
+    var_5.camerastyle = "unknown";
 
     if ( isdefined( var_1 ) && isdefined( var_1.agent_type ) )
     {
         if ( var_1.agent_type == "dog" || var_1.agent_type == "wolf" )
         {
             setcinematiccamerastyle( "killcam_dog", var_0 getentitynumber(), var_3 getentitynumber() );
-            var_5._id_37CC = "killcam_dog";
+            var_5.camerastyle = "killcam_dog";
         }
         else if ( var_1.agent_type == "remote_c8" )
         {
             setcinematiccamerastyle( "killcam_rc8", var_0 getentitynumber(), var_3 getentitynumber() );
-            var_5._id_37CC = "killcam_rc8";
+            var_5.camerastyle = "killcam_rc8";
         }
         else
         {
             setcinematiccamerastyle( "killcam_agent", var_0 getentitynumber(), var_3 getentitynumber() );
-            var_5._id_37CC = "killcam_agent";
+            var_5.camerastyle = "killcam_agent";
         }
 
         return 1;
@@ -151,7 +151,7 @@ _id_F76C( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     else if ( isdefined( var_6 ) && var_6 == "nuke_mp" )
     {
         setcinematiccamerastyle( "killcam_nuke", var_3 getentitynumber(), var_3 getentitynumber() );
-        var_5._id_37CC = "killcam_nuke";
+        var_5.camerastyle = "killcam_nuke";
         return 1;
     }
     else if ( var_4 > 0 )
@@ -168,7 +168,7 @@ _id_F76C( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     return 0;
 }
 
-_id_127CF( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
+trimkillcamtime( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
 {
     var_9 = var_5 + var_6;
 
@@ -222,14 +222,14 @@ _id_127CF( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     }
 
     var_14 = spawnstruct();
-    var_14._id_37F1 = var_5;
-    var_14._id_D6F8 = var_6;
-    var_14._id_A63E = var_9;
+    var_14.camtime = var_5;
+    var_14.postdelay = var_6;
+    var_14.killcamlength = var_9;
     var_14.killcamoffset = var_10;
     return var_14;
 }
 
-_id_D83E( var_0, var_1 )
+prekillcamnotify( var_0, var_1 )
 {
     if ( isdefined( var_1 ) && !isagent( var_1 ) )
     {
@@ -264,15 +264,15 @@ killcam( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, v
     if ( var_2 < 0 || !isdefined( var_12 ) )
         return;
 
-    level._id_C23C++;
-    var_20 = 0.05 * ( level._id_C23C - 1 );
-    level._id_B4A7 = var_20;
+    level.numplayerswaitingtoenterkillcam++;
+    var_20 = 0.05 * ( level.numplayerswaitingtoenterkillcam - 1 );
+    level.maxkillcamdelay = var_20;
 
-    if ( level._id_C23C > 1 )
+    if ( level.numplayerswaitingtoenterkillcam > 1 )
         wait( var_20 );
 
     wait 0.05;
-    level._id_C23C--;
+    level.numplayerswaitingtoenterkillcam--;
 
     if ( getdvar( "scr_killcam_time" ) == "" )
     {
@@ -281,7 +281,7 @@ killcam( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, v
         else if ( var_7 == "remote_mortar_missile_mp" )
             var_21 = 6.5;
         else if ( level.showingfinalkillcam )
-            var_21 = 4.0 + level._id_B4A7 - var_20;
+            var_21 = 4.0 + level.maxkillcamdelay - var_20;
         else if ( var_7 == "apache_minigun_mp" )
             var_21 = 3.0;
         else if ( var_7 == "javelin_mp" )
@@ -329,7 +329,7 @@ killcam( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, v
     if ( var_2 < 0 || !isdefined( var_12 ) )
         return;
 
-    var_23 = _id_127CF( var_0, var_1, var_12, var_13, var_3, var_21, var_22, var_8, var_11 );
+    var_23 = trimkillcamtime( var_0, var_1, var_12, var_13, var_3, var_21, var_22, var_8, var_11 );
 
     if ( !isdefined( var_23 ) )
         return;
@@ -347,9 +347,9 @@ killcam( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, v
     }
 
     if ( scripts\mp\utility::iskillstreakweapon( var_7 ) )
-        _id_F76E( var_7, var_16 );
+        setkillcamkillstreaktypeomnvars( var_7, var_16 );
     else
-        scripts\mp\perks::_id_F7C5( "ui_killcam_killedby_perk", var_15 );
+        scripts\mp\perks::setomnvarsforperklist( "ui_killcam_killedby_perk", var_15 );
 
     var_24 = getdvarint( "scr_player_forcerespawn" );
 
@@ -373,13 +373,13 @@ killcam( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, v
 
     self.forcespectatorclient = var_2;
     self.killcamentity = -1;
-    var_26 = _id_F76C( var_0, var_1, var_2, var_13, var_3, var_23, var_7 );
+    var_26 = setkillcamerastyle( var_0, var_1, var_2, var_13, var_3, var_23, var_7 );
 
     if ( !var_26 )
-        thread _id_F76B( var_3, var_23.killcamoffset, var_4, var_5, var_6 );
+        thread setkillcamentity( var_3, var_23.killcamoffset, var_4, var_5, var_6 );
 
     self.archivetime = var_23.killcamoffset;
-    self._id_A63E = var_23._id_A63E;
+    self.killcamlength = var_23.killcamlength;
     self.psoffsettime = var_9;
     self allowspectateteam( "allies", 1 );
     self allowspectateteam( "axis", 1 );
@@ -392,7 +392,7 @@ killcam( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, v
             self allowspectateteam( var_28, 1 );
     }
 
-    thread _id_6315();
+    thread endedkillcamcleanup();
     wait 0.05;
 
     if ( !isdefined( self ) )
@@ -406,11 +406,11 @@ killcam( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, v
             game["truncated_killcams"]++;
     }
 
-    var_23._id_37F1 = self.archivetime - 0.05 - var_8;
-    var_23._id_A63E = var_23._id_37F1 + var_23._id_D6F8;
-    self._id_A63E = var_23._id_A63E;
+    var_23.camtime = self.archivetime - 0.05 - var_8;
+    var_23.killcamlength = var_23.camtime + var_23.postdelay;
+    self.killcamlength = var_23.killcamlength;
 
-    if ( var_23._id_37F1 <= 0 )
+    if ( var_23.camtime <= 0 )
     {
         scripts\mp\utility::updatesessionstate( "dead" );
         scripts\mp\utility::clearkillcamstate();
@@ -419,27 +419,27 @@ killcam( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, v
     }
 
     var_31 = level.showingfinalkillcam;
-    self setclientomnvar( "ui_killcam_end_milliseconds", int( var_23._id_A63E * 1000 ) + gettime() );
+    self setclientomnvar( "ui_killcam_end_milliseconds", int( var_23.killcamlength * 1000 ) + gettime() );
 
     if ( var_31 )
         self setclientomnvar( "ui_killcam_victim_or_attacker", 1 );
 
     if ( var_31 )
-        thread scripts\mp\finalkillcam::_id_5854( var_23, self.killcamentity, var_12, var_13, var_14 );
+        thread scripts\mp\finalkillcam::dofinalkillcamfx( var_23, self.killcamentity, var_12, var_13, var_14 );
 
     self.killcam = 1;
 
     if ( isdefined( self.battlebuddy ) && !level.gameended )
-        self._id_28CD = gettime();
+        self.battlebuddyrespawntimestamp = gettime();
 
-    thread _id_10855();
+    thread spawnedkillcamcleanup();
 
     if ( !level.showingfinalkillcam )
-        thread _id_13715( var_10 );
+        thread waitskipkillcambutton( var_10 );
     else
         self notify( "showing_final_killcam" );
 
-    thread _id_635D();
+    thread endkillcamifnothingtoshow();
     waittillkillcamover();
 
     if ( level.showingfinalkillcam )
@@ -448,10 +448,10 @@ killcam( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, v
         return;
     }
 
-    thread _id_A639( 1 );
+    thread killcamcleanup( 1 );
 }
 
-_id_F770( var_0, var_1, var_2 )
+setkillcamnormalweaponomnvars( var_0, var_1, var_2 )
 {
     var_3 = getweaponbasename( var_0 );
 
@@ -462,18 +462,18 @@ _id_F770( var_0, var_1, var_2 )
         var_4 = scripts\mp\utility::getequipmenttype( var_3 );
 
         if ( isdefined( scripts\mp\supers::_id_7F0D( var_3 ) ) )
-            _id_F772( var_3 );
+            setkillcamsupertypeomnvars( var_3 );
         else if ( isdefined( var_4 ) && ( var_4 == "lethal" || var_4 == "tactical" ) )
             _id_F771( var_3 );
         else
         {
             if ( isdefined( level.killcammiscitems[var_3] ) )
             {
-                _id_F76F( level.killcammiscitems[var_3] );
+                setkillcammisctypeomnvars( level.killcammiscitems[var_3] );
                 return;
             }
 
-            _id_F773( var_0, var_2 );
+            setkillcamweapontypeomnvars( var_0, var_2 );
         }
     }
 }
@@ -483,9 +483,9 @@ waittillkillcamover()
     self endon( "abort_killcam" );
 
     if ( level.showingfinalkillcam )
-        thread scripts\mp\utility::setuipostgamefade( 1.0, self._id_A63E - 0.5 );
+        thread scripts\mp\utility::setuipostgamefade( 1.0, self.killcamlength - 0.5 );
 
-    wait( self._id_A63E - 0.05 );
+    wait( self.killcamlength - 0.05 );
 
     if ( level.showingfinalkillcam )
     {
@@ -495,7 +495,7 @@ waittillkillcamover()
     }
 }
 
-_id_F76B( var_0, var_1, var_2, var_3, var_4 )
+setkillcamentity( var_0, var_1, var_2, var_3, var_4 )
 {
     self endon( "disconnect" );
     self endon( "killcam_ended" );
@@ -517,10 +517,10 @@ _id_F76B( var_0, var_1, var_2, var_3, var_4 )
         self.killcamentitylookat = var_3;
 
     if ( isdefined( var_4 ) )
-        self _meth_85C4( var_4 );
+        self setkillcamentstickstolookatent( var_4 );
 }
 
-_id_13715( var_0 )
+waitskipkillcambutton( var_0 )
 {
     self endon( "disconnect" );
     self endon( "killcam_ended" );
@@ -568,13 +568,13 @@ _id_1CA0( var_0 )
 
     if ( isdefined( var_2 ) )
     {
-        var_3 = scripts\mp\killstreaks\killstreaks::_id_7F45( var_2 );
+        var_3 = scripts\mp\killstreaks\killstreaks::getkillstreakinslot( var_2 );
         var_3._id_98F2 = 1;
         scripts\mp\killstreaks\killstreaks::_id_A69A( var_3 );
     }
 }
 
-_id_635D()
+endkillcamifnothingtoshow()
 {
     self endon( "disconnect" );
     self endon( "killcam_ended" );
@@ -590,20 +590,20 @@ _id_635D()
     self notify( "abort_killcam" );
 }
 
-_id_10855()
+spawnedkillcamcleanup()
 {
     self endon( "disconnect" );
     self endon( "killcam_ended" );
     self waittill( "spawned" );
-    thread _id_A639( 0 );
+    thread killcamcleanup( 0 );
 }
 
-_id_6315()
+endedkillcamcleanup()
 {
     self endon( "disconnect" );
     self endon( "killcam_ended" );
     level waittill( "game_ended" );
-    thread _id_A639( 1 );
+    thread killcamcleanup( 1 );
 }
 
 clearkillcamomnvars()
@@ -620,7 +620,7 @@ clearkillcamomnvars()
         self setclientomnvar( "ui_killcam_killedby_perk" + var_0, -1 );
 }
 
-_id_A639( var_0 )
+killcamcleanup( var_0 )
 {
     clearkillcamomnvars();
 
@@ -664,9 +664,9 @@ setkillcamkilledbyitemomnvars( var_0, var_1 )
     self setclientomnvar( "ui_killcam_killedby_item_id", var_1 );
 }
 
-_id_F773( var_0, var_1 )
+setkillcamweapontypeomnvars( var_0, var_1 )
 {
-    var_0 = scripts\mp\utility::_id_13CA1( var_0, var_1 );
+    var_0 = scripts\mp\utility::weaponmap( var_0, var_1 );
     var_2 = scripts\mp\utility::getweaponrootname( var_0 );
     var_3 = tablelookuprownum( "mp/statsTable.csv", 4, var_2 );
 
@@ -722,7 +722,7 @@ _id_F773( var_0, var_1 )
     }
 }
 
-_id_F772( var_0 )
+setkillcamsupertypeomnvars( var_0 )
 {
     var_1 = scripts\mp\supers::_id_7F0D( var_0 );
     setkillcamkilledbyitemomnvars( 2, var_1 );
@@ -730,7 +730,7 @@ _id_F772( var_0 )
     clearkillcamattachmentomnvars();
 }
 
-_id_F76E( var_0, var_1 )
+setkillcamkillstreaktypeomnvars( var_0, var_1 )
 {
     var_2 = scripts\mp\utility::getkillstreakindex( level.killstreakweildweapons[var_0] );
 
@@ -753,14 +753,14 @@ _id_F76E( var_0, var_1 )
 
 _id_F771( var_0 )
 {
-    var_1 = level._id_D7A4[var_0];
+    var_1 = level.powerweaponmap[var_0];
     var_2 = level.powers[var_1].id;
     setkillcamkilledbyitemomnvars( 3, var_2 );
     clearlootweaponomnvars();
     clearkillcamattachmentomnvars();
 }
 
-_id_F76F( var_0 )
+setkillcammisctypeomnvars( var_0 )
 {
     setkillcamkilledbyitemomnvars( 4, var_0 );
     clearlootweaponomnvars();

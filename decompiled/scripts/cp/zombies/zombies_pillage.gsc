@@ -39,12 +39,12 @@ _id_6690( var_0 )
     if ( isdefined( var_1 ) )
     {
         level._id_C1FC++;
-        var_0 thread _id_136B6( var_0 );
+        var_0 thread waitfordeath( var_0 );
         _id_668F( var_0, var_1 );
     }
 }
 
-_id_136B6( var_0 )
+waitfordeath( var_0 )
 {
     var_0 waittill( "death" );
     level._id_C1FC--;
@@ -354,7 +354,7 @@ player_used_pillage_spot( var_0, var_1 )
     }
 
     if ( isdefined( var_0._id_A038 ) )
-        var_1 thread _id_100F2( var_0._id_A038 );
+        var_1 thread show_pillage_text( var_0._id_A038 );
 
     var_1 playlocalsound( "zmb_item_pickup" );
     var_1 thread scripts\cp\utility::usegrenadegesture( var_1, "iw7_pickup_zm" );
@@ -408,9 +408,9 @@ _id_831A( var_0 )
         var_1 = var_0 getcurrentweapon();
         var_2 = scripts\cp\utility::getrawbaseweaponname( var_1 );
         var_0 takeweapon( var_1 );
-        var_0._id_A037 = var_2;
+        var_0.itemreplaced = var_2;
         level.transactionid = randomint( 100 );
-        scripts\cp\zombies\zombie_analytics::_id_AF76( var_0._id_A037, level.transactionid );
+        scripts\cp\zombies\zombie_analytics::_id_AF76( var_0.itemreplaced, level.transactionid );
 
         if ( isdefined( var_0.pap[var_2] ) )
         {
@@ -440,7 +440,7 @@ _id_5135( var_0 )
     thread _id_13971();
     var_1 = scripts\engine\utility::waittill_any_timeout( 60, "stop_pillage_spot_think", "all_players_searched", "redistributed_pillage_spots" );
     var_2 = var_1 != "redistributed_pillage_spots";
-    self._id_A032 = var_0.model;
+    self.itemignored = var_0.model;
     thread _id_5189( var_0, var_2 );
 }
 
@@ -706,11 +706,11 @@ _id_7BEF( var_0, var_1 )
     }
 }
 
-_id_100F2( var_0 )
+show_pillage_text( var_0 )
 {
     self endon( "disconnect" );
 
-    if ( isdefined( self._id_1304A ) )
+    if ( isdefined( self.usebartext ) )
         return;
 
     var_1 = level.primaryprogressbarfontsize;
@@ -719,17 +719,17 @@ _id_100F2( var_0 )
     if ( level.splitscreen )
         var_1 = 1.3;
 
-    self._id_1304A = scripts\cp\utility::createprimaryprogressbartext( 0, 25, var_1, var_2 );
-    self._id_1304A settext( var_0 );
-    self._id_1304A setpulsefx( 50, 2000, 800 );
+    self.usebartext = scripts\cp\utility::createprimaryprogressbartext( 0, 25, var_1, var_2 );
+    self.usebartext settext( var_0 );
+    self.usebartext setpulsefx( 50, 2000, 800 );
     scripts\engine\utility::waittill_any_timeout( 3, "death" );
-    self._id_1304A scripts\cp\utility::destroyelem();
-    self._id_1304A = undefined;
+    self.usebartext scripts\cp\utility::destroyelem();
+    self.usebartext = undefined;
 }
 
 _id_3E90()
 {
-    return scripts\engine\utility::random( level._id_138A1 );
+    return scripts\engine\utility::random( level.wall_buys );
 }
 
 _id_3E8C()
@@ -755,7 +755,7 @@ _id_3E8F()
 _id_12880( var_0, var_1, var_2 )
 {
     var_3 = var_0.item;
-    var_4 = var_0._id_1E2D;
+    var_4 = var_0.ammo;
     self.itempicked = var_3;
     level.transactionid = randomint( 100 );
 
@@ -778,7 +778,7 @@ _id_12880( var_0, var_1, var_2 )
 _id_1287B( var_0 )
 {
     var_1 = var_0.pillageinfo.item;
-    var_2 = var_0.pillageinfo._id_1E2D;
+    var_2 = var_0.pillageinfo.ammo;
     self.itempicked = var_1;
     level.transactionid = randomint( 100 );
 
@@ -810,8 +810,8 @@ _id_1287B( var_0 )
     }
     else
     {
-        var_5 = _id_FFA4( level._id_C32B );
-        self _meth_831C( "other" );
+        var_5 = should_swap_weapon( level._id_C32B );
+        self setoffhandprimaryclass( "other" );
 
         if ( !isdefined( var_5 ) )
         {
@@ -827,9 +827,9 @@ _id_1287B( var_0 )
         else
         {
             self.itempicked = var_1;
-            self._id_A037 = var_5;
+            self.itemreplaced = var_5;
             level.transactionid = randomint( 100 );
-            scripts\cp\zombies\zombie_analytics::_id_AF76( self._id_A037, level.transactionid );
+            scripts\cp\zombies\zombie_analytics::_id_AF76( self.itemreplaced, level.transactionid );
             self takeweapon( var_5 );
             self giveweapon( var_1 );
             self setweaponammoclip( var_1, var_2 );
@@ -843,18 +843,18 @@ _id_1287B( var_0 )
             var_0.pillageinfo = spawnstruct();
             var_0.pillageinfo.type = "explosive";
             var_0.pillageinfo.item = var_5;
-            var_0.pillageinfo._id_1E2D = self._id_1131E;
+            var_0.pillageinfo.ammo = self.swapped_weapon_ammocount;
             var_0._id_CB63 _id_5D00();
         }
     }
 }
 
-_id_FFA4( var_0 )
+should_swap_weapon( var_0 )
 {
     var_1 = 0;
     var_2 = undefined;
     var_3 = 0;
-    var_4 = self getweaponslistall();
+    var_4 = self getweaponslistoffhands();
 
     foreach ( var_6 in var_4 )
     {
@@ -877,7 +877,7 @@ _id_FFA4( var_0 )
     }
 
     if ( isdefined( var_2 ) )
-        self._id_1131E = var_3;
+        self.swapped_weapon_ammocount = var_3;
 
     return var_2;
 }
@@ -1125,7 +1125,7 @@ _id_4934( var_0 )
     var_1.origin = var_0.origin;
     var_1.angles = var_0.angles;
     var_1.script_noteworthy = "pillage_item";
-    var_1._id_457D = _id_7B82( var_1, var_0 );
+    var_1.contents = _id_7B82( var_1, var_0 );
     var_1._id_CB47 = _id_7A06( var_1.item );
     var_1._id_A038 = _id_7A09( var_1.item );
     var_1.requires_power = 0;

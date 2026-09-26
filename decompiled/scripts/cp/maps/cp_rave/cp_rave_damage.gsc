@@ -621,13 +621,13 @@ cp_rave_onzombiekilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, 
             {
                 for ( var_9 = 0; var_9 < level.revocatorownercount; var_9++ )
                 {
-                    if ( !isdefined( level.revocatorkills[level.revocatorkills[var_9].name] ) )
+                    if ( !isdefined( level.revocatorkills[level.revocatorowner[var_9].name] ) )
                     {
-                        level.revocatorkills[level.revocatorkills[var_9].name] = 1;
+                        level.revocatorkills[level.revocatorowner[var_9].name] = 1;
                         continue;
                     }
 
-                    level.revocatorkills[level.revocatorkills[var_9].name]++;
+                    level.revocatorkills[level.revocatorowner[var_9].name]++;
                 }
             }
         }

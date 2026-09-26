@@ -3,8 +3,8 @@
 
 init()
 {
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "ims", ::_id_128EA );
-    level._id_9385 = [];
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "ims", ::tryuseims );
+    level.imssettings = [];
     var_0 = spawnstruct();
     var_0.weaponinfo = "ims_projectile_mp";
     var_0.modelbase = "ims_scorpion_body_iw6";
@@ -16,28 +16,28 @@ init()
     var_0.placestring = &"KILLSTREAKS_HINTS_IMS_PLACE";
     var_0.cannotplacestring = &"KILLSTREAKS_HINTS_IMS_CANNOT_PLACE";
     var_0.streakname = "ims";
-    var_0._id_10A38 = "used_ims";
+    var_0.splashname = "used_ims";
     var_0.maxhealth = 670;
     var_0.lifespan = 90.0;
-    var_0._id_DDAC = 0.5;
-    var_0._id_8487 = 0.4;
-    var_0._id_C228 = 4;
-    var_0._id_6A03 = "ims_scorpion_explosive_iw6";
+    var_0.rearmtime = 0.5;
+    var_0.graceperiod = 0.4;
+    var_0.numexplosives = 4;
+    var_0.explosivemodel = "ims_scorpion_explosive_iw6";
     var_0.placementheighttolerance = 30.0;
     var_0.placementradius = 24.0;
-    var_0._id_AC49 = "tag_lid";
-    var_0._id_AC47 = [];
-    var_0._id_AC47[1] = "IMS_Scorpion_door_1";
-    var_0._id_AC47[2] = "IMS_Scorpion_door_2";
-    var_0._id_AC47[3] = "IMS_Scorpion_door_3";
-    var_0._id_AC47[4] = "IMS_Scorpion_door_4";
-    var_0._id_AC48 = [];
-    var_0._id_AC48[1] = "IMS_Scorpion_1_opened";
-    var_0._id_AC48[2] = "IMS_Scorpion_2_opened";
-    var_0._id_AC48[3] = "IMS_Scorpion_3_opened";
-    var_0._id_6A09 = "tag_explosive";
+    var_0.lidtagroot = "tag_lid";
+    var_0.lidopenanims = [];
+    var_0.lidopenanims[1] = "IMS_Scorpion_door_1";
+    var_0.lidopenanims[2] = "IMS_Scorpion_door_2";
+    var_0.lidopenanims[3] = "IMS_Scorpion_door_3";
+    var_0.lidopenanims[4] = "IMS_Scorpion_door_4";
+    var_0.lidsnapopenanims = [];
+    var_0.lidsnapopenanims[1] = "IMS_Scorpion_1_opened";
+    var_0.lidsnapopenanims[2] = "IMS_Scorpion_2_opened";
+    var_0.lidsnapopenanims[3] = "IMS_Scorpion_3_opened";
+    var_0.expltagroot = "tag_explosive";
     var_0.killcamoffset = ( 0, 0, 12 );
-    level._id_9385["ims"] = var_0;
+    level.imssettings["ims"] = var_0;
     level._effect["ims_explode_mp"] = loadfx( "vfx/iw7/_requests/mp/vfx_generic_equipment_exp_lg.vfx" );
     level._effect["ims_smoke_mp"] = loadfx( "vfx/core/mp/killstreaks/vfx_sg_damage_blacksmoke" );
     level._effect["ims_sensor_explode"] = loadfx( "vfx/core/mp/killstreaks/vfx_ims_sparks" );
@@ -45,25 +45,25 @@ init()
     level.placedims = [];
 }
 
-_id_128EA( var_0 )
+tryuseims( var_0 )
 {
     var_1 = [];
 
-    if ( isdefined( self._id_9382 ) )
-        var_1 = self._id_9382;
+    if ( isdefined( self.imslist ) )
+        var_1 = self.imslist;
 
-    var_2 = _id_836E( "ims", var_0 );
+    var_2 = giveims( "ims", var_0 );
 
     if ( !isdefined( var_2 ) )
     {
         var_2 = 0;
 
-        if ( isdefined( self._id_9382 ) )
+        if ( isdefined( self.imslist ) )
         {
-            if ( !var_1.size && self._id_9382.size )
+            if ( !var_1.size && self.imslist.size )
                 var_2 = 1;
 
-            if ( var_1.size && var_1[0] != self._id_9382[0] )
+            if ( var_1.size && var_1[0] != self.imslist[0] )
                 var_2 = 1;
         }
     }
@@ -75,7 +75,7 @@ _id_128EA( var_0 )
     return var_2;
 }
 
-_id_836E( var_0, var_1 )
+giveims( var_0, var_1 )
 {
     var_2 = createimsforplayer( var_0, self );
     var_1._id_9380 = var_2;
@@ -92,7 +92,7 @@ _id_F684( var_0, var_1 )
 {
     self endon( "death" );
     self endon( "disconnect" );
-    var_0 thread _id_9377( self );
+    var_0 thread ims_setcarried( self );
     scripts\engine\utility::allow_weapon( 0 );
 
     if ( !isai( self ) )
@@ -124,7 +124,7 @@ _id_F684( var_0, var_1 )
         if ( !var_0.canbeplaced )
             continue;
 
-        var_0 thread _id_9379();
+        var_0 thread ims_setplaced();
         self notify( "IMS_placed" );
         scripts\engine\utility::allow_weapon( 1 );
         return 1;
@@ -183,9 +183,9 @@ createimsforplayer( var_0, var_1 )
 
     var_2 = spawnturret( "misc_turret", var_1.origin + ( 0, 0, 25 ), "sentry_minigun_mp" );
     var_2.angles = var_1.angles;
-    var_2._id_9386 = var_0;
+    var_2.imstype = var_0;
     var_2.owner = var_1;
-    var_2 setmodel( level._id_9385[var_0].modelbase );
+    var_2 setmodel( level.imssettings[var_0].modelbase );
     var_2 maketurretinoperable();
     var_2 setturretmodechangewait( 1 );
     var_2 setmode( "sentry_offline" );
@@ -197,35 +197,35 @@ createimsforplayer( var_0, var_1 )
 createims( var_0 )
 {
     var_1 = var_0.owner;
-    var_2 = var_0._id_9386;
+    var_2 = var_0.imstype;
     var_3 = spawn( "script_model", var_0.origin );
-    var_3 setmodel( level._id_9385[var_2].modelbase );
-    var_3._id_EB9C = 3;
+    var_3 setmodel( level.imssettings[var_2].modelbase );
+    var_3.scale = 3;
     var_3.angles = var_0.angles;
-    var_3._id_9386 = var_2;
+    var_3.imstype = var_2;
     var_3.owner = var_1;
     var_3 setotherent( var_1 );
     var_3.team = var_1.team;
     var_3.shouldsplash = 0;
     var_3.hidden = 0;
-    var_3._id_252E = 1;
-    var_3 _meth_80A3();
-    var_3._id_8BF0 = [];
-    var_3.config = level._id_9385[var_2];
-    var_3 thread _id_9369();
-    var_3 thread _id_937C();
-    var_3 thread _id_9363();
-    var_3 thread _id_9372();
+    var_3.attacks = 1;
+    var_3 disablemissilestick();
+    var_3.hasexplosivefired = [];
+    var_3.config = level.imssettings[var_2];
+    var_3 thread ims_handleuse();
+    var_3 thread ims_timeout();
+    var_3 thread ims_createbombsquadmodel();
+    var_3 thread ims_onkillstreakdisowned();
     return var_3;
 }
 
-_id_9363()
+ims_createbombsquadmodel()
 {
     var_0 = spawn( "script_model", self.origin );
     var_0.angles = self.angles;
     var_0 hide();
     var_0 thread scripts\mp\weapons::bombsquadvisibilityupdater( self.owner );
-    var_0 setmodel( level._id_9385[self._id_9386].modelbombsquad );
+    var_0 setmodel( level.imssettings[self.imstype].modelbombsquad );
     var_0 linkto( self );
     var_0 setcontents( 0 );
     self.bombsquadmodel = var_0;
@@ -235,19 +235,19 @@ _id_9363()
         var_0 delete();
 }
 
-_id_936D( var_0 )
+ims_moving_platform_death( var_0 )
 {
-    self._id_933C = 1;
+    self.immediatedeath = 1;
     self notify( "death" );
 }
 
-_id_9366()
+ims_handledamage()
 {
     self endon( "carried" );
-    scripts\mp\damage::monitordamage( self.config.maxhealth, "ims", ::_id_9368, ::_id_936C, 1 );
+    scripts\mp\damage::monitordamage( self.config.maxhealth, "ims", ::ims_handledeathdamage, ::ims_modifydamage, 1 );
 }
 
-_id_936C( var_0, var_1, var_2, var_3, var_4 )
+ims_modifydamage( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( self.hidden || var_1 == "ims_projectile_mp" )
         return -1;
@@ -265,7 +265,7 @@ _id_936C( var_0, var_1, var_2, var_3, var_4 )
     return var_5;
 }
 
-_id_9368( var_0, var_1, var_2, var_3 )
+ims_handledeathdamage( var_0, var_1, var_2, var_3 )
 {
     var_4 = scripts\mp\damage::onkillstreakkilled( "ims", var_0, var_1, var_2, var_3, "destroyed_ims", "ims_destroyed" );
 
@@ -273,16 +273,16 @@ _id_9368( var_0, var_1, var_2, var_3 )
         var_0 notify( "destroyed_equipment" );
 }
 
-_id_9367()
+ims_handledeath()
 {
     self endon( "carried" );
     self waittill( "death" );
-    _id_E10B();
+    removefromimslist();
 
     if ( !isdefined( self ) )
         return;
 
-    _id_9378();
+    ims_setinactive();
     self playsound( "ims_destroyed" );
 
     if ( isdefined( self.inuseby ) )
@@ -294,7 +294,7 @@ _id_9367()
         self notify( "deleting" );
         wait 1.0;
     }
-    else if ( isdefined( self._id_933C ) )
+    else if ( isdefined( self.immediatedeath ) )
     {
         playfx( scripts\engine\utility::getfx( "ims_explode_mp" ), self.origin + ( 0, 0, 10 ) );
         self notify( "deleting" );
@@ -311,8 +311,8 @@ _id_9367()
     if ( isdefined( self.objidfriendly ) )
         scripts\mp\objidpoolmanager::returnminimapid( self.objidfriendly );
 
-    if ( isdefined( self._id_C2BA ) )
-        scripts\mp\objidpoolmanager::returnminimapid( self._id_C2BA );
+    if ( isdefined( self.objidenemy ) )
+        scripts\mp\objidpoolmanager::returnminimapid( self.objidenemy );
 
     scripts\mp\weapons::equipmentdeletevfx();
     self enablemissilestick();
@@ -332,11 +332,11 @@ watchempdamage()
         playfx( scripts\engine\utility::getfx( "emp_stun" ), self.origin );
         playfx( scripts\engine\utility::getfx( "ims_smoke_mp" ), self.origin );
         wait( var_1 );
-        _id_937B();
+        ims_start();
     }
 }
 
-_id_9369()
+ims_handleuse()
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -351,14 +351,14 @@ _id_9369()
         if ( self.damagetaken >= self.maxhealth )
             continue;
 
-        var_1 = createimsforplayer( self._id_9386, var_0 );
+        var_1 = createimsforplayer( self.imstype, var_0 );
 
         if ( !isdefined( var_1 ) )
             continue;
 
-        var_1._id_935F = self;
-        _id_9378();
-        _id_936A();
+        var_1.ims = self;
+        ims_setinactive();
+        ims_hideallparts();
 
         if ( isdefined( self getlinkedparent() ) )
             self unlink();
@@ -367,7 +367,7 @@ _id_9369()
     }
 }
 
-_id_9379()
+ims_setplaced()
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -383,41 +383,41 @@ _id_9379()
     self.firstplacement = undefined;
     var_0 = undefined;
 
-    if ( isdefined( self._id_935F ) )
+    if ( isdefined( self.ims ) )
     {
-        var_0 = self._id_935F;
+        var_0 = self.ims;
         var_0 endon( "death" );
         var_0.origin = self.origin;
         var_0.angles = self.angles;
         var_0.carriedby = undefined;
-        var_0 _id_937A();
+        var_0 ims_showallparts();
 
         if ( isdefined( var_0.bombsquadmodel ) )
         {
             var_0.bombsquadmodel show();
-            var_0 _id_9383( var_0.bombsquadmodel, 1 );
+            var_0 imsopenalldoors( var_0.bombsquadmodel, 1 );
             level notify( "update_bombsquad" );
         }
     }
     else
         var_0 = createims( self );
 
-    var_0 _id_184F();
+    var_0 addtoimslist();
     var_0.isplaced = 1;
-    var_0 thread _id_9366();
+    var_0 thread ims_handledamage();
     var_0 thread watchempdamage();
-    var_0 thread _id_9367();
+    var_0 thread ims_handledeath();
     var_0 setcandamage( 1 );
     self playsound( "ims_plant" );
     self notify( "placed" );
-    var_0 thread _id_9375();
+    var_0 thread ims_setactive();
     var_1 = spawnstruct();
 
     if ( isdefined( self.moving_platform ) )
         var_1.linkparent = self.moving_platform;
 
     var_1.endonstring = "carried";
-    var_1.deathoverridecallback = ::_id_936D;
+    var_1.deathoverridecallback = ::ims_moving_platform_death;
     var_0 thread scripts\mp\movers::handle_moving_platforms( var_1 );
     self delete();
 }
@@ -432,9 +432,9 @@ ims_setcancelled( var_0 )
         var_1.carrieditem = undefined;
         var_1 scripts\engine\utility::allow_weapon( 1 );
 
-        if ( isdefined( var_1._id_9382 ) )
+        if ( isdefined( var_1.imslist ) )
         {
-            foreach ( var_3 in var_1._id_9382 )
+            foreach ( var_3 in var_1.imslist )
             {
                 if ( isdefined( var_3.bombsquadmodel ) )
                     var_3.bombsquadmodel delete();
@@ -448,34 +448,34 @@ ims_setcancelled( var_0 )
     self delete();
 }
 
-_id_9377( var_0 )
+ims_setcarried( var_0 )
 {
-    _id_E10B();
-    self setmodel( level._id_9385[self._id_9386].modelplacement );
+    removefromimslist();
+    self setmodel( level.imssettings[self.imstype].modelplacement );
     self setsentrycarrier( var_0 );
     self setcontents( 0 );
     self setcandamage( 0 );
     self.carriedby = var_0;
     var_0.iscarrying = 1;
-    var_0 thread _id_12EB0( self );
-    thread _id_936E( var_0 );
-    thread _id_936F( var_0 );
-    thread _id_9371();
-    thread _id_9370( var_0 );
+    var_0 thread updateimsplacement( self );
+    thread ims_oncarrierdeath( var_0 );
+    thread ims_oncarrierdisconnect( var_0 );
+    thread ims_ongameended();
+    thread ims_onenterride( var_0 );
     self notify( "carried" );
 
-    if ( isdefined( self._id_935F ) )
+    if ( isdefined( self.ims ) )
     {
-        self._id_935F notify( "carried" );
-        self._id_935F.carriedby = var_0;
-        self._id_935F.isplaced = 0;
+        self.ims notify( "carried" );
+        self.ims.carriedby = var_0;
+        self.ims.isplaced = 0;
 
-        if ( isdefined( self._id_935F.bombsquadmodel ) )
-            self._id_935F.bombsquadmodel hide();
+        if ( isdefined( self.ims.bombsquadmodel ) )
+            self.ims.bombsquadmodel hide();
     }
 }
 
-_id_12EB0( var_0 )
+updateimsplacement( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -484,7 +484,7 @@ _id_12EB0( var_0 )
     var_0 endon( "death" );
     var_0.canbeplaced = 1;
     var_1 = -1;
-    var_2 = level._id_9385[var_0._id_9386];
+    var_2 = level.imssettings[var_0.imstype];
 
     for (;;)
     {
@@ -502,13 +502,13 @@ _id_12EB0( var_0 )
         {
             if ( var_0.canbeplaced )
             {
-                var_0 setmodel( level._id_9385[var_0._id_9386].modelplacement );
-                self forceusehinton( level._id_9385[var_0._id_9386].placestring );
+                var_0 setmodel( level.imssettings[var_0.imstype].modelplacement );
+                self forceusehinton( level.imssettings[var_0.imstype].placestring );
             }
             else
             {
-                var_0 setmodel( level._id_9385[var_0._id_9386].modelplacementfailed );
-                self forceusehinton( level._id_9385[var_0._id_9386].cannotplacestring );
+                var_0 setmodel( level.imssettings[var_0.imstype].modelplacementfailed );
+                self forceusehinton( level.imssettings[var_0.imstype].cannotplacestring );
             }
         }
 
@@ -517,7 +517,7 @@ _id_12EB0( var_0 )
     }
 }
 
-_id_936E( var_0 )
+ims_oncarrierdeath( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -525,12 +525,12 @@ _id_936E( var_0 )
     var_0 waittill( "death" );
 
     if ( self.canbeplaced && var_0.team != "spectator" )
-        thread _id_9379();
+        thread ims_setplaced();
     else
         ims_setcancelled();
 }
 
-_id_936F( var_0 )
+ims_oncarrierdisconnect( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -538,7 +538,7 @@ _id_936F( var_0 )
     ims_setcancelled();
 }
 
-_id_9370( var_0 )
+ims_onenterride( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -552,7 +552,7 @@ _id_9370( var_0 )
     }
 }
 
-_id_9371( var_0 )
+ims_ongameended( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -560,10 +560,10 @@ _id_9371( var_0 )
     ims_setcancelled();
 }
 
-_id_9375()
+ims_setactive()
 {
     self setcursorhint( "HINT_NOICON" );
-    self sethintstring( level._id_9385[self._id_9386].hintstring );
+    self sethintstring( level.imssettings[self.imstype].hintstring );
     var_0 = self.owner;
     var_0 forceusehintoff();
 
@@ -575,9 +575,9 @@ _id_9375()
     self makeusable();
     self setcandamage( 1 );
 
-    if ( isdefined( var_0._id_9382 ) )
+    if ( isdefined( var_0.imslist ) )
     {
-        foreach ( var_2 in var_0._id_9382 )
+        foreach ( var_2 in var_0.imslist )
         {
             if ( var_2 == self )
                 continue;
@@ -586,8 +586,8 @@ _id_9375()
         }
     }
 
-    var_0._id_9382 = [];
-    var_0._id_9382[0] = self;
+    var_0.imslist = [];
+    var_0.imslist[0] = self;
 
     foreach ( var_5 in level.players )
     {
@@ -602,31 +602,31 @@ _id_9375()
 
     if ( self.shouldsplash )
     {
-        level thread scripts\mp\utility::teamplayercardsplash( level._id_9385[self._id_9386]._id_10A38, var_0 );
+        level thread scripts\mp\utility::teamplayercardsplash( level.imssettings[self.imstype].splashname, var_0 );
         self.shouldsplash = 0;
     }
 
     var_7 = ( 0, 0, 20 );
     var_8 = ( 0, 0, 256 ) - var_7;
     var_9 = [];
-    self._id_A637 = [];
+    self.killcam_ents = [];
 
-    for ( var_10 = 0; var_10 < self.config._id_C228; var_10++ )
+    for ( var_10 = 0; var_10 < self.config.numexplosives; var_10++ )
     {
-        if ( _id_C229() )
-            var_11 = _id_FCA8( var_10 + 1, self.config._id_C228 - 4 );
+        if ( numexplosivesexceedmodelcapacity() )
+            var_11 = shiftindexforward( var_10 + 1, self.config.numexplosives - 4 );
         else
             var_11 = var_10 + 1;
 
-        var_12 = self gettagorigin( self.config._id_6A09 + var_11 + "_attach" );
-        var_13 = self gettagorigin( self.config._id_6A09 + var_11 + "_attach" ) + var_7;
+        var_12 = self gettagorigin( self.config.expltagroot + var_11 + "_attach" );
+        var_13 = self gettagorigin( self.config.expltagroot + var_11 + "_attach" ) + var_7;
         var_9[var_10] = bullettrace( var_13, var_13 + var_8, 0, self );
 
         if ( var_10 < 4 )
         {
             var_14 = spawn( "script_model", var_12 + self.config.killcamoffset );
             var_14 setscriptmoverkillcam( "explosive" );
-            self._id_A637[self._id_A637.size] = var_14;
+            self.killcam_ents[self.killcam_ents.size] = var_14;
         }
     }
 
@@ -638,32 +638,32 @@ _id_9375()
             var_15 = var_9[var_10];
     }
 
-    self._id_2514 = var_15["position"] - ( 0, 0, 20 ) - self.origin;
+    self.attackheightpos = var_15["position"] - ( 0, 0, 20 ) - self.origin;
     var_16 = spawn( "trigger_radius", self.origin, 0, 256, 100 );
-    self._id_2536 = var_16;
-    self._id_2536 enablelinkto();
-    self._id_2536 linkto( self );
-    self._id_2528 = length( self._id_2514 ) / 200;
-    _id_937F();
-    _id_937B();
-    thread _id_937D();
+    self.attacktrigger = var_16;
+    self.attacktrigger enablelinkto();
+    self.attacktrigger linkto( self );
+    self.attackmovetime = length( self.attackheightpos ) / 200;
+    imscreateexplosivewithkillcam();
+    ims_start();
+    thread ims_watchplayerconnected();
 
     foreach ( var_5 in level.players )
-        thread _id_9374( var_5 );
+        thread ims_playerjoinedteam( var_5 );
 }
 
-_id_937D()
+ims_watchplayerconnected()
 {
     self endon( "death" );
 
     for (;;)
     {
         level waittill( "connected", var_0 );
-        _id_9373( var_0 );
+        ims_playerconnected( var_0 );
     }
 }
 
-_id_9373( var_0 )
+ims_playerconnected( var_0 )
 {
     self endon( "death" );
     var_0 endon( "disconnect" );
@@ -671,7 +671,7 @@ _id_9373( var_0 )
     self disableplayeruse( var_0 );
 }
 
-_id_9374( var_0 )
+ims_playerjoinedteam( var_0 )
 {
     self endon( "death" );
     var_0 endon( "disconnect" );
@@ -683,7 +683,7 @@ _id_9374( var_0 )
     }
 }
 
-_id_9372()
+ims_onkillstreakdisowned()
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -695,13 +695,13 @@ _id_9372()
         ims_setcancelled( 0 );
 }
 
-_id_937B()
+ims_start()
 {
     thread scripts\mp\weapons::doblinkinglight( "tag_fx" );
-    thread _id_9362();
+    thread ims_attacktargets();
 }
 
-_id_9378()
+ims_setinactive()
 {
     self makeunusable();
 
@@ -710,16 +710,16 @@ _id_9378()
     else if ( isdefined( self.owner ) )
         scripts\mp\entityheadicons::setplayerheadicon( undefined, ( 0, 0, 0 ) );
 
-    if ( isdefined( self._id_2536 ) )
-        self._id_2536 delete();
+    if ( isdefined( self.attacktrigger ) )
+        self.attacktrigger delete();
 
-    if ( isdefined( self._id_A637 ) )
+    if ( isdefined( self.killcam_ents ) )
     {
-        foreach ( var_1 in self._id_A637 )
+        foreach ( var_1 in self.killcam_ents )
         {
             if ( isdefined( var_1 ) )
             {
-                if ( isdefined( self.owner ) && isdefined( self.owner._id_9381 ) && var_1 == self.owner._id_9381 )
+                if ( isdefined( self.owner ) && isdefined( self.owner.imskillcament ) && var_1 == self.owner.imskillcament )
                     continue;
                 else
                     var_1 delete();
@@ -727,10 +727,10 @@ _id_9378()
         }
     }
 
-    if ( isdefined( self._id_69F6 ) )
+    if ( isdefined( self.explosive1 ) )
     {
-        self._id_69F6 delete();
-        self._id_69F6 = undefined;
+        self.explosive1 delete();
+        self.explosive1 = undefined;
     }
 
     scripts\mp\weapons::stopblinkinglight();
@@ -744,7 +744,7 @@ isfriendlytoims( var_0 )
     return 0;
 }
 
-_id_9362()
+ims_attacktargets()
 {
     self endon( "death" );
     self endon( "emp_damage" );
@@ -752,10 +752,10 @@ _id_9362()
 
     for (;;)
     {
-        if ( !isdefined( self._id_2536 ) )
+        if ( !isdefined( self.attacktrigger ) )
             break;
 
-        self._id_2536 waittill( "trigger", var_0 );
+        self.attacktrigger waittill( "trigger", var_0 );
 
         if ( isplayer( var_0 ) )
         {
@@ -779,17 +779,17 @@ _id_9362()
 
         var_1 = var_0.origin + ( 0, 0, 50 );
 
-        if ( !sighttracepassed( self._id_2514 + self.origin, var_1, 0, self ) )
+        if ( !sighttracepassed( self.attackheightpos + self.origin, var_1, 0, self ) )
             continue;
 
         var_2 = 0;
 
-        for ( var_3 = 1; var_3 <= self.config._id_C228; var_3++ )
+        for ( var_3 = 1; var_3 <= self.config.numexplosives; var_3++ )
         {
             if ( var_3 > 4 )
                 break;
 
-            if ( sighttracepassed( self gettagorigin( self.config._id_AC49 + var_3 ), var_1, 0, self ) )
+            if ( sighttracepassed( self gettagorigin( self.config.lidtagroot + var_3 ), var_1, 0, self ) )
             {
                 var_2 = 1;
                 break;
@@ -800,24 +800,24 @@ _id_9362()
             continue;
 
         self playsound( "ims_trigger" );
-        scripts\mp\weapons::explosivetrigger( var_0, level._id_9385[self._id_9386]._id_8487, "ims" );
+        scripts\mp\weapons::explosivetrigger( var_0, level.imssettings[self.imstype].graceperiod, "ims" );
 
-        if ( !isdefined( self._id_2536 ) )
+        if ( !isdefined( self.attacktrigger ) )
             break;
 
-        if ( !isdefined( self._id_8BF0[self._id_252E] ) )
+        if ( !isdefined( self.hasexplosivefired[self.attacks] ) )
         {
-            self._id_8BF0[self._id_252E] = 1;
-            thread _id_6D2C( var_0, self._id_252E );
-            self._id_252E++;
+            self.hasexplosivefired[self.attacks] = 1;
+            thread fire_sensor( var_0, self.attacks );
+            self.attacks++;
         }
 
-        if ( self._id_252E > self.config._id_C228 )
+        if ( self.attacks > self.config.numexplosives )
             break;
 
-        _id_937F();
+        imscreateexplosivewithkillcam();
         self waittill( "sensor_exploded" );
-        wait( self.config._id_DDAC );
+        wait( self.config.rearmtime );
 
         if ( !isdefined( self.owner ) )
             break;
@@ -829,21 +829,21 @@ _id_9362()
     self notify( "death" );
 }
 
-_id_6D2C( var_0, var_1 )
+fire_sensor( var_0, var_1 )
 {
-    if ( _id_C229() )
-        var_1 = _id_FCA8( var_1, self.config._id_C228 - 4 );
+    if ( numexplosivesexceedmodelcapacity() )
+        var_1 = shiftindexforward( var_1, self.config.numexplosives - 4 );
 
-    var_2 = self._id_69F6;
-    self._id_69F6 = undefined;
-    var_3 = self.config._id_AC49 + var_1;
+    var_2 = self.explosive1;
+    self.explosive1 = undefined;
+    var_3 = self.config.lidtagroot + var_1;
     playfxontag( level._effect["ims_sensor_explode"], self, var_3 );
-    _id_9384( var_1, self.config );
+    imsopendoor( var_1, self.config );
     var_4 = self.config.weaponinfo;
     var_5 = self.owner;
     var_2 unlink();
-    var_2 rotateyaw( 3600, self._id_2528 );
-    var_2 moveto( self._id_2514 + self.origin, self._id_2528, self._id_2528 * 0.25, self._id_2528 * 0.25 );
+    var_2 rotateyaw( 3600, self.attackmovetime );
+    var_2 moveto( self.attackheightpos + self.origin, self.attackmovetime, self.attackmovetime * 0.25, self.attackmovetime * 0.25 );
 
     if ( isdefined( var_2.killcament ) )
     {
@@ -851,11 +851,11 @@ _id_6D2C( var_0, var_1 )
         var_6 unlink();
 
         if ( isdefined( self.owner ) )
-            self.owner._id_9381 = var_6;
+            self.owner.imskillcament = var_6;
 
-        var_6 moveto( self._id_2514 + self.origin + self.config.killcamoffset, self._id_2528, self._id_2528 * 0.25, self._id_2528 * 0.25 );
+        var_6 moveto( self.attackheightpos + self.origin + self.config.killcamoffset, self.attackmovetime, self.attackmovetime * 0.25, self.attackmovetime * 0.25 );
 
-        if ( !_id_C229() )
+        if ( !numexplosivesexceedmodelcapacity() )
             var_6 thread deleteaftertime( 5.0 );
     }
 
@@ -889,11 +889,11 @@ deleteaftertime( var_0 )
         self delete();
 }
 
-_id_937C()
+ims_timeout()
 {
     self endon( "death" );
     level endon( "game_ended" );
-    var_0 = level._id_9385[self._id_9386].lifespan;
+    var_0 = level.imssettings[self.imstype].lifespan;
 
     while ( var_0 )
     {
@@ -907,93 +907,93 @@ _id_937C()
     self notify( "death" );
 }
 
-_id_184F()
+addtoimslist()
 {
     var_0 = self getentitynumber();
     level.placedims[var_0] = self;
 }
 
-_id_E10B()
+removefromimslist()
 {
     var_0 = self getentitynumber();
     level.placedims[var_0] = undefined;
 }
 
-_id_936A()
+ims_hideallparts()
 {
     self hide();
     self.hidden = 1;
 }
 
-_id_937A()
+ims_showallparts()
 {
     self show();
     self.hidden = 0;
-    _id_9383( self, 1 );
+    imsopenalldoors( self, 1 );
 }
 
-_id_937E( var_0 )
+imscreateexplosive( var_0 )
 {
-    var_1 = spawn( "script_model", self gettagorigin( self.config._id_6A09 + var_0 + "_attach" ) );
-    var_1 setmodel( self.config._id_6A03 );
+    var_1 = spawn( "script_model", self gettagorigin( self.config.expltagroot + var_0 + "_attach" ) );
+    var_1 setmodel( self.config.explosivemodel );
     var_1.angles = self.angles;
-    var_1.killcament = self._id_A637[var_0 - 1];
+    var_1.killcament = self.killcam_ents[var_0 - 1];
     var_1.killcament linkto( self );
     return var_1;
 }
 
-_id_937F()
+imscreateexplosivewithkillcam()
 {
-    for ( var_0 = 1; var_0 <= self.config._id_C228 && isdefined( self._id_8BF0[var_0] ); var_0++ )
+    for ( var_0 = 1; var_0 <= self.config.numexplosives && isdefined( self.hasexplosivefired[var_0] ); var_0++ )
     {
 
     }
 
-    if ( var_0 <= self.config._id_C228 )
+    if ( var_0 <= self.config.numexplosives )
     {
-        if ( _id_C229() )
-            var_0 = _id_FCA8( var_0, self.config._id_C228 - 4 );
+        if ( numexplosivesexceedmodelcapacity() )
+            var_0 = shiftindexforward( var_0, self.config.numexplosives - 4 );
 
-        var_1 = _id_937E( var_0 );
+        var_1 = imscreateexplosive( var_0 );
         var_1 linkto( self );
-        self._id_69F6 = var_1;
+        self.explosive1 = var_1;
     }
 }
 
-_id_9384( var_0, var_1, var_2 )
+imsopendoor( var_0, var_1, var_2 )
 {
-    var_3 = var_1._id_AC49 + var_0 + "_attach";
+    var_3 = var_1.lidtagroot + var_0 + "_attach";
     var_4 = undefined;
 
     if ( isdefined( var_2 ) )
-        var_4 = var_1._id_AC48[var_0];
+        var_4 = var_1.lidsnapopenanims[var_0];
     else
-        var_4 = var_1._id_AC47[var_0];
+        var_4 = var_1.lidopenanims[var_0];
 
     self scriptmodelplayanim( var_4 );
-    var_5 = var_1._id_6A09 + var_0 + "_attach";
+    var_5 = var_1.expltagroot + var_0 + "_attach";
     self hidepart( var_5 );
 }
 
-_id_9383( var_0, var_1 )
+imsopenalldoors( var_0, var_1 )
 {
-    var_2 = self._id_8BF0.size;
+    var_2 = self.hasexplosivefired.size;
 
     if ( var_2 > 0 )
     {
-        if ( _id_C229() )
-            var_2 = _id_FCA8( var_2, self.config._id_C228 - 4 );
+        if ( numexplosivesexceedmodelcapacity() )
+            var_2 = shiftindexforward( var_2, self.config.numexplosives - 4 );
 
-        var_0 _id_9384( var_2, self.config, var_1 );
+        var_0 imsopendoor( var_2, self.config, var_1 );
     }
 }
 
-_id_C229()
+numexplosivesexceedmodelcapacity()
 {
-    return self.config._id_C228 > 4;
+    return self.config.numexplosives > 4;
 }
 
-_id_FCA8( var_0, var_1 )
+shiftindexforward( var_0, var_1 )
 {
     var_2 = var_0 - var_1;
     var_2 = max( 1, var_2 );

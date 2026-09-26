@@ -231,7 +231,7 @@ playsoundonplayers( var_0, var_1, var_2 )
             {
                 var_4 = level.players[var_3];
 
-                if ( var_4 issplitscreenplayer() && !var_4 isreloading() )
+                if ( var_4 issplitscreenplayer() && !var_4 issplitscreenplayerprimary() )
                     continue;
 
                 if ( isdefined( var_4.pers["team"] ) && var_4.pers["team"] == var_1 && !isexcluded( var_4, var_2 ) )
@@ -245,7 +245,7 @@ playsoundonplayers( var_0, var_1, var_2 )
         {
             var_4 = level.players[var_3];
 
-            if ( var_4 issplitscreenplayer() && !var_4 isreloading() )
+            if ( var_4 issplitscreenplayer() && !var_4 issplitscreenplayerprimary() )
                 continue;
 
             if ( isdefined( var_4.pers["team"] ) && var_4.pers["team"] == var_1 )
@@ -258,7 +258,7 @@ playsoundonplayers( var_0, var_1, var_2 )
     {
         for ( var_3 = 0; var_3 < level.players.size; var_3++ )
         {
-            if ( level.players[var_3] issplitscreenplayer() && !level.players[var_3] isreloading() )
+            if ( level.players[var_3] issplitscreenplayer() && !level.players[var_3] issplitscreenplayerprimary() )
                 continue;
 
             if ( !isexcluded( level.players[var_3], var_2 ) )
@@ -269,7 +269,7 @@ playsoundonplayers( var_0, var_1, var_2 )
     {
         for ( var_3 = 0; var_3 < level.players.size; var_3++ )
         {
-            if ( level.players[var_3] issplitscreenplayer() && !level.players[var_3] isreloading() )
+            if ( level.players[var_3] issplitscreenplayer() && !level.players[var_3] issplitscreenplayerprimary() )
                 continue;
 
             level.players[var_3] playlocalsound( var_0 );
@@ -315,7 +315,7 @@ playvoforlaststand( var_0, var_1 )
     var_0 thread scripts\cp\cp_vo::play_vo_on_player( var_2, undefined, 1 );
 }
 
-_id_3D8A()
+check_for_last_stand()
 {
     self endon( "disconnect" );
     self endon( "death" );
@@ -323,11 +323,11 @@ _id_3D8A()
     for (;;)
     {
         self waittill( "last_stand" );
-        _id_5AF8();
+        downed_sequence_vo_handler();
     }
 }
 
-_id_3D80()
+check_for_drill_planted()
 {
     for (;;)
     {
@@ -336,7 +336,7 @@ _id_3D80()
     }
 }
 
-_id_5AF8()
+downed_sequence_vo_handler()
 {
     self endon( "disconnect" );
     self endon( "death" );

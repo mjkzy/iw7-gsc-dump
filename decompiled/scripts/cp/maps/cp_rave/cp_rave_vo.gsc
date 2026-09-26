@@ -366,7 +366,7 @@ ww_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
         if ( !isdefined( var_9 ) )
             continue;
 
-        if ( var_9 issplitscreenplayer() && !var_9 isreloading() )
+        if ( var_9 issplitscreenplayer() && !var_9 issplitscreenplayerprimary() )
             continue;
 
         var_10 = scripts\cp\cp_vo::create_vo_data( var_0, var_3, var_5, var_6 );
@@ -478,7 +478,7 @@ play_announcer_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8
         if ( !isdefined( var_10 ) )
             continue;
 
-        if ( var_10 issplitscreenplayer() && !var_10 isreloading() )
+        if ( var_10 issplitscreenplayer() && !var_10 issplitscreenplayerprimary() )
             continue;
 
         if ( isdefined( var_8 ) && var_10.vo_prefix == var_8 )
@@ -777,7 +777,7 @@ starting_vo()
         {
             if ( var_3 issplitscreenplayer() )
             {
-                if ( var_3 isreloading() )
+                if ( var_3 issplitscreenplayerprimary() )
                 {
                     if ( isdefined( var_3.vo_prefix ) )
                     {
@@ -847,7 +847,7 @@ memory_vo_handler( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     if ( !isdefined( var_7 ) )
         return;
 
-    if ( var_7 issplitscreenplayer() && !var_7 isreloading() )
+    if ( var_7 issplitscreenplayer() && !var_7 issplitscreenplayerprimary() )
         return;
 
     var_8 = scripts\cp\cp_vo::create_vo_data( var_0, var_3, var_5, var_6 );
@@ -896,7 +896,7 @@ play_ks_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
             if ( !isdefined( var_9 ) )
                 continue;
 
-            if ( var_9 issplitscreenplayer() && !var_9 isreloading() )
+            if ( var_9 issplitscreenplayer() && !var_9 issplitscreenplayerprimary() )
                 continue;
 
             if ( isdefined( level.survivor ) )

@@ -31,33 +31,35 @@ createcarryobject( var_0, var_1, var_2 )
     var_3 = getent( var_0, "targetname" );
 
     if ( !isdefined( var_3 ) )
-        scripts\engine\utility::error( "No model named " + var_0 + " found!" );
-    else
     {
-        var_4 = spawn( "trigger_radius", var_3.origin, 0, 96, 120 );
-        var_5 = scripts\mp\gameobjects::createcarryobject( var_1, var_4, [ var_3 ], ( 0, 0, 85 ) );
-        var_5 scripts\mp\gameobjects::setteamusetime( "friendly", var_2.pickuptime );
-        var_5 scripts\mp\gameobjects::setteamusetime( "enemy", var_2.pickuptime );
-        var_5 scripts\mp\gameobjects::setteamusetext( "enemy", var_2.usetextfriendly );
-        var_5 scripts\mp\gameobjects::setteamusetext( "friendly", var_2.usetextenemy );
-        var_5 scripts\mp\gameobjects::allowcarry( "enemy" );
-        var_5 scripts\mp\gameobjects::set2dicon( "enemy", var_2.pickupicon );
-        var_5 scripts\mp\gameobjects::set3dicon( "enemy", var_2.pickupicon );
-        var_5 scripts\mp\gameobjects::setvisibleteam( "enemy" );
-        var_5.objidpingenemy = 1;
-        var_5.allowweapons = 1;
-        var_5.onpickup = var_2.onpickupfn;
-        var_5.onpickupfailed = var_2.onpickupfailfn;
-        var_5.ondrop = var_2.ondropfn;
-        var_5.onreset = var_2.onresetfn;
-        var_5.settings = var_2;
-
-        if ( !isdefined( var_2.carrymodel ) )
-            var_2.carrymodel = var_3.model;
-
-        var_5 setnodeploy( 1 );
-        var_5 setnonstick( 1 );
+        scripts\engine\utility::error( "No model named " + var_0 + " found!" );
+        return;
     }
+
+    var_4 = spawn( "trigger_radius", var_3.origin, 0, 96, 120 );
+    var_5 = scripts\mp\gameobjects::createcarryobject( var_1, var_4, [ var_3 ], ( 0, 0, 85 ) );
+    var_5 scripts\mp\gameobjects::setteamusetime( "friendly", var_2.pickuptime );
+    var_5 scripts\mp\gameobjects::setteamusetime( "enemy", var_2.pickuptime );
+    var_5 scripts\mp\gameobjects::setteamusetext( "enemy", var_2.usetextfriendly );
+    var_5 scripts\mp\gameobjects::setteamusetext( "friendly", var_2.usetextenemy );
+    var_5 scripts\mp\gameobjects::allowcarry( "enemy" );
+    var_5 scripts\mp\gameobjects::set2dicon( "enemy", var_2.pickupicon );
+    var_5 scripts\mp\gameobjects::set3dicon( "enemy", var_2.pickupicon );
+    var_5 scripts\mp\gameobjects::setvisibleteam( "enemy" );
+    var_5.objidpingfriendly = 1;
+    var_5.allowweapons = 1;
+    var_5.onpickup = var_2.onpickupfn;
+    var_5.onpickupfailed = var_2.onpickupfailfn;
+    var_5.ondrop = var_2.ondropfn;
+    var_5.onreset = var_2.onresetfn;
+    var_5.settings = var_2;
+
+    if ( !isdefined( var_2.carrymodel ) )
+        var_2.carrymodel = var_3.model;
+
+    var_5 setnodeploy( 1 );
+    var_5 setnonstick( 1 );
+    return var_5;
 }
 
 creategoal( var_0, var_1, var_2, var_3 )
@@ -65,27 +67,29 @@ creategoal( var_0, var_1, var_2, var_3 )
     var_4 = getent( var_0, "targetname" );
 
     if ( !isdefined( var_4 ) )
-        scripts\engine\utility::error( "No goal trigger named " + var_4 + " found!" );
-    else
     {
-        var_5 = scripts\mp\gameobjects::createuseobject( var_2, var_4, [], ( 0, 0, 85 ) );
-        var_5 scripts\mp\gameobjects::allowuse( "enemy" );
-        var_5 scripts\mp\gameobjects::setvisibleteam( "any" );
-        var_5 scripts\mp\gameobjects::set2dicon( "friendly", "waypoint_blitz_defend" );
-        var_5 scripts\mp\gameobjects::set3dicon( "friendly", "waypoint_blitz_defend" );
-        var_5 scripts\mp\gameobjects::set2dicon( "enemy", "waypoint_blitz_goal" );
-        var_5 scripts\mp\gameobjects::set3dicon( "enemy", "waypoint_blitz_goal" );
-        var_5 scripts\mp\gameobjects::setusetime( var_3.delivertime );
-        var_5 scripts\mp\gameobjects::setkeyobject( var_1 );
-        var_5.onuse = var_3.ondelivered;
-        var_5.settings = var_3;
+        scripts\engine\utility::error( "No goal trigger named " + var_4 + " found!" );
+        return;
     }
+
+    var_5 = scripts\mp\gameobjects::createuseobject( var_2, var_4, [], ( 0, 0, 85 ) );
+    var_5 scripts\mp\gameobjects::allowuse( "enemy" );
+    var_5 scripts\mp\gameobjects::setvisibleteam( "any" );
+    var_5 scripts\mp\gameobjects::set2dicon( "friendly", "waypoint_blitz_defend" );
+    var_5 scripts\mp\gameobjects::set3dicon( "friendly", "waypoint_blitz_defend" );
+    var_5 scripts\mp\gameobjects::set2dicon( "enemy", "waypoint_blitz_goal" );
+    var_5 scripts\mp\gameobjects::set3dicon( "enemy", "waypoint_blitz_goal" );
+    var_5 scripts\mp\gameobjects::setusetime( var_3.delivertime );
+    var_5 scripts\mp\gameobjects::setkeyobject( var_1 );
+    var_5.onuse = var_3.ondelivered;
+    var_5.settings = var_3;
+    return var_5;
 }
 
 onobjectpickup( var_0 )
 {
     if ( var_0.team == scripts\mp\gameobjects::getownerteam() )
-        scripts\mp\gameobjects::returnobjectiveid();
+        scripts\mp\gameobjects::returnhome();
     else
     {
         var_0 attachobjecttocarrier( self.settings.carrymodel );
@@ -114,7 +118,7 @@ returnaftertime()
 
     self endon( "picked_up" );
     wait( self.settings.returntime );
-    scripts\mp\gameobjects::returnobjectiveid();
+    scripts\mp\gameobjects::returnhome();
 }
 
 onobjectreset()

@@ -29,7 +29,7 @@ init()
     level.sentrysettings["crafted_autosentry"].hintstring = &"COOP_CRAFTABLES_PICKUP";
     level.sentrysettings["crafted_autosentry"].headicon = 1;
     level.sentrysettings["crafted_autosentry"].vodestroyed = "sentry_destroyed";
-    level.sentrysettings["crafted_autosentry"]._id_9F43 = 0;
+    level.sentrysettings["crafted_autosentry"].issentient = 0;
 }
 
 give_crafted_sentry( var_0, var_1 )
@@ -176,9 +176,9 @@ sentry_initsentry( var_0, var_1 )
             self setrightarc( 100 );
             self setbottomarc( 90 );
             self settoparc( 60 );
-            self _meth_82C9( 0.3, "pitch" );
-            self _meth_82C9( 0.3, "yaw" );
-            self _meth_82C8( 0.65 );
+            self setconvergencetime( 0.3, "pitch" );
+            self setconvergencetime( 0.3, "yaw" );
+            self setconvergenceheightpercent( 0.65 );
             self setdefaultdroppitch( -89.0 );
             break;
     }
@@ -211,10 +211,10 @@ sentry_handledeath( var_0 )
     self playsound( "sentry_explode" );
 
     if ( isdefined( self ) )
-        thread _id_F23F();
+        thread sentry_deleteturret();
 }
 
-_id_F23F()
+sentry_deleteturret()
 {
     self notify( "sentry_delete_turret" );
     self endon( "sentry_delete_turret" );
@@ -225,7 +225,7 @@ _id_F23F()
         playfxontag( scripts\engine\utility::getfx( "sentry_smoke_mp" ), self, "tag_aim" );
         self.inuseby scripts\cp\utility::restore_player_perk();
         self notify( "deleting" );
-        self _meth_83D3( self.inuseby );
+        self useby( self.inuseby );
         wait 1.0;
     }
     else
@@ -269,7 +269,7 @@ sentry_handleuse()
 
 sentry_setowner( var_0 )
 {
-    var_0._id_4BAE = self;
+    var_0.current_sentry = self;
     self.owner = var_0;
     self setsentryowner( self.owner );
     self.team = self.owner.team;
@@ -281,7 +281,7 @@ sentry_setplaced()
 {
     self setmodel( level.sentrysettings[self.sentrytype].modelbase );
 
-    if ( self _meth_813D() == "manual" )
+    if ( self getmode() == "manual" )
         self setmode( level.sentrysettings[self.sentrytype].sentrymodeoff );
 
     self setsentrycarrier( undefined );
@@ -293,7 +293,7 @@ sentry_setplaced()
     {
         self.owner.iscarrying = 0;
 
-        if ( level.sentrysettings[self.sentrytype]._id_9F43 )
+        if ( level.sentrysettings[self.sentrytype].issentient )
             scripts\cp\utility::make_entity_sentient_cp( self.owner.team );
 
         self.owner notify( "new_sentry", self );
@@ -346,7 +346,7 @@ updatesentryplacement( var_0, var_1 )
 
     for (;;)
     {
-        var_0.canbeplaced = _id_3834( var_0 );
+        var_0.canbeplaced = can_place_sentry( var_0 );
 
         if ( var_0.canbeplaced != var_2 )
         {
@@ -371,7 +371,7 @@ updatesentryplacement( var_0, var_1 )
     }
 }
 
-_id_3834( var_0 )
+can_place_sentry( var_0 )
 {
     var_1 = self canplayerplacesentry();
     var_0.origin = var_1["origin"];
@@ -398,7 +398,7 @@ sentry_setactive()
         {
             case "crafted_autosentry":
                 var_2 = self getentitynumber();
-                _id_1862( var_2, var_1 );
+                addtoturretlist( var_2, var_1 );
                 break;
         }
     }
@@ -409,7 +409,7 @@ sentry_setinactive()
     self setmode( level.sentrysettings[self.sentrytype].sentrymodeoff );
     self makeunusable();
     var_0 = self getentitynumber();
-    _id_E11F( var_0 );
+    removefromturretlist( var_0 );
 }
 
 sentry_makesolid()
@@ -422,7 +422,7 @@ sentry_makenotsolid()
     self setcontents( 0 );
 }
 
-_id_1862( var_0, var_1 )
+addtoturretlist( var_0, var_1 )
 {
     level.turrets = scripts\engine\utility::add_to_array( level.turrets, self );
 
@@ -436,7 +436,7 @@ _id_1862( var_0, var_1 )
     }
 }
 
-_id_E11F( var_0 )
+removefromturretlist( var_0 )
 {
     level.turrets = scripts\engine\utility::array_remove( level.turrets, self );
 }

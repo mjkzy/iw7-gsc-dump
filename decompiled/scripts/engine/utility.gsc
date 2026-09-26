@@ -1230,7 +1230,7 @@ add_to_array( var_0, var_1 )
     return var_0;
 }
 
-exist_in_array_MAYBE( var_0, var_1 )
+_id_693B( var_0, var_1 )
 {
     var_2 = 0;
 
@@ -1810,8 +1810,8 @@ allow_weapon( var_0 )
         {
             self enableweapons();
 
-            if ( isdefined( level.allow_weapon_func ) )
-                self [[ level.allow_weapon_func ]]( 1 );
+            if ( isdefined( level.allow_weapon_mp ) )
+                self [[ level.allow_weapon_mp ]]( 1 );
         }
     }
     else
@@ -1821,8 +1821,8 @@ allow_weapon( var_0 )
 
         if ( !self.disabledweapon )
         {
-            if ( isdefined( level.allow_weapon_func ) )
-                self [[ level.allow_weapon_func ]]( 0 );
+            if ( isdefined( level.allow_weapon_mp ) )
+                self [[ level.allow_weapon_mp ]]( 0 );
 
             self disableweapons();
         }
@@ -2742,7 +2742,7 @@ unlock_thread( var_0 )
     var_1 notify( "unlocked" );
 }
 
-get_template_script_MAYBE()
+get_template_level()
 {
     var_0 = level.script;
 
@@ -2943,7 +2943,7 @@ array_sort_with_func( var_0, var_1 )
     return var_0;
 }
 
-add_func_ref_MAYBE( var_0, var_1 )
+_id_16DC( var_0, var_1 )
 {
     if ( !isdefined( level.func ) )
         level.func = [];
@@ -2951,13 +2951,13 @@ add_func_ref_MAYBE( var_0, var_1 )
     level.func[var_0] = var_1;
 }
 
-init_empty_func_ref_MAYBE( var_0 )
+_id_95C6( var_0 )
 {
     if ( !isdefined( level.func ) )
         level.func = [];
 
     if ( !isdefined( level.func[var_0] ) )
-        add_func_ref_MAYBE( var_0, ::empty_init_func );
+        _id_16DC( var_0, ::empty_init_func );
 }
 
 add_init_script( var_0, var_1 )
@@ -3921,7 +3921,7 @@ allow_reload( var_0, var_1 )
         self allowreload( 0 );
 
         if ( !isdefined( var_1 ) || !var_1 )
-            self _meth_8545();
+            self cancelreload();
     }
 }
 
@@ -3947,19 +3947,19 @@ allow_autoreload( var_0 )
     }
 }
 
-forceenable_weapon_MAYBE()
+_id_725F()
 {
     self.disabledweapon = 0;
     self enableweapons();
 }
 
-forceenable_fire_MAYBE()
+_id_725D()
 {
     self.disabledfire = 0;
     self allowfire( 1 );
 }
 
-forceenable_melee_MAYBE()
+_id_725E()
 {
     self.disabledmelee = 0;
     self allowmelee( 1 );
@@ -4010,7 +4010,7 @@ void()
 
 }
 
-_id_9DA3()
+iscurrentenemyvalid()
 {
     if ( !isdefined( self.enemy ) )
         return 0;

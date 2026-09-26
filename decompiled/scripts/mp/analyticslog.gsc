@@ -241,7 +241,7 @@ buildkilldeathactionvalue()
 
 buildloadoutstring()
 {
-    var_0 = "archetype=" + self.loadoutarchetype + ";" + "powerPrimary=" + self._id_AE7B + ";" + "powerSecondary=" + self._id_AE7D + ";" + "weaponPrimary\t =" + scripts\mp\class::buildweaponname( self.loadoutprimary, self.loadoutprimaryattachments, self.loadoutprimarycamo, self.loadoutprimaryreticle ) + ";" + "weaponSecondary =" + scripts\mp\class::buildweaponname( self.loadoutsecondary, self.loadoutsecondaryattachments, self.loadoutsecondarycamo, self.loadoutsecondaryreticle ) + ";";
+    var_0 = "archetype=" + self.loadoutarchetype + ";" + "powerPrimary=" + self.loadoutpowerprimary + ";" + "powerSecondary=" + self.loadoutpowersecondary + ";" + "weaponPrimary\t =" + scripts\mp\class::buildweaponname( self.loadoutprimary, self.loadoutprimaryattachments, self.loadoutprimarycamo, self.loadoutprimaryreticle ) + ";" + "weaponSecondary =" + scripts\mp\class::buildweaponname( self.loadoutsecondary, self.loadoutsecondaryattachments, self.loadoutsecondarycamo, self.loadoutsecondaryreticle ) + ";";
     return var_0;
 }
 
@@ -276,7 +276,7 @@ logevent_playerspawn()
     if ( !shouldplayerlogevents( self ) )
         return;
 
-    var_0 = isdefined( self.lastspawnpoint ) && isdefined( self.lastspawnpoint.budgetedents ) && self.lastspawnpoint.budgetedents;
+    var_0 = isdefined( self.lastspawnpoint ) && isdefined( self.lastspawnpoint.buddyspawn ) && self.lastspawnpoint.buddyspawn;
     var_1 = anglestoforward( self.angles );
     bbprint( "gamemp_spawn_in", "playerid %i x %f y %f z %f orientx %f orienty %f orientz %f loadout %s type %s team %s", self.analyticslog.playerid, self.origin[0], self.origin[1], self.origin[2], var_1[0], var_1[1], var_1[2], buildloadoutstring(), scripts\engine\utility::ter_op( var_0, "Buddy", "Normal" ), self.team );
 }
@@ -402,7 +402,7 @@ logevent_spawnpointupdate()
         return;
 
     foreach ( var_1 in level.spawnpoints )
-        bbprint( "gamemp_spawn_point", "x %f y %f z %f allies_score %i axis_score %i allies_max_score %i axis_max_score %i state %s", var_1.origin[0], var_1.origin[1], var_1.origin[2], scripts\engine\utility::ter_op( isdefined( var_1._id_A9E9["allies"] ), var_1._id_A9E9["allies"], 0 ), scripts\engine\utility::ter_op( isdefined( var_1._id_A9E9["axis"] ), var_1._id_A9E9["axis"], 0 ), scripts\engine\utility::ter_op( isdefined( var_1._id_11A3A ), var_1._id_11A3A, 0 ), scripts\engine\utility::ter_op( isdefined( var_1._id_11A3A ), var_1._id_11A3A, 0 ), buildspawnpointstatestring( var_1 ) );
+        bbprint( "gamemp_spawn_point", "x %f y %f z %f allies_score %i axis_score %i allies_max_score %i axis_max_score %i state %s", var_1.origin[0], var_1.origin[1], var_1.origin[2], scripts\engine\utility::ter_op( isdefined( var_1.lastscore["allies"] ), var_1.lastscore["allies"], 0 ), scripts\engine\utility::ter_op( isdefined( var_1.lastscore["axis"] ), var_1.lastscore["axis"], 0 ), scripts\engine\utility::ter_op( isdefined( var_1.totalpossiblescore ), var_1.totalpossiblescore, 0 ), scripts\engine\utility::ter_op( isdefined( var_1.totalpossiblescore ), var_1.totalpossiblescore, 0 ), buildspawnpointstatestring( var_1 ) );
 }
 
 logevent_frontlineupdate( var_0, var_1, var_2, var_3, var_4 )
@@ -740,10 +740,10 @@ analyticssend_spawntype( var_0, var_1, var_2, var_3 )
     var_12 = level.spawnglobals.logicvariantid;
     var_13 = 0;
 
-    if ( isdefined( level.spawnglobals.buddyspawnid ) )
+    if ( isdefined( level.spawnglobals.buddyplayerid ) )
     {
-        var_13 = level.spawnglobals.buddyspawnid;
-        level.spawnglobals.buddyspawnid = 0;
+        var_13 = level.spawnglobals.buddyplayerid;
+        level.spawnglobals.buddyplayerid = 0;
     }
 
     bbreportspawntypes( var_6, var_7, var_8, var_9, var_3, var_10, var_11, var_2, var_12, var_13 );

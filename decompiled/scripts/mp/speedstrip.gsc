@@ -58,7 +58,7 @@ _id_109B7( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( self.owner ) && var_0 != self.owner )
     {
-        var_0 scripts\mp\killstreaks\killstreaks::_id_83A0();
+        var_0 scripts\mp\killstreaks\killstreaks::givescoreforequipment();
         var_0 notify( "destroyed_equipment" );
     }
 
@@ -180,7 +180,7 @@ _id_13B54( var_0, var_1 )
             foreach ( var_4 in level._id_109BE )
                 var_2 scripts\mp\utility::giveperk( var_4 );
 
-            if ( !( isdefined( var_2.powers ) && var_2 scripts\mp\powers::hasequipment( "power_speedBoost" ) && var_2.powers["power_speedBoost"].active ) )
+            if ( !( isdefined( var_2.powers ) && var_2 scripts\mp\powers::haspower( "power_speedBoost" ) && var_2.powers["power_speedBoost"].active ) )
             {
                 var_2.speedstripmod = 0.2;
                 var_2 scripts\mp\weapons::updatemovespeedscale();

@@ -16,7 +16,7 @@ init()
     level.objpointscale = 1.0;
 }
 
-_id_4A23( var_0, var_1, var_2, var_3, var_4, var_5 )
+createteamobjpoint( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     var_6 = getobjpointbyname( var_0 );
 
@@ -40,7 +40,7 @@ _id_4A23( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_6.z = var_1[2];
     var_6.team = var_2;
     var_6.isflashing = 0;
-    var_6._id_9F51 = 1;
+    var_6.isshown = 1;
     var_6 setshader( var_3, level.objpointsize, level.objpointsize );
     var_6 setwaypoint( 1, 0 );
 

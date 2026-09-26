@@ -12,7 +12,7 @@ init()
 
 updatedamagefeedback( var_0, var_1, var_2, var_3, var_4 )
 {
-    if ( !isplayer( self ) && !scripts\mp\utility::_id_9EF0( self ) )
+    if ( !isplayer( self ) && !scripts\mp\utility::isplayerkillstreak( self ) )
         return;
 
     if ( !isdefined( var_3 ) )
@@ -23,11 +23,11 @@ updatedamagefeedback( var_0, var_1, var_2, var_3, var_4 )
 
     if ( ( !isdefined( level.damagefeedbacknosound ) || !level.damagefeedbacknosound ) && !var_4 )
     {
-        if ( !isdefined( self._id_903F ) )
-            self._id_903F = 0;
+        if ( !isdefined( self.hitmarkeraudioevents ) )
+            self.hitmarkeraudioevents = 0;
 
-        self._id_903F++;
-        self setclientomnvar( "ui_hitmarker_audio_events", self._id_903F % 16 );
+        self.hitmarkeraudioevents++;
+        self setclientomnvar( "ui_hitmarker_audio_events", self.hitmarkeraudioevents % 16 );
     }
 
     switch ( var_0 )
@@ -71,11 +71,11 @@ updatehitmarker( var_0, var_1, var_2 )
     var_2 = 0;
     var_3 = gethitmarkerpriority( var_0 );
 
-    if ( isdefined( self._id_A99E ) && self._id_A99E == gettime() && var_3 <= self._id_A99D && !var_1 )
+    if ( isdefined( self.lasthitmarkertime ) && self.lasthitmarkertime == gettime() && var_3 <= self.lasthitmarkerpriority && !var_1 )
         return;
 
-    self._id_A99E = gettime();
-    self._id_A99D = var_3;
+    self.lasthitmarkertime = gettime();
+    self.lasthitmarkerpriority = var_3;
     self setclientomnvar( "damage_feedback", var_0 );
     self setclientomnvar( "damage_feedback_notify", gettime() );
 

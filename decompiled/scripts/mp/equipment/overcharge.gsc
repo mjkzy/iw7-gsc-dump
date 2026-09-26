@@ -14,7 +14,7 @@ _id_E14D( var_0, var_1 )
     self endon( "disconnect" );
     level endon( "game_ended" );
 
-    for ( var_2 = scripts\mp\powers::_id_808F( var_0 ) / 1000; var_2 > 0; var_2 = scripts\mp\powers::_id_808F( var_0 ) / 1000 )
+    for ( var_2 = scripts\mp\powers::getpowerovertimeduration( var_0 ) / 1000; var_2 > 0; var_2 = scripts\mp\powers::getpowerovertimeduration( var_0 ) / 1000 )
         wait( var_2 );
 
     self playlocalsound( "mp_overcharge_off" );
@@ -29,7 +29,7 @@ _id_E14C( var_0 )
     if ( isdefined( self._id_C7E6 ) && self._id_C7E6 )
     {
         self notify( "removeOvercharge" );
-        self._id_C7E8 = undefined;
+        self.overchargeviewkickscale = undefined;
         scripts\mp\weapons::updateviewkickscale();
         _id_E12D();
         self.powers["power_overCharge"].active = 0;
@@ -67,7 +67,7 @@ useovercharge()
     thread _id_20D4();
     scripts\mp\utility::giveperk( "specialty_overcharge" );
     var_4 = "power_overCharge_update";
-    self._id_C7E8 = 0.0;
+    self.overchargeviewkickscale = 0.0;
     scripts\mp\weapons::updateviewkickscale();
     thread scripts\mp\powers::_id_4575( var_0, var_4, "removeOvercharge" );
     thread _id_E14D( var_4, var_3 );

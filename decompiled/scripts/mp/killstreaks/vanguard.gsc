@@ -3,46 +3,46 @@
 
 init()
 {
-    _id_FAB1();
-    _id_FAC4();
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "vanguard", ::_id_1290D );
+    setupfx();
+    setuphelirange();
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "vanguard", ::tryusevanguard );
     level.remote_uav = [];
     level.vanguard_lastdialogtime = 0;
-    level._id_1317F = ::vanguard_firemissile;
-    level._id_A864 = loadfx( "vfx/misc/laser_glow" );
+    level.vanguardfiremisslefunc = ::vanguard_firemissile;
+    level.lasedstrikeglow = loadfx( "vfx/misc/laser_glow" );
 }
 
-_id_FAB1()
+setupfx()
 {
 
 }
 
-_id_FAC4()
+setuphelirange()
 {
-    level._id_13182 = getentarray( "remote_heli_range", "targetname" );
-    level._id_13181 = getent( "airstrikeheight", "targetname" );
+    level.vanguardrangetriggers = getentarray( "remote_heli_range", "targetname" );
+    level.vanguardmaxheightent = getent( "airstrikeheight", "targetname" );
 
-    if ( isdefined( level._id_13181 ) )
+    if ( isdefined( level.vanguardmaxheightent ) )
     {
-        level._id_13180 = level._id_13181.origin[2];
-        level._id_13183 = 163840000;
+        level.vanguardmaxheight = level.vanguardmaxheightent.origin[2];
+        level.vanguradmaxdistancesq = 163840000;
     }
 
-    level._id_9C46 = 0;
+    level.is_mp_descent = 0;
 
     if ( scripts\mp\utility::getmapname() == "mp_descent" || scripts\mp\utility::getmapname() == "mp_descent_new" )
     {
-        level._id_13180 = level._id_13182[0].origin[2] + 360;
-        level._id_9C46 = 1;
+        level.vanguardmaxheight = level.vanguardrangetriggers[0].origin[2] + 360;
+        level.is_mp_descent = 1;
     }
 }
 
-_id_1290D( var_0, var_1 )
+tryusevanguard( var_0, var_1 )
 {
-    return _id_130F5( var_0, var_1 );
+    return usevanguard( var_0, var_1 );
 }
 
-_id_130F5( var_0, var_1 )
+usevanguard( var_0, var_1 )
 {
     if ( scripts\mp\utility::isusingremote() || self isusingturret() )
         return 0;
@@ -67,7 +67,7 @@ _id_130F5( var_0, var_1 )
     }
 
     scripts\mp\utility::incrementfauxvehiclecount();
-    var_2 = _id_8356( var_0, var_1 );
+    var_2 = givecarryvanguard( var_0, var_1 );
 
     if ( !isdefined( var_2 ) )
     {
@@ -76,7 +76,7 @@ _id_130F5( var_0, var_1 )
     }
 
     scripts\mp\matchdata::logkillstreakevent( var_1, self.origin );
-    return _id_10E0A( var_2, var_1, var_0 );
+    return startvanguard( var_2, var_1, var_0 );
 }
 
 exceededmaxvanguards( var_0 )
@@ -87,7 +87,7 @@ exceededmaxvanguards( var_0 )
         return isdefined( level.remote_uav[var_0] ) || isdefined( level.remote_uav[level.otherteam[var_0]] );
 }
 
-_id_6CCC( var_0, var_1 )
+findvalidvanguardspawnpoint( var_0, var_1 )
 {
     var_2 = anglestoforward( self.angles );
     var_3 = anglestoright( self.angles );
@@ -95,54 +95,54 @@ _id_6CCC( var_0, var_1 )
     var_5 = var_4 + ( 0, 0, var_1 );
     var_6 = var_5 + var_0 * var_2;
 
-    if ( _id_3E5C( var_4, var_6 ) )
+    if ( checkvanguardspawnpoint( var_4, var_6 ) )
         return var_6;
 
     var_6 = var_5 - var_0 * var_2;
 
-    if ( _id_3E5C( var_4, var_6 ) )
+    if ( checkvanguardspawnpoint( var_4, var_6 ) )
         return var_6;
 
     var_6 = var_6 + var_0 * var_3;
 
-    if ( _id_3E5C( var_4, var_6 ) )
+    if ( checkvanguardspawnpoint( var_4, var_6 ) )
         return var_6;
 
     var_6 = var_5 - var_0 * var_3;
 
-    if ( _id_3E5C( var_4, var_6 ) )
+    if ( checkvanguardspawnpoint( var_4, var_6 ) )
         return var_6;
 
     var_6 = var_5;
 
-    if ( _id_3E5C( var_4, var_6 ) )
+    if ( checkvanguardspawnpoint( var_4, var_6 ) )
         return var_6;
 
     scripts\engine\utility::waitframe();
     var_6 = var_5 + 0.707 * var_0 * ( var_2 + var_3 );
 
-    if ( _id_3E5C( var_4, var_6 ) )
+    if ( checkvanguardspawnpoint( var_4, var_6 ) )
         return var_6;
 
     var_6 = var_5 + 0.707 * var_0 * ( var_2 - var_3 );
 
-    if ( _id_3E5C( var_4, var_6 ) )
+    if ( checkvanguardspawnpoint( var_4, var_6 ) )
         return var_6;
 
     var_6 = var_5 + 0.707 * var_0 * ( var_3 - var_2 );
 
-    if ( _id_3E5C( var_4, var_6 ) )
+    if ( checkvanguardspawnpoint( var_4, var_6 ) )
         return var_6;
 
     var_6 = var_5 + 0.707 * var_0 * ( -1 * var_2 - var_3 );
 
-    if ( _id_3E5C( var_4, var_6 ) )
+    if ( checkvanguardspawnpoint( var_4, var_6 ) )
         return var_6;
 
     return undefined;
 }
 
-_id_3E5C( var_0, var_1 )
+checkvanguardspawnpoint( var_0, var_1 )
 {
     var_2 = 0;
 
@@ -152,27 +152,27 @@ _id_3E5C( var_0, var_1 )
     return var_2;
 }
 
-_id_8356( var_0, var_1, var_2 )
+givecarryvanguard( var_0, var_1, var_2 )
 {
-    var_3 = scripts\mp\spawnscoring::_id_6CB5( self, 90, 20, 192 );
+    var_3 = scripts\mp\spawnscoring::finddronepathnode( self, 90, 20, 192 );
 
     if ( !isdefined( var_3 ) )
     {
-        var_3 = scripts\mp\spawnscoring::_id_6CB5( self, 0, 20, 192 );
+        var_3 = scripts\mp\spawnscoring::finddronepathnode( self, 0, 20, 192 );
 
         if ( !isdefined( var_3 ) )
         {
-            var_3 = _id_6CCC( 80, 35 );
+            var_3 = findvalidvanguardspawnpoint( 80, 35 );
 
             if ( !isdefined( var_3 ) )
-                var_3 = _id_6CCC( 80, 0 );
+                var_3 = findvalidvanguardspawnpoint( 80, 0 );
         }
     }
 
     if ( isdefined( var_3 ) )
     {
         var_4 = self.angles;
-        var_5 = _id_4A30( var_0, self, var_1, var_3, var_4, var_2 );
+        var_5 = createvanguard( var_0, self, var_1, var_3, var_4, var_2 );
 
         if ( !isdefined( var_5 ) )
             scripts\mp\hud_message::showerrormessage( "KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
@@ -186,7 +186,7 @@ _id_8356( var_0, var_1, var_2 )
     }
 }
 
-_id_10E0A( var_0, var_1, var_2 )
+startvanguard( var_0, var_1, var_2 )
 {
     scripts\mp\utility::setusingremote( var_1 );
     scripts\mp\utility::freezecontrolswrapper( 1 );
@@ -217,9 +217,9 @@ _id_10E0A( var_0, var_1, var_2 )
     return 1;
 }
 
-_id_1316F( var_0 )
+vanguard_moving_platform_death( var_0 )
 {
-    if ( !isdefined( var_0.lasttouchedplatform.destroydroneoncollision ) || var_0.lasttouchedplatform.destroydroneoncollision || !isdefined( self._id_108D4 ) || gettime() > self._id_108D4 )
+    if ( !isdefined( var_0.lasttouchedplatform.destroydroneoncollision ) || var_0.lasttouchedplatform.destroydroneoncollision || !isdefined( self.spawngraceperiod ) || gettime() > self.spawngraceperiod )
         thread handledeathdamage( undefined, undefined, undefined, undefined );
     else
     {
@@ -228,7 +228,7 @@ _id_1316F( var_0 )
     }
 }
 
-_id_4A30( var_0, var_1, var_2, var_3, var_4, var_5 )
+createvanguard( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     var_6 = spawnhelicopter( var_1, var_3, var_4, "remote_uav_mp", "veh_mil_air_un_pocketdrone_mp" );
 
@@ -236,7 +236,7 @@ _id_4A30( var_0, var_1, var_2, var_3, var_4, var_5 )
         return undefined;
 
     var_6 scripts\mp\killstreaks\helicopter::addtolittlebirdlist();
-    var_6 thread scripts\mp\killstreaks\helicopter::_id_E111();
+    var_6 thread scripts\mp\killstreaks\helicopter::removefromlittlebirdlistondeath();
     var_6 makevehiclesolidcapsule( 20, -5, 10 );
     var_6.attackarrow = spawn( "script_model", ( 0, 0, 0 ) );
     var_6.attackarrow setmodel( "tag_origin" );
@@ -260,7 +260,7 @@ _id_4A30( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_6.health = 999999;
     var_6.maxhealth = 750;
     var_6.damagetaken = 0;
-    var_6._id_1037E = 0;
+    var_6.smoking = 0;
     var_6.inheliproximity = 0;
     var_6.helitype = "remote_uav";
     var_7.owner = var_1;
@@ -270,23 +270,23 @@ _id_4A30( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_7.health = 999999;
     var_7.maxhealth = 250;
     var_7.damagetaken = 0;
-    level thread _id_1316B( var_6 );
-    level thread _id_1316E( var_6, var_5 );
-    level thread _id_13169( var_6 );
-    level thread _id_1316D( var_6 );
-    var_6 thread _id_1317D();
-    var_6 thread _id_1317E();
+    level thread vanguard_monitorkillstreakdisowned( var_6 );
+    level thread vanguard_monitortimeout( var_6, var_5 );
+    level thread vanguard_monitordeath( var_6 );
+    level thread vanguard_monitorobjectivecam( var_6 );
+    var_6 thread vanguard_watch_distance();
+    var_6 thread vanguard_watchheliproximity();
     var_6 thread vanguard_handledamage();
-    var_6.turret thread _id_1317B();
+    var_6.turret thread vanguard_turret_handledamage();
     var_6 thread watchempdamage();
     var_8 = spawn( "script_model", var_6.origin );
     var_8 setscriptmoverkillcam( "explosive" );
     var_8 linkto( var_6, "tag_player", ( -10, 0, 20 ), ( 0, 0, 0 ) );
     var_6.killcament = var_8;
-    var_6._id_108D4 = gettime() + 2000;
+    var_6.spawngraceperiod = gettime() + 2000;
     var_9 = spawnstruct();
-    var_9._id_13139 = 1;
-    var_9.deathoverridecallback = ::_id_1316F;
+    var_9.validateaccuratetouching = 1;
+    var_9.deathoverridecallback = ::vanguard_moving_platform_death;
     var_6 thread scripts\mp\movers::handle_moving_platforms( var_9 );
     level.remote_uav[var_6.team] = var_6;
     return var_6;
@@ -303,8 +303,8 @@ watchhostmigrationfinishedinit( var_0 )
     for (;;)
     {
         level waittill( "host_migration_end" );
-        _id_98DE();
-        var_0 thread _id_13175();
+        initvanguardhud();
+        var_0 thread vanguard_reticlestart();
     }
 }
 
@@ -316,28 +316,28 @@ watchintrocleared( var_0 )
     level endon( "game_ended" );
     var_0 endon( "death" );
     self waittill( "intro_cleared" );
-    _id_98DE();
+    initvanguardhud();
     var_0 enableaimassist();
-    thread _id_1317A( var_0 );
-    thread _id_1316A( var_0 );
-    thread _id_1316C( var_0 );
-    thread _id_1317C( var_0 );
-    var_0 thread _id_13175();
+    thread vanguard_think( var_0 );
+    thread vanguard_monitorfire( var_0 );
+    thread vanguard_monitormanualplayerexit( var_0 );
+    thread vanguard_turrettarget( var_0 );
+    var_0 thread vanguard_reticlestart();
 
     if ( !level.hardcoremode )
-        var_0 thread _id_13176();
+        var_0 thread vanguard_reticlewaitforjoinedteam();
 
     thread watchhostmigrationfinishedinit( var_0 );
     scripts\mp\utility::freezecontrolswrapper( 0 );
 }
 
-_id_98DE()
+initvanguardhud()
 {
     self thermalvisionfofoverlayon();
     self setclientomnvar( "ui_vanguard", 1 );
 }
 
-_id_1316C( var_0 )
+vanguard_monitormanualplayerexit( var_0 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
@@ -352,7 +352,7 @@ _id_1316C( var_0 )
     var_0 notify( "death" );
 }
 
-_id_1317C( var_0 )
+vanguard_turrettarget( var_0 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
@@ -366,7 +366,7 @@ _id_1317C( var_0 )
     var_0 setturrettargetent( var_0.attackarrow );
 }
 
-_id_1317A( var_0 )
+vanguard_think( var_0 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
@@ -378,18 +378,18 @@ _id_1317A( var_0 )
         if ( var_0 scripts\mp\utility::touchingbadtrigger( "gryphon" ) )
             var_0 notify( "damage", 1019, self, self.angles, self.origin, "MOD_EXPLOSIVE", undefined, undefined, undefined, undefined, "c4_mp" );
 
-        self._id_AEF8 = var_0.attackarrow.origin;
+        self.lockedlocation = var_0.attackarrow.origin;
         scripts\engine\utility::waitframe();
     }
 }
 
-_id_13175()
+vanguard_reticlestart()
 {
     playfxontagforclients( level.vanguard_fx["target_marker_circle"], self.attackarrow, "tag_origin", self.owner );
-    thread _id_13179();
+    thread vanguard_showreticletoenemies();
 }
 
-_id_13176()
+vanguard_reticlewaitforjoinedteam()
 {
     self endon( "death" );
     self endon( "end_remote" );
@@ -399,11 +399,11 @@ _id_13176()
         level waittill( "joined_team", var_0 );
         stopfxontag( level.vanguard_fx["target_marker_circle"], self.attackarrow, "tag_origin" );
         scripts\engine\utility::waitframe();
-        _id_13175();
+        vanguard_reticlestart();
     }
 }
 
-_id_13179()
+vanguard_showreticletoenemies()
 {
     self endon( "death" );
     self endon( "end_remote" );
@@ -421,9 +421,9 @@ _id_13179()
     }
 }
 
-_id_13178( var_0 )
+vanguard_selecttarget( var_0 )
 {
-    var_1 = _id_819C( var_0.owner, var_0 );
+    var_1 = gettargetpoint( var_0.owner, var_0 );
 
     if ( isdefined( var_1 ) )
     {
@@ -434,7 +434,7 @@ _id_13178( var_0 )
     return undefined;
 }
 
-_id_819C( var_0, var_1 )
+gettargetpoint( var_0, var_1 )
 {
     var_2 = var_1.turret gettagorigin( "tag_flash" );
     var_3 = var_0 getplayerangles();
@@ -455,7 +455,7 @@ _id_819C( var_0, var_1 )
     return var_8;
 }
 
-_id_1316A( var_0 )
+vanguard_monitorfire( var_0 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
@@ -463,7 +463,7 @@ _id_1316A( var_0 )
     var_0 endon( "end_remote" );
     self notifyonplayercommand( "vanguard_fire", "+attack" );
     self notifyonplayercommand( "vanguard_fire", "+attack_akimbo_accessible" );
-    var_0._id_6D7F = gettime();
+    var_0.firereadytime = gettime();
 
     for (;;)
     {
@@ -473,12 +473,12 @@ _id_1316A( var_0 )
         if ( isdefined( level.hostmigrationtimer ) )
             continue;
 
-        if ( isdefined( self._id_AEF8 ) && gettime() >= var_0._id_6D7F )
-            self thread [[ level._id_1317F ]]( var_0, self._id_AEF8 );
+        if ( isdefined( self.lockedlocation ) && gettime() >= var_0.firereadytime )
+            self thread [[ level.vanguardfiremisslefunc ]]( var_0, self.lockedlocation );
     }
 }
 
-_id_13177( var_0, var_1, var_2 )
+vanguard_rumble( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
@@ -526,20 +526,20 @@ vanguard_firemissile( var_0, var_1 )
     var_0.ammocount--;
     self playlocalsound( "weap_gryphon_fire_plr" );
     scripts\mp\utility::playsoundinspace( "weap_gryphon_fire_npc", var_0.origin );
-    thread _id_13177( var_0, "shotgun_fire", 1 );
+    thread vanguard_rumble( var_0, "shotgun_fire", 1 );
     earthquake( 0.3, 0.25, var_0.origin, 60 );
     var_3 = scripts\mp\utility::_magicbullet( "remote_tank_projectile_mp", var_2, var_1, self );
     var_3.vehicle_fired_from = var_0;
     var_4 = 1500;
-    var_0._id_6D7F = gettime() + var_4;
-    thread _id_12F63( var_0, var_4 * 0.001 );
+    var_0.firereadytime = gettime() + var_4;
+    thread updateweaponui( var_0, var_4 * 0.001 );
     var_3 scripts\mp\hostmigration::waittill_notify_or_timeout_hostmigration_pause( "death", 4 );
     earthquake( 0.3, 0.75, var_1, 128 );
 
     if ( isdefined( var_0 ) )
     {
         earthquake( 0.25, 0.75, var_0.origin, 60 );
-        thread _id_13177( var_0, "damage_heavy", 3 );
+        thread vanguard_rumble( var_0, "damage_heavy", 3 );
 
         if ( var_0.ammocount == 0 )
         {
@@ -549,7 +549,7 @@ vanguard_firemissile( var_0, var_1 )
     }
 }
 
-_id_12F63( var_0, var_1 )
+updateweaponui( var_0, var_1 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
@@ -560,31 +560,31 @@ _id_12F63( var_0, var_1 )
     self setclientomnvar( "ui_vanguard_ammo", var_0.ammocount );
 }
 
-_id_8166( var_0, var_1 )
+getstartposition( var_0, var_1 )
 {
     var_2 = ( 3000, 3000, 3000 );
     var_3 = vectornormalize( var_0.origin - ( var_1 + ( 0, 0, -400 ) ) );
     var_4 = rotatevector( var_3, ( 0, 25, 0 ) );
     var_5 = var_1 + var_4 * var_2;
 
-    if ( _id_9FE6( var_5, var_1 ) )
+    if ( isvalidstartpoint( var_5, var_1 ) )
         return var_5;
 
     var_4 = rotatevector( var_3, ( 0, -25, 0 ) );
     var_5 = var_1 + var_4 * var_2;
 
-    if ( _id_9FE6( var_5, var_1 ) )
+    if ( isvalidstartpoint( var_5, var_1 ) )
         return var_5;
 
     var_5 = var_1 + var_3 * var_2;
 
-    if ( _id_9FE6( var_5, var_1 ) )
+    if ( isvalidstartpoint( var_5, var_1 ) )
         return var_5;
 
     return var_1 + ( 0, 0, 3000 );
 }
 
-_id_9FE6( var_0, var_1 )
+isvalidstartpoint( var_0, var_1 )
 {
     var_2 = bullettrace( var_0, var_1, 0 );
 
@@ -594,11 +594,11 @@ _id_9FE6( var_0, var_1 )
     return 0;
 }
 
-_id_1317D()
+vanguard_watch_distance()
 {
     self endon( "death" );
     var_0 = self.origin;
-    self._id_DCCE = 0;
+    self.rangecountdownactive = 0;
 
     for (;;)
     {
@@ -618,26 +618,26 @@ _id_1317D()
                 if ( !isdefined( self.owner ) )
                     return;
 
-                if ( !self._id_DCCE )
+                if ( !self.rangecountdownactive )
                 {
-                    self._id_DCCE = 1;
-                    thread _id_13173();
+                    self.rangecountdownactive = 1;
+                    thread vanguard_rangecountdown();
                 }
 
                 if ( isdefined( self.heliinproximity ) )
                     var_1 = distance( self.origin, self.heliinproximity.origin );
-                else if ( isdefined( level._id_5618 ) )
+                else if ( isdefined( level.disablevanguardsinair ) )
                     var_1 = 467.5;
                 else
                     var_1 = distance( self.origin, var_0 );
 
-                var_2 = _id_8123( var_1 );
+                var_2 = getsignalstrengthalpha( var_1 );
                 self.owner setclientomnvar( "ui_vanguard", var_2 );
                 wait 0.1;
             }
 
             self notify( "in_range" );
-            self._id_DCCE = 0;
+            self.rangecountdownactive = 0;
             self.owner setclientomnvar( "ui_vanguard", 1 );
         }
 
@@ -654,7 +654,7 @@ _id_1317D()
     }
 }
 
-_id_8123( var_0 )
+getsignalstrengthalpha( var_0 )
 {
     var_0 = clamp( var_0, 50, 550 );
     return 2 + int( 8 * ( var_0 - 50 ) / 500 );
@@ -662,35 +662,35 @@ _id_8123( var_0 )
 
 vanguard_in_range()
 {
-    if ( !isdefined( level._id_13183 ) || !isdefined( level._id_13180 ) )
+    if ( !isdefined( level.vanguradmaxdistancesq ) || !isdefined( level.vanguardmaxheight ) )
         return 0;
 
     if ( isdefined( self.inheliproximity ) && self.inheliproximity )
         return 0;
 
-    if ( isdefined( level._id_5618 ) )
+    if ( isdefined( level.disablevanguardsinair ) )
         return 0;
 
-    if ( isdefined( level._id_13182[0] ) )
+    if ( isdefined( level.vanguardrangetriggers[0] ) )
     {
-        foreach ( var_1 in level._id_13182 )
+        foreach ( var_1 in level.vanguardrangetriggers )
         {
             if ( self istouching( var_1 ) )
                 return 0;
         }
 
-        if ( level._id_9C46 )
-            return self.origin[2] < level._id_13180;
+        if ( level.is_mp_descent )
+            return self.origin[2] < level.vanguardmaxheight;
         else
             return 1;
     }
-    else if ( distance2dsquared( self.origin, level.mapcenter ) < level._id_13183 && self.origin[2] < level._id_13180 )
+    else if ( distance2dsquared( self.origin, level.mapcenter ) < level.vanguradmaxdistancesq && self.origin[2] < level.vanguardmaxheight )
         return 1;
 
     return 0;
 }
 
-_id_13173()
+vanguard_rangecountdown()
 {
     self endon( "death" );
     self endon( "in_range" );
@@ -704,14 +704,14 @@ _id_13173()
     self notify( "death", "range_death" );
 }
 
-_id_1316B( var_0 )
+vanguard_monitorkillstreakdisowned( var_0 )
 {
     var_0 endon( "death" );
     var_0.owner scripts\engine\utility::waittill_any( "killstreak_disowned" );
     var_0 notify( "death" );
 }
 
-_id_1316E( var_0, var_1 )
+vanguard_monitortimeout( var_0, var_1 )
 {
     var_0 endon( "death" );
     var_2 = 60;
@@ -723,7 +723,7 @@ _id_1316E( var_0, var_1 )
     var_0 notify( "death" );
 }
 
-_id_13169( var_0 )
+vanguard_monitordeath( var_0 )
 {
     level endon( "game_ended" );
     level endon( "objective_cam" );
@@ -735,13 +735,13 @@ _id_13169( var_0 )
     var_0 playsound( "ball_drone_explode" );
     var_1 delete();
 
-    if ( isdefined( var_0._id_1155D ) )
-        var_0._id_1155D delete();
+    if ( isdefined( var_0.targeteffect ) )
+        var_0.targeteffect delete();
 
     vanguard_endride( var_0.owner, var_0 );
 }
 
-_id_1316D( var_0 )
+vanguard_monitorobjectivecam( var_0 )
 {
     var_0 endon( "death" );
     level scripts\engine\utility::waittill_any( "objective_cam", "game_ended" );
@@ -755,7 +755,7 @@ vanguard_endride( var_0, var_1 )
     var_1 notify( "end_remote" );
     var_1.playerlinked = 0;
     var_1 setotherent( undefined );
-    _id_13174( var_0, var_1 );
+    vanguard_removeplayer( var_0, var_1 );
     stopfxontag( level.vanguard_fx["smoke"], var_1, "tag_origin" );
     level.remote_uav[var_1.team] = undefined;
     scripts\mp\utility::decrementfauxvehiclecount();
@@ -767,19 +767,19 @@ vanguard_endride( var_0, var_1 )
     var_1 delete();
 }
 
-_id_E2E5()
+restorevisionset()
 {
     self visionsetnakedforplayer( "", 1 );
     scripts\mp\utility::set_visionset_for_watching_players( "", 1 );
 }
 
-_id_13174( var_0, var_1 )
+vanguard_removeplayer( var_0, var_1 )
 {
     if ( !isdefined( var_0 ) )
         return;
 
     var_0 scripts\mp\utility::clearusingremote();
-    var_0 _id_E2E5();
+    var_0 restorevisionset();
     var_0 setclientomnvar( "ui_vanguard", 0 );
 
     if ( getdvarint( "camera_thirdPerson" ) )
@@ -807,7 +807,7 @@ vanguard_freezecontrolsbuffer( var_0 )
     var_0 scripts\mp\utility::freezecontrolswrapper( 0 );
 }
 
-_id_1317E()
+vanguard_watchheliproximity()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -860,7 +860,7 @@ vanguard_handledamage()
     }
 }
 
-_id_1317B()
+vanguard_turret_handledamage()
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -889,9 +889,9 @@ modifydamage( var_0, var_1, var_2, var_3 )
 
     playfxontagforclients( level.vanguard_fx["hit"], self, "tag_origin", self.owner );
 
-    if ( self._id_1037E == 0 && self.damagetaken >= self.maxhealth / 2 )
+    if ( self.smoking == 0 && self.damagetaken >= self.maxhealth / 2 )
     {
-        self._id_1037E = 1;
+        self.smoking = 1;
         playfxontag( level.vanguard_fx["smoke"], self, "tag_origin" );
     }
 
@@ -908,7 +908,7 @@ handledeathdamage( var_0, var_1, var_2, var_3 )
     if ( isdefined( var_0 ) )
     {
         var_0 scripts\mp\missions::processchallenge( "ch_gryphondown" );
-        scripts\mp\missions::_id_3DE3( var_0, self, var_1 );
+        scripts\mp\missions::checkaachallenges( var_0, self, var_1 );
     }
 }
 
@@ -922,11 +922,11 @@ watchempdamage()
         self waittill( "emp_damage", var_0, var_1 );
         stopfxontag( level.vanguard_fx["target_marker_circle"], self.attackarrow, "tag_origin" );
         scripts\engine\utility::waitframe();
-        thread _id_13179();
+        thread vanguard_showreticletoenemies();
         playfxontag( scripts\engine\utility::getfx( "emp_stun" ), self, "tag_origin" );
         wait( var_1 );
         stopfxontag( level.vanguard_fx["target_marker_circle"], self.attackarrow, "tag_origin" );
         scripts\engine\utility::waitframe();
-        thread _id_13175();
+        thread vanguard_reticlestart();
     }
 }

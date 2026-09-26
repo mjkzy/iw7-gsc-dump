@@ -20,7 +20,7 @@ onplayerconnect()
             if ( var_0 scripts\mp\utility::rankingenabled() )
             {
                 var_1 = getdvarint( "online_mp_party_weapon_xpscale" );
-                var_2 = var_0 _meth_85BE() > 1;
+                var_2 = var_0 getprivatepartysize() > 1;
 
                 if ( var_2 )
                     var_0 addweaponrankxpmultiplier( var_1, "online_mp_party_weapon_xpscale" );
@@ -112,16 +112,16 @@ isplayerweaponatmaxxp( var_0 )
     return var_1 >= var_2;
 }
 
-_id_13CCA( var_0 )
+weaponshouldgetxp( var_0 )
 {
     if ( !self isitemunlocked( "cac", "feature" ) )
         return 0;
 
     var_1 = scripts\mp\utility::getweaponrootname( var_0 );
-    return _id_13C97( var_1 );
+    return weaponhasranks( var_1 );
 }
 
-_id_13C97( var_0 )
+weaponhasranks( var_0 )
 {
     if ( !isdefined( level.weaponranktable.maxweaponranks[var_0] ) )
         return 0;
@@ -170,7 +170,7 @@ getweaponrankinfominxp( var_0 )
     return level.weaponranktable.rankinfo[var_0].minxp;
 }
 
-_id_8230( var_0 )
+getweaponrankinfoxptonextrank( var_0 )
 {
     return level.weaponranktable.rankinfo[var_0].xptonextrank;
 }
@@ -180,7 +180,7 @@ getweaponrankinfomaxxp( var_0 )
     return level.weaponranktable.rankinfo[var_0].maxxp;
 }
 
-_id_8394( var_0, var_1, var_2 )
+giveplayerweaponxp( var_0, var_1, var_2 )
 {
     if ( isai( self ) || !isplayer( self ) || !isdefined( var_2 ) || var_2 == 0 || !scripts\mp\utility::rankingenabled() )
         return;
@@ -190,7 +190,7 @@ _id_8394( var_0, var_1, var_2 )
     if ( !self isitemunlocked( var_3, "weapon" ) )
         return;
 
-    if ( !_id_13C97( var_3 ) )
+    if ( !weaponhasranks( var_3 ) )
         return;
 
     var_4 = remapscoreeventforweapon( var_1 );
@@ -205,7 +205,7 @@ _id_8394( var_0, var_1, var_2 )
         return;
 
     var_5 = var_2;
-    var_2 = var_2 * _id_8233();
+    var_2 = var_2 * getweaponrankxpmultipliertotal();
     var_2 = int( var_2 );
 
     if ( var_2 > getweaponmaxrankxp( var_3 ) )
@@ -229,7 +229,7 @@ _id_8394( var_0, var_1, var_2 )
     scripts\mp\analyticslog::logevent_givempweaponxp( var_0, var_15, var_16, var_2, var_1 );
     self setplayerdata( "common", "sharedProgression", "weaponLevel", var_3, "mpXP", var_12 );
     var_17 = getweaponvariantindex( var_0 );
-    scripts\mp\matchdata::_id_AFDC( var_3, "xp", var_2, var_17 );
+    scripts\mp\matchdata::logweaponstat( var_3, "xp", var_2, var_17 );
 
     if ( var_9 < var_16 )
     {
@@ -318,7 +318,7 @@ removeweaponrankxpmultiplier( var_0 )
     self.rankxpmultipliers[var_0] = undefined;
 }
 
-_id_8233()
+getweaponrankxpmultipliertotal()
 {
     var_0 = getweaponrankxpmultiplier();
     var_1 = getglobalweaponrankxpmultiplier();

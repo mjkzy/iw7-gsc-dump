@@ -54,7 +54,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_lava_roundswitch", 0 );
     scripts\mp\utility::registerroundswitchdvar( "lava", 0, 0, 9 );
     setdynamicdvar( "scr_lava_roundlimit", 1 );

@@ -19,7 +19,7 @@ _id_10E0B( var_0, var_1 )
 {
     var_2 = [];
     var_3 = scripts\mp\utility::getotherteam( var_1.team );
-    var_2 = scripts\mp\utility::_id_807C( var_0, 256 );
+    var_2 = scripts\mp\utility::getplayersinradius( var_0, 256 );
 
     if ( var_2.size > 0 )
     {
@@ -124,7 +124,7 @@ _id_D573()
 _id_10AA5( var_0, var_1 )
 {
     var_2 = self.origin + ( 0, 0, 32 );
-    var_3 = scripts\mp\utility::_id_807C( var_2, 256 );
+    var_3 = scripts\mp\utility::getplayersinradius( var_2, 256 );
 
     if ( var_3.size > 0 )
     {

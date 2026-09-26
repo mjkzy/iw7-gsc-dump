@@ -102,7 +102,7 @@ turn_on_coaster_anims()
     {
         setomnvar( "zm_coaster_hiscore_p" + ( var_6 + 1 ), 0 );
         var_5.coaster_hi_score = 0;
-        setomnvar( "zm_coaster_pic_p" + int( var_5 getentitynumber() + 1 ), var_5._id_CFC4 );
+        setomnvar( "zm_coaster_pic_p" + int( var_5 getentitynumber() + 1 ), var_5.player_character_num );
     }
 }
 
@@ -1059,7 +1059,7 @@ show_score_tally()
     if ( var_0 > 0 && !scripts\engine\utility::is_true( self.inlaststand ) )
     {
         thread scripts\cp\cp_vo::try_to_play_vo( "arcade_complete", "zmb_comment_vo", "low", 10, 0, 0, 0, 45 );
-        scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, self, level.wave_num_at_start_of_game, "coaster", 0, var_0, self.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["coaster"] );
+        scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, self, level.wave_num_at_start_of_game, "coaster", 0, var_0, self.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["coaster"] );
     }
 
     scripts\cp\zombies\arcade_game_utility::update_player_tickets_earned( self );

@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\elvira::_id_DEE8();
-    scripts\asm\elvira\mp\states::_id_2371();
+    behaviortree\elvira::registerbehaviortree();
+    scripts\asm\elvira\mp\states::asm_register();
     scripts\mp\agents\elvira\elvira_tunedata::setuptunedata();
     thread _id_FAB0();
 }
@@ -48,14 +48,14 @@ setupagent()
     self.footstepdetectdist = 1000;
     self.footstepdetectdistwalk = 1000;
     self.footstepdetectdistsprint = 1000;
-    self._id_1A44 = 50;
+    self.aimpitchdifftolerance = 50;
     self._id_B62D = 70;
     self._id_B62E = 70;
     self.meleeradiuswhentargetnotonnavmesh = 80;
     self.meleeradiusbasesq = squared( self._id_B62E );
     self.meleedot = 0.5;
     self._id_B601 = 9999;
-    self._id_129AF = 55;
+    self.turnthreshold = 55;
     self.radius = 15;
     self.height = 65;
     self.allowpain = 0;
@@ -109,10 +109,10 @@ _id_11570()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.25, 0.35 );
@@ -130,10 +130,10 @@ _id_1157B()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.65, 0.75 );
@@ -149,10 +149,10 @@ _id_1156F()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.65, 0.75 );
@@ -168,10 +168,10 @@ _id_11559()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.65, 0.75 );
@@ -228,10 +228,10 @@ getdefaultenemychestpos()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * 0.75;

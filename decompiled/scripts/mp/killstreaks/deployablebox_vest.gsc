@@ -9,10 +9,10 @@ init()
     var_0.modelbase = "prop_ballistic_vest_iw6";
     var_0.modelbombsquad = "prop_ballistic_vest_iw6_bombsquad";
     var_0.hintstring = &"KILLSTREAKS_HINTS_LIGHT_ARMOR_PICKUP";
-    var_0._id_3A41 = &"KILLSTREAKS_BOX_GETTING_VEST";
-    var_0._id_67E5 = "deployable_vest_taken";
+    var_0.capturingstring = &"KILLSTREAKS_BOX_GETTING_VEST";
+    var_0.event = "deployable_vest_taken";
     var_0.streakname = "deployable_vest";
-    var_0._id_10A38 = "used_deployable_vest";
+    var_0.splashname = "used_deployable_vest";
     var_0.shadername = "compass_objpoint_deploy_friendly";
     var_0.headiconoffset = 20;
     var_0.lifespan = 90.0;
@@ -22,21 +22,21 @@ init()
     var_0.deployedsfx = "mp_vest_deployed_ui";
     var_0.onusesfx = "ammo_crate_use";
     var_0.onusecallback = ::onusedeployable;
-    var_0.canusecallback = ::_id_3937;
+    var_0.canusecallback = ::canusedeployable;
     var_0.usetime = 1000;
     var_0.maxhealth = 220;
     var_0.damagefeedback = "deployable_bag";
     var_0.deathvfx = loadfx( "vfx/core/mp/killstreaks/vfx_ballistic_vest_death" );
     var_0.allowmeleedamage = 1;
-    var_0.allowhvtspawn = 0;
+    var_0.allowgrenadedamage = 0;
     var_0.maxuses = 4;
     var_0.canuseotherboxes = 0;
     level.boxsettings["deployable_vest"] = var_0;
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_vest", ::_id_128E1 );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_vest", ::tryusedeployablevest );
     level.deployable_box["deployable_vest"] = [];
 }
 
-_id_128E1( var_0, var_1 )
+tryusedeployablevest( var_0, var_1 )
 {
     var_2 = scripts\mp\killstreaks\deployablebox::begindeployableviamarker( var_0, "deployable_vest" );
 
@@ -47,11 +47,11 @@ _id_128E1( var_0, var_1 )
     return 1;
 }
 
-_id_3937( var_0 )
+canusedeployable( var_0 )
 {
     return !scripts\mp\lightarmor::haslightarmor( self ) && !scripts\mp\utility::isjuggernaut();
 
-    if ( isdefined( var_0 ) && var_0.owner == self && !isdefined( var_0._id_1A64 ) )
+    if ( isdefined( var_0 ) && var_0.owner == self && !isdefined( var_0.air_dropped ) )
         return 0;
 
     return !scripts\mp\utility::isjuggernaut();

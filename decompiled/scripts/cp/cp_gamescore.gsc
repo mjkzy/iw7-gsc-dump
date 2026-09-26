@@ -178,7 +178,7 @@ calculate_player_encounter_scores( var_0, var_1, var_2 )
     {
         var_10 = [[ level.bonusscorefunc ]]( var_0, var_4 );
         var_4 = var_4 + var_10.amount;
-        set_lua_encounter_score_row( var_0, var_3, var_10._id_12B27, var_10.amount );
+        set_lua_encounter_score_row( var_0, var_3, var_10.ui_string_index, var_10.amount );
         var_3++;
     }
 

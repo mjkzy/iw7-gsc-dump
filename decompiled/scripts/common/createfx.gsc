@@ -256,7 +256,7 @@ createfxlogic()
     {
 
     }
-    else if ( getdvar( "createfx_map" ) == scripts\engine\utility::get_template_script_MAYBE() )
+    else if ( getdvar( "createfx_map" ) == scripts\engine\utility::get_template_level() )
         [[ level.func_position_player ]]();
 
     init_crosshair();
@@ -707,7 +707,9 @@ createfx_print3d( var_0, var_1, var_2 )
         if ( isdefined( self.v["reactive_radius"] ) )
         {
             if ( self.v["fxid"] == "No FX" && !getdvarint( "createfx_vfxonly" ) )
-                return;
+            {
+
+            }
         }
     }
 }
@@ -2070,20 +2072,20 @@ cfxprintlnend( var_0, var_1, var_2 )
 
     if ( scripts\engine\utility::issp() )
     {
-        var_4 = scripts\engine\utility::get_template_script_MAYBE() + var_1 + "_" + var_2 + ".gsc";
+        var_4 = scripts\engine\utility::get_template_level() + var_1 + "_" + var_2 + ".gsc";
 
         if ( var_0 )
             var_4 = "backup_" + var_2 + ".gsc";
     }
     else
     {
-        var_4 = scripts\engine\utility::get_template_script_MAYBE() + var_1 + "_" + var_2 + ".gsc";
+        var_4 = scripts\engine\utility::get_template_level() + var_1 + "_" + var_2 + ".gsc";
 
         if ( var_0 )
             var_4 = "backup.gsc";
     }
 
-    var_5 = scripts\engine\utility::get_template_script_MAYBE();
+    var_5 = scripts\engine\utility::get_template_level();
     var_6 = get_raw_or_devraw_subdir();
     var_7 = get_gamemode_subdir();
     scripts\engine\utility::fileprint_launcher_end_file( "/share/" + var_6 + "/scripts/" + var_7 + "/maps/" + var_5 + "/gen/" + var_4, var_3 );

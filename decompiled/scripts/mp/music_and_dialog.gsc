@@ -281,10 +281,10 @@ init()
     }
 
     level thread onplayerconnect();
-    level thread _id_BDEF();
+    level thread musiccontroller();
     level thread ongameended();
     level thread post_match_music();
-    level thread _id_C585();
+    level thread onroundswitch();
 }
 
 onplayerconnect()
@@ -294,7 +294,7 @@ onplayerconnect()
         level waittill( "connected", var_0 );
         var_0 thread playflyoveraudioline();
         var_0 thread onplayerspawned();
-        var_0 thread _id_6C70();
+        var_0 thread finalkillcammusic();
         var_0 thread watchhostmigration();
     }
 }
@@ -345,26 +345,26 @@ playflyoveraudioline()
 
     var_1 = self getrankedplayerdata( "mp", "activeMissionTeam" );
 
-    if ( !self issplitscreenplayer() || self isreloading() )
+    if ( !self issplitscreenplayer() || self issplitscreenplayerprimary() )
     {
         if ( self.sessionteam == "allies" )
         {
             switch ( var_1 )
             {
                 case 0:
-                    self _meth_85BF( "jtfw_mtc1_un_flyover" );
+                    self playannouncersound( "jtfw_mtc1_un_flyover" );
                     break;
                 case 1:
-                    self _meth_85BF( "oi_mtc3_un_flyover" );
+                    self playannouncersound( "oi_mtc3_un_flyover" );
                     break;
                 case 2:
-                    self _meth_85BF( "st7_mtc4_prematch_flyover" );
+                    self playannouncersound( "st7_mtc4_prematch_flyover" );
                     break;
                 case 3:
-                    self _meth_85BF( "wr_mtc5_un_flyover" );
+                    self playannouncersound( "wr_mtc5_un_flyover" );
                     break;
                 case 4:
-                    self _meth_85BF( "ba_mtc2_un_flyover" );
+                    self playannouncersound( "ba_mtc2_un_flyover" );
                     break;
                 default:
                     break;
@@ -375,19 +375,19 @@ playflyoveraudioline()
             switch ( var_1 )
             {
                 case 0:
-                    self _meth_85BF( "jtfw_mtc1_sdf_flyover" );
+                    self playannouncersound( "jtfw_mtc1_sdf_flyover" );
                     break;
                 case 1:
-                    self _meth_85BF( "oi_mtc3_sdf_flyover" );
+                    self playannouncersound( "oi_mtc3_sdf_flyover" );
                     break;
                 case 2:
-                    self _meth_85BF( "st7_mtc4_prematch_flyover" );
+                    self playannouncersound( "st7_mtc4_prematch_flyover" );
                     break;
                 case 3:
-                    self _meth_85BF( "wr_mtc5_sdf_flyover" );
+                    self playannouncersound( "wr_mtc5_sdf_flyover" );
                     break;
                 case 4:
-                    self _meth_85BF( "ba_mtc2_sdf_flyover" );
+                    self playannouncersound( "ba_mtc2_sdf_flyover" );
                     break;
                 default:
                     break;
@@ -404,7 +404,7 @@ dointro()
     while ( level.ingraceperiod > 15 )
         wait 0.05;
 
-    var_0 = !scripts\mp\utility::gameflag( "prematch_done" ) && ( !scripts\mp\utility::isroundbased() || scripts\mp\utility::_id_9DF6() );
+    var_0 = !scripts\mp\utility::gameflag( "prematch_done" ) && ( !scripts\mp\utility::isroundbased() || scripts\mp\utility::isfirstround() );
 
     if ( var_0 )
     {
@@ -427,7 +427,7 @@ dointro()
 
     if ( !level.splitscreen || level.splitscreen && !isdefined( level.playedstartingmusic ) )
     {
-        if ( !self issplitscreenplayer() || self isreloading() )
+        if ( !self issplitscreenplayer() || self issplitscreenplayerprimary() )
         {
             self setplayermusicstate( "" );
 
@@ -445,7 +445,7 @@ dointro()
             scripts\mp\utility::leaderdialogonplayer( "allies_gametype" );
         else if ( isdefined( game["dialog"]["axis_gametype"] ) && self.team == "axis" )
             scripts\mp\utility::leaderdialogonplayer( "axis_gametype" );
-        else if ( !self issplitscreenplayer() || self isreloading() )
+        else if ( !self issplitscreenplayer() || self issplitscreenplayerprimary() )
             scripts\mp\utility::leaderdialogonplayer( "gametype" );
     }
 
@@ -453,10 +453,10 @@ dointro()
 
     if ( self.team == game["attackers"] )
     {
-        if ( !self issplitscreenplayer() || self isreloading() )
+        if ( !self issplitscreenplayer() || self issplitscreenplayerprimary() )
             scripts\mp\utility::leaderdialogonplayer( "offense_obj", "introboost" );
     }
-    else if ( !self issplitscreenplayer() || self isreloading() )
+    else if ( !self issplitscreenplayer() || self issplitscreenplayerprimary() )
         scripts\mp\utility::leaderdialogonplayer( "defense_obj", "introboost" );
 }
 
@@ -476,7 +476,7 @@ watchhostmigration()
     }
 }
 
-_id_C54B( var_0 )
+onlastalive( var_0 )
 {
     if ( level.gameended )
         return;
@@ -497,7 +497,7 @@ _id_C54B( var_0 )
         var_0 scripts\mp\utility::leaderdialogonplayer( "last_alive" );
 }
 
-_id_C585()
+onroundswitch()
 {
     level waittill( "round_switch", var_0 );
 
@@ -506,7 +506,7 @@ _id_C585()
         case "halftime":
             foreach ( var_2 in level.players )
             {
-                if ( var_2 issplitscreenplayer() && !var_2 isreloading() )
+                if ( var_2 issplitscreenplayer() && !var_2 issplitscreenplayerprimary() )
                     continue;
 
                 var_2 scripts\mp\utility::leaderdialogonplayer( "halftime" );
@@ -516,7 +516,7 @@ _id_C585()
         case "overtime":
             foreach ( var_2 in level.players )
             {
-                if ( var_2 issplitscreenplayer() && !var_2 isreloading() )
+                if ( var_2 issplitscreenplayer() && !var_2 issplitscreenplayerprimary() )
                     continue;
 
                 var_2 scripts\mp\utility::leaderdialogonplayer( "overtime" );
@@ -526,7 +526,7 @@ _id_C585()
         default:
             foreach ( var_2 in level.players )
             {
-                if ( var_2 issplitscreenplayer() && !var_2 isreloading() )
+                if ( var_2 issplitscreenplayer() && !var_2 issplitscreenplayerprimary() )
                     continue;
 
                 var_2 scripts\mp\utility::leaderdialogonplayer( "side_switch" );
@@ -542,7 +542,7 @@ post_match_music()
 
     foreach ( var_2 in level.players )
     {
-        if ( var_2 issplitscreenplayer() && !var_2 isreloading() )
+        if ( var_2 issplitscreenplayer() && !var_2 issplitscreenplayerprimary() )
             continue;
 
         if ( level.finalkillcam_winner != "none" )
@@ -552,8 +552,8 @@ post_match_music()
 
 ongameended()
 {
-    level thread _id_E76B();
-    level thread _id_7690();
+    level thread roundwinnerdialog();
+    level thread gamewinnerdialog();
     level waittill( "game_win", var_0 );
 
     if ( level.teambased )
@@ -564,7 +564,7 @@ ongameended()
             {
                 foreach ( var_2 in level.players )
                 {
-                    if ( var_2 issplitscreenplayer() && !var_2 isreloading() )
+                    if ( var_2 issplitscreenplayer() && !var_2 issplitscreenplayerprimary() )
                         continue;
 
                     var_2 setplayermusicstate( game["music"]["victory_allies"] );
@@ -574,7 +574,7 @@ ongameended()
             {
                 foreach ( var_2 in level.players )
                 {
-                    if ( var_2 issplitscreenplayer() && !var_2 isreloading() )
+                    if ( var_2 issplitscreenplayer() && !var_2 issplitscreenplayerprimary() )
                         continue;
 
                     var_2 setplayermusicstate( game["music"]["victory_axis"] );
@@ -634,7 +634,7 @@ ongameended()
         {
             var_2 setplayermusicstate( "" );
 
-            if ( var_2 issplitscreenplayer() && !var_2 isreloading() )
+            if ( var_2 issplitscreenplayer() && !var_2 issplitscreenplayerprimary() )
                 continue;
 
             if ( !isdefined( var_2.pers["team"] ) )
@@ -658,7 +658,7 @@ ongameended()
     }
 }
 
-_id_E76B()
+roundwinnerdialog()
 {
     level waittill( "round_win", var_0 );
     wait 0.5;
@@ -692,10 +692,10 @@ _id_E76B()
         scripts\mp\utility::leaderdialog( "lead_tied" );
 }
 
-_id_7690()
+gamewinnerdialog()
 {
     level waittill( "game_win", var_0 );
-    var_1 = level._id_D706 / 2;
+    var_1 = level.postroundtime / 2;
 
     if ( var_1 > 0 )
         wait( var_1 );
@@ -709,7 +709,7 @@ _id_7690()
         {
             var_3 = level.placement["all"][var_2];
 
-            if ( var_3 issplitscreenplayer() && !var_3 isreloading() )
+            if ( var_3 issplitscreenplayer() && !var_3 issplitscreenplayerprimary() )
                 continue;
 
             if ( var_2 < 3 )
@@ -735,7 +735,7 @@ _id_7690()
         scripts\mp\utility::leaderdialog( "mission_draw" );
 }
 
-_id_BDEF()
+musiccontroller()
 {
     level endon( "game_ended" );
     level.musicenabled = 1;
@@ -889,7 +889,7 @@ suspensemusic( var_0 )
     level endon( "match_ending_soon" );
     level endon( "stop_suspense_music" );
 
-    if ( isdefined( level._id_C0AF ) && level._id_C0AF )
+    if ( isdefined( level.nosuspensemusic ) && level.nosuspensemusic )
         return;
 
     var_1 = game["music"]["allies_suspense"].size;
@@ -931,12 +931,12 @@ stopsuspensemusic()
     }
 }
 
-_id_6C70()
+finalkillcammusic()
 {
     self waittill( "showing_final_killcam" );
 }
 
-_id_6274()
+enablemusic()
 {
     if ( level.musicenabled == 0 )
         thread suspensemusic();

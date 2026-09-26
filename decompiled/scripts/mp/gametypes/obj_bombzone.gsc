@@ -74,7 +74,7 @@ bombzone_setupobjective( var_0 )
     if ( !level.multibomb )
         var_1 scripts\mp\gameobjects::setkeyobject( level.sdbomb );
 
-    var_2 = var_1 scripts\mp\gameobjects::getlaserangles();
+    var_2 = var_1 scripts\mp\gameobjects::getlabel();
 
     if ( level.gametype == "dd" && scripts\mp\utility::inovertime() )
     {
@@ -146,7 +146,7 @@ allowedwhileplanting( var_0 )
 {
     scripts\engine\utility::allow_melee( var_0 );
     scripts\engine\utility::allow_jump( var_0 );
-    scripts\mp\utility::_id_1C47( var_0 );
+    scripts\mp\utility::allow_gesture( var_0 );
 
     if ( var_0 )
         scripts\engine\utility::waittill_any_timeout( 0.8, "bomb_allow_offhands" );
@@ -268,7 +268,7 @@ bombzone_onuseplantobject( var_0 )
             var_1 = 1;
 
         scripts\mp\utility::setmlgannouncement( 3, var_0.team, var_0 getentitynumber(), var_1 );
-        var_0 scripts\mp\utility::incperstat( "plants", 1 );
+        var_0 scripts\mp\utility::incpersstat( "plants", 1 );
         var_0 scripts\mp\persistence::statsetchild( "round", "plants", var_0.pers["plants"] );
         var_0 scripts\mp\utility::setextrascore0( var_0.pers["plants"] );
 
@@ -330,7 +330,7 @@ bombzone_onusedefuseobject( var_0 )
     if ( !var_1 )
         var_0 thread scripts\mp\awards::givemidmatchaward( "mode_sd_defuse" );
 
-    var_0 scripts\mp\utility::incperstat( "defuses", 1 );
+    var_0 scripts\mp\utility::incpersstat( "defuses", 1 );
     var_0 scripts\mp\persistence::statsetchild( "round", "defuses", var_0.pers["defuses"] );
 
     if ( level.gametype != "sr" )
@@ -406,7 +406,7 @@ bombzone_onbombplanted( var_0, var_1 )
         var_0 scripts\mp\gameobjects::setvisibleteam( "none" );
     }
 
-    var_3 = var_0 scripts\mp\gameobjects::getlaserangles();
+    var_3 = var_0 scripts\mp\gameobjects::getlabel();
     var_4 = [];
 
     if ( level.gametype == "dd" )
@@ -461,7 +461,7 @@ bombzone_onbombplanted( var_0, var_1 )
         if ( var_0.bombdefused )
         {
             var_0.bombplanted = 0;
-            var_0 thread scripts\mp\gametypes\dd::_id_2C59( var_1, "defused" );
+            var_0 thread scripts\mp\gametypes\dd::bombhandler( var_1, "defused" );
             var_0.onuse = ::bombzone_onuseplantobject;
             level.ddbombmodel[var_0.label] delete();
             return;
@@ -469,7 +469,7 @@ bombzone_onbombplanted( var_0, var_1 )
         else
         {
             level.bombexploded = level.bombexploded + 1;
-            var_0 thread scripts\mp\gametypes\dd::_id_2C59( var_1, "explode", var_2 );
+            var_0 thread scripts\mp\gametypes\dd::bombhandler( var_1, "explode", var_2 );
         }
     }
     else
@@ -495,7 +495,7 @@ bombzone_onbombplanted( var_0, var_1 )
     if ( isdefined( var_1 ) )
     {
         var_0.visuals[0] radiusdamage( var_8, 512, 200, 20, var_1, "MOD_EXPLOSIVE", "bomb_site_mp" );
-        var_1 scripts\mp\utility::incperstat( "destructions", 1 );
+        var_1 scripts\mp\utility::incpersstat( "destructions", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "destructions", var_1.pers["destructions"] );
     }
     else

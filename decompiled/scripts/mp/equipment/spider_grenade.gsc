@@ -140,7 +140,7 @@ spidergrenade_setstate( var_0, var_1 )
 
             if ( spidergrenade_agentavailable() && isdefined( var_3 ) )
             {
-                var_4 = _id_0F6E::_id_1090C( self.origin, self.angles, self.owner );
+                var_4 = scripts\mp\agents\seeker\seeker_agent::_id_1090C( self.origin, self.angles, self.owner );
 
                 if ( isdefined( var_4 ) )
                 {
@@ -186,7 +186,7 @@ spidergrenade_destroyonemp()
     if ( isdefined( var_3 ) && var_3 == "emp_grenade_mp" )
     {
         if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
-            var_0 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+            var_0 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
     }
 
     spidergrenade_awardpoints( var_0 );
@@ -216,7 +216,7 @@ spidergrenadeproxy_handledamage( var_0, var_1, var_2, var_3, var_4 )
     if ( var_2 == "MOD_MELEE" )
         return 0;
 
-    var_5 = _id_0F6E::getseekermaxhealth();
+    var_5 = scripts\mp\agents\seeker\seeker_agent::getseekermaxhealth();
     var_6 = 1;
 
     if ( scripts\mp\utility::isfmjdamage( var_1, var_2 ) )
@@ -241,13 +241,13 @@ _id_5856( var_0 )
 
 spidergrenade_proxyinitialize( var_0 )
 {
-    var_0._id_9F72 = 1;
+    var_0.isspidergrenade = 1;
     var_0 setotherent( self );
     var_0 setentityowner( self );
     var_0 setnodeploy( 1 );
     var_1 = var_0.owner scripts\mp\utility::_hasperk( "specialty_rugged_eqp" );
     var_0.hasruggedeqp = var_1;
-    var_2 = scripts\engine\utility::ter_op( var_1, _id_0F6E::getseekermaxhealthrugged(), _id_0F6E::getseekermaxhealth() );
+    var_2 = scripts\engine\utility::ter_op( var_1, scripts\mp\agents\seeker\seeker_agent::getseekermaxhealthrugged(), scripts\mp\agents\seeker\seeker_agent::getseekermaxhealth() );
     var_3 = scripts\engine\utility::ter_op( var_1, "hitequip", "" );
     var_0 thread scripts\mp\damage::monitordamage( var_2, var_3, ::spidergrenadeproxy_handlefataldamage, ::spidergrenadeproxy_handledamage );
     var_0 thread spidergrenade_cleanuponownerdisconnect();
@@ -271,7 +271,7 @@ spidergrenade_proxytoagent( var_0, var_1 )
     var_1.attackers = var_0.attackers;
     var_1.proxy = var_0;
     var_1.killcament = var_0;
-    var_1._id_9F72 = var_0._id_9F72;
+    var_1.isspidergrenade = var_0.isspidergrenade;
     var_1.hasruggedeqp = var_0.hasruggedeqp;
     var_1 setotherent( var_1.owner );
     var_1 setentityowner( var_1.owner );
@@ -338,7 +338,7 @@ spidergrenade_trackdebuff( var_0, var_1 )
     if ( isdefined( var_0 ) )
         var_0 notify( "spiderGrenade_trackDebuff" );
     else
-        scripts\mp\gamescore::_id_11ACE( var_2, var_1, "power_spider_grenade_mp" );
+        scripts\mp\gamescore::trackdebuffassist( var_2, var_1, "power_spider_grenade_mp" );
 
     self waittill( "death" );
     scripts\mp\gamescore::untrackdebuffassist( var_2, var_1, "power_spider_grenade_mp" );

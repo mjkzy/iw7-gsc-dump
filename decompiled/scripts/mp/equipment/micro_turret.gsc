@@ -103,7 +103,7 @@ _id_B711( var_0, var_1, var_2 )
     var_3 thread _id_B6EA();
     thread _id_B71D();
     self._id_B710 = undefined;
-    scripts\mp\supers::_id_DE3B( 9999000 );
+    scripts\mp\supers::reducesuperusepercent( 9999000 );
     scripts\mp\utility::printgameaction( "microturret placed", self );
 }
 
@@ -244,7 +244,7 @@ _id_B6EA()
 {
     self endon( "death" );
     level endon( "game_ended" );
-    self._id_1E2D = 34;
+    self.ammo = 34;
     wait 1;
 
     for (;;)
@@ -370,17 +370,17 @@ _id_B6EC()
     {
         if ( _id_B701() )
         {
-            var_1 = self _meth_8161( 0 );
+            var_1 = self gettargetentity( 0 );
 
             if ( !isdefined( self._id_1A4A ) )
                 self settargetentity( self._id_1A4A );
 
-            if ( _id_B715() && isdefined( self _meth_8161( 1 ) ) )
+            if ( _id_B715() && isdefined( self gettargetentity( 1 ) ) )
             {
                 self shootturret();
-                self._id_1E2D--;
+                self.ammo--;
 
-                if ( self._id_1E2D <= 0 )
+                if ( self.ammo <= 0 )
                     _id_B6F6();
             }
 
@@ -498,9 +498,9 @@ _id_B6FF( var_0, var_1, var_2, var_3 )
     if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
     {
         if ( var_0 scripts\mp\missions::_id_66B8( "specialty_blindeye" ) )
-            var_0 scripts\mp\missions::_id_D991( "ch_perk_kills_blindeye" );
+            var_0 scripts\mp\missions::processchallengedaily( "ch_perk_kills_blindeye" );
 
-        var_0 scripts\mp\missions::_id_D991( "ch_killjoy_six_ability" );
+        var_0 scripts\mp\missions::processchallengedaily( "ch_killjoy_six_ability" );
         var_0 thread scripts\mp\events::supershutdown( self.owner );
         var_0 notify( "destroyed_equipment" );
     }
@@ -557,7 +557,7 @@ _id_139ED()
     self endon( "microTurret_spawned" );
     self endon( "microTurret_end" );
     level waittill( "game_ended" );
-    scripts\mp\supers::_id_DE3B( 9999000 );
+    scripts\mp\supers::reducesuperusepercent( 9999000 );
 }
 
 watcharbitraryup()
@@ -571,7 +571,7 @@ watcharbitraryup()
         scripts\engine\utility::waitframe();
 
     scripts\mp\supers::superdisabledinarbitraryupmessage();
-    scripts\mp\supers::_id_DE3B( 9999000 );
+    scripts\mp\supers::reducesuperusepercent( 9999000 );
 }
 
 _id_5232()
@@ -579,7 +579,7 @@ _id_5232()
     self._id_B6FB = 1;
     scripts\engine\utility::allow_usability( 0 );
     scripts\mp\powers::_id_D729();
-    scripts\mp\utility::_id_1C47( 0 );
+    scripts\mp\utility::allow_gesture( 0 );
 }
 
 _id_5236( var_0 )
@@ -590,7 +590,7 @@ _id_5236( var_0 )
         {
             scripts\engine\utility::allow_usability( 1 );
             scripts\mp\powers::_id_D72F();
-            scripts\mp\utility::_id_1C47( 1 );
+            scripts\mp\utility::allow_gesture( 1 );
         }
     }
 
@@ -653,12 +653,12 @@ _id_B714( var_0 )
     var_2 = physics_createcontents( [ "physicscontents_solid", "physicscontents_vehicle", "physicscontents_glass", "physicscontents_ainosight", "physicscontents_sky" ] );
     var_3 = self gettagorigin( "tag_dummy" );
 
-    if ( isplayer( var_0 ) || isagent( var_0 ) && !scripts\mp\utility::_id_9F72( var_0 ) )
+    if ( isplayer( var_0 ) || isagent( var_0 ) && !scripts\mp\utility::isspidergrenade( var_0 ) )
     {
         var_4 = "j_spine4";
         var_5 = var_0 gettagorigin( var_4 );
 
-        if ( !isdefined( var_1 ) && !scripts\mp\utility::_id_C7A0( var_3, var_5 ) )
+        if ( !isdefined( var_1 ) && !scripts\mp\utility::outlineoccluded( var_3, var_5 ) )
         {
             var_6 = physics_raycast( var_3, var_5, var_2, self, 0, "physicsquery_closest" );
             var_7 = !isdefined( var_6 ) || var_6.size == 0;
@@ -670,7 +670,7 @@ _id_B714( var_0 )
             var_4 = "tag_eye";
             var_5 = var_0 gettagorigin( var_4 );
 
-            if ( !isdefined( var_1 ) && !scripts\mp\utility::_id_C7A0( var_3, var_5 ) )
+            if ( !isdefined( var_1 ) && !scripts\mp\utility::outlineoccluded( var_3, var_5 ) )
             {
                 var_6 = physics_raycast( var_3, var_5, var_2, self, 0, "physicsquery_closest" );
                 var_7 = !isdefined( var_6 ) || var_6.size == 0;
@@ -682,7 +682,7 @@ _id_B714( var_0 )
         {
             var_5 = var_0.origin;
 
-            if ( !isdefined( var_1 ) && !scripts\mp\utility::_id_C7A0( var_3, var_5 ) )
+            if ( !isdefined( var_1 ) && !scripts\mp\utility::outlineoccluded( var_3, var_5 ) )
             {
                 var_6 = physics_raycast( var_3, var_5, var_2, self, 0, "physicsquery_closest" );
                 var_7 = !isdefined( var_6 ) || var_6.size == 0;
@@ -695,7 +695,7 @@ _id_B714( var_0 )
         var_4 = "tag_origin";
         var_5 = var_0 gettagorigin( var_4 );
 
-        if ( !isdefined( var_1 ) && !scripts\mp\utility::_id_C7A0( var_3, var_5 ) )
+        if ( !isdefined( var_1 ) && !scripts\mp\utility::outlineoccluded( var_3, var_5 ) )
         {
             var_6 = physics_raycast( var_3, var_5, var_2, self, 0, "physicsquery_closest" );
             var_7 = !isdefined( var_6 ) || var_6.size == 0;
@@ -757,7 +757,7 @@ _id_B71A( var_0 )
     if ( scripts\mp\equipment\phase_shift::isentityphaseshifted( var_0 ) )
         return 0;
 
-    if ( var_0 scripts\mp\utility::_hasperk( "specialty_blindeye" ) && !scripts\mp\utility::_id_9F72( var_0 ) )
+    if ( var_0 scripts\mp\utility::_hasperk( "specialty_blindeye" ) && !scripts\mp\utility::isspidergrenade( var_0 ) )
         return 0;
 
     if ( isplayer( var_0 ) || isagent( var_0 ) )
@@ -768,7 +768,7 @@ _id_B71A( var_0 )
         if ( scripts\mp\utility::_id_9F22( var_0 ) )
             var_1 = var_0.owner;
 
-        if ( scripts\mp\utility::_id_9F72( var_0 ) )
+        if ( scripts\mp\utility::isspidergrenade( var_0 ) )
             var_1 = var_0.owner;
     }
     else

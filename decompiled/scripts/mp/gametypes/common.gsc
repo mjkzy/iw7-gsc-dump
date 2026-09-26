@@ -5,7 +5,7 @@ setupcommoncallbacks()
 {
     level.onnormaldeath = ::onnormaldeath;
     level.onsuicidedeath = ::onsuicidedeath;
-    level.onteamscore = ::onteamscore;
+    level.onteamchangedeath = ::onteamchangedeath;
     scripts\mp\utility::registerdogtagsenableddvar( level.gametype, 0 );
     level._effect["protection_cameraFX"] = loadfx( "vfx/iw7/_requests/mp/vfx_adrenaline_drip_heal_scrn.vfx" );
 }
@@ -75,7 +75,7 @@ onsuicidedeath( var_0 )
     }
 }
 
-onteamscore( var_0 )
+onteamchangedeath( var_0 )
 {
     if ( scripts\mp\utility::istrue( level.supportcranked ) )
         var_0 scripts\mp\utility::cleanupcrankedplayertimer();

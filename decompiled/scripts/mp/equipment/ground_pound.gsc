@@ -79,8 +79,8 @@ groundpound_impact( var_0, var_1 )
         var_4 setotherent( var_0 );
         var_4 setmodel( var_2.modelname );
 
-        if ( isdefined( var_2.partname ) && isdefined( var_2._id_10E2C ) )
-            var_4 setscriptablepartstate( var_2.partname, var_2._id_10E2C );
+        if ( isdefined( var_2.partname ) && isdefined( var_2.statename ) )
+            var_4 setscriptablepartstate( var_2.partname, var_2.statename );
 
         if ( isdefined( var_2.deletiondelay ) )
             wait( var_2.deletiondelay );
@@ -246,7 +246,7 @@ groundpound_initimpactstructs()
     var_1._id_B783 = 150;
     var_1.innerradsqr = 5625;
     var_1.innerradsqr = 5625;
-    var_1._id_10E2C = "impact2";
+    var_1.statename = "impact2";
     var_1.physicsradmax = 150;
     var_1.physicsscale = 2.5;
     var_0.impactstructs[var_0.impactstructs.size] = var_1;
@@ -254,7 +254,7 @@ groundpound_initimpactstructs()
     var_1._id_B783 = 225;
     var_1.innerradsqr = -1;
     var_1.innerradsqrhc = -1;
-    var_1._id_10E2C = "impact3";
+    var_1.statename = "impact3";
     var_1.physicsradmax = 225;
     var_1.physicsscale = 3;
     var_0.impactstructs[var_0.impactstructs.size] = var_1;
@@ -262,7 +262,7 @@ groundpound_initimpactstructs()
     var_1._id_B783 = 325;
     var_1.innerradsqr = -1;
     var_1.innerradsqrhc = -1;
-    var_1._id_10E2C = "impact4";
+    var_1.statename = "impact4";
     var_1.physicsradmax = 275;
     var_1.physicsscale = 3.5;
     var_0.impactstructs[var_0.impactstructs.size] = var_1;
@@ -270,7 +270,7 @@ groundpound_initimpactstructs()
     var_1._id_B783 = 425;
     var_1.innerradsqr = -1;
     var_1.innerradsqrhc = -1;
-    var_1._id_10E2C = "impact5";
+    var_1.statename = "impact5";
     var_1.physicsradmax = 325;
     var_1.physicsscale = 4;
     var_0.impactstructs[var_0.impactstructs.size] = var_1;
@@ -291,7 +291,7 @@ groundpound_createimpactstruct()
     var_0.outerdamagehc = 20;
     var_0.modelname = "perk_mp_groundPound_scr";
     var_0.partname = "effects";
-    var_0._id_10E2C = "impact1";
+    var_0.statename = "impact1";
     var_0.deletiondelay = 2;
     var_0.physicsradmin = 75;
     var_0.physicsradmax = 100;

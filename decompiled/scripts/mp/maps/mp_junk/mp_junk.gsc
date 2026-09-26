@@ -18,7 +18,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     thread apex_not_outofbounds();
     thread on_connect();
     thread _id_CDA4( "mp_junk_screens" );
@@ -214,9 +214,9 @@ killtriggerloop( var_0 )
             if ( isplayer( var_1 ) )
             {
                 var_1 suicide();
-                var_2 = var_1 _meth_8113();
+                var_2 = var_1 getcorpseentity();
                 var_2 hide( 1 );
-                var_2.permanentcustommovetransition = 1;
+                var_2.permhidden = 1;
 
                 if ( var_1.loadoutarchetype == "archetype_scout" )
                     playfx( level._effect["reaper_kill_robot"], var_1.origin + ( 0, 0, 12 ) );

@@ -85,16 +85,16 @@ shouldplayentranceanim( var_0, var_1, var_2, var_3 )
 
 isanimdone( var_0, var_1, var_2, var_3 )
 {
-    if ( scripts\asm\asm::_id_232B( var_1, "end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "early_end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "early_end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "finish_early" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "finish_early" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "code_move" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "code_move" ) )
         return 1;
 
     return 0;
@@ -103,7 +103,7 @@ isanimdone( var_0, var_1, var_2, var_3 )
 playbeamanim( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    thread scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    thread scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 stopcrabbossbeam()
@@ -212,13 +212,13 @@ gettargetbombloc( var_0, var_1, var_2, var_3 )
 playroarloop( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    scripts\asm\asm_mp::_id_235F( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_loopanimstate( var_0, var_1, var_2, var_3 );
 }
 
 playroarend( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
     self notify( "roar_done" );
 }
 
@@ -524,8 +524,8 @@ dobeamattackposition( var_0, var_1 )
 crab_boss_lure_beam_sfx( var_0, var_1 )
 {
     var_2 = var_1 - var_0;
-    var_3 = var_1 + var_2 * 0.333333;
-    var_4 = var_1 + var_2 * 0.666667;
+    var_3 = var_1 + var_2 * 0.33333334;
+    var_4 = var_1 + var_2 * 0.6666667;
     var_5 = var_1 + var_2 * 0.5;
     level thread scripts\engine\utility::play_sound_in_space( "town_weap_beam_fire_npc_start", var_0 );
     level.boss_beam_lure_loop_sfx = scripts\engine\utility::play_loopsound_in_space( "town_weap_beam_fire_npc_loop", var_0 );
@@ -716,8 +716,8 @@ playanimwithplaybackrate( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     var_4 = var_3;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, var_4 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, var_4 );
 }
 
 chooseidleanim( var_0, var_1, var_2 )
@@ -780,19 +780,19 @@ handleadditionalyaw( var_0, var_1 )
 
 playcrabbossturnanim( var_0, var_1, var_2, var_3 )
 {
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self getanimentry( var_1, var_4 );
     var_6 = getanimlength( var_5 );
 
     if ( isdefined( self.additionalyaw ) )
         thread handleadditionalyaw( var_1, ceil( var_6 * 20 ) );
 
-    return scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 1 );
+    return scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 1 );
 }
 
 playcrabbossemergeanim( var_0, var_1, var_2, var_3 )
 {
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2 );
     self notify( "emerge_complete" );
 }
 
@@ -807,7 +807,7 @@ loophealanim( var_0, var_1, var_2, var_3 )
 {
     var_4 = scripts\mp\agents\crab_boss\crab_boss_tunedata::gettunedata();
     thread healme( var_4.heal_duration );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 isdonehealing( var_0, var_1, var_2, var_3 )
@@ -828,12 +828,12 @@ playmovearrival( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( self.desiredbossmovepos ) )
     {
-        var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+        var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
         var_5 = self getanimentry( var_1, var_4 );
         thread applyallmotiontowards( var_1, self.desiredbossmovepos, var_5, self.moveloopscale );
     }
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 applyallmotiontowards( var_0, var_1, var_2, var_3 )
@@ -870,12 +870,12 @@ playmoveexit( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( self.desiredbossmovepos ) )
     {
-        var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+        var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
         var_5 = self getanimentry( var_1, var_4 );
         thread applyallmotiontowards( var_1, self.desiredbossmovepos, var_5, self.moveloopscale );
     }
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 loopcrabbossmoveanim( var_0, var_1, var_2, var_3 )
@@ -884,7 +884,7 @@ loopcrabbossmoveanim( var_0, var_1, var_2, var_3 )
 
     if ( isdefined( self.desiredbossmovepos ) )
     {
-        var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+        var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
         var_5 = self getanimentry( var_1, var_4 );
         thread applyallmotiontowards( var_1, self.desiredbossmovepos, var_5, self.moveloopscale );
     }
@@ -893,9 +893,9 @@ loopcrabbossmoveanim( var_0, var_1, var_2, var_3 )
 
     for ( var_7 = 0; var_7 < var_6; var_7++ )
     {
-        var_8 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+        var_8 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
         self setanimstate( var_1, var_8 );
-        scripts\anim\notetracks_mp::_id_1384C( var_1, "end", var_1, var_8, ::crabbossnotehandler );
+        scripts\anim\notetracks_mp::waituntilnotetrack( var_1, "end", var_1, var_8, ::crabbossnotehandler );
     }
 
     clearaction();
@@ -907,7 +907,7 @@ choosecrabbossarrivalanim( var_0, var_1, var_2 )
     return scripts\asm\asm::asm_lookupanimfromalias( var_1, var_3 );
 }
 
-_id_3EE4( var_0, var_1, var_2 )
+choosepainanim_covercorner( var_0, var_1, var_2 )
 {
     if ( !isdefined( self.painalias ) )
     {
@@ -968,7 +968,7 @@ stopsonicbeam()
 choosetauntanim( var_0, var_1, var_2 )
 {
     if ( scripts\engine\utility::is_true( level.crab_boss_random_taunt_anim ) )
-        return _id_0F3C::_id_3E96( var_0, var_1 );
+        return scripts\asm\shared\mp\utility::_id_3E96( var_0, var_1 );
     else
-        return _id_0F3C::_id_3E96( var_0, var_1, "taunt" );
+        return scripts\asm\shared\mp\utility::_id_3E96( var_0, var_1, "taunt" );
 }

@@ -95,7 +95,7 @@ giveplayerscore( var_0, var_1 )
 
     var_3 scripts\mp\utility::bufferednotify( "earned_score_buffered", var_1 );
     scripts\mp\analyticslog::logevent_reportgamescore( var_1, gettime(), scripts\mp\rank::getscoreinfocategory( var_0, "eventID" ) );
-    var_3 scripts\mp\matchdata::_id_AFD8( var_0 );
+    var_3 scripts\mp\matchdata::logscoreevent( var_0 );
 }
 
 _setplayerscore( var_0, var_1 )
@@ -125,7 +125,7 @@ checkffascorejip()
     {
         var_0 = self.score / level.roundscorelimit * 100;
 
-        if ( var_0 > level._id_EC3F )
+        if ( var_0 > level.scorepercentagecutoff )
         {
             setnojipscore( 1 );
             level.nojip = 1;
@@ -149,13 +149,13 @@ giveteamscoreforobjective( var_0, var_1, var_2 )
     else if ( level.roundscorelimit > 1 && game["teamScores"][var_0] >= level.roundscorelimit || level.roundscorelimit > 1 && game["teamScores"][level.otherteam[var_0]] >= level.roundscorelimit )
         return;
 
-    _id_13D6( var_0, _getteamscore( var_0 ) + var_1, var_2 );
+    _setteamscore( var_0, _getteamscore( var_0 ) + var_1, var_2 );
     level notify( "update_team_score", var_0, _getteamscore( var_0 ) );
-    var_3 = _id_8242( var_2 );
+    var_3 = getwinningteam( var_2 );
 
-    if ( !level.splitscreen && var_3 != "none" && var_3 != level.waswinning && gettime() - level._id_AA1E > 5000 && scripts\mp\utility::getscorelimit() != 1 )
+    if ( !level.splitscreen && var_3 != "none" && var_3 != level.waswinning && gettime() - level.laststatustime > 5000 && scripts\mp\utility::getscorelimit() != 1 )
     {
-        level._id_AA1E = gettime();
+        level.laststatustime = gettime();
         scripts\mp\utility::leaderdialog( "lead_taken", var_3, "status" );
 
         if ( level.waswinning != "none" )
@@ -175,7 +175,7 @@ giveteamscoreforobjective( var_0, var_1, var_2 )
 
         if ( !scripts\mp\utility::isroundbased() && isdefined( level.nojip ) && !level.nojip )
         {
-            if ( var_6 > level._id_EC3F )
+            if ( var_6 > level.scorepercentagecutoff )
             {
                 setnojipscore( 1 );
                 level.nojip = 1;
@@ -184,7 +184,7 @@ giveteamscoreforobjective( var_0, var_1, var_2 )
     }
 }
 
-_id_8242( var_0 )
+getwinningteam( var_0 )
 {
     var_1 = level.teamnamelist;
 
@@ -225,7 +225,7 @@ _id_8242( var_0 )
     return var_2;
 }
 
-_id_13D6( var_0, var_1, var_2 )
+_setteamscore( var_0, var_1, var_2 )
 {
     if ( var_1 < 0 )
         var_1 = 0;
@@ -235,7 +235,7 @@ _id_13D6( var_0, var_1, var_2 )
 
     game["teamScores"][var_0] = var_1;
     updateteamscore( var_0 );
-    thread scripts\mp\gamelogic::_id_E75E( var_0, var_2 );
+    thread scripts\mp\gamelogic::roundend_checkscorelimit( var_0, var_2 );
 }
 
 updateteamscore( var_0 )
@@ -250,7 +250,7 @@ updateteamscore( var_0 )
     setteamscore( var_0, int( var_1 ) );
 }
 
-_id_12F4A( var_0 )
+updatetotalteamscore( var_0 )
 {
     if ( !isdefined( game["totalScore"] ) )
     {
@@ -269,7 +269,7 @@ _id_12F4A( var_0 )
         case "teamScores":
             if ( scripts\mp\utility::inovertime() )
                 game["teamScores"][var_0] = game["preOvertimeScore"][var_0] + game["overtimeScore"][var_0] + game["teamScores"][var_0];
-            else if ( scripts\mp\utility::_id_E269() )
+            else if ( scripts\mp\utility::resetscoreonroundstart() )
             {
                 game["totalScore"][var_0] = game["totalScore"][var_0] + game["teamScores"][var_0];
                 game["teamScores"][var_0] = game["totalScore"][var_0];
@@ -281,7 +281,7 @@ _id_12F4A( var_0 )
     setteamscore( var_0, int( game["teamScores"][var_0] ) );
 }
 
-_id_12EE5()
+updateovertimescore()
 {
     if ( game["overtimeRoundsPlayed"] == 0 )
     {
@@ -355,7 +355,7 @@ removedisconnectedplayerfromplacement()
     level.placement["all"][var_1 - 1] = undefined;
 
     if ( level.multiteambased )
-        _id_BD7B();
+        mtdm_updateteamplacement();
 
     if ( level.teambased )
     {
@@ -384,7 +384,7 @@ updateplacement()
         var_2 = var_0[var_4];
         var_5 = var_2.score;
 
-        for ( var_6 = var_4 - 1; var_6 >= 0 && _id_7E06( var_2, var_0[var_6] ) == var_2; var_6-- )
+        for ( var_6 = var_4 - 1; var_6 >= 0 && getbetterplayer( var_2, var_0[var_6] ) == var_2; var_6-- )
             var_0[var_6 + 1] = var_0[var_6];
 
         var_0[var_6 + 1] = var_2;
@@ -393,12 +393,12 @@ updateplacement()
     level.placement["all"] = var_0;
 
     if ( level.multiteambased )
-        _id_BD7B();
+        mtdm_updateteamplacement();
     else if ( level.teambased )
         updateteamplacement();
 }
 
-_id_7E06( var_0, var_1 )
+getbetterplayer( var_0, var_1 )
 {
     if ( var_0.score > var_1.score )
         return var_0;
@@ -437,7 +437,7 @@ updateteamplacement()
     level.placement["axis"] = var_0["axis"];
 }
 
-_id_BD7B()
+mtdm_updateteamplacement()
 {
     var_0["spectator"] = [];
 
@@ -484,7 +484,7 @@ processassist_regularmp( var_0, var_1, var_2 )
         var_5 = var_0.markedbyboomperk;
 
     wait 0.05;
-    scripts\mp\utility::_id_13842();
+    scripts\mp\utility::waittillslowprocessallowed();
     var_6 = self.pers["team"];
 
     if ( var_6 != "axis" && var_6 != "allies" )
@@ -519,7 +519,7 @@ processassist_regularmp( var_0, var_1, var_2 )
         thread scripts\mp\utility::givestreakpointswithtext( "assistMarked", var_1, var_7 );
         giveplayerscore( "assist", var_9 );
     }
-    else if ( isdefined( var_5 ) && scripts\mp\utility::_id_2287( var_5, scripts\mp\utility::getuniqueid() ) )
+    else if ( isdefined( var_5 ) && scripts\mp\utility::array_contains_key( var_5, scripts\mp\utility::getuniqueid() ) )
         thread scripts\mp\utility::givestreakpointswithtext( "assistPing", var_1, undefined );
     else
     {
@@ -555,15 +555,15 @@ processassist_regularmp( var_0, var_1, var_2 )
         self notify( "assist_hardline" );
     }
 
-    scripts\mp\utility::incperstat( "assists", 1 );
+    scripts\mp\utility::incpersstat( "assists", 1 );
     self.assists = scripts\mp\utility::getpersstat( "assists" );
     scripts\mp\persistence::statsetchild( "round", "assists", self.assists );
     scripts\mp\utility::bufferednotify( "assist_buffered", self.modifiers );
-    thread scripts\mp\missions::_id_D366( var_0 );
+    thread scripts\mp\missions::playerassist( var_0 );
     thread scripts\mp\intelchallenges::_id_99B8( var_0 );
 
     if ( level.gameended )
-        scripts\mp\utility::_id_F7DF( "streakPoints", scripts\engine\utility::ter_op( isdefined( self.streakpoints ), self.streakpoints, 0 ) );
+        scripts\mp\utility::setpersstat( "streakPoints", scripts\engine\utility::ter_op( isdefined( self.streakpoints ), self.streakpoints, 0 ) );
 }
 
 processshieldassist( var_0 )
@@ -579,7 +579,7 @@ processshieldassist_regularmp( var_0 )
     self endon( "disconnect" );
     var_0 endon( "disconnect" );
     wait 0.05;
-    scripts\mp\utility::_id_13842();
+    scripts\mp\utility::waittillslowprocessallowed();
 
     if ( self.pers["team"] != "axis" && self.pers["team"] != "allies" )
         return;
@@ -588,19 +588,19 @@ processshieldassist_regularmp( var_0 )
         return;
 
     thread scripts\mp\utility::giveunifiedpoints( "shield_assist" );
-    scripts\mp\utility::incperstat( "assists", 1 );
+    scripts\mp\utility::incpersstat( "assists", 1 );
     self.assists = scripts\mp\utility::getpersstat( "assists" );
     scripts\mp\persistence::statsetchild( "round", "assists", self.assists );
-    thread scripts\mp\missions::_id_D366( var_0 );
+    thread scripts\mp\missions::playerassist( var_0 );
 }
 
-_id_97D2()
+initassisttrackers()
 {
     self.buffedbyplayers = [];
     self.debuffedbyplayers = [];
 }
 
-_id_11ACE( var_0, var_1, var_2 )
+trackdebuffassist( var_0, var_1, var_2 )
 {
     if ( isplayer( var_1 ) )
     {
@@ -617,13 +617,13 @@ untrackdebuffassist( var_0, var_1, var_2 )
         var_1.debuffedbyplayers[var_2][var_0 getentitynumber()] = undefined;
 }
 
-_id_11ACF( var_0, var_1, var_2, var_3 )
+trackdebuffassistfortime( var_0, var_1, var_2, var_3 )
 {
     var_1 endon( "spawned_player" );
     var_1 endon( "disconnect" );
     var_0 endon( "disconnect" );
     level endon( "game_ended" );
-    _id_11ACE( var_0, var_1, var_2 );
+    trackdebuffassist( var_0, var_1, var_2 );
     wait( var_3 );
     untrackdebuffassist( var_0, var_1, var_2 );
 }
@@ -671,7 +671,7 @@ untrackbuffassist( var_0, var_1, var_2 )
         var_1.buffedbyplayers[var_2][var_0 getentitynumber()] = undefined;
 }
 
-_id_11ACA( var_0, var_1, var_2, var_3 )
+trackbuffassistfortime( var_0, var_1, var_2, var_3 )
 {
     var_1 endon( "spawned_player" );
     var_1 endon( "disconnect" );

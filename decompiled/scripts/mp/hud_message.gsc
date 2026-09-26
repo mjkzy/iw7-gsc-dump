@@ -54,7 +54,7 @@ onplayerconnect()
         level waittill( "connected", var_0 );
         var_0 thread lowermessagethink();
         var_0 thread splashshownthink();
-        var_0 thread _id_68B8();
+        var_0 thread eventsplashesthink();
     }
 }
 
@@ -338,11 +338,11 @@ teamoutcomenotify( var_0, var_1, var_2 )
         self setclientomnvar( "ui_round_end_enemy_score", game["roundsWon"][level.otherteam[var_3]] );
     }
 
-    if ( isdefined( self._id_B3DD ) )
-        self setclientomnvar( "ui_round_end_match_bonus", self._id_B3DD );
+    if ( isdefined( self.matchbonus ) )
+        self setclientomnvar( "ui_round_end_match_bonus", self.matchbonus );
 }
 
-_id_C752( var_0, var_1 )
+outcomenotify( var_0, var_1 )
 {
     self endon( "disconnect" );
     var_2 = level.placement["all"];
@@ -369,8 +369,8 @@ _id_C752( var_0, var_1 )
 
     self setclientomnvar( "ui_round_end_reason", var_1 );
 
-    if ( isdefined( self._id_B3DD ) )
-        self setclientomnvar( "ui_round_end_match_bonus", self._id_B3DD );
+    if ( isdefined( self.matchbonus ) )
+        self setclientomnvar( "ui_round_end_match_bonus", self.matchbonus );
 }
 
 getsplashtablename()
@@ -471,7 +471,7 @@ showmiscmessage( var_0 )
     self setclientomnvar( "ui_misc_message_trigger", 1 );
 }
 
-_id_68B8()
+eventsplashesthink()
 {
     self endon( "disconnect" );
     self waittill( "spawned_player" );
@@ -483,7 +483,7 @@ _id_68B8()
     if ( !scripts\mp\utility::matchmakinggame() )
         return;
 
-    var_0 = self _meth_85BE() > 1;
+    var_0 = self getprivatepartysize() > 1;
 
     if ( getdvarint( "online_mp_xpscale" ) == 2 || var_0 && getdvarint( "online_mp_party_xpscale" ) == 2 )
         showsplash( "event_double_xp" );

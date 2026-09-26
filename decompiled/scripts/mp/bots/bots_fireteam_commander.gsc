@@ -716,7 +716,7 @@ spectator_takeover_other( var_0 )
     {
         var_0.sidelinedbycommander = 1;
         var_0 bot_free_to_move();
-        self playlocalsound( var_0 );
+        self playercommandbot( var_0 );
         self notify( "commander_spectate_stop" );
         var_0 notify( "commander_took_over" );
     }
@@ -733,7 +733,7 @@ spectator_takeover_other( var_0 )
     if ( isbot( self ) )
     {
         var_0 thread commander_spectate_bot( self );
-        var_0 playlocalsound( undefined );
+        var_0 playercommandbot( undefined );
         self.sidelinedbycommander = 0;
         var_0 playlocalsound( "counter_uav_activate" );
         thread takeover_flash();

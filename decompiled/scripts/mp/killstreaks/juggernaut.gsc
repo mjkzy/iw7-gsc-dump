@@ -3,14 +3,14 @@
 
 init()
 {
-    level._id_A4AD = [];
-    level._id_A4AD["juggernaut"] = spawnstruct();
-    level._id_A4AD["juggernaut"]._id_10A41 = "used_juggernaut";
-    level._id_A4AD["juggernaut_recon"] = spawnstruct();
-    level._id_A4AD["juggernaut_recon"]._id_10A41 = "used_juggernaut_recon";
-    level._id_A4AD["juggernaut_maniac"] = spawnstruct();
-    level._id_A4AD["juggernaut_maniac"]._id_10A41 = "used_juggernaut_maniac";
-    level thread _id_13AB0();
+    level.juggsettings = [];
+    level.juggsettings["juggernaut"] = spawnstruct();
+    level.juggsettings["juggernaut"].splashusedname = "used_juggernaut";
+    level.juggsettings["juggernaut_recon"] = spawnstruct();
+    level.juggsettings["juggernaut_recon"].splashusedname = "used_juggernaut_recon";
+    level.juggsettings["juggernaut_maniac"] = spawnstruct();
+    level.juggsettings["juggernaut_maniac"].splashusedname = "used_juggernaut_maniac";
+    level thread watchjugghostmigrationfinishedinit();
 }
 
 givejuggernaut( var_0 )
@@ -22,7 +22,7 @@ givejuggernaut( var_0 )
     if ( isdefined( self.lightarmorhp ) )
         scripts\mp\perks\perkfunctions::unsetlightarmor();
 
-    scripts\mp\weapons::_id_5608();
+    scripts\mp\weapons::disableplantedequipmentuse();
 
     if ( scripts\mp\utility::_hasperk( "specialty_explosivebullets" ) )
         scripts\mp\utility::removeperk( "specialty_explosivebullets" );
@@ -34,7 +34,7 @@ givejuggernaut( var_0 )
     {
         case "juggernaut":
             self.isjuggernaut = 1;
-            self._id_A4AA = 0.8;
+            self.juggmovespeedscaler = 0.8;
             scripts\mp\class::giveloadout( self.pers["team"], var_0, 0 );
             self.movespeedscaler = 0.8;
             scripts\mp\utility::giveperk( "specialty_scavenger" );
@@ -45,7 +45,7 @@ givejuggernaut( var_0 )
             break;
         case "juggernaut_recon":
             self.isjuggernautrecon = 1;
-            self._id_A4AA = 0.8;
+            self.juggmovespeedscaler = 0.8;
             scripts\mp\class::giveloadout( self.pers["team"], var_0 );
             self.movespeedscaler = 0.8;
             scripts\mp\utility::giveperk( "specialty_scavenger" );
@@ -64,7 +64,7 @@ givejuggernaut( var_0 )
             break;
         case "juggernaut_maniac":
             self.isjuggernautmaniac = 1;
-            self._id_A4AA = 1.15;
+            self.juggmovespeedscaler = 1.15;
             scripts\mp\class::giveloadout( self.pers["team"], var_0, 0 );
             scripts\mp\utility::giveperk( "specialty_blindeye" );
             scripts\mp\utility::giveperk( "specialty_coldblooded" );
@@ -75,11 +75,11 @@ givejuggernaut( var_0 )
             self.movespeedscaler = 1.15;
             break;
         default:
-            var_1 = self [[ level._id_B331 ]]( var_0 );
+            var_1 = self [[ level.mapcustomjuggfunc ]]( var_0 );
             break;
     }
 
-    if ( _id_CA4E( "specialty_hardline" ) )
+    if ( perkcheck( "specialty_hardline" ) )
         scripts\mp\utility::giveperk( "specialty_hardline" );
 
     scripts\mp\weapons::updatemovespeedscale();
@@ -90,17 +90,17 @@ givejuggernaut( var_0 )
         if ( var_1 )
         {
             self setclientomnvar( "ui_juggernaut", 1 );
-            thread scripts\mp\utility::teamplayercardsplash( level._id_A4AD[var_0]._id_10A41, self );
-            thread _id_A4A9();
-            thread _id_139F1();
-            thread _id_13A13();
+            thread scripts\mp\utility::teamplayercardsplash( level.juggsettings[var_0].splashusedname, self );
+            thread juggernautsounds();
+            thread watchdisablejuggernaut();
+            thread watchenablejuggernaut();
         }
     }
 
     if ( self.streaktype == "specialist" )
-        thread scripts\mp\killstreaks\killstreaks::_id_41C0();
+        thread scripts\mp\killstreaks\killstreaks::clearkillstreaks();
 
-    thread _id_A4AC();
+    thread juggremover();
 
     if ( isdefined( self.carryflag ) )
     {
@@ -112,7 +112,7 @@ givejuggernaut( var_0 )
     scripts\mp\matchdata::logkillstreakevent( var_0, self.origin );
 }
 
-_id_CA4E( var_0 )
+perkcheck( var_0 )
 {
     var_1 = self.pers["loadoutPerks"];
 
@@ -125,7 +125,7 @@ _id_CA4E( var_0 )
     return 0;
 }
 
-_id_A4A9()
+juggernautsounds()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -139,7 +139,7 @@ _id_A4A9()
     }
 }
 
-_id_13AB0()
+watchjugghostmigrationfinishedinit()
 {
     level endon( "game_ended" );
 
@@ -165,14 +165,14 @@ _id_13AB0()
     }
 }
 
-_id_A4AC()
+juggremover()
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
     self endon( "jugg_removed" );
-    thread _id_A4AB();
+    thread juggremoveongameended();
     scripts\engine\utility::waittill_any( "death", "joined_team", "joined_spectators", "lost_juggernaut" );
-    self _meth_80DB();
+    self enableweaponpickup();
     self.isjuggernaut = 0;
     self.isjuggernautdef = 0;
     self.isjuggernautgl = 0;
@@ -187,7 +187,7 @@ _id_A4AC()
     self notify( "jugg_removed" );
 }
 
-_id_A4AB()
+juggremoveongameended()
 {
     self endon( "disconnect" );
     self endon( "jugg_removed" );
@@ -197,7 +197,7 @@ _id_A4AB()
         self setclientomnvar( "ui_juggernaut", 0 );
 }
 
-_id_F766()
+setjugg()
 {
     if ( isdefined( self.headmodel ) )
     {
@@ -207,10 +207,10 @@ _id_F766()
 
     self setmodel( "mp_fullbody_juggernaut_heavy_black" );
     self setviewmodel( "viewhands_juggernaut_ally" );
-    self _meth_82C6( "vestheavy" );
+    self setclothtype( "vestheavy" );
 }
 
-_id_F767()
+setjuggmaniac()
 {
     if ( isdefined( self.headmodel ) )
     {
@@ -222,28 +222,28 @@ _id_F767()
     self setviewmodel( "viewhands_juggernaut_ally" );
     self attach( "mp_warfighter_head_1", "", 1 );
     self.headmodel = "mp_warfighter_head_1";
-    self _meth_82C6( "nylon" );
+    self setclothtype( "nylon" );
 }
 
-_id_55F4()
+disablejuggernaut()
 {
     if ( scripts\mp\utility::isjuggernaut() )
     {
-        self._id_A4A4 = 1;
+        self.juggernaut_disabled = 1;
         self setclientomnvar( "ui_juggernaut", 0 );
     }
 }
 
-_id_626C()
+enablejuggernaut()
 {
     if ( scripts\mp\utility::isjuggernaut() )
     {
-        self._id_A4A4 = undefined;
+        self.juggernaut_disabled = undefined;
         self setclientomnvar( "ui_juggernaut", 1 );
     }
 }
 
-_id_139F1()
+watchdisablejuggernaut()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -252,17 +252,17 @@ _id_139F1()
 
     for (;;)
     {
-        if ( !isdefined( self._id_A4A4 ) && scripts\mp\utility::isusingremote() )
+        if ( !isdefined( self.juggernaut_disabled ) && scripts\mp\utility::isusingremote() )
         {
             self waittill( "black_out_done" );
-            _id_55F4();
+            disablejuggernaut();
         }
 
         wait 0.05;
     }
 }
 
-_id_13A13()
+watchenablejuggernaut()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -271,18 +271,18 @@ _id_13A13()
 
     for (;;)
     {
-        if ( isdefined( self._id_A4A4 ) && !scripts\mp\utility::isusingremote() )
-            _id_626C();
+        if ( isdefined( self.juggernaut_disabled ) && !scripts\mp\utility::isusingremote() )
+            enablejuggernaut();
 
         wait 0.05;
     }
 }
 
-_id_988F( var_0, var_1, var_2, var_3 )
+initlevelcustomjuggernaut( var_0, var_1, var_2, var_3 )
 {
-    level._id_B331 = var_0;
-    level._id_B333 = var_1;
-    level._id_B332 = var_3;
+    level.mapcustomjuggfunc = var_0;
+    level.mapcustomjuggsetclass = var_1;
+    level.mapcustomjuggkilledsplash = var_3;
     game["allies_model"]["JUGGERNAUT_CUSTOM"] = var_2;
     game["axis_model"]["JUGGERNAUT_CUSTOM"] = var_2;
 }

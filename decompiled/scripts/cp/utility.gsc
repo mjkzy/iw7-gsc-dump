@@ -506,9 +506,9 @@ initgameflags()
         game["flags"] = [];
 }
 
-_id_F305()
+set_console_status()
 {
-    if ( !scripts\engine\utility::add_init_script( "platform", ::_id_F305 ) )
+    if ( !scripts\engine\utility::add_init_script( "platform", ::set_console_status ) )
         return;
 
     if ( !isdefined( level.console ) )
@@ -518,29 +518,29 @@ _id_F305()
 
     }
 
-    if ( !isdefined( level._id_13E0F ) )
-        level._id_13E0F = getdvar( "xenonGame" ) == "true";
+    if ( !isdefined( level.xenon ) )
+        level.xenon = getdvar( "xenonGame" ) == "true";
     else
     {
 
     }
 
-    if ( !isdefined( level._id_DADB ) )
-        level._id_DADB = getdvar( "ps3Game" ) == "true";
+    if ( !isdefined( level.ps3 ) )
+        level.ps3 = getdvar( "ps3Game" ) == "true";
     else
     {
 
     }
 
-    if ( !isdefined( level._id_13E0E ) )
-        level._id_13E0E = getdvar( "xb3Game" ) == "true";
+    if ( !isdefined( level.xb3 ) )
+        level.xb3 = getdvar( "xb3Game" ) == "true";
     else
     {
 
     }
 
-    if ( !isdefined( level._id_DADC ) )
-        level._id_DADC = getdvar( "ps4Game" ) == "true";
+    if ( !isdefined( level.ps4 ) )
+        level.ps4 = getdvar( "ps4Game" ) == "true";
     else
     {
 
@@ -678,7 +678,7 @@ isstrstart( var_0, var_1 )
 
 isreallyalive( var_0 )
 {
-    if ( isalive( var_0 ) && !isdefined( var_0.fauxdeath ) )
+    if ( isalive( var_0 ) && !isdefined( var_0.fauxdead ) )
         return 1;
 
     return 0;
@@ -807,7 +807,7 @@ leaderdialogonplayer( var_0, var_1, var_2, var_3 )
     if ( isdefined( var_4 ) && ( var_4 == "axis" || var_4 == "allies" ) )
     {
         var_5 = game["voice"][var_4] + game["dialog"][var_0];
-        self _meth_8252( var_5, var_0, 2, var_1, var_2, var_3 );
+        self queuedialogforplayer( var_5, var_0, 2, var_1, var_2, var_3 );
     }
 }
 
@@ -924,7 +924,7 @@ playdeathsound()
     var_0 = randomintrange( 1, 8 );
     var_1 = "generic";
 
-    if ( self _meth_817F() )
+    if ( self hasfemalecustomizationmodel() )
         var_1 = "female";
 
     if ( self.team == "axis" )
@@ -1301,20 +1301,20 @@ isinkillcam()
     return self.spectatekillcam;
 }
 
-_id_F6DB( var_0, var_1, var_2 )
+setdvar_cg_ng( var_0, var_1, var_2 )
 {
-    if ( !isdefined( level.console ) || !isdefined( level._id_13E0E ) || !isdefined( level._id_DADC ) )
-        _id_F305();
+    if ( !isdefined( level.console ) || !isdefined( level.xb3 ) || !isdefined( level.ps4 ) )
+        set_console_status();
 
-    if ( _id_9BEE() )
+    if ( is_gen4() )
         setdvar( var_0, var_2 );
     else
         setdvar( var_0, var_1 );
 }
 
-_id_9BEE()
+is_gen4()
 {
-    if ( level._id_13E0E || level._id_DADC || !level.console )
+    if ( level.xb3 || level.ps4 || !level.console )
         return 1;
     else
         return 0;
@@ -1927,83 +1927,85 @@ setheadicon( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_
 
             self.entityheadicons[var_13] = undefined;
         }
+
+        return;
+    }
+
+    if ( isplayer( var_0 ) )
+    {
+        if ( isdefined( self.entityheadicons[var_0.guid] ) )
+        {
+            self.entityheadicons[var_0.guid] destroy();
+            self.entityheadicons[var_0.guid] = undefined;
+        }
+
+        if ( var_1 == "" )
+            return;
+
+        if ( isdefined( var_0.team ) )
+        {
+            if ( isdefined( self.entityheadicons[var_0.team] ) )
+            {
+                self.entityheadicons[var_0.team] destroy();
+                self.entityheadicons[var_0.team] = undefined;
+            }
+        }
+
+        var_12 = newclienthudelem( var_0 );
+        self.entityheadicons[var_0.guid] = var_12;
     }
     else
     {
-        if ( isplayer( var_0 ) )
+        if ( isdefined( self.entityheadicons[var_0] ) )
         {
-            if ( isdefined( self.entityheadicons[var_0.guid] ) )
-            {
-                self.entityheadicons[var_0.guid] destroy();
-                self.entityheadicons[var_0.guid] = undefined;
-            }
-
-            if ( var_1 == "" )
-                return;
-
-            if ( isdefined( var_0.team ) )
-            {
-                if ( isdefined( self.entityheadicons[var_0.team] ) )
-                {
-                    self.entityheadicons[var_0.team] destroy();
-                    self.entityheadicons[var_0.team] = undefined;
-                }
-            }
-
-            var_12 = newclienthudelem( var_0 );
-            self.entityheadicons[var_0.guid] = var_12;
-        }
-        else
-        {
-            if ( isdefined( self.entityheadicons[var_0] ) )
-            {
-                self.entityheadicons[var_0] destroy();
-                self.entityheadicons[var_0] = undefined;
-            }
-
-            if ( var_1 == "" )
-                return;
-
-            foreach ( var_13, var_15 in self.entityheadicons )
-            {
-                if ( var_13 == "axis" || var_13 == "allies" )
-                    continue;
-
-                var_16 = getplayerforguid( var_13 );
-
-                if ( var_16.team == var_0 )
-                {
-                    self.entityheadicons[var_13] destroy();
-                    self.entityheadicons[var_13] = undefined;
-                }
-            }
-
-            var_12 = newteamhudelem( var_0 );
-            self.entityheadicons[var_0] = var_12;
+            self.entityheadicons[var_0] destroy();
+            self.entityheadicons[var_0] = undefined;
         }
 
-        if ( !isdefined( var_3 ) || !isdefined( var_4 ) )
+        if ( var_1 == "" )
+            return;
+
+        foreach ( var_13, var_15 in self.entityheadicons )
         {
-            var_3 = 10;
-            var_4 = 10;
+            if ( var_13 == "axis" || var_13 == "allies" )
+                continue;
+
+            var_16 = getplayerforguid( var_13 );
+
+            if ( var_16.team == var_0 )
+            {
+                self.entityheadicons[var_13] destroy();
+                self.entityheadicons[var_13] = undefined;
+            }
         }
 
-        var_12.archived = var_5;
-        var_12.x = self.origin[0] + var_2[0];
-        var_12.y = self.origin[1] + var_2[1];
-        var_12.z = self.origin[2] + var_2[2];
-        var_12.alpha = 0.85;
-        var_12 setshader( var_1, var_3, var_4 );
-        var_12 setwaypoint( var_7, var_8, var_9, var_10 );
-        var_12 thread keeppositioned( self, var_2, var_6 );
-        thread destroyiconsondeath();
-
-        if ( isplayer( var_0 ) )
-            var_12 thread destroyonownerdisconnect( var_0 );
-
-        if ( isplayer( self ) )
-            var_12 thread destroyonownerdisconnect( self );
+        var_12 = newteamhudelem( var_0 );
+        self.entityheadicons[var_0] = var_12;
     }
+
+    if ( !isdefined( var_3 ) || !isdefined( var_4 ) )
+    {
+        var_3 = 10;
+        var_4 = 10;
+    }
+
+    var_12.archived = var_5;
+    var_12.x = self.origin[0] + var_2[0];
+    var_12.y = self.origin[1] + var_2[1];
+    var_12.z = self.origin[2] + var_2[2];
+    var_12.alpha = 0.85;
+    var_12 setshader( var_1, var_3, var_4 );
+    var_12 setwaypoint( var_7, var_8, var_9, var_10 );
+    var_12 thread keeppositioned( self, var_2, var_6 );
+    thread destroyiconsondeath();
+
+    if ( isplayer( var_0 ) )
+        var_12 thread destroyonownerdisconnect( var_0 );
+
+    if ( isplayer( self ) )
+        var_12 thread destroyonownerdisconnect( self );
+
+    return var_12;
 }
 
 showheadicon( var_0 )
@@ -2101,7 +2103,7 @@ destroyonownerdisconnect( var_0 )
 
 _suicide()
 {
-    if ( !isusingremote() && !isdefined( self.fauxdeath ) )
+    if ( !isusingremote() && !isdefined( self.fauxdead ) )
         self suicide();
 }
 
@@ -2538,7 +2540,7 @@ has_special_weapon()
 
 filloffhandweapons( var_0, var_1 )
 {
-    var_2 = self getweaponslistall();
+    var_2 = self getweaponslistoffhands();
     var_3 = 0;
     var_4 = undefined;
     var_5 = 0;
@@ -3044,7 +3046,7 @@ is_empty_string( var_0 )
     return var_0 == "";
 }
 
-_id_F225( var_0, var_1 )
+send_notify( var_0, var_1 )
 {
     if ( isdefined( var_1 ) )
         self notify( var_0, var_1 );
@@ -4370,10 +4372,10 @@ getpassiveattachment( var_0 )
 {
     var_1 = getpassivestruct( var_0 );
 
-    if ( !isdefined( var_1 ) || !isdefined( var_1.attachmentroll ) )
+    if ( !isdefined( var_1 ) || !isdefined( var_1.attachmentref ) )
         return undefined;
 
-    return var_1.attachmentroll;
+    return var_1.attachmentref;
 }
 
 getweaponpassives( var_0, var_1 )
@@ -5419,7 +5421,7 @@ getregendata( var_0 )
         if ( is_consumable_active( "faster_health_regen_upgrade" ) || isdefined( level.purify_active ) && level.purify_active >= 1 )
         {
             var_0.activatetime = 0.45;
-            var_0.waittimebetweenregen = 0.045;
+            var_0.waittimebetweenregen = 0.044999998;
             var_0.regenamount = 0.1;
         }
         else if ( self.health <= 45 )
@@ -6422,14 +6424,14 @@ bufferednotify_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7,
         self.bufferednotifications[var_0] = [];
 
     var_11 = spawnstruct();
-    var_11._id_C8E5 = var_1;
-    var_11._id_C8E6 = var_2;
-    var_11._id_C8E7 = var_3;
-    var_11._id_C8E8 = var_4;
-    var_11._id_C8E9 = var_5;
-    var_11._id_C8EA = var_6;
-    var_11._id_C8EB = var_7;
-    var_11._id_C8EC = var_8;
+    var_11.param1 = var_1;
+    var_11.param2 = var_2;
+    var_11.param3 = var_3;
+    var_11.param4 = var_4;
+    var_11.param5 = var_5;
+    var_11.param6 = var_6;
+    var_11.param7 = var_7;
+    var_11.param8 = var_8;
     var_11.param9 = var_9;
     self.bufferednotifications[var_0][self.bufferednotifications[var_0].size] = var_11;
     waittillframeend;
@@ -6437,7 +6439,7 @@ bufferednotify_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7,
     while ( self.bufferednotifications[var_0].size > 0 )
     {
         var_11 = self.bufferednotifications[var_0][0];
-        self notify( var_0, var_11._id_C8E5, var_11._id_C8E6, var_11._id_C8E7, var_11._id_C8E8, var_11._id_C8E9, var_11._id_C8EA, var_11._id_C8EB, var_11._id_C8EC, var_11.param9 );
+        self notify( var_0, var_11.param1, var_11.param2, var_11.param3, var_11.param4, var_11.param5, var_11.param6, var_11.param7, var_11.param8, var_11.param9 );
         self.bufferednotifications[var_0] = array_remove_index( self.bufferednotifications[var_0], 0 );
         wait 0.05;
     }

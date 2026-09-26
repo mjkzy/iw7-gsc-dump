@@ -309,7 +309,7 @@ enable_bossfight_magicwheel()
     level.bossfight_magicwheel._id_10A03 show();
     level.bossfight_magicwheel._id_10A03 setscriptablepartstate( "spinner", "idle" );
     level.bossfight_magicwheel makeusable();
-    level.bossfight_magicwheel _meth_84A7( "tag_use" );
+    level.bossfight_magicwheel sethinttag( "tag_use" );
     level.bossfight_magicwheel setusefov( 60 );
     level.bossfight_magicwheel setuserange( 72 );
     level.current_active_wheel = level.bossfight_magicwheel;
@@ -381,7 +381,7 @@ spawn_meph()
     level thread play_meph_song( ( 1785, -2077, 211 ), "mus_zombies_boss_battle" );
     level.meph_fight_started = 1;
     level.no_laststand_music = 1;
-    level._id_4C58 = ::meph_intermission_func;
+    level.custom_intermission_func = ::meph_intermission_func;
     level.force_respawn_location = ::respawn_in_meph_fight;
     level.getspawnpoint = ::respawn_in_meph_fight;
     scripts\cp\zombies\zombies_spawning::activate_volume_by_name( "meph_arena" );
@@ -563,7 +563,7 @@ start( var_0 )
     var_2 = getbosstunedata();
     level.no_loot_drop = 1;
     scripts\engine\utility::flag_clear( "zombie_drop_powerups" );
-    scripts\cp\cp_vo::_id_C9CB( level.players );
+    scripts\cp\cp_vo::pause_vo_system( level.players );
     level.vo_system_busy = 1;
     registerweakspots();
 

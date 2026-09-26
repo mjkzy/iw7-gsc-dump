@@ -89,32 +89,34 @@ _id_CAC0( var_0 )
     var_1 = scripts\mp\agents\agents::add_humanoid_agent( "phaseSplitAgent", self.team, "callback", var_0.origin, self.angles, self, 0, 0, "veteran", ::_id_CAB2 );
 
     if ( !isdefined( var_1 ) )
-        thread _id_CABB();
-    else
     {
-        if ( isdefined( var_1.headmodel ) )
-        {
-            var_1 detach( self.headmodel, "" );
-            var_1.headmodel = undefined;
-        }
-
-        var_1 setmodel( var_1.owner.model );
-        var_1.health = 25;
-        var_1 botsetflag( "disable_attack", 1 );
-        var_2 = var_1.origin + anglestoforward( var_1.angles ) * 500;
-        var_3 = scripts\common\trace::ray_trace( var_1.origin, var_2, level.players );
-
-        if ( !isdefined( var_3 ) )
-            var_3["position"] = var_2;
-        else
-            var_3 = var_3["position"];
-
-        var_4 = getclosestpointonnavmesh( var_3 );
-        var_4 = getclosestnodeinsight( var_4 );
-        var_1 botsetscriptgoalnode( var_4, "objective" );
-        self playlocalsound( "ghost_prism_activate" );
-        playfx( level._id_CAA3["spawn"], var_1.origin, anglestoforward( var_1.angles ), anglestoup( var_1.angles ) );
+        thread _id_CABB();
+        return;
     }
+
+    if ( isdefined( var_1.headmodel ) )
+    {
+        var_1 detach( self.headmodel, "" );
+        var_1.headmodel = undefined;
+    }
+
+    var_1 setmodel( var_1.owner.model );
+    var_1.health = 25;
+    var_1 botsetflag( "disable_attack", 1 );
+    var_2 = var_1.origin + anglestoforward( var_1.angles ) * 500;
+    var_3 = scripts\common\trace::ray_trace( var_1.origin, var_2, level.players );
+
+    if ( !isdefined( var_3 ) )
+        var_3["position"] = var_2;
+    else
+        var_3 = var_3["position"];
+
+    var_4 = getclosestpointonnavmesh( var_3 );
+    var_4 = getclosestnodeinsight( var_4 );
+    var_1 botsetscriptgoalnode( var_4, "objective" );
+    self playlocalsound( "ghost_prism_activate" );
+    playfx( level._id_CAA3["spawn"], var_1.origin, anglestoforward( var_1.angles ), anglestoup( var_1.angles ) );
+    return var_1;
 }
 
 _id_CAB6()
@@ -131,7 +133,7 @@ _id_CAB6()
 _id_CAB4()
 {
     self waittill( "death" );
-    var_0 = self _meth_8113();
+    var_0 = self getcorpseentity();
     var_0 hide();
     playfx( level._id_CAA3["death"], var_0.origin, anglestoforward( var_0.angles ), anglestoup( var_0.angles ) );
 

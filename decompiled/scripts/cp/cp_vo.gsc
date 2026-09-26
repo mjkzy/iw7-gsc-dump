@@ -5,26 +5,26 @@ initcpvosystem()
 {
     level.vo_priority_level = [ "highest", "high", "medium", "low" ];
     level.vo_alias_data = [];
-    level._id_134BF = [];
-    level._id_134C0 = [];
+    level.vo_categories = [];
+    level.vo_category_last_played_time = [];
     level.vo_dialogue_prefix = [];
-    level._id_13519 = "cp/" + getdvar( "ui_mapname" ) + "_vo_table.csv";
-    level thread _id_C904();
-    level thread _id_BE3E();
+    level.vo_table = "cp/" + getdvar( "ui_mapname" ) + "_vo_table.csv";
+    level thread parse_vo_table();
+    level thread nag_vo_handler();
 }
 
-_id_97CC()
+initandstartvosystem()
 {
-    _id_97A1();
-    thread _id_10D5B();
+    init_vo_system();
+    thread start_vo_system();
     level thread game_ended_vo_watcher();
 }
 
-_id_97A1()
+init_vo_system()
 {
     var_0 = spawnstruct();
     var_0.vo_currently_playing = undefined;
-    var_0._id_9A89 = undefined;
+    var_0.interrupt_vo = undefined;
     var_0.is_playing = 0;
     var_1 = [];
 
@@ -36,9 +36,9 @@ _id_97A1()
     scripts\engine\utility::flag_init( "vo_system_busy" );
 }
 
-_id_C904()
+parse_vo_table()
 {
-    var_0 = level._id_13519;
+    var_0 = level.vo_table;
     var_1 = 1;
 
     for (;;)
@@ -64,7 +64,7 @@ _id_C904()
         var_16 = tablelookupbyrow( var_0, var_1, 15 );
         var_17 = int( tablelookupbyrow( var_0, var_1, 16 ) );
         var_18 = int( tablelookupbyrow( var_0, var_1, 17 ) );
-        _id_DEDE( var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13, var_14, var_15, var_16, var_17, var_18 );
+        register_vo( var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13, var_14, var_15, var_16, var_17, var_18 );
 
         if ( var_1 % 5 == 1 )
             wait 0.05;
@@ -73,23 +73,23 @@ _id_C904()
     }
 }
 
-_id_DEDE( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13, var_14, var_15, var_16 )
+register_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13, var_14, var_15, var_16 )
 {
     var_17 = spawnstruct();
 
     if ( isdefined( var_2 ) && var_2 > 0 )
     {
         var_17.cooldown = var_2;
-        var_17._id_A9CE = 0;
+        var_17.lastplayedtime = 0;
     }
 
     if ( isdefined( var_13 ) && var_13 > 0 )
-        var_17._id_C9CA = var_13;
+        var_17.pause_time = var_13;
 
     if ( scripts\engine\utility::is_true( var_10 ) )
-        var_17._id_C555 = 1;
+        var_17.onlylocal = 1;
     else
-        var_17._id_C555 = 0;
+        var_17.onlylocal = 0;
 
     if ( isdefined( var_11 ) && var_11 > 0 )
         var_17._id_32A0 = var_11;
@@ -98,36 +98,36 @@ _id_DEDE( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
         var_17.priority = var_12;
 
     if ( isdefined( var_4 ) && var_4 > 0 )
-        var_17._id_B44F = var_4;
+        var_17.max_plays = var_4;
 
     if ( isdefined( var_3 ) && var_3 > 0 )
         var_17.chance_to_play = var_3;
 
     if ( isdefined( var_7 ) && var_7 != "" )
-        var_17._id_1383B = var_7;
+        var_17.waittillnotifyorflag = var_7;
 
     if ( isdefined( var_5 ) && var_5 != "" )
     {
-        if ( !isdefined( level._id_134BF[var_5] ) )
-            level._id_134BF[var_5] = [];
+        if ( !isdefined( level.vo_categories[var_5] ) )
+            level.vo_categories[var_5] = [];
 
-        var_17._id_3B96 = var_5;
-        level._id_134BF[var_5][level._id_134BF[var_5].size] = var_1;
+        var_17.category_1 = var_5;
+        level.vo_categories[var_5][level.vo_categories[var_5].size] = var_1;
 
-        if ( !isdefined( level._id_134C0[var_5] ) )
-            level._id_134C0[var_5] = 0;
+        if ( !isdefined( level.vo_category_last_played_time[var_5] ) )
+            level.vo_category_last_played_time[var_5] = 0;
     }
 
     if ( isdefined( var_6 ) && var_6 != "" )
     {
-        if ( !isdefined( level._id_134BF[var_6] ) )
-            level._id_134BF[var_6] = [];
+        if ( !isdefined( level.vo_categories[var_6] ) )
+            level.vo_categories[var_6] = [];
 
-        var_17._id_3B97 = var_6;
-        level._id_134BF[var_6][level._id_134BF[var_6].size] = var_1;
+        var_17.category_2 = var_6;
+        level.vo_categories[var_6][level.vo_categories[var_6].size] = var_1;
 
-        if ( !isdefined( level._id_134C0[var_6] ) )
-            level._id_134C0[var_6] = 0;
+        if ( !isdefined( level.vo_category_last_played_time[var_6] ) )
+            level.vo_category_last_played_time[var_6] = 0;
     }
 
     if ( isdefined( var_8 ) && var_8 != "" )
@@ -154,7 +154,7 @@ _id_DEDE( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
     level.vo_alias_data[var_1] = var_17;
 }
 
-_id_10D5B()
+start_vo_system()
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
@@ -167,14 +167,14 @@ _id_10D5B()
                 scripts\engine\utility::flag_waitopen( "vo_system_busy" );
         }
 
-        var_0 = _id_7D4E();
+        var_0 = get_vo_to_play();
 
         if ( !isdefined( var_0 ) )
         {
             set_vo_system_playing( 0 );
             self waittill( "play_VO_system" );
 
-            if ( _id_9D14() )
+            if ( is_vo_system_paused() )
                 self waittill( "unpause_VO_system" );
 
             continue;
@@ -194,16 +194,16 @@ play_vo_system( var_0, var_1 )
     unset_vo_currently_playing();
 }
 
-_id_7D4E()
+get_vo_to_play()
 {
-    var_0 = _id_E409();
+    var_0 = retrieve_interrupt_vo();
 
     if ( isdefined( var_0 ) )
         return var_0;
 
     foreach ( var_3, var_2 in level.vo_priority_level )
     {
-        var_0 = _id_E40A( var_2 );
+        var_0 = retrieve_vo_from_queue( var_2 );
 
         if ( isdefined( var_0 ) )
             return var_0;
@@ -212,25 +212,25 @@ _id_7D4E()
     return undefined;
 }
 
-_id_E409()
+retrieve_interrupt_vo()
 {
-    var_0 = self.vo_system._id_9A89;
-    _id_E1F9();
+    var_0 = self.vo_system.interrupt_vo;
+    reset_interrupt_vo();
     return var_0;
 }
 
-_id_E1F9()
+reset_interrupt_vo()
 {
-    self.vo_system._id_9A89 = undefined;
+    self.vo_system.interrupt_vo = undefined;
 }
 
-_id_E40A( var_0 )
+retrieve_vo_from_queue( var_0 )
 {
-    _id_E009( var_0 );
-    return _id_D659( var_0 );
+    remove_expired_vo_from_queue( var_0 );
+    return pop_first_vo_out_of_queue( var_0 );
 }
 
-_id_D659( var_0 )
+pop_first_vo_out_of_queue( var_0 )
 {
     var_1 = self.vo_system.vo_queue[var_0][0];
 
@@ -251,14 +251,14 @@ _id_D659( var_0 )
     return var_1;
 }
 
-_id_E009( var_0 )
+remove_expired_vo_from_queue( var_0 )
 {
     var_1 = gettime();
     var_2 = [];
 
     foreach ( var_5, var_4 in self.vo_system.vo_queue[var_0] )
     {
-        if ( !_id_134D5( var_4, var_1 ) )
+        if ( !vo_expired( var_4, var_1 ) )
         {
             var_2[var_2.size] = self.vo_system.vo_queue[var_0][var_5];
             continue;
@@ -268,9 +268,9 @@ _id_E009( var_0 )
     self.vo_system.vo_queue[var_0] = var_2;
 }
 
-_id_134D5( var_0, var_1 )
+vo_expired( var_0, var_1 )
 {
-    return var_1 > var_0._id_698A;
+    return var_1 > var_0.expire_time;
 }
 
 set_vo_system_playing( var_0 )
@@ -278,9 +278,9 @@ set_vo_system_playing( var_0 )
     self.vo_system.is_playing = var_0;
 }
 
-_id_9D14()
+is_vo_system_paused()
 {
-    return scripts\engine\utility::is_true( self._id_C9CB );
+    return scripts\engine\utility::is_true( self.pause_vo_system );
 }
 
 is_vo_system_busy()
@@ -427,14 +427,14 @@ play_vo( var_0, var_1 )
             self stoplocalsound( var_3 );
     }
 
-    if ( isdefined( var_0._id_2896 ) )
-        var_4 = var_0._id_2896;
+    if ( isdefined( var_0.basealias ) )
+        var_4 = var_0.basealias;
     else
         var_4 = var_2;
 
     foreach ( var_6 in level.players )
     {
-        if ( var_6 issplitscreenplayer() && !var_6 isreloading() )
+        if ( var_6 issplitscreenplayer() && !var_6 issplitscreenplayerprimary() )
             continue;
 
         if ( isdefined( var_6.current_vo_queue ) )
@@ -464,17 +464,17 @@ play_vo( var_0, var_1 )
             continue;
         }
 
-        if ( !scripts\engine\utility::is_true( var_0._id_C551 ) )
+        if ( !scripts\engine\utility::is_true( var_0.only_local ) )
             self playsoundtoplayer( var_2, var_6 );
     }
 
-    foreach ( var_11 in var_0._id_3B94 )
-        level._id_134C0[var_11] = gettime();
+    foreach ( var_11 in var_0.categories )
+        level.vo_category_last_played_time[var_11] = gettime();
 
-    if ( !isdefined( self._id_C1F6[var_4] ) )
-        self._id_C1F6[var_4] = 1;
+    if ( !isdefined( self.num_of_plays[var_4] ) )
+        self.num_of_plays[var_4] = 1;
     else
-        self._id_C1F6[var_4]++;
+        self.num_of_plays[var_4]++;
 
     wait( get_sound_length( var_2 ) );
     self notify( "play_char_specific_intro" );
@@ -516,7 +516,7 @@ get_alias_2d_version( var_0, var_1, var_2 )
     }
 }
 
-_id_77EE( var_0, var_1 )
+get_alias_3d_version( var_0, var_1 )
 {
     if ( issubstr( var_1, "ww_" ) || issubstr( var_1, "dj_" ) || issubstr( var_1, "p1_" ) || issubstr( var_1, "p2_" ) || issubstr( var_1, "p3_" ) || issubstr( var_1, "p4_" ) || issubstr( var_1, "jaroslav_anc" ) )
         return var_1;
@@ -532,11 +532,11 @@ get_sound_length( var_0 )
 
 pause_between_vo( var_0 )
 {
-    if ( _id_9D14() )
+    if ( is_vo_system_paused() )
         self waittill( "unpause_VO_system" );
 
-    if ( var_0._id_C9CA > 0 )
-        wait( var_0._id_C9CA );
+    if ( var_0.pause_time > 0 )
+        wait( var_0.pause_time );
 }
 
 unset_vo_currently_playing()
@@ -583,18 +583,18 @@ try_to_play_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     if ( randomint( 100 ) > var_7 )
         return;
 
-    if ( _id_FF79( var_0, var_1, var_2, var_3, var_4, var_5, var_6 ) )
+    if ( should_play_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6 ) )
     {
-        if ( var_9 && isdefined( level.vo_alias_data[var_0]._id_C9CA ) )
-            var_5 = level.vo_alias_data[var_0]._id_C9CA;
+        if ( var_9 && isdefined( level.vo_alias_data[var_0].pause_time ) )
+            var_5 = level.vo_alias_data[var_0].pause_time;
 
-        if ( var_9 && isdefined( level.vo_alias_data[var_0]._id_C555 ) )
-            var_6 = level.vo_alias_data[var_0]._id_C555;
+        if ( var_9 && isdefined( level.vo_alias_data[var_0].onlylocal ) )
+            var_6 = level.vo_alias_data[var_0].onlylocal;
 
-        var_10 = _id_788D( var_0 );
+        var_10 = get_categories_from_alias( var_0 );
 
         foreach ( var_12 in var_10 )
-            level._id_134C0[var_12] = gettime();
+            level.vo_category_last_played_time[var_12] = gettime();
 
         if ( var_9 && isdefined( level.vo_alias_data[var_0]._id_32A0 ) )
             var_3 = level.vo_alias_data[var_0]._id_32A0;
@@ -602,16 +602,16 @@ try_to_play_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
         if ( var_9 && isdefined( level.vo_alias_data[var_0].priority ) )
             var_2 = level.vo_alias_data[var_0].priority;
 
-        if ( var_9 && isdefined( level.vo_alias_data[var_0]._id_A9CE ) )
-            level.vo_alias_data[var_0]._id_A9CE = gettime();
+        if ( var_9 && isdefined( level.vo_alias_data[var_0].lastplayedtime ) )
+            level.vo_alias_data[var_0].lastplayedtime = gettime();
 
-        thread _id_1781( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_8 );
+        thread add_to_vo_queue( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_8 );
     }
 }
 
-_id_FF79( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
+should_play_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 {
-    if ( scripts\engine\utility::is_true( self._id_C9CB ) )
+    if ( scripts\engine\utility::is_true( self.pause_vo_system ) )
         return 0;
 
     if ( !isdefined( level.vo_alias_data[var_0] ) )
@@ -649,31 +649,31 @@ _id_FF79( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 
     var_7 = gettime();
 
-    if ( isdefined( level.vo_alias_data[var_0].cooldown ) && isdefined( level.vo_alias_data[var_0]._id_A9CE ) )
+    if ( isdefined( level.vo_alias_data[var_0].cooldown ) && isdefined( level.vo_alias_data[var_0].lastplayedtime ) )
     {
-        if ( var_7 < level.vo_alias_data[var_0]._id_A9CE + level.vo_alias_data[var_0].cooldown * 1000 )
+        if ( var_7 < level.vo_alias_data[var_0].lastplayedtime + level.vo_alias_data[var_0].cooldown * 1000 )
             return 0;
     }
 
-    var_8 = _id_788D( var_0 );
+    var_8 = get_categories_from_alias( var_0 );
 
     foreach ( var_10 in var_8 )
     {
         var_11 = scripts\engine\utility::ter_op( isdefined( level.vo_alias_data[var_0].cooldown ), level.vo_alias_data[var_0].cooldown, 30 );
 
-        if ( var_7 < level._id_134C0[var_10] + var_11 * 1000 )
+        if ( var_7 < level.vo_category_last_played_time[var_10] + var_11 * 1000 )
             return 0;
     }
 
-    if ( isdefined( level.vo_alias_data[var_0]._id_B44F ) )
+    if ( isdefined( level.vo_alias_data[var_0].max_plays ) )
     {
-        if ( !isdefined( self._id_C1F6 ) )
-            self._id_C1F6 = [];
+        if ( !isdefined( self.num_of_plays ) )
+            self.num_of_plays = [];
 
-        if ( !isdefined( self._id_C1F6[var_0] ) )
-            self._id_C1F6[var_0] = 0;
+        if ( !isdefined( self.num_of_plays[var_0] ) )
+            self.num_of_plays[var_0] = 0;
 
-        if ( self._id_C1F6[var_0] < level.vo_alias_data[var_0]._id_B44F )
+        if ( self.num_of_plays[var_0] < level.vo_alias_data[var_0].max_plays )
             return 1;
         else
             return 0;
@@ -682,17 +682,17 @@ _id_FF79( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
         return 1;
 }
 
-_id_788D( var_0 )
+get_categories_from_alias( var_0 )
 {
-    if ( !isdefined( level._id_134BF ) )
+    if ( !isdefined( level.vo_categories ) )
         return [];
 
-    var_1 = getarraykeys( level._id_134BF );
+    var_1 = getarraykeys( level.vo_categories );
     var_2 = [];
 
     foreach ( var_4 in var_1 )
     {
-        if ( scripts\engine\utility::array_contains( level._id_134BF[var_4], var_0 ) )
+        if ( scripts\engine\utility::array_contains( level.vo_categories[var_4], var_0 ) )
             var_2[var_2.size] = var_4;
     }
 
@@ -720,7 +720,7 @@ should_append_player_suffix( var_0, var_1 )
     return 0;
 }
 
-_id_1781( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
+add_to_vo_queue( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -755,49 +755,49 @@ _id_1781( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
     else
     {
         var_8 = var_0;
-        level thread _id_CE89( var_8, var_2, var_3, var_4, var_5, var_6, var_0 );
+        level thread play_vo_on_all_players( var_8, var_2, var_3, var_4, var_5, var_6, var_0 );
     }
 }
 
-_id_CE89( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
+play_vo_on_all_players( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 {
     foreach ( var_8 in level.players )
-        var_8 _id_1782( var_0, var_1, var_2, var_3, var_4, var_5, var_6 );
+        var_8 add_to_vo_system( var_0, var_1, var_2, var_3, var_4, var_5, var_6 );
 }
 
 play_vo_on_player( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 {
-    _id_1782( var_0, var_1, var_2, var_3, var_4, var_5, var_6 );
+    add_to_vo_system( var_0, var_1, var_2, var_3, var_4, var_5, var_6 );
 }
 
-_id_1782( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
+add_to_vo_system( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 {
     if ( !isdefined( self.current_vo_queue ) )
         self.current_vo_queue = [];
 
-    thread _id_1783( var_0, var_1, var_2, var_3, var_4, var_5, var_6 );
+    thread add_to_vo_system_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6 );
 }
 
-_id_1783( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
+add_to_vo_system_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 {
-    var_1 = _id_7D3E( var_1 );
+    var_1 = get_validated_priority( var_1 );
     var_7 = create_vo_data( var_0, var_2, var_4, var_5, var_6 );
 
-    if ( _id_FF5B( var_3 ) )
+    if ( should_interrupt_vo_system( var_3 ) )
     {
-        _id_1767( var_7 );
+        add_to_interrupt_vo( var_7 );
 
-        if ( _id_9D15() )
-            _id_9A85();
+        if ( is_vo_system_playing() )
+            interrupt_current_vo();
     }
     else
-        _id_1777( var_7, var_1 );
+        add_to_queue_at_priority( var_7, var_1 );
 
-    if ( !_id_9D15() )
-        _id_C14E();
+    if ( !is_vo_system_playing() )
+        notify_system_to_grab_next_vo_from_queue();
 }
 
-_id_7D3E( var_0 )
+get_validated_priority( var_0 )
 {
     if ( !isdefined( var_0 ) )
         return level.vo_priority_level[level.vo_priority_level.size - 1];
@@ -812,45 +812,45 @@ create_vo_data( var_0, var_1, var_2, var_3, var_4 )
     var_7 = 3;
     var_8 = spawnstruct();
     var_8.alias = var_0;
-    var_8._id_3B94 = _id_788D( var_0 );
-    var_8._id_2896 = var_4;
+    var_8.categories = get_categories_from_alias( var_0 );
+    var_8.basealias = var_4;
 
     if ( !isdefined( var_1 ) )
         var_1 = var_5;
 
-    var_8._id_698A = gettime() + var_1 * 1000;
+    var_8.expire_time = gettime() + var_1 * 1000;
 
     if ( !isdefined( var_2 ) )
         var_2 = randomfloatrange( var_6, var_7 );
 
-    var_8._id_C9CA = var_2;
+    var_8.pause_time = var_2;
 
     if ( scripts\engine\utility::is_true( var_3 ) )
-        var_8._id_C551 = 1;
+        var_8.only_local = 1;
     else
-        var_8._id_C551 = 0;
+        var_8.only_local = 0;
 
     return var_8;
 }
 
-_id_FF5B( var_0 )
+should_interrupt_vo_system( var_0 )
 {
     return isdefined( var_0 ) && var_0;
 }
 
-_id_1767( var_0 )
+add_to_interrupt_vo( var_0 )
 {
-    self.vo_system._id_9A89 = var_0;
+    self.vo_system.interrupt_vo = var_0;
 }
 
-_id_9D15()
+is_vo_system_playing()
 {
     return scripts\engine\utility::is_true( self.vo_system.is_playing );
 }
 
-_id_9A85()
+interrupt_current_vo()
 {
-    var_0 = _id_790D();
+    var_0 = get_current_vo_alias();
 
     if ( isdefined( var_0 ) )
         self stoplocalsound( var_0 );
@@ -858,7 +858,7 @@ _id_9A85()
     self notify( "interrupt_current_VO" );
 }
 
-_id_790D()
+get_current_vo_alias()
 {
     if ( isdefined( self.vo_system ) )
     {
@@ -872,17 +872,17 @@ _id_790D()
     return undefined;
 }
 
-_id_1777( var_0, var_1 )
+add_to_queue_at_priority( var_0, var_1 )
 {
     self.vo_system.vo_queue[var_1][self.vo_system.vo_queue[var_1].size] = var_0;
 }
 
-_id_C14E()
+notify_system_to_grab_next_vo_from_queue()
 {
     self notify( "play_VO_system" );
 }
 
-_id_E0A9( var_0, var_1 )
+remove_vo_data( var_0, var_1 )
 {
     var_2 = [];
 
@@ -895,34 +895,34 @@ _id_E0A9( var_0, var_1 )
     self.vo_system.vo_queue[var_1] = var_2;
 }
 
-_id_C9CB( var_0 )
+pause_vo_system( var_0 )
 {
     if ( var_0.size == 1 )
-        var_0[0]._id_C9CB = 1;
+        var_0[0].pause_vo_system = 1;
     else
     {
         foreach ( var_2 in var_0 )
-            var_2._id_C9CB = 1;
+            var_2.pause_vo_system = 1;
     }
 }
 
-_id_12BE3( var_0 )
+unpause_vo_system( var_0 )
 {
     foreach ( var_2 in var_0 )
-        var_2._id_C9CB = 0;
+        var_2.pause_vo_system = 0;
 
     foreach ( var_2 in var_0 )
         var_2 notify( "unpause_VO_system" );
 }
 
-_id_BE3E()
+nag_vo_handler()
 {
     level endon( "game_ended" );
 
-    if ( !isdefined( level._id_BE3D ) )
+    if ( !isdefined( level.nag_vo ) )
     {
-        level._id_BE3D = [];
-        level._id_BE3F = [];
+        level.nag_vo = [];
+        level.nag_vo_never_play_again = [];
         level.pause_nag_vo = 0;
     }
 
@@ -935,21 +935,21 @@ _id_BE3E()
 
         var_1 = gettime();
 
-        foreach ( var_4, var_3 in level._id_BE3D )
+        foreach ( var_4, var_3 in level.nag_vo )
         {
             if ( var_1 > var_3.next_play_time )
             {
-                if ( isdefined( var_3._id_EC12 ) )
-                    var_3._id_EC12 try_to_play_vo( var_4, var_3._id_1351C, "low", 3, 0, 0, var_3._id_C551 );
+                if ( isdefined( var_3.scope ) )
+                    var_3.scope try_to_play_vo( var_4, var_3.vo_type, "low", 3, 0, 0, var_3.only_local );
                 else
-                    level try_to_play_vo( var_4, var_3._id_1351C, "low", 3, 0, 0, var_3._id_C551 );
+                    level try_to_play_vo( var_4, var_3.vo_type, "low", 3, 0, 0, var_3.only_local );
 
-                var_3._id_11923++;
+                var_3.times_played++;
 
-                if ( var_3._id_B468 != -1 && var_3._id_B468 <= var_3._id_11923 )
+                if ( var_3.max_times != -1 && var_3.max_times <= var_3.times_played )
                     remove_from_nag_vo( var_4 );
 
-                var_3.next_play_time = var_1 + var_3.cooldown * min( var_3._id_11923, 3 ) * 1000;
+                var_3.next_play_time = var_1 + var_3.cooldown * min( var_3.times_played, 3 ) * 1000;
                 wait( var_0 );
             }
         }
@@ -960,17 +960,17 @@ _id_BE3E()
 
 add_to_nag_vo( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
-    if ( !isdefined( level._id_BE3D ) )
+    if ( !isdefined( level.nag_vo ) )
     {
-        level._id_BE3D = [];
-        level._id_BE3F = [];
+        level.nag_vo = [];
+        level.nag_vo_never_play_again = [];
         level.pause_nag_vo = 0;
     }
 
-    if ( isdefined( level._id_BE3D[var_0] ) )
+    if ( isdefined( level.nag_vo[var_0] ) )
         return;
 
-    if ( isdefined( level._id_BE3F[var_0] ) )
+    if ( isdefined( level.nag_vo_never_play_again[var_0] ) )
         return;
 
     if ( !isdefined( var_2 ) )
@@ -985,17 +985,17 @@ add_to_nag_vo( var_0, var_1, var_2, var_3, var_4, var_5 )
         var_6 = self;
 
     var_7 = spawnstruct();
-    var_7._id_11923 = 0;
+    var_7.times_played = 0;
     var_7.cooldown = var_2;
-    var_7._id_1351C = var_1;
+    var_7.vo_type = var_1;
 
     if ( isdefined( var_6 ) )
-        var_7._id_EC12 = var_6;
+        var_7.scope = var_6;
 
     if ( isdefined( var_5 ) )
-        var_7._id_C551 = var_5;
+        var_7.only_local = var_5;
     else
-        var_7._id_C551 = 0;
+        var_7.only_local = 0;
 
     if ( isdefined( var_3 ) )
         var_7.next_play_time = gettime() + var_3 * 1000;
@@ -1003,19 +1003,19 @@ add_to_nag_vo( var_0, var_1, var_2, var_3, var_4, var_5 )
         var_7.next_play_time = 0;
 
     if ( isdefined( var_4 ) )
-        var_7._id_B468 = var_4;
+        var_7.max_times = var_4;
     else
-        var_7._id_B468 = -1;
+        var_7.max_times = -1;
 
-    level._id_BE3D[var_0] = var_7;
+    level.nag_vo[var_0] = var_7;
 }
 
 remove_from_nag_vo( var_0, var_1 )
 {
-    level._id_BE3D = scripts\cp\utility::array_remove_index( level._id_BE3D, var_0, 1 );
+    level.nag_vo = scripts\cp\utility::array_remove_index( level.nag_vo, var_0, 1 );
 
     if ( scripts\engine\utility::is_true( var_1 ) )
-        level._id_BE3F[var_0] = 1;
+        level.nag_vo_never_play_again[var_0] = 1;
 }
 
 timeoutvofunction( var_0, var_1 )

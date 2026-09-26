@@ -4,32 +4,32 @@
 init()
 {
     scripts\engine\utility::struct_class_init();
-    _id_F6BD();
-    _id_F6BA();
-    scripts\cp\utility::_id_F305();
+    setdefaultleveldata();
+    setdefaultdvars();
+    scripts\cp\utility::set_console_status();
     setupcallbacks();
     scripts\cp\utility::initgameflags();
     scripts\cp\utility::initlevelflags();
-    _id_FAAB();
-    _id_F6BB();
-    _id_F6BF();
-    _id_F6BC();
-    _id_AE18();
-    _id_10958();
-    _id_97F7();
+    setupexplodertriggers();
+    setdefaultgameparameters();
+    setdefaultvisionset();
+    setdefaultjiprules();
+    loadglobalfx();
+    specialentitymonitor();
+    initdestructables();
     setupexploders();
-    _id_9817();
-    _id_988B();
+    inithud();
+    initkilltriggerspawn();
     scripts\common\fx::initfx();
     scripts\mp\callbacksetup::setupdamageflags();
     scripts\cp\cp_movers::init();
-    scripts\cp\_id_0A53::main();
+    _id_0A53::main();
     scripts\cp\cp_merits::buildmeritinfo();
     scripts\cp\cp_gamelogic::init();
     scripts\cp\cp_laststand::init_laststand();
 
-    if ( _id_100BC() )
-        level thread _id_132A3();
+    if ( shouldverifydedicatedconfig() )
+        level thread verifydedicatedconfiguration();
 
     level.spawnmins = ( 0, 0, 0 );
     level.spawnmaxs = ( 0, 0, 0 );
@@ -45,9 +45,9 @@ findboxcenter( var_0, var_1 )
     return var_2;
 }
 
-_id_F6BD()
+setdefaultleveldata()
 {
-    level._id_1307 = 1;
+    level._loadstarted = 1;
     level.splitscreen = issplitscreen();
     level.onlinegame = getdvarint( "onlinegame" );
     level.rankedmatch = level.onlinegame && !getdvarint( "xblive_privatematch" ) || getdvarint( "force_ranking" );
@@ -64,11 +64,11 @@ _id_F6BD()
     level.spawnmins = ( 0, 0, 0 );
     level.spawnmaxs = ( 0, 0, 0 );
     level.hardcoremode = 0;
-    level._id_C22E = 0;
+    level.numgametypereservedobjectives = 0;
     level.reclaimedreservedobjectives = [];
 }
 
-_id_F6BA()
+setdefaultdvars()
 {
     setdvar( "ui_inhostmigration", 0 );
     setdvar( "camera_thirdPerson", getdvarint( "scr_thirdPerson" ) );
@@ -92,18 +92,18 @@ _id_F6BA()
 
 setupcallbacks()
 {
-    level.callbackstartgametype = ::_id_4631;
-    level.callbackplayerconnect = ::_id_5043;
-    level.callbackplayerdisconnect = ::_id_5045;
-    level.callbackplayerdamage = ::_id_5044;
-    level.callbackplayerkilled = ::_id_5046;
-    level.callbackplayermigrated = ::_id_5049;
-    level.callbackhostmigration = ::_id_503E;
+    level.callbackstartgametype = ::coopstartgametype;
+    level.callbackplayerconnect = ::defaultplayerconnect;
+    level.callbackplayerdisconnect = ::defaultplayerdisconnect;
+    level.callbackplayerdamage = ::defaultplayerdamage;
+    level.callbackplayerkilled = ::defaultplayerkilled;
+    level.callbackplayermigrated = ::defaultplayermigrated;
+    level.callbackhostmigration = ::defaulthostmigration;
     level.getspawnpoint = ::defaultgetspawnpoint;
     level.onspawnplayer = ::blank;
     level.onprecachegametype = ::blank;
     level.onstartgametype = ::blank;
-    level._id_D3D5 = ::_id_5048;
+    level.playermaxhealth = ::defaultplayermaxhealth;
     level.initagentscriptvariables = scripts\cp\cp_agent_utils::initagentscriptvariables;
     level.setagentteam = scripts\cp\cp_agent_utils::set_agent_team;
     level.agentvalidateattacker = scripts\cp\cp_agent_utils::validateattacker;
@@ -112,25 +112,25 @@ setupcallbacks()
     level.addtocharactersarray = scripts\cp\cp_agent_utils::addtocharactersarray;
     level.callbackplayerlaststand = scripts\cp\cp_laststand::callback_defaultplayerlaststand;
     level.endgame = scripts\cp\cp_gamelogic::endgame;
-    level._id_72BF = scripts\cp\cp_gamelogic::_id_72BF;
+    level.forceendgame = scripts\cp\cp_gamelogic::forceendgame;
 }
 
-_id_AE18()
+loadglobalfx()
 {
     level._effect["slide_dust"] = loadfx( "vfx/core/screen/vfx_scrnfx_tocam_slidedust_m" );
 }
 
-_id_5044( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
+defaultplayerdamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
 {
 
 }
 
-_id_5046( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
+defaultplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
 {
 
 }
 
-_id_FAAB()
+setupexplodertriggers()
 {
     var_0 = [ "trigger_multiple", "trigger_once", "trigger_use", "trigger_radius", "trigger_lookat", "trigger_damage" ];
 
@@ -149,7 +149,7 @@ _id_FAAB()
     }
 }
 
-_id_10958()
+specialentitymonitor()
 {
     level thread trackgrenades();
     level thread trackmissiles();
@@ -183,7 +183,7 @@ trackcarepackages()
     }
 }
 
-_id_5048()
+defaultplayermaxhealth()
 {
     if ( scripts\engine\utility::is_true( self.keep_perks ) )
     {
@@ -196,7 +196,7 @@ _id_5048()
         return 100;
 }
 
-_id_F6BB()
+setdefaultgameparameters()
 {
     game["thermal_vision"] = "thermal_mp";
     game["attackers"] = "allies";
@@ -210,7 +210,7 @@ _id_F6BB()
     game["roundsWon"] = [];
 }
 
-_id_F6BF()
+setdefaultvisionset()
 {
     visionsetnaked( "", 0 );
     visionsetnight( "default_night_mp" );
@@ -219,7 +219,7 @@ _id_F6BF()
     visionsetpain( "", 0 );
 }
 
-_id_F6BC()
+setdefaultjiprules()
 {
     setnojipscore( 0 );
     setnojiptime( 0 );
@@ -240,7 +240,7 @@ getassignedspawnpoint( var_0 )
     return var_0[var_1];
 }
 
-_id_5038()
+defaultendgame()
 {
     level.gameended = 1;
     setomnvar( "allow_server_pause", 0 );
@@ -249,25 +249,25 @@ _id_5038()
     exitlevel( 0 );
 }
 
-_id_4631()
+coopstartgametype()
 {
     [[ level.onprecachegametype ]]();
-    _id_E256();
-    _id_E255();
-    scripts\cp\perks\perkmachines::_id_98B1();
+    resetlevelflags();
+    resetlevelarrays();
+    scripts\cp\perks\perkmachines::initperks();
     scripts\cp\perks\prestige::initprestige();
     scripts\cp\cp_weaponrank::init();
     scripts\cp\cp_weaponpassives::init();
     thread scripts\cp\powers\coop_powers::init();
     scripts\cp\cp_merits::init();
     thread scripts\cp\contracts_coop::init();
-    level thread _id_E896();
-    level thread _id_8489();
-    level thread _id_10D9F();
+    level thread runprematch();
+    level thread graceperiodmonitor();
+    level thread startgame();
     game["gamestarted"] = 1;
 }
 
-_id_E256()
+resetlevelflags()
 {
     level.teamcount["allies"] = 0;
     level.teamcount["axis"] = 0;
@@ -276,28 +276,28 @@ _id_E256()
     level.hasspawned["axis"] = 0;
     level.fauxvehiclecount = 0;
     level.gameended = 0;
-    level._id_72B3 = 0;
+    level.forcedend = 0;
     level.hostforcedend = 0;
-    level._id_8487 = 10;
-    level.ingraceperiod = level._id_8487;
+    level.graceperiod = 10;
+    level.ingraceperiod = level.graceperiod;
     level.noragdollents = getentarray( "noragdoll", "targetname" );
     level.friendlyfire = 0;
     level.starttime = gettime();
 }
 
-_id_E255()
+resetlevelarrays()
 {
     level.players = [];
     level.participants = [];
     level.characters = [];
     level.helis = [];
     level.turrets = [];
-    level._id_935F = [];
+    level.ims = [];
     level.ugvs = [];
     level.balldrones = [];
 }
 
-_id_E896()
+runprematch()
 {
     level notify( "coop_pre_match" );
     level endon( "game_ended" );
@@ -312,7 +312,7 @@ _id_E896()
     setomnvar( "ui_prematch_period", 0 );
 }
 
-_id_8489()
+graceperiodmonitor()
 {
     level notify( "coop_grace_period" );
     level endon( "game_ended" );
@@ -330,17 +330,17 @@ _id_8489()
     level.ingraceperiod = 0;
 }
 
-_id_10D9F()
+startgame()
 {
     [[ level.onstartgametype ]]();
 }
 
-_id_100BC()
+shouldverifydedicatedconfig()
 {
     return !level.console && ( getdvar( "dedicated" ) == "dedicated LAN server" || getdvar( "dedicated" ) == "dedicated internet server" );
 }
 
-_id_132A3()
+verifydedicatedconfiguration()
 {
     for (;;)
     {
@@ -357,7 +357,7 @@ _id_132A3()
     }
 }
 
-_id_5043()
+defaultplayerconnect()
 {
     self endon( "disconnect" );
     self.statusicon = "hud_status_connecting";
@@ -366,21 +366,21 @@ _id_5043()
     var_0 = gettime();
     level notify( "connected", self );
     game["clientid"]++;
-    _id_98BC();
-    _id_F7F0();
+    initplayersessionstats();
+    setplayerconnectscriptfields();
     initclientdvars();
     setupsavedactionslots();
-    _id_98B9();
-    _id_988E();
+    initplayerperks();
+    initlaststand();
     scripts\cp\perks\prestige::initplayerprestige();
-    scripts\cp\perks\perk_utility::_id_95C1();
+    scripts\cp\perks\perk_utility::init_each_perk();
     self.no_team_outlines = 0;
     self.no_outline = 0;
 
     if ( scripts\cp\utility::coop_mode_has( "outline" ) )
         thread scripts\cp\cp_outline::playeroutlinemonitor();
 
-    thread scripts\cp\cp_vo::_id_97CC();
+    thread scripts\cp\cp_vo::initandstartvosystem();
     thread scripts\cp\cp_merits::updatemerits();
 
     if ( self ishost() )
@@ -390,7 +390,7 @@ _id_5043()
         game["roundsWon"][self.guid] = 0;
 
     waittillframeend;
-    _id_1810( self );
+    addplayertolevelarrays( self );
 
     if ( game["state"] == "postgame" )
     {
@@ -412,18 +412,18 @@ _id_5043()
         [[ level.onplayerconnectaudioinit ]]();
 
     if ( !isai( self ) )
-        _id_D3D9();
+        playermonitor();
 
     spawnplayer();
 }
 
-_id_D3D9()
+playermonitor()
 {
-    thread _id_102EC();
-    thread _id_72C1();
+    thread slidemonitor();
+    thread forceendmonitor();
 }
 
-_id_F7F0()
+setplayerconnectscriptfields()
 {
     self.guid = scripts\cp\utility::getuniqueid();
     self.clientid = game["clientid"];
@@ -479,24 +479,24 @@ setupsavedactionslots()
     }
 }
 
-_id_98B9()
+initplayerperks()
 {
     self.perks = [];
     self.perksperkname = [];
 }
 
-_id_102EC()
+slidemonitor()
 {
     self endon( "disconnect" );
 
     for (;;)
     {
         self waittill( "sprint_slide_begin" );
-        self _meth_8241( level._effect["slide_dust"], self geteye() );
+        self playfx( level._effect["slide_dust"], self geteye() );
     }
 }
 
-_id_72C1()
+forceendmonitor()
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
@@ -510,7 +510,7 @@ _id_72C1()
 
         if ( var_0 == "end_game" )
         {
-            level thread [[ level._id_72BF ]]();
+            level thread [[ level.forceendgame ]]();
             self notify( "disconnect" );
         }
     }
@@ -518,7 +518,7 @@ _id_72C1()
 
 spawnintermission( var_0 )
 {
-    _id_F726();
+    setglobalintermissionspawninfo();
     var_1 = self.forcespawnangles;
     spawnplayer();
     self setclientdvar( "cg_everyoneHearsEveryone", 1 );
@@ -530,19 +530,19 @@ spawnintermission( var_0 )
     scripts\cp\utility::updatesessionstate( "intermission" );
 }
 
-_id_F726()
+setglobalintermissionspawninfo()
 {
-    var_0 = _id_7ED8();
-    _id_F717( var_0.origin, var_0.angles );
+    var_0 = getglobalintermissionpoint();
+    setforcespawninfo( var_0.origin, var_0.angles );
 }
 
-_id_F717( var_0, var_1 )
+setforcespawninfo( var_0, var_1 )
 {
     self.forcespawnorigin = var_0;
     self.forcespawnangles = var_1;
 }
 
-_id_7ED8()
+getglobalintermissionpoint()
 {
     var_0 = getentarray( "mp_global_intermission", "classname" );
     return var_0[0];
@@ -550,10 +550,10 @@ _id_7ED8()
 
 spawnplayer( var_0 )
 {
-    thread _id_108F4( var_0 );
+    thread spawnplayer_internal( var_0 );
 }
 
-_id_108F4( var_0 )
+spawnplayer_internal( var_0 )
 {
     self endon( "disconnect" );
     self endon( "joined_spectators" );
@@ -562,11 +562,11 @@ _id_108F4( var_0 )
     if ( self.waitingtospawn )
         return;
 
-    _id_136E9();
-    _id_108F3( var_0 );
+    waitforspawn();
+    spawnplayer_actual( var_0 );
 }
 
-_id_136E9()
+waitforspawn()
 {
     self.waitingtospawn = 1;
 
@@ -576,27 +576,27 @@ _id_136E9()
     self.waitingtospawn = 0;
 }
 
-_id_108F3( var_0 )
+spawnplayer_actual( var_0 )
 {
     self notify( "spawned" );
     self notify( "started_spawnPlayer" );
 
     if ( level.gameended )
-        self spawn( getspawnorigin( self, 1 ), _id_8132( self ) );
+        self spawn( getspawnorigin( self, 1 ), getspawnangles( self ) );
     else
-        self spawn( getspawnorigin( self ), _id_8132( self ) );
+        self spawn( getspawnorigin( self ), getspawnangles( self ) );
 
-    _id_E262();
-    _id_E261();
-    _id_E263();
+    resetplayerspawnomnvar();
+    resetplayerspawneffects();
+    resetplayerspawnscriptfields();
     resetplayerdamagemodifiers();
     var_0 = scripts\engine\utility::ter_op( isdefined( var_0 ), var_0, 0 );
 
     if ( !var_0 )
-        _id_C07F();
+        nonfauxspawnsetup();
 
     if ( isai( self ) )
-        _id_10828( var_0 );
+        spawnaihandler( var_0 );
 
     [[ level.onspawnplayer ]]();
 
@@ -608,7 +608,7 @@ _id_108F3( var_0 )
     if ( getdvarint( "camera_thirdPerson" ) )
         scripts\cp\utility::setthirdpersondof( 1 );
 
-    if ( _id_1001B() )
+    if ( shouldfreezeplayercontrolatspawn() )
         scripts\cp\utility::freezecontrolswrapper( 1 );
 
     waittillframeend;
@@ -616,13 +616,13 @@ _id_108F3( var_0 )
     level notify( "player_spawned", self );
 }
 
-_id_E262()
+resetplayerspawnomnvar()
 {
     self setclientomnvar( "ui_options_menu", 0 );
     self setclientomnvar( "ui_hud_shake", 0 );
 }
 
-_id_E261()
+resetplayerspawneffects()
 {
     self stopshellshock();
     self stoprumble( "damage_heavy" );
@@ -651,13 +651,13 @@ resetplayerdamagemodifiers()
     }
 }
 
-_id_E263()
+resetplayerspawnscriptfields()
 {
-    var_0 = _id_8144();
+    var_0 = getspawnteamassignment();
     self.team = var_0;
     self.sessionteam = var_0;
     self.pers["team"] = var_0;
-    self.fauxdeath = undefined;
+    self.fauxdead = undefined;
     self.movespeedscaler = 1;
     self.disabledweapon = 0;
     self.disabledoffhandweapons = 0;
@@ -665,23 +665,23 @@ _id_E263()
     self.hasriotshield = 0;
 }
 
-_id_8144()
+getspawnteamassignment()
 {
-    if ( isdefined( level._id_D425 ) )
-        return [[ level._id_D425 ]]( self );
+    if ( isdefined( level.playerspawnteamassignmentfunc ) )
+        return [[ level.playerspawnteamassignmentfunc ]]( self );
 
     return "allies";
 }
 
-_id_C07F()
+nonfauxspawnsetup()
 {
-    _id_E25B();
+    resetnonfauxspawnscriptfields();
     scripts\cp\utility::updatesessionstate( "playing" );
 }
 
-_id_E25B()
+resetnonfauxspawnscriptfields()
 {
-    self.maxhealth = self [[ level._id_D3D5 ]]();
+    self.maxhealth = self [[ level.playermaxhealth ]]();
     self.health = self.maxhealth;
     self.avoidkillstreakonspawntimer = 5.0;
     self.friendlydamage = undefined;
@@ -690,7 +690,7 @@ _id_E25B()
     self.objectivescaler = 1;
 }
 
-_id_10828( var_0 )
+spawnaihandler( var_0 )
 {
     scripts\cp\utility::freezecontrolswrapper( 1 );
 
@@ -730,7 +730,7 @@ getspawnorigin( var_0, var_1 )
     return var_2;
 }
 
-_id_8132( var_0 )
+getspawnangles( var_0 )
 {
     var_1 = undefined;
 
@@ -748,7 +748,7 @@ _id_8132( var_0 )
     return var_1;
 }
 
-_id_1001B()
+shouldfreezeplayercontrolatspawn()
 {
     if ( game["state"] == "postgame" )
         return 1;
@@ -758,22 +758,22 @@ _id_1001B()
 
 enterspectator()
 {
-    var_0 = _id_7ED8();
+    var_0 = getglobalintermissionpoint();
     self setspectatedefaults( var_0.origin, var_0.angles );
-    _id_F717( var_0.origin, var_0.angles );
-    _id_F858();
+    setforcespawninfo( var_0.origin, var_0.angles );
+    setspectaterules();
     scripts\cp\utility::updatesessionstate( "spectator" );
 }
 
-_id_F858()
+setspectaterules()
 {
-    if ( isdefined( level._id_10979 ) )
-        [[ level._id_10979 ]]( self );
+    if ( isdefined( level.spectaterulesfunc ) )
+        [[ level.spectaterulesfunc ]]( self );
     else
-        _id_504C( self );
+        defaultspectaterules( self );
 }
 
-_id_504C( var_0 )
+defaultspectaterules( var_0 )
 {
     var_0 allowspectateteam( "allies", 1 );
     var_0 allowspectateteam( "axis", 1 );
@@ -781,22 +781,22 @@ _id_504C( var_0 )
     var_0 allowspectateteam( "none", 1 );
 }
 
-_id_5045( var_0 )
+defaultplayerdisconnect( var_0 )
 {
     if ( !isdefined( self.connected ) )
         return;
 
     scripts\cp\cp_analytics::on_player_disconnect( var_0 );
-    _id_E15A( self );
+    removeplayerfromlevelarrays( self );
 
-    if ( _id_563B() )
-        level thread [[ level._id_72BF ]]();
+    if ( disconnectshouldforceend() )
+        level thread [[ level.forceendgame ]]();
 
     if ( isdefined( level.onplayerdisconnected ) )
         level thread [[ level.onplayerdisconnected ]]( self, var_0 );
 }
 
-_id_563B()
+disconnectshouldforceend()
 {
     if ( level.splitscreen )
         return level.players.size <= 1;
@@ -812,32 +812,32 @@ _id_563B()
     return var_0;
 }
 
-_id_1810( var_0 )
+addplayertolevelarrays( var_0 )
 {
     level.players[level.players.size] = var_0;
     level.participants[level.participants.size] = var_0;
     level.characters[level.characters.size] = var_0;
 }
 
-_id_E15A( var_0 )
+removeplayerfromlevelarrays( var_0 )
 {
     level.players = scripts\engine\utility::array_remove( level.players, var_0 );
     level.participants = scripts\engine\utility::array_remove( level.participants, var_0 );
     level.characters = scripts\engine\utility::array_remove( level.characters, var_0 );
 }
 
-_id_5049()
+defaultplayermigrated()
 {
     if ( self ishost() )
         initclientdvarssplitscreenspecific();
 
-    if ( _id_9E39( self ) )
+    if ( ishumanplayer( self ) )
     {
         var_0 = 0;
 
         foreach ( var_2 in level.players )
         {
-            if ( _id_9E39( var_2 ) )
+            if ( ishumanplayer( var_2 ) )
                 var_0++;
         }
 
@@ -848,12 +848,12 @@ _id_5049()
     }
 }
 
-_id_9E39( var_0 )
+ishumanplayer( var_0 )
 {
     return !isdefined( var_0.pers["isBot"] ) || var_0.pers["isBot"] == 0;
 }
 
-_id_503E()
+defaulthostmigration()
 {
     if ( level.gameended )
         return;
@@ -891,7 +891,7 @@ _id_503E()
     level notify( "host_migration_end" );
 }
 
-_id_97F7()
+initdestructables()
 {
     var_0 = getentarray( "destructable", "targetname" );
 
@@ -1040,7 +1040,7 @@ setupexploders()
         var_7.v["firefx"] = var_6.script_firefx;
         var_7.v["firefxdelay"] = var_6.script_firefxdelay;
         var_7.v["firefxsound"] = var_6.script_firefxsound;
-        var_7.v["firefxtimeout"] = var_6._id_ED96;
+        var_7.v["firefxtimeout"] = var_6.script_firefxtimeout;
         var_7.v["earthquake"] = var_6.script_earthquake;
         var_7.v["damage"] = var_6.script_damage;
         var_7.v["damage_radius"] = var_6.script_radius;
@@ -1083,7 +1083,7 @@ setupexploders()
     }
 }
 
-_id_9817()
+inithud()
 {
     level.uiparent = spawnstruct();
     level.uiparent.horzalign = "left";
@@ -1096,8 +1096,8 @@ _id_9817()
     level.uiparent.height = 0;
     level.uiparent.children = [];
     level.fontheight = 12;
-    level._id_912F["allies"] = spawnstruct();
-    level._id_912F["axis"] = spawnstruct();
+    level.hud["allies"] = spawnstruct();
+    level.hud["axis"] = spawnstruct();
     level.primaryprogressbary = -61;
     level.primaryprogressbarx = 0;
     level.primaryprogressbarheight = 9;
@@ -1105,11 +1105,11 @@ _id_9817()
     level.primaryprogressbartexty = -75;
     level.primaryprogressbartextx = 0;
     level.primaryprogressbarfontsize = 1.2;
-    level._id_115E4 = 32;
-    level._id_115E1 = 14;
-    level._id_115E3 = 192;
-    level._id_115E2 = 8;
-    level._id_115E0 = 1.65;
+    level.teamprogressbary = 32;
+    level.teamprogressbarheight = 14;
+    level.teamprogressbarwidth = 192;
+    level.teamprogressbartexty = 8;
+    level.teamprogressbarfontsize = 1.65;
     level.lowertextyalign = "BOTTOM";
     level.lowertexty = -140;
     level.lowertextfontsize = 1.2;
@@ -1155,7 +1155,7 @@ blank( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 
 }
 
-_id_98BC()
+initplayersessionstats()
 {
     self setplayerdata( "cp", "alienSession", "team_shots", 0 );
     self setplayerdata( "cp", "alienSession", "team_kills", 0 );
@@ -1184,20 +1184,20 @@ _id_98BC()
     self setplayerdata( "cp", "alienSession", "waveNum", 0 );
 }
 
-_id_988E()
+initlaststand()
 {
-    if ( isdefined( level._id_D0FE ) )
-        [[ level._id_D0FE ]]();
+    if ( isdefined( level.player_init_laststand_func ) )
+        [[ level.player_init_laststand_func ]]();
     else
         scripts\cp\cp_laststand::default_player_init_laststand();
 }
 
-_id_988B()
+initkilltriggerspawn()
 {
-    level._id_A6CB = scripts\engine\utility::getstructarray( "respawn_edge", "targetname" );
+    level.killtriggerspawnlocs = scripts\engine\utility::getstructarray( "respawn_edge", "targetname" );
 }
 
 getkilltriggerspawnloc()
 {
-    return scripts\engine\utility::getclosest( self.origin, level._id_A6CB );
+    return scripts\engine\utility::getclosest( self.origin, level.killtriggerspawnlocs );
 }

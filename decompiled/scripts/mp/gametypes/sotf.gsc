@@ -62,7 +62,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_sotf_crateamount", getmatchrulesdata( "sotfData", "crateAmount" ) );
     setdynamicdvar( "scr_sotf_crategunamount", getmatchrulesdata( "sotfData", "crateGunAmount" ) );
     setdynamicdvar( "scr_sotf_cratetimer", getmatchrulesdata( "sotfData", "crateDropTimer" ) );

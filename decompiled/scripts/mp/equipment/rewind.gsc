@@ -27,7 +27,7 @@ _id_10DEB()
     level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_perk_rewind", undefined, 0.75 );
 
     if ( self.health < self.maxhealth )
-        scripts\mp\missions::_id_D991( "ch_scout_damaged_rewind" );
+        scripts\mp\missions::processchallengedaily( "ch_scout_damaged_rewind" );
 
     self.isrewinding = 1;
     self playerhide();

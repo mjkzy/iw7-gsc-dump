@@ -27,27 +27,27 @@ passiveparsetable()
         var_5 = tablelookupbyrow( "mp/passivetable.csv", var_0, 14 );
         var_6 = spawnstruct();
         var_6.name = var_2;
-        var_6._id_13CDE = scripts\engine\utility::ter_op( tablelookupbyrow( "mp/passivetable.csv", var_0, 8 ) == "", 0, 1 );
+        var_6.weapontype = scripts\engine\utility::ter_op( tablelookupbyrow( "mp/passivetable.csv", var_0, 8 ) == "", 0, 1 );
         var_6.killstreaktype = scripts\engine\utility::ter_op( tablelookupbyrow( "mp/passivetable.csv", var_0, 9 ) == "", 0, 1 );
-        var_6._id_ABCA = scripts\engine\utility::ter_op( tablelookupbyrow( "mp/passivetable.csv", var_0, 10 ) == "", 0, 1 );
-        var_6._id_113D1 = scripts\engine\utility::ter_op( tablelookupbyrow( "mp/passivetable.csv", var_0, 11 ) == "", 0, 1 );
+        var_6.lethaltype = scripts\engine\utility::ter_op( tablelookupbyrow( "mp/passivetable.csv", var_0, 10 ) == "", 0, 1 );
+        var_6.tacticaltype = scripts\engine\utility::ter_op( tablelookupbyrow( "mp/passivetable.csv", var_0, 11 ) == "", 0, 1 );
 
         if ( var_3 != "" )
-            var_6.attachmentroll = var_3;
+            var_6.attachmentref = var_3;
 
         if ( getdvar( "ui_gametype" ) == "zombie" )
         {
             var_7 = tablelookupbyrow( "mp/passivetable.csv", var_0, 22 );
 
             if ( var_7 != "" )
-                var_6.attachmentroll = var_7;
+                var_6.attachmentref = var_7;
         }
 
         if ( var_4 != "" )
-            var_6._id_CA59 = var_4;
+            var_6.perkref = var_4;
 
         if ( var_5 != "" )
-            var_6._id_B689 = var_5;
+            var_6.messageref = var_5;
 
         if ( !isdefined( level.passivemap[var_2] ) )
             level.passivemap[var_2] = var_6;
@@ -69,46 +69,46 @@ getpassiveattachment( var_0 )
 {
     var_1 = getpassivestruct( var_0 );
 
-    if ( !isdefined( var_1 ) || !isdefined( var_1.attachmentroll ) )
+    if ( !isdefined( var_1 ) || !isdefined( var_1.attachmentref ) )
         return undefined;
 
-    return var_1.attachmentroll;
+    return var_1.attachmentref;
+}
+
+_id_804A( var_0 )
+{
+    var_1 = getpassivestruct( var_0 );
+
+    if ( !isdefined( var_1 ) || !isdefined( var_1.perkref ) )
+        return undefined;
+
+    return var_1.perkref;
 }
 
 getpassivemessage( var_0 )
 {
     var_1 = getpassivestruct( var_0 );
 
-    if ( !isdefined( var_1 ) || !isdefined( var_1._id_CA59 ) )
+    if ( !isdefined( var_1 ) || !isdefined( var_1.messageref ) )
         return undefined;
 
-    return var_1._id_CA59;
+    return var_1.messageref;
 }
 
-getpassivedeathwatching( var_0 )
-{
-    var_1 = getpassivestruct( var_0 );
-
-    if ( !isdefined( var_1 ) || !isdefined( var_1._id_B689 ) )
-        return undefined;
-
-    return var_1._id_B689;
-}
-
-_id_8239()
+getweapontypepassives()
 {
     var_0 = [];
 
     foreach ( var_2 in level.passivemap )
     {
-        if ( var_2._id_13CDE )
+        if ( var_2.weapontype )
             var_0[var_0.size] = var_2.name;
     }
 
     return var_0;
 }
 
-_id_7F52()
+getkillstreaktypepassives()
 {
     var_0 = [];
 
@@ -121,26 +121,26 @@ _id_7F52()
     return var_0;
 }
 
-_id_7F67()
+getlethaltypepassives()
 {
     var_0 = [];
 
     foreach ( var_2 in level.passivemap )
     {
-        if ( var_2._id_ABCA )
+        if ( var_2.lethaltype )
             var_0[var_0.size] = var_2.name;
     }
 
     return var_0;
 }
 
-_id_8190()
+gettacticaltypepassives()
 {
     var_0 = [];
 
     foreach ( var_2 in level.passivemap )
     {
-        if ( var_2._id_113D1 )
+        if ( var_2.tacticaltype )
             var_0[var_0.size] = var_2.name;
     }
 

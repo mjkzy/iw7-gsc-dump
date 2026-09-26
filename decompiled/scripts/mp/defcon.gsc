@@ -3,28 +3,28 @@
 
 init()
 {
-    if ( !isdefined( level._id_5056 ) || level._id_5056 == 0 )
+    if ( !isdefined( level.defconmode ) || level.defconmode == 0 )
         return;
 
     if ( !isdefined( game["defcon"] ) )
         game["defcon"] = 4;
 
     setdvar( "scr_defcon", game["defcon"] );
-    level._id_5059[5] = 0;
-    level._id_5059[4] = 0;
-    level._id_5059[3] = -1;
-    level._id_5059[2] = -1;
-    level._id_5059[1] = -1;
-    level._id_5057[5] = 1;
-    level._id_5057[4] = 1;
-    level._id_5057[3] = 1;
-    level._id_5057[2] = 1;
-    level._id_5057[1] = 2;
-    _id_12E87( game["defcon"] );
-    thread _id_5054();
+    level.defconstreakadd[5] = 0;
+    level.defconstreakadd[4] = 0;
+    level.defconstreakadd[3] = -1;
+    level.defconstreakadd[2] = -1;
+    level.defconstreakadd[1] = -1;
+    level.defconpointmod[5] = 1;
+    level.defconpointmod[4] = 1;
+    level.defconpointmod[3] = 1;
+    level.defconpointmod[2] = 1;
+    level.defconpointmod[1] = 2;
+    updatedefcon( game["defcon"] );
+    thread defconkillstreakthread();
 }
 
-_id_5055( var_0 )
+defconkillstreakwait( var_0 )
 {
     for (;;)
     {
@@ -33,19 +33,19 @@ _id_5055( var_0 )
     }
 }
 
-_id_5054()
+defconkillstreakthread()
 {
     level endon( "game_ended" );
     var_0 = 10;
-    level thread _id_5055( var_0 );
-    level thread _id_5055( var_0 - 1 );
-    level thread _id_5055( var_0 - 2 );
-    level thread _id_5055( var_0 * 2 );
-    level thread _id_5055( var_0 * 2 - 1 );
-    level thread _id_5055( var_0 * 2 - 2 );
-    level thread _id_5055( var_0 * 3 );
-    level thread _id_5055( var_0 * 3 - 1 );
-    level thread _id_5055( var_0 * 3 - 2 );
+    level thread defconkillstreakwait( var_0 );
+    level thread defconkillstreakwait( var_0 - 1 );
+    level thread defconkillstreakwait( var_0 - 2 );
+    level thread defconkillstreakwait( var_0 * 2 );
+    level thread defconkillstreakwait( var_0 * 2 - 1 );
+    level thread defconkillstreakwait( var_0 * 2 - 2 );
+    level thread defconkillstreakwait( var_0 * 3 );
+    level thread defconkillstreakwait( var_0 * 3 - 1 );
+    level thread defconkillstreakwait( var_0 * 3 - 2 );
 
     for (;;)
     {
@@ -80,16 +80,16 @@ _id_5054()
             continue;
         }
 
-        _id_12E87( game["defcon"] - 1, var_2, var_1 );
+        updatedefcon( game["defcon"] - 1, var_2, var_1 );
     }
 }
 
-_id_12E87( var_0, var_1, var_2 )
+updatedefcon( var_0, var_1, var_2 )
 {
     var_0 = int( var_0 );
     var_3 = game["defcon"];
     game["defcon"] = var_0;
-    level._id_C2A7 = level._id_5057[var_0];
+    level.objectivepointsmod = level.defconpointmod[var_0];
     setdvar( "scr_defcon", game["defcon"] );
 
     if ( isdefined( var_1 ) )

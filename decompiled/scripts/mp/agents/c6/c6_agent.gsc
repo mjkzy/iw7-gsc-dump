@@ -4,13 +4,13 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    _id_03A9::_id_DEE8();
-    _id_0F37::_id_2371();
+    behaviortree\c6_mp::registerbehaviortree();
+    _id_0F37::asm_register();
 
     if ( level.gametype != "zombie" )
-        _id_09FD::_id_3353();
+        scripts\aitypes\assets::_id_3353();
 
-    _id_9812();
+    initgrenadethrowanims();
     thread _id_FAB0();
 }
 
@@ -57,7 +57,7 @@ setupagent()
     self.footstepdetectdist = 600;
     self.footstepdetectdistwalk = 600;
     self.footstepdetectdistsprint = 600;
-    self._id_1A44 = 50;
+    self.aimpitchdifftolerance = 50;
     _id_FAFE();
     thread scriptedgoalwaitforarrival();
     thread _id_899D();
@@ -101,10 +101,10 @@ _id_11570()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.25, 0.35 );
@@ -122,10 +122,10 @@ _id_1157B()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.65, 0.75 );
@@ -141,10 +141,10 @@ _id_1156F()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.65, 0.75 );
@@ -160,10 +160,10 @@ _id_11559()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * randomfloatrange( 0.65, 0.75 );
@@ -188,7 +188,7 @@ _id_2475()
         return;
 
     self.voice = "american";
-    self _meth_82C6( "cloth" );
+    self setclothtype( "cloth" );
     self attach( "robot_c6_armor" );
     var_0 = [];
     var_0["tag_armor_head_ri"] = 165;
@@ -216,28 +216,28 @@ _id_2475()
     self._id_2AB4 = 1;
 }
 
-setupdestructibleparts()
+_id_FAA6()
 {
     self._id_2AB5 = 1;
 }
 
-_id_17CC( var_0, var_1 )
+addgrenadethrowanimoffset( var_0, var_1 )
 {
-    if ( !isdefined( anim._id_85DF ) )
+    if ( !isdefined( anim.grenadethrowanims ) )
     {
-        anim._id_85DF = [];
-        anim._id_85E1 = [];
+        anim.grenadethrowanims = [];
+        anim.grenadethrowoffsets = [];
     }
 
-    var_2 = anim._id_85DF.size;
-    anim._id_85DF[var_2] = var_0;
-    anim._id_85E1[var_2] = var_1;
+    var_2 = anim.grenadethrowanims.size;
+    anim.grenadethrowanims[var_2] = var_0;
+    anim.grenadethrowoffsets[var_2] = var_1;
 }
 
-_id_9812()
+initgrenadethrowanims()
 {
-    _id_17CC( 0, ( 41.5391, 7.28883, 72.2128 ) );
-    _id_17CC( 1, ( 34.8849, -4.77048, 74.0488 ) );
+    addgrenadethrowanimoffset( 0, ( 41.5391, 7.28883, 72.2128 ) );
+    addgrenadethrowanimoffset( 1, ( 34.8849, -4.77048, 74.0488 ) );
 }
 
 scriptedgoalwaitforarrival()

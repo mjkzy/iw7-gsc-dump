@@ -17,7 +17,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     thread _id_9284();
     thread scripts\mp\animation_suite::animationsuite();
     thread fix_collision();
@@ -129,7 +129,7 @@ spawn_oob_trigger()
     wait 1;
     var_0 = spawn( "trigger_radius", ( 0, -760, -1000 ), 0, 700, 400 );
     var_0 hide();
-    level._id_C7B3[level._id_C7B3.size] = var_0;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_0;
 }
 
 runmodespecifictriggers()

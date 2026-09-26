@@ -42,28 +42,28 @@ init()
     level.bcsounds["stun_incoming"] = "stun_incoming";
     level.bcsounds["grenade_incoming"] = "grenade_incoming";
     level.bcsounds["rpg_incoming"] = "rpg_incoming";
-    level.bcsounds = [];
-    level.bcsounds["timeout"]["suppressing_fire"] = 5000;
-    level.bcsounds["timeout"]["moving"] = 45000;
-    level.bcsounds["timeout"]["callout_generic"] = 15000;
-    level.bcsounds["timeout"]["callout_location"] = 3000;
-    level.bcsounds["timeout_player"]["suppressing_fire"] = 10000;
-    level.bcsounds["timeout_player"]["moving"] = 120000;
-    level.bcsounds["timeout_player"]["callout_generic"] = 5000;
-    level.bcsounds["timeout_player"]["callout_location"] = 5000;
+    level.bcinfo = [];
+    level.bcinfo["timeout"]["suppressing_fire"] = 5000;
+    level.bcinfo["timeout"]["moving"] = 45000;
+    level.bcinfo["timeout"]["callout_generic"] = 15000;
+    level.bcinfo["timeout"]["callout_location"] = 3000;
+    level.bcinfo["timeout_player"]["suppressing_fire"] = 10000;
+    level.bcinfo["timeout_player"]["moving"] = 120000;
+    level.bcinfo["timeout_player"]["callout_generic"] = 5000;
+    level.bcinfo["timeout_player"]["callout_location"] = 5000;
 
     foreach ( var_5, var_4 in level.speakers )
     {
-        level.bcsounds["last_say_time"][var_5]["suppressing_fire"] = -99999;
-        level.bcsounds["last_say_time"][var_5]["moving"] = -99999;
-        level.bcsounds["last_say_time"][var_5]["callout_generic"] = -99999;
-        level.bcsounds["last_say_time"][var_5]["callout_location"] = -99999;
-        level.bcsounds["last_say_pos"][var_5]["suppressing_fire"] = ( 0, 0, -9000 );
-        level.bcsounds["last_say_pos"][var_5]["moving"] = ( 0, 0, -9000 );
-        level.bcsounds["last_say_pos"][var_5]["callout_generic"] = ( 0, 0, -9000 );
-        level.bcsounds["last_say_pos"][var_5]["callout_location"] = ( 0, 0, -9000 );
-        level._id_13526[var_5][""] = 0;
-        level._id_13526[var_5]["w"] = 0;
+        level.bcinfo["last_say_time"][var_5]["suppressing_fire"] = -99999;
+        level.bcinfo["last_say_time"][var_5]["moving"] = -99999;
+        level.bcinfo["last_say_time"][var_5]["callout_generic"] = -99999;
+        level.bcinfo["last_say_time"][var_5]["callout_location"] = -99999;
+        level.bcinfo["last_say_pos"][var_5]["suppressing_fire"] = ( 0, 0, -9000 );
+        level.bcinfo["last_say_pos"][var_5]["moving"] = ( 0, 0, -9000 );
+        level.bcinfo["last_say_pos"][var_5]["callout_generic"] = ( 0, 0, -9000 );
+        level.bcinfo["last_say_pos"][var_5]["callout_location"] = ( 0, 0, -9000 );
+        level.voice_count[var_5][""] = 0;
+        level.voice_count[var_5]["w"] = 0;
     }
 
     scripts\common\bcs_location_trigs::bcs_location_trigs_init();
@@ -100,11 +100,11 @@ onplayerspawned()
     for (;;)
     {
         self waittill( "spawned_player" );
-        self.bcsounds = [];
-        self.bcsounds["last_say_time"]["suppressing_fire"] = -99999;
-        self.bcsounds["last_say_time"]["moving"] = -99999;
-        self.bcsounds["last_say_time"]["callout_generic"] = -99999;
-        self.bcsounds["last_say_time"]["callout_location"] = -99999;
+        self.bcinfo = [];
+        self.bcinfo["last_say_time"]["suppressing_fire"] = -99999;
+        self.bcinfo["last_say_time"]["moving"] = -99999;
+        self.bcinfo["last_say_time"]["callout_generic"] = -99999;
+        self.bcinfo["last_say_time"]["callout_location"] = -99999;
 
         if ( scripts\mp\utility::_id_9D48( "archetype_heavy" ) )
             var_0 = "HV_";
@@ -157,18 +157,18 @@ onplayerspawned()
         }
 
         thread claymoretracking();
-        thread _id_DF5F();
-        thread _id_85E5();
-        thread _id_85D1();
+        thread reloadtracking();
+        thread grenadetracking();
+        thread grenadeproximitytracking();
         thread suppressingfiretracking();
-        thread _id_3B20();
-        thread _id_4D73();
+        thread casualtytracking();
+        thread damagetracking();
         thread sprinttracking();
-        thread _id_117E1();
+        thread threatcallouttracking();
     }
 }
 
-_id_85D1()
+grenadeproximitytracking()
 {
     self endon( "disconnect" );
     self endon( "death" );
@@ -339,7 +339,7 @@ claymoretracking()
     }
 }
 
-_id_DF5F()
+reloadtracking()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -352,7 +352,7 @@ _id_DF5F()
     }
 }
 
-_id_85E5()
+grenadetracking()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -418,7 +418,7 @@ sprinttracking()
     }
 }
 
-_id_4D73()
+damagetracking()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -443,7 +443,7 @@ _id_4D73()
     }
 }
 
-_id_3B20()
+casualtytracking()
 {
     self endon( "disconnect" );
     self endon( "faux_spawn" );
@@ -477,7 +477,7 @@ _id_3B20()
     }
 }
 
-_id_117E1()
+threatcallouttracking()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -578,13 +578,13 @@ dosound( var_0, var_1, var_2 )
         var_2 = 1;
 
     var_3 = self.pers["team"];
-    level addspawnviewer( self, var_3 );
+    level addspeaker( self, var_3 );
     var_4 = !level.istactical || !scripts\mp\utility::_hasperk( "specialty_coldblooded" ) && ( isagent( self ) || self issighted() );
 
     if ( var_2 && var_4 )
     {
         if ( isagent( self ) || level.alivecount[var_3] > 3 )
-            thread _id_5AB1( var_0, var_3 );
+            thread dosounddistant( var_0, var_3 );
     }
 
     if ( isagent( self ) || isdefined( var_1 ) && var_1 )
@@ -597,7 +597,7 @@ dosound( var_0, var_1, var_2 )
     level removespeaker( self, var_3 );
 }
 
-_id_5AB1( var_0, var_1 )
+dosounddistant( var_0, var_1 )
 {
     var_2 = spawn( "script_origin", self.origin + ( 0, 0, 256 ) );
     var_3 = var_0 + "_n";
@@ -699,7 +699,7 @@ isspeakerinrange( var_0, var_1 )
     return 0;
 }
 
-addspawnviewer( var_0, var_1 )
+addspeaker( var_0, var_1 )
 {
     level.speakers[var_1][level.speakers[var_1].size] = var_0;
 }
@@ -736,14 +736,14 @@ cansay( var_0 )
     if ( var_1 == "spectator" )
         return 0;
 
-    var_2 = level.bcsounds["timeout_player"][var_0];
-    var_3 = gettime() - self.bcsounds["last_say_time"][var_0];
+    var_2 = level.bcinfo["timeout_player"][var_0];
+    var_3 = gettime() - self.bcinfo["last_say_time"][var_0];
 
     if ( var_2 > var_3 )
         return 0;
 
-    var_2 = level.bcsounds["timeout"][var_0];
-    var_3 = gettime() - level.bcsounds["last_say_time"][var_1][var_0];
+    var_2 = level.bcinfo["timeout"][var_0];
+    var_3 = gettime() - level.bcinfo["last_say_time"][var_1][var_0];
 
     if ( var_2 < var_3 )
         return 1;
@@ -754,12 +754,12 @@ cansay( var_0 )
 updatechatter( var_0 )
 {
     var_1 = self.pers["team"];
-    self.bcsounds["last_say_time"][var_0] = gettime();
-    level.bcsounds["last_say_time"][var_1][var_0] = gettime();
-    level.bcsounds["last_say_pos"][var_1][var_0] = self.origin;
+    self.bcinfo["last_say_time"][var_0] = gettime();
+    level.bcinfo["last_say_time"][var_1][var_0] = gettime();
+    level.bcinfo["last_say_pos"][var_1][var_0] = self.origin;
 }
 
-_id_12EC1( var_0 )
+updatelocation( var_0 )
 {
 
 }

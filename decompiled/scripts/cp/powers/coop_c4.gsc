@@ -85,7 +85,7 @@ c4_destroyonemp()
 
 c4_candetonate( var_0 )
 {
-    return ( gettime() - self.throwtime ) / 1000 > 0.3 && !isdefined( self._id_53D7 );
+    return ( gettime() - self.throwtime ) / 1000 > 0.3 && !isdefined( self.detonationtime );
 }
 
 c4_watchfordetonation()

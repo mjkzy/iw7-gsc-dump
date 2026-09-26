@@ -50,7 +50,7 @@ _id_1E58( var_0 )
 
     for ( var_3 = 0; var_3 <= var_2; var_3++ )
     {
-        scripts\mp\supers::_id_1613();
+        scripts\mp\supers::activatesuper();
 
         if ( !scripts\mp\supers::issuperinuse() )
             break;

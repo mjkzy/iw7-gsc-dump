@@ -4,7 +4,7 @@
 asminit( var_0, var_1, var_2, var_3 )
 {
     scripts\asm\zombie\zombie::_id_13F9A( var_0, var_1, var_2, var_3 );
-    self._id_71D0 = ::shouldbruteplaypainanim;
+    self.fnshouldplaypainanim = ::shouldbruteplaypainanim;
 }
 
 shouldbruteplaypainanim()
@@ -52,22 +52,22 @@ shouldplayentranceanim( var_0, var_1, var_2, var_3 )
 playanimandlookatenemy( var_0, var_1, var_2, var_3 )
 {
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, scripts\mp\agents\crab_brute\crab_brute_agent::getenemy() );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 1 );
 }
 
 isanimdone( var_0, var_1, var_2, var_3 )
 {
-    if ( scripts\asm\asm::_id_232B( var_1, "end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "early_end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "early_end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "finish_early" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "finish_early" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "code_move" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "code_move" ) )
         return 1;
 
     return 0;
@@ -156,34 +156,34 @@ doflash()
         var_8 = scripts\common\trace::create_default_contents( 1 );
 
         if ( scripts\common\trace::ray_trace_passed( self geteye(), var_2 geteye(), var_2, var_8 ) )
-            var_2 _id_20CA( var_0.flash_duration, var_0.flash_rumble_duration );
+            var_2 applyflash( var_0.flash_duration, var_0.flash_rumble_duration );
     }
 }
 
-_id_20CA( var_0, var_1 )
+applyflash( var_0, var_1 )
 {
-    if ( !isdefined( self._id_6EC8 ) || var_0 > self._id_6EC8 )
-        self._id_6EC8 = var_0;
+    if ( !isdefined( self.flashduration ) || var_0 > self.flashduration )
+        self.flashduration = var_0;
 
-    if ( !isdefined( self._id_6EDB ) || var_1 > self._id_6EDB )
-        self._id_6EDB = var_1;
+    if ( !isdefined( self.flashrumbleduration ) || var_1 > self.flashrumbleduration )
+        self.flashrumbleduration = var_1;
 
     wait 0.05;
 
-    if ( isdefined( self._id_6EC8 ) )
+    if ( isdefined( self.flashduration ) )
     {
-        self shellshock( "flashbang_mp", self._id_6EC8 );
-        self.flashendtime = gettime() + self._id_6EC8 * 1000;
+        self shellshock( "flashbang_mp", self.flashduration );
+        self.flashendtime = gettime() + self.flashduration * 1000;
     }
 
-    if ( isdefined( self._id_6EDB ) )
-        thread _id_6EDC( self._id_6EDB );
+    if ( isdefined( self.flashrumbleduration ) )
+        thread flashrumbleloop( self.flashrumbleduration );
 
-    self._id_6EC8 = undefined;
-    self._id_6EDB = undefined;
+    self.flashduration = undefined;
+    self.flashrumbleduration = undefined;
 }
 
-_id_6EDC( var_0 )
+flashrumbleloop( var_0 )
 {
     self endon( "stop_monitoring_flash" );
     self endon( "flash_rumble_loop" );
@@ -261,8 +261,8 @@ playanimwithplaybackrate( var_0, var_1, var_2, var_3 )
     if ( var_1 == "burrow_loop" )
         thread play_burrow_loop_sfx();
 
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, var_4 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, var_4 );
 }
 
 play_burrow_loop_sfx()
@@ -284,8 +284,8 @@ playmeleeattack( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, self.curmeleetarget );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4 );
 }
 
 choosemeleeattack( var_0, var_1, var_2 )
@@ -308,9 +308,9 @@ choosemeleeattack( var_0, var_1, var_2 )
     return var_5;
 }
 
-_id_3EE4( var_0, var_1, var_2 )
+choosepainanim_covercorner( var_0, var_1, var_2 )
 {
-    return _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+    return scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 }
 
 playmovingpainanim( var_0, var_1, var_2, var_3 )
@@ -319,18 +319,18 @@ playmovingpainanim( var_0, var_1, var_2, var_3 )
 
     if ( !isdefined( self.pathgoalpos ) || self pathdisttogoal() < scripts\mp\agents\crab_brute\crab_brute_tunedata::gettunedata().min_moving_pain_dist )
     {
-        var_4 = _id_3EE4( var_0, "pain_generic", var_3 );
+        var_4 = choosepainanim_covercorner( var_0, "pain_generic", var_3 );
         self scragentsetorientmode( "face angle abs", self.angles );
-        scripts\asm\asm_mp::_id_2365( var_0, "pain_generic", var_2, var_4, 1 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, "pain_generic", var_2, var_4, 1 );
         return;
     }
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 doteleporthack( var_0, var_1, var_2, var_3 )
 {
-    var_6 = self _meth_8146();
+    var_6 = self getnegotiationendpos();
     self setorigin( var_6, 0 );
     var_6 = getgroundposition( var_6, 15 );
     self.is_traversing = undefined;
@@ -401,14 +401,14 @@ domeleedamageoncontact( var_0, var_1 )
             if ( var_6 < var_2.charge_attack_stop_facing_enemy_dist_sq )
             {
                 scripts\asm\zombie\melee::_id_1106E();
-                self _meth_8281( "code_move" );
+                self scragentsetanimmode( "code_move" );
                 self scragentsetorientmode( "face angle abs", self.angles );
             }
 
             if ( shouldmeleeattackhit( var_5, var_2.charge_attack_damage_radius_sq, var_2.charge_attack_damage_dot ) )
             {
                 scripts\asm\zombie\melee::_id_1106E();
-                self _meth_8281( "code_move" );
+                self scragentsetanimmode( "code_move" );
                 self scragentsetorientmode( "face angle abs", self.angles );
                 scripts\asm\zombie\melee::domeleedamage( var_5, var_2.charge_attack_damage_amt, "MOD_IMPACT" );
                 clearaction();
@@ -446,7 +446,7 @@ playchargeloop( var_0, var_1, var_2, var_3 )
         thread scripts\asm\zombie\melee::_id_6A6A( var_1, self.curmeleetarget );
     }
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 choosechargeoutroanim( var_0, var_1, var_2 )
@@ -532,7 +532,7 @@ playchargeintro( var_0, var_1, var_2, var_3 )
         self scragentsetorientmode( "face angle abs", var_6 );
     }
 
-    return scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    return scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 doburrowoutrodamage( var_0 )

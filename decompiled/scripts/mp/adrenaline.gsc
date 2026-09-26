@@ -76,7 +76,7 @@ _id_189F( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( self.owner ) && var_0 != self.owner )
     {
-        var_0 scripts\mp\killstreaks\killstreaks::_id_83A0();
+        var_0 scripts\mp\killstreaks\killstreaks::givescoreforequipment();
         var_0 notify( "destroyed_equipment" );
     }
 
@@ -197,7 +197,7 @@ _id_13992( var_0, var_1 )
             }
 
             var_3._id_189A = 1;
-            var_3 scripts\mp\utility::_id_F741( var_1._id_FCA3 );
+            var_3 scripts\mp\utility::sethealthshield( var_1._id_FCA3 );
             var_2 = var_1._id_FCA3;
 
             if ( isplayer( var_3 ) )

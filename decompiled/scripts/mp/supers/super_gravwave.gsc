@@ -70,7 +70,7 @@ _id_ABFD( var_0, var_1 )
     var_3 = getcenterfrac();
     var_4 = self.origin;
     var_5 = anglestoup( self.angles );
-    self _meth_84DC( var_5, 160 );
+    self knockback( var_5, 160 );
     self shellshock( "concussion_grenade_mp", 3, 0, 1 );
     self notify( "flashbang", self.origin, 1.0, 30, var_1, 1 );
     var_0.origin = self.origin;

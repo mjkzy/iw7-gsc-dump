@@ -50,7 +50,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_conf_pointsPerConfirm", getmatchrulesdata( "confData", "pointsPerConfirm" ) );
     setdynamicdvar( "scr_conf_pointsPerDeny", getmatchrulesdata( "confData", "pointsPerDeny" ) );
     setdynamicdvar( "scr_conf_halftime", 0 );

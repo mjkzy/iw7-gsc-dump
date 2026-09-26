@@ -93,7 +93,7 @@ _id_DEF8( var_0, var_1 )
     level._id_9979[var_0] = var_1;
 }
 
-updatecurrentobjective( var_0 )
+_id_12E82( var_0 )
 {
     if ( !isdefined( var_0 ) )
         var_0 = 1;
@@ -113,7 +113,7 @@ updatecurrentobjective( var_0 )
     scripts\mp\intel::_id_12EB7( var_1.progress );
 
     if ( var_5 > 0 && !scripts\mp\intel::_id_9E94() )
-        updatecurrentobjective( var_5 );
+        _id_12E82( var_5 );
 }
 
 _id_F80D( var_0 )
@@ -158,7 +158,7 @@ _id_9992( var_0 )
         self waittill( "kill_event_buffered", var_1, var_2, var_3, var_4 );
 
         if ( scripts\mp\utility::istrue( var_4["headshot"] ) )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -169,7 +169,7 @@ _id_999E( var_0 )
     while ( !scripts\mp\intel::_id_9E94() )
     {
         self waittill( "kill_event_buffered", var_1, var_2 );
-        updatecurrentobjective();
+        _id_12E82();
     }
 }
 
@@ -185,7 +185,7 @@ _id_99C9( var_0 )
         if ( isdefined( var_2 ) && var_2 > 0 )
             var_1 = var_2 - self._id_9978.progress;
 
-        updatecurrentobjective( var_1 );
+        _id_12E82( var_1 );
     }
 }
 
@@ -196,7 +196,7 @@ _id_99CD( var_0 )
     while ( !scripts\mp\intel::_id_9E94() )
     {
         self waittill( "earned_killstreak_buffered" );
-        updatecurrentobjective();
+        _id_12E82();
     }
 }
 
@@ -207,7 +207,7 @@ _id_99B3( var_0 )
     while ( !scripts\mp\intel::_id_9E94() )
     {
         self waittill( "earned_award_buffered" );
-        updatecurrentobjective();
+        _id_12E82();
     }
 }
 
@@ -227,7 +227,7 @@ _id_A67D()
     while ( !scripts\mp\intel::_id_9E94() )
     {
         self waittill( "kill_event_buffered", var_0, var_1, var_2, var_3 );
-        updatecurrentobjective();
+        _id_12E82();
     }
 
     self notify( "killsOrAssistsChallengeFinished" );
@@ -241,7 +241,7 @@ _id_A67C()
     while ( !scripts\mp\intel::_id_9E94() )
     {
         self waittill( "assist_buffered", var_0 );
-        updatecurrentobjective();
+        _id_12E82();
     }
 
     self notify( "killsOrAssistsChallengeFinished" );
@@ -257,7 +257,7 @@ _id_999D( var_0 )
         var_2 = level.awards[var_1].category;
 
         if ( var_2 == "supershutdown" || var_2 == "streak_shutdown" )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -270,7 +270,7 @@ _id_9981( var_0 )
         self waittill( "update_rapid_kill_buffered", var_1 );
 
         if ( var_1 % 2 == 0 )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -283,7 +283,7 @@ _id_99E2( var_0 )
         self waittill( "update_rapid_kill_buffered", var_1 );
 
         if ( var_1 % 3 == 0 )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -294,7 +294,7 @@ _id_99D6( var_0 )
     while ( !scripts\mp\intel::_id_9E94() )
     {
         self waittill( "super_kill_buffered" );
-        updatecurrentobjective();
+        _id_12E82();
     }
 }
 
@@ -326,14 +326,14 @@ _id_99CE( var_0 )
     {
         self waittill( "kill_event_buffered", var_1, var_2, var_3, var_4 );
         var_5 = scripts\mp\utility::getweaponrootname( var_2 ) == "iw7_axe";
-        var_2 = scripts\mp\utility::_id_13CA1( var_2 );
+        var_2 = scripts\mp\utility::weaponmap( var_2 );
 
         if ( scripts\mp\utility::iscacsecondaryweapon( var_2 ) )
         {
             if ( var_3 == "MOD_MELEE" || var_5 )
                 continue;
 
-            updatecurrentobjective();
+            _id_12E82();
         }
     }
 }
@@ -347,7 +347,7 @@ _id_9993( var_0 )
         self waittill( "kill_event_buffered", var_1, var_2, var_3, var_4 );
 
         if ( scripts\mp\utility::istrue( var_4["hipfire"] ) )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -360,7 +360,7 @@ _id_9973( var_0 )
         self waittill( "kill_event_buffered", var_1, var_2, var_3, var_4 );
 
         if ( scripts\mp\utility::istrue( var_4["buzzkill"] ) )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -385,7 +385,7 @@ _id_99BC()
     self notify( "monitorSurviveHealth" );
     self endon( "monitorSurviveHealth" );
     self waittill( "healed" );
-    updatecurrentobjective();
+    _id_12E82();
 }
 
 _id_9995( var_0 )
@@ -451,7 +451,7 @@ _id_99E3( var_0 )
             else
                 self._id_138D5 = self._id_138D5 + var_2;
 
-            updatecurrentobjective( var_2 );
+            _id_12E82( var_2 );
         }
 
         wait 0.05;
@@ -539,7 +539,7 @@ _id_99C1( var_0 )
         self waittill( "earned_award_buffered", var_1 );
 
         if ( var_1 == "mode_x_assault" || var_1 == "mode_sd_defuse_save" || var_1 == "mode_uplink_kill_with_ball" || var_1 == "mode_ctf_kill_with_flag" )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -552,7 +552,7 @@ _id_99C3( var_0 )
         self waittill( "earned_award_buffered", var_1 );
 
         if ( var_1 == "mode_x_defend" || var_1 == "mode_sd_plant_save" || var_1 == "mode_uplink_kill_carrier" || var_1 == "mode_ctf_kill_carrier" )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -569,12 +569,12 @@ _id_99C2( var_0 )
         if ( isdefined( var_1 ) )
         {
             if ( var_1 == "mode_dom_secure_b" || var_1 == "mode_dom_secure_neutral" || var_1 == "mode_dom_secure" || var_1 == "mode_hp_secure" || var_1 == "mode_sd_last_defuse" || var_1 == "mode_sd_defuse" || var_1 == "mode_uplink_dunk" || var_1 == "mode_uplink_fieldgoal" || var_1 == "mode_ctf_cap" || var_1 == "mode_siege_secure" )
-                updatecurrentobjective();
+                _id_12E82();
 
             continue;
         }
 
-        updatecurrentobjective();
+        _id_12E82();
     }
 }
 
@@ -607,7 +607,7 @@ _id_99A2( var_0 )
         var_5 = scripts\mp\utility::getequipmenttype( var_2 );
 
         if ( isdefined( var_5 ) && var_5 == "lethal" )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -626,7 +626,7 @@ _id_99D5( var_0 )
     while ( !scripts\mp\intel::_id_9E94() )
     {
         self waittill( "grenade_stuck_enemy" );
-        updatecurrentobjective();
+        _id_12E82();
     }
 }
 
@@ -656,7 +656,7 @@ _id_9965( var_0 )
         }
 
         if ( var_2 )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -667,7 +667,7 @@ _id_99CA( var_0 )
     while ( !scripts\mp\intel::_id_9E94() )
     {
         self waittill( "update_uav_assist_buffered" );
-        updatecurrentobjective();
+        _id_12E82();
     }
 }
 
@@ -681,7 +681,7 @@ _id_99CB( var_0 )
         var_2 = level.awards[var_1].category;
 
         if ( var_2 == "streak_shutdown" )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -694,7 +694,7 @@ _id_99CC( var_0 )
         self waittill( "kill_event_buffered", var_1, var_2 );
 
         if ( scripts\mp\utility::iskillstreakweapon( var_2 ) )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -705,7 +705,7 @@ _id_9980( var_0 )
     while ( !scripts\mp\intel::_id_9E94() )
     {
         self waittill( "destroyed_equipment" );
-        updatecurrentobjective();
+        _id_12E82();
     }
 }
 
@@ -757,7 +757,7 @@ _id_99AD( var_0 )
         self waittill( "kill_event_buffered", var_1, var_2, var_3, var_4 );
 
         if ( scripts\mp\utility::istrue( var_4["airborne"] ) )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -799,7 +799,7 @@ _id_99B2( var_0 )
         self waittill( "kill_event_buffered", var_1, var_2, var_3, var_4 );
 
         if ( var_3 == "MOD_MELEE" )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -828,7 +828,7 @@ _id_9966( var_0 )
         self waittill( "kill_event_buffered", var_1, var_2, var_3, var_4 );
 
         if ( scripts\mp\utility::istrue( var_4["posthumous"] ) )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -841,7 +841,7 @@ _id_9970( var_0 )
         self waittill( "kill_event_buffered", var_1, var_2, var_3, var_4 );
 
         if ( scripts\mp\utility::istrue( var_4["backstab"] ) && var_3 == "MOD_MELEE" )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -854,7 +854,7 @@ _id_997B( var_0 )
         self waittill( "kill_event_buffered", var_1, var_2, var_3, var_4 );
 
         if ( scripts\mp\utility::istrue( var_4["crouch_kill"] ) )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -901,7 +901,7 @@ _id_99AB( var_0 )
         self waittill( "update_rapid_kill_buffered", var_1 );
 
         if ( var_1 % 4 == 0 )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -914,7 +914,7 @@ _id_99AA( var_0 )
         self waittill( "update_rapid_kill_buffered", var_1 );
 
         if ( var_1 % 5 == 0 )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -927,7 +927,7 @@ _id_99B5( var_0 )
         self waittill( "update_rapid_kill_buffered", var_1 );
 
         if ( var_1 % 6 == 0 )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -955,7 +955,7 @@ _id_99BB()
     self notify( "intelMonitorMultikills" );
     self endon( "intelMonitorMultikills" );
 
-    while ( self._id_DDC2 != 0 )
+    while ( self.recentkillcount != 0 )
         wait 0.1;
 
     _id_F80D( 0 );
@@ -1006,7 +1006,7 @@ _id_998A( var_0 )
         self waittill( "super_kill_buffered" );
 
         if ( scripts\mp\supers::getcurrentsuperref() == "super_teleport" || scripts\mp\supers::getcurrentsuperref() == "super_rewind" )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -1046,12 +1046,12 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
             {
                 case "ch_intel_air_sniper_kills":
                     if ( !self isonground() && isdefined( var_2 ) && scripts\mp\utility::getweapongroup( var_2 ) == "weapon_sniper" )
-                        updatecurrentobjective();
+                        _id_12E82();
 
                     break;
                 case "ch_intel_medal_merciless":
                     if ( isdefined( self.killsthislife ) && self.killsthislife.size % 10 == 0 )
-                        updatecurrentobjective();
+                        _id_12E82();
 
                     break;
                 case "ch_intel_ace":
@@ -1062,9 +1062,9 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                     else
                         var_5 = level.players.size - 1;
 
-                    if ( isdefined( self._id_A653 ) && var_5 >= 4 )
+                    if ( isdefined( self.killedplayers ) && var_5 >= 4 )
                     {
-                        var_6 = combinepartialprogressandvalidateplayers( self._id_A653 );
+                        var_6 = combinepartialprogressandvalidateplayers( self.killedplayers );
 
                         if ( var_6.size == var_5 )
                         {
@@ -1076,14 +1076,14 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                                     return;
                             }
 
-                            updatecurrentobjective();
+                            _id_12E82();
                         }
                     }
 
                     break;
                 case "ch_intel_injured_kills":
                     if ( self.health > 0 && self.health < self.maxhealth * 0.9 )
-                        updatecurrentobjective();
+                        _id_12E82();
 
                     break;
                 case "ch_intel_kills_this_life":
@@ -1104,7 +1104,7 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                         var_13 = combinepartialprogress( var_12 );
 
                         if ( var_13.size > var_7 )
-                            updatecurrentobjective();
+                            _id_12E82();
                     }
 
                     break;
@@ -1130,7 +1130,7 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                                 var_16 = getweaponvariantindex( var_2 );
 
                                 if ( isdefined( var_16 ) && ( var_16 == 4 || var_16 == 36 ) )
-                                    updatecurrentobjective();
+                                    _id_12E82();
                             }
                         }
                         else if ( isexplosivedamagemod( var_3 ) )
@@ -1142,11 +1142,11 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                                 var_16 = getweaponvariantindex( var_2 );
 
                                 if ( isdefined( var_16 ) && ( var_16 == 6 || var_16 == 38 ) )
-                                    updatecurrentobjective();
+                                    _id_12E82();
                             }
                         }
                         else if ( scripts\engine\utility::isbulletdamage( var_3 ) )
-                            updatecurrentobjective();
+                            _id_12E82();
                     }
 
                     break;
@@ -1160,7 +1160,7 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                             if ( var_15 == "iw7_rvn" )
                             {
                                 if ( self isalternatemode( var_2 ) )
-                                    updatecurrentobjective();
+                                    _id_12E82();
                             }
                         }
                         else if ( isexplosivedamagemod( var_3 ) )
@@ -1174,36 +1174,36 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                                 if ( isdefined( var_16 ) && ( var_16 == 3 || var_16 == 35 ) )
                                 {
                                     if ( self isalternatemode( var_2 ) )
-                                        updatecurrentobjective();
+                                        _id_12E82();
                                 }
                             }
                         }
                         else if ( scripts\engine\utility::isbulletdamage( var_3 ) )
-                            updatecurrentobjective();
+                            _id_12E82();
                     }
 
                     break;
                 case "ch_intel_ground_pound_rushdown_kills":
                     if ( isdefined( var_2 ) && ( var_2 == "groundpound_mp" || var_2 == "thruster_mp" ) )
-                        updatecurrentobjective();
+                        _id_12E82();
 
                     break;
                 case "ch_intel_ss_drone_kills":
                     if ( !isdefined( var_2 ) || !scripts\mp\utility::iskillstreakweapon( var_2 ) )
                         return;
 
-                    var_17 = scripts\mp\missions::_id_7F48( var_2 );
+                    var_17 = scripts\mp\missions::getkillstreaknamefromweapon( var_2 );
 
                     switch ( var_17 )
                     {
                         case "ball_drone_backup":
                         case "jackal":
                         case "sentry_shock":
-                            updatecurrentobjective();
+                            _id_12E82();
                             break;
                         case "remote_c8":
-                            if ( isdefined( self._id_4BE1 ) && self._id_4BE1 != "MANUAL" )
-                                updatecurrentobjective();
+                            if ( isdefined( self.currentcombatmode ) && self.currentcombatmode != "MANUAL" )
+                                _id_12E82();
 
                             break;
                     }
@@ -1213,7 +1213,7 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                     if ( !isdefined( var_2 ) || !scripts\mp\utility::iskillstreakweapon( var_2 ) )
                         return;
 
-                    var_17 = scripts\mp\missions::_id_7F48( var_2 );
+                    var_17 = scripts\mp\missions::getkillstreaknamefromweapon( var_2 );
 
                     switch ( var_17 )
                     {
@@ -1221,11 +1221,11 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                         case "thor":
                         case "minijackal":
                         case "drone_hive":
-                            updatecurrentobjective();
+                            _id_12E82();
                             break;
                         case "remote_c8":
-                            if ( isdefined( self._id_4BE1 ) && self._id_4BE1 == "MANUAL" )
-                                updatecurrentobjective();
+                            if ( isdefined( self.currentcombatmode ) && self.currentcombatmode == "MANUAL" )
+                                _id_12E82();
 
                             break;
                     }
@@ -1233,7 +1233,7 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                     break;
                 case "ch_intel_perch_active_camo_kills":
                     if ( isdefined( self.trait ) && self.trait == "specialty_wall_lock" && scripts\mp\utility::istrue( self._id_9FF6 ) || scripts\mp\supers::issuperinuse() && scripts\mp\supers::getcurrentsuperref() == "super_invisible" )
-                        updatecurrentobjective();
+                        _id_12E82();
 
                     break;
                 case "ch_intel_medal_fixated":
@@ -1244,9 +1244,9 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                     else
                         var_5 = level.players.size - 1;
 
-                    if ( isdefined( self._id_A653 ) )
+                    if ( isdefined( self.killedplayers ) )
                     {
-                        var_6 = combinepartialprogressandvalidateplayers( self._id_A653 );
+                        var_6 = combinepartialprogressandvalidateplayers( self.killedplayers );
                         var_7 = self._id_9978.progress;
                         var_18 = 0;
 
@@ -1260,7 +1260,7 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                         }
 
                         if ( var_18 )
-                            updatecurrentobjective();
+                            _id_12E82();
                     }
 
                     break;
@@ -1270,13 +1270,13 @@ _id_99BA( var_0, var_1, var_2, var_3, var_4 )
                         var_21 = distancesquared( self.origin, var_0.origin );
 
                         if ( var_3 == "MOD_MELEE" || var_21 < 24336 )
-                            updatecurrentobjective();
+                            _id_12E82();
                     }
 
                     break;
                 case "ch_intel_medal_wallbuster":
                     if ( isdefined( var_0._id_AA43 ) && gettime() - var_0._id_AA43 < 1000 )
-                        updatecurrentobjective();
+                        _id_12E82();
 
                     break;
             }
@@ -1296,7 +1296,7 @@ _id_99B8( var_0 )
             if ( self._id_9978.ref == "ch_intel_tactical_assists" )
             {
                 if ( isdefined( var_1 ) && scripts\mp\utility::istrue( var_1.diddamagewithtacticalequipment ) )
-                    updatecurrentobjective();
+                    _id_12E82();
             }
         }
     }
@@ -1318,7 +1318,7 @@ _id_99A7( var_0 )
     self waittill( "earned_award_buffered", var_1 );
 
     if ( var_1 == var_0 )
-        updatecurrentobjective();
+        _id_12E82();
 }
 
 _id_9969( var_0 )
@@ -1326,7 +1326,7 @@ _id_9969( var_0 )
     self waittill( "kill_event_buffered", var_1, var_2 );
 
     if ( !scripts\mp\utility::iskillstreakweapon( var_2 ) && scripts\mp\utility::_id_9D48( var_0 ) )
-        updatecurrentobjective();
+        _id_12E82();
 }
 
 _id_996A( var_0 )
@@ -1334,18 +1334,18 @@ _id_996A( var_0 )
     self waittill( "super_kill_buffered" );
 
     if ( scripts\mp\utility::_id_9D48( var_0 ) )
-        updatecurrentobjective();
+        _id_12E82();
 }
 
 _id_99E4( var_0 )
 {
     self waittill( "kill_event_buffered", var_1, var_2, var_3 );
-    var_2 = scripts\mp\utility::_id_13CA1( var_2 );
+    var_2 = scripts\mp\utility::weaponmap( var_2 );
 
     if ( !scripts\mp\utility::iskillstreakweapon( var_2 ) && scripts\mp\utility::getweapongroup( var_2 ) == var_0 )
     {
         if ( var_3 != "MOD_MELEE" )
-            updatecurrentobjective();
+            _id_12E82();
     }
 }
 
@@ -1365,15 +1365,15 @@ intelattachmentcountchallenge( var_0, var_1, var_2 )
     if ( var_2 < 0 )
     {
         if ( var_4 < var_1 )
-            updatecurrentobjective();
+            _id_12E82();
     }
     else if ( var_2 > 0 )
     {
         if ( var_4 > var_1 )
-            updatecurrentobjective();
+            _id_12E82();
     }
     else if ( var_4 == var_1 )
-        updatecurrentobjective();
+        _id_12E82();
 }
 
 combinealtweaponarray( var_0 )

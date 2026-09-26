@@ -146,21 +146,21 @@ contractkills( var_0 )
 
                 break;
             case "con_kills_AR":
-                var_2 = scripts\mp\utility::_id_13CA1( var_2 );
+                var_2 = scripts\mp\utility::weaponmap( var_2 );
 
                 if ( var_3 != "MOD_MELEE" && !scripts\mp\utility::iskillstreakweapon( var_2 ) && scripts\mp\utility::getweapongroup( var_2 ) == "weapon_assault" )
                     var_5 = 1;
 
                 break;
             case "con_kills_LMG":
-                var_2 = scripts\mp\utility::_id_13CA1( var_2 );
+                var_2 = scripts\mp\utility::weaponmap( var_2 );
 
                 if ( var_3 != "MOD_MELEE" && !scripts\mp\utility::iskillstreakweapon( var_2 ) && scripts\mp\utility::getweapongroup( var_2 ) == "weapon_lmg" )
                     var_5 = 1;
 
                 break;
             case "con_kills_SG":
-                var_2 = scripts\mp\utility::_id_13CA1( var_2 );
+                var_2 = scripts\mp\utility::weaponmap( var_2 );
 
                 if ( var_3 != "MOD_MELEE" && !scripts\mp\utility::iskillstreakweapon( var_2 ) && scripts\mp\utility::getweapongroup( var_2 ) == "weapon_shotgun" )
                     var_5 = 1;
@@ -179,14 +179,14 @@ contractkills( var_0 )
 
                 break;
             case "con_kills_Sniper":
-                var_2 = scripts\mp\utility::_id_13CA1( var_2 );
+                var_2 = scripts\mp\utility::weaponmap( var_2 );
 
                 if ( var_3 != "MOD_MELEE" && !scripts\mp\utility::iskillstreakweapon( var_2 ) && scripts\mp\utility::getweapongroup( var_2 ) == "weapon_sniper" )
                     var_5 = 1;
 
                 break;
             case "con_kills_SMG":
-                var_2 = scripts\mp\utility::_id_13CA1( var_2 );
+                var_2 = scripts\mp\utility::weaponmap( var_2 );
 
                 if ( var_3 != "MOD_MELEE" && !scripts\mp\utility::iskillstreakweapon( var_2 ) && scripts\mp\utility::getweapongroup( var_2 ) == "weapon_smg" )
                     var_5 = 1;
@@ -370,7 +370,7 @@ contractscorestreakair( var_0 )
 
         if ( scripts\mp\utility::iskillstreakweapon( var_2 ) )
         {
-            var_4 = scripts\mp\missions::_id_7F48( var_2 );
+            var_4 = scripts\mp\missions::getkillstreaknamefromweapon( var_2 );
 
             switch ( var_4 )
             {
@@ -402,7 +402,7 @@ contractscorestreakground( var_0 )
 
         if ( scripts\mp\utility::iskillstreakweapon( var_2 ) )
         {
-            var_4 = scripts\mp\missions::_id_7F48( var_2 );
+            var_4 = scripts\mp\missions::getkillstreaknamefromweapon( var_2 );
 
             switch ( var_4 )
             {
@@ -465,12 +465,12 @@ contractmatchend( var_0 )
         switch ( var_2.ref )
         {
             case "con_wins":
-                if ( var_0._id_13D8A )
+                if ( var_0.winner )
                     var_3 = 1;
 
                 break;
             case "con_wins_top3":
-                if ( var_0._id_13D8A && var_0._id_CBFC < 3 )
+                if ( var_0.winner && var_0.place < 3 )
                     var_3 = 1;
 
                 break;
@@ -480,7 +480,7 @@ contractmatchend( var_0 )
 
                 break;
             case "con_wins_objective":
-                if ( var_0._id_13D8A )
+                if ( var_0.winner )
                 {
                     switch ( level.gametype )
                     {
@@ -502,7 +502,7 @@ contractmatchend( var_0 )
 
                 break;
             case "con_wins_slayer":
-                if ( var_0._id_13D8A )
+                if ( var_0.winner )
                 {
                     switch ( level.gametype )
                     {
@@ -517,7 +517,7 @@ contractmatchend( var_0 )
 
                 break;
             case "con_wins_hardcore":
-                if ( var_0._id_13D8A && level.hardcoremode )
+                if ( var_0.winner && level.hardcoremode )
                     var_3 = 1;
 
                 break;
@@ -635,7 +635,7 @@ contractequipmentdamagedplayer( var_0, var_1, var_2 )
             else
                 var_5 = var_2 getentitynumber();
 
-            var_6 = var_5 + "_" + scripts\mp\utility::_id_13CA1( var_1 );
+            var_6 = var_5 + "_" + scripts\mp\utility::weaponmap( var_1 );
 
             if ( var_0 != self && !isdefined( self.equipmentdamageinflictors[var_0.guid][var_6] ) )
             {

@@ -17,7 +17,7 @@ createfx()
     level.callbackplayerdisconnect = scripts\engine\utility::void;
     level.callbackplayerdamage = scripts\engine\utility::void;
     level.callbackplayerkilled = scripts\engine\utility::void;
-    level._id_375C = scripts\engine\utility::void;
+    level.callbackcodeendgame = scripts\engine\utility::void;
     level.callbackplayerlaststand = scripts\engine\utility::void;
     level.callbackplayerconnect = ::callback_playerconnect;
     level.callbackplayermigrated = scripts\engine\utility::void;

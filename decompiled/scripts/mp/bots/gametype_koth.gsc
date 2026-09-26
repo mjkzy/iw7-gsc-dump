@@ -10,18 +10,18 @@ main()
 setup_bot_koth()
 {
     scripts\mp\bots\bots_util::bot_waittill_bots_enabled( 1 );
-    thread _id_2DC3();
+    thread bot_hardpoint_ai_director_update();
     level.protect_radius = 128;
-    level._id_C992 = 800;
+    level.patrol_radius = 800;
     level.bot_gametype_precaching_done = 1;
 }
 
 setup_callbacks()
 {
-    level.bot_funcs["gametype_think"] = ::_id_2DC4;
+    level.bot_funcs["gametype_think"] = ::bot_hardpoint_think;
 }
 
-_id_986A()
+initialize_role()
 {
     var_0 = get_allied_attackers_for_team( self.team );
     var_1 = get_allied_defenders_for_team( self.team );
@@ -87,7 +87,7 @@ _id_986A()
     }
 }
 
-_id_2DC4()
+bot_hardpoint_think()
 {
     self notify( "bot_grnd_think" );
     self endon( "bot_grnd_think" );
@@ -111,7 +111,7 @@ _id_2DC4()
             continue;
 
         if ( !isdefined( self.role ) )
-            _id_986A();
+            initialize_role();
 
         if ( !scripts\engine\utility::is_true( self.bot_defending ) )
         {
@@ -137,7 +137,7 @@ _id_2DC4()
                 var_3 = getclosestpointonnavmesh( level.zone.gameobject.trigger.origin, self );
                 var_4["min_goal_time"] = 1;
                 var_4["max_goal_time"] = 4;
-                scripts\mp\bots\bots_strategy::bot_patrol_area( var_3, level._id_C992, var_4 );
+                scripts\mp\bots\bots_strategy::bot_patrol_area( var_3, level.patrol_radius, var_4 );
                 var_0 = level.zone.gameobject.trigger;
             }
 
@@ -175,17 +175,17 @@ _id_2DC4()
 
 bot_attacker_limit_for_team( var_0 )
 {
-    var_1 = _id_7B3C( var_0 );
+    var_1 = get_num_players_on_team( var_0 );
     return int( int( var_1 ) / 2 ) + 1 + int( var_1 ) % 2;
 }
 
 bot_defender_limit_for_team( var_0 )
 {
-    var_1 = _id_7B3C( var_0 );
+    var_1 = get_num_players_on_team( var_0 );
     return max( int( int( var_1 ) / 2 ) - 1, 0 );
 }
 
-_id_7B3C( var_0 )
+get_num_players_on_team( var_0 )
 {
     var_1 = 0;
 
@@ -259,7 +259,7 @@ bot_set_role( var_0 )
     scripts\mp\bots\bots_strategy::bot_defend_stop();
 }
 
-_id_9B74( var_0, var_1 )
+is_b_better_defender( var_0, var_1 )
 {
     var_2 = var_0 istouching( level.zone.gameobject.trigger );
     var_3 = var_1 istouching( level.zone.gameobject.trigger );
@@ -292,7 +292,7 @@ _id_9B74( var_0, var_1 )
     return 0;
 }
 
-_id_2DC3()
+bot_hardpoint_ai_director_update()
 {
     level notify( "bot_hardpoint_ai_director_update" );
     level endon( "bot_hardpoint_ai_director_update" );
@@ -347,7 +347,7 @@ _id_2DC3()
                     }
                 }
 
-                var_15 = scripts\engine\utility::array_sort_with_func( var_12, ::_id_9B74 );
+                var_15 = scripts\engine\utility::array_sort_with_func( var_12, ::is_b_better_defender );
 
                 if ( var_12.size < var_11 )
                     var_11 = var_12.size;
@@ -449,9 +449,9 @@ monitor_zone_control()
         wait 1;
         var_0 = 0;
 
-        if ( isdefined( level._id_DBFD ) && self._id_1270F == level._id_DBFD.trigger )
+        if ( isdefined( level.radioobject ) && self.trig == level.radioobject.trigger )
         {
-            var_1 = level._id_DBFD scripts\mp\gameobjects::getownerteam();
+            var_1 = level.radioobject scripts\mp\gameobjects::getownerteam();
 
             if ( var_1 != "neutral" )
             {
@@ -482,7 +482,7 @@ _id_F8DE()
     while ( !isdefined( level.radios ) )
         wait 0.05;
 
-    scripts\mp\bots\bots_strategy::bot_setup_objective_bottargets();
+    scripts\mp\bots\bots_strategy::bot_setup_radio_bottargets();
 
     for ( var_0 = 0; var_0 < level.radios.size; var_0++ )
     {
@@ -516,7 +516,7 @@ bot_headquarters_think()
         if ( self.health <= 0 )
             continue;
 
-        if ( !isdefined( level._id_DBFD ) )
+        if ( !isdefined( level.radioobject ) )
         {
             if ( scripts\mp\bots\bots_util::bot_is_defending() )
                 scripts\mp\bots\bots_strategy::bot_defend_stop();
@@ -543,27 +543,27 @@ bot_headquarters_think()
             continue;
         }
 
-        var_5 = level._id_DBFD scripts\mp\gameobjects::getownerteam();
+        var_5 = level.radioobject scripts\mp\gameobjects::getownerteam();
 
         if ( self.team != var_5 )
         {
-            if ( !_id_9B83() )
+            if ( !is_capturing_current_headquarters() )
             {
-                var_6 = _id_7B2C();
-                var_7 = find_current_radio()._id_2E28.size;
+                var_6 = get_num_ai_capturing_headquarters();
+                var_7 = find_current_radio().bot_nodes.size;
 
                 if ( var_6 < var_7 )
-                    _id_3A36();
-                else if ( !_id_9C94() )
-                    _id_DAA1();
+                    capture_current_headquarters();
+                else if ( !is_protecting_current_headquarters() )
+                    protect_current_headquarters();
             }
         }
-        else if ( !_id_9C94() )
+        else if ( !is_protecting_current_headquarters() )
         {
             wait( randomfloat( 2 ) );
 
-            if ( isdefined( level._id_DBFD ) )
-                _id_DAA1();
+            if ( isdefined( level.radioobject ) )
+                protect_current_headquarters();
         }
     }
 }
@@ -572,42 +572,42 @@ find_current_radio()
 {
     foreach ( var_1 in level.radios )
     {
-        if ( var_1._id_1270F == level._id_DBFD.trigger )
+        if ( var_1.trig == level.radioobject.trigger )
             return var_1;
     }
 }
 
-_id_9B83()
+is_capturing_current_headquarters()
 {
     return scripts\mp\bots\bots_util::bot_is_capturing();
 }
 
-_id_7B2C()
+get_num_ai_capturing_headquarters()
 {
     var_0 = 0;
 
     foreach ( var_2 in level.participants )
     {
-        if ( isai( var_2 ) && var_2.health > 0 && var_2.team == self.team && var_2 _id_9B83() )
+        if ( isai( var_2 ) && var_2.health > 0 && var_2.team == self.team && var_2 is_capturing_current_headquarters() )
             var_0++;
     }
 
     return var_0;
 }
 
-_id_3A36()
+capture_current_headquarters()
 {
     var_0 = find_current_radio();
     var_1["entrance_points_index"] = "radio" + var_0.script_label;
-    scripts\mp\bots\bots_strategy::bot_capture_zone( var_0.origin, var_0._id_2E28, undefined, var_1 );
+    scripts\mp\bots\bots_strategy::bot_capture_zone( var_0.origin, var_0.bot_nodes, undefined, var_1 );
 }
 
-_id_9C94()
+is_protecting_current_headquarters()
 {
     return scripts\mp\bots\bots_util::bot_is_protecting();
 }
 
-_id_DAA1()
+protect_current_headquarters()
 {
     var_0 = self botgetworldsize();
     var_1 = ( var_0[0] + var_0[1] ) / 2;
@@ -623,5 +623,5 @@ init_bot_game_headquarters()
     level.bots_gametype_initialized = 1;
 
     foreach ( var_1 in level.radios )
-        var_1._id_2E28 = getnodesintrigger( var_1._id_1270F );
+        var_1.bot_nodes = getnodesintrigger( var_1.trig );
 }

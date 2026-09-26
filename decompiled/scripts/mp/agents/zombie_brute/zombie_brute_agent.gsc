@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    _id_03B3::_id_DEE8();
-    _id_0F45::_id_2371();
+    behaviortree\zombie_brute::registerbehaviortree();
+    _id_0F45::asm_register();
     _id_AEB0();
     thread _id_FAB0();
 }
@@ -55,7 +55,7 @@ setupagent()
     self.marked_for_death = undefined;
     self.trap_killed_by = undefined;
     self.hastraversed = 0;
-    self._id_9342 = 1;
+    self.immune_against_repulsor = 1;
     self.immune_against_nuke = 1;
     self.aistate = "idle";
     self.movemode = "run";
@@ -483,7 +483,7 @@ _id_311E( var_0, var_1 )
                     }
                 }
 
-                var_3 _meth_84DC( var_9, var_7 );
+                var_3 knockback( var_9, var_7 );
             }
         }
     }
@@ -586,18 +586,18 @@ _id_3116()
         }
         else
         {
-            var_6 = scripts\cp\zombies\_id_0D60::_id_800B( var_1 );
+            var_6 = _id_0D60::_id_800B( var_1 );
 
             if ( var_6 == 0 )
             {
                 var_7 = 0;
-                var_2 = var_1._id_186E;
+                var_2 = var_1.adjacent_volumes;
 
                 if ( isdefined( var_2 ) )
                 {
                     foreach ( var_4 in var_2 )
                     {
-                        var_6 = scripts\cp\zombies\_id_0D60::_id_800B( var_4 );
+                        var_6 = _id_0D60::_id_800B( var_4 );
 
                         if ( var_6 > 0 )
                         {

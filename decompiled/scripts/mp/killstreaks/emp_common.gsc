@@ -27,9 +27,9 @@ _id_1181()
     if ( scripts\mp\utility::_hasperk( "specialty_localjammer" ) )
         self clearscrambler();
 
-    self _meth_82DA( 1 );
+    self setempjammed( 1 );
     scripts\engine\utility::allow_usability( 0 );
-    thread _id_10D95();
+    thread startempjamsequence();
 }
 
 _id_13B5()
@@ -37,13 +37,13 @@ _id_13B5()
     if ( scripts\mp\utility::_hasperk( "specialty_localjammer" ) )
         self makescrambler();
 
-    self _meth_82DA( 0 );
+    self setempjammed( 0 );
     scripts\engine\utility::allow_usability( 1 );
 
     if ( scripts\mp\utility::isreallyalive( self ) )
-        thread _id_1106A();
+        thread stopempjamsequence();
     else
-        thread _id_1106B();
+        thread stopempjamsequenceimmediate();
 
     self notify( "emp_stop_vfx" );
     self playsound( "emp_nade_lp_end" );
@@ -60,13 +60,13 @@ _id_FFC5()
     if ( scripts\mp\utility::_hasperk( "specialty_empimmune" ) || !scripts\mp\utility::isreallyalive( self ) )
         return 0;
 
-    if ( scripts\mp\utility::_id_9EF0( self ) )
+    if ( scripts\mp\utility::isplayerkillstreak( self ) )
         return 0;
 
     return 1;
 }
 
-_id_20CD()
+applyglobalempeffects()
 {
     visionsetnaked( "coup_sunblind", 0.05 );
     wait 0.05;
@@ -74,13 +74,13 @@ _id_20CD()
     visionsetnaked( "", 0.5 );
 }
 
-_id_10D95()
+startempjamsequence()
 {
     level endon( "game_ended" );
     self endon( "emp_stop_effect" );
     self endon( "disconnect" );
-    self._id_2B12 = 1;
-    thread _id_5823();
+    self.bisplayingjameffects = 1;
+    thread doempartifactloop();
     wait 1.0;
     self setclientomnvar( "ui_hud_static", 2 );
     wait 0.5;
@@ -97,15 +97,15 @@ _id_10D95()
     }
 }
 
-_id_1106A()
+stopempjamsequence()
 {
     level endon( "game_ended" );
     self notify( "emp_stop_effect" );
     self endon( "disconnect" );
 
-    if ( isdefined( self._id_2B12 ) )
+    if ( isdefined( self.bisplayingjameffects ) )
     {
-        self._id_2B12 = undefined;
+        self.bisplayingjameffects = undefined;
         self setclientomnvar( "ui_hud_static", 0 );
 
         for ( var_0 = 0; var_0 < 3; var_0++ )
@@ -115,24 +115,24 @@ _id_1106A()
         }
 
         self setclientomnvar( "ui_hud_emp_artifact", 0 );
-        self._id_D2DB = 0;
+        self.player_static_value = 0;
     }
 }
 
-_id_1106B()
+stopempjamsequenceimmediate()
 {
     self notify( "emp_stop_effect" );
 
-    if ( isdefined( self._id_2B12 ) || isdefined( self._id_D2DB ) )
+    if ( isdefined( self.bisplayingjameffects ) || isdefined( self.player_static_value ) )
     {
-        self._id_2B12 = undefined;
-        self._id_D2DB = 0;
+        self.bisplayingjameffects = undefined;
+        self.player_static_value = 0;
         self setclientomnvar( "ui_hud_static", 0 );
         self setclientomnvar( "ui_hud_emp_artifact", 0 );
     }
 }
 
-_id_5823()
+doempartifactloop()
 {
     self notify( "emp_stop_artifact" );
     level endon( "game_ended" );
@@ -149,7 +149,7 @@ _id_5823()
     }
 }
 
-_id_5826( var_0 )
+doempstaticloop( var_0 )
 {
     self notify( "emp_stop_static" );
     level endon( "game_ended" );
@@ -174,41 +174,41 @@ _id_5826( var_0 )
     }
 }
 
-_id_10E4A()
+staticfieldinit()
 {
-    self._id_D2DB = 0;
+    self.player_static_value = 0;
 }
 
-_id_10E4B( var_0 )
+staticfieldsetstrength( var_0 )
 {
-    if ( self._id_D2DB != var_0 && isalive( self ) && !isemped() )
+    if ( self.player_static_value != var_0 && isalive( self ) && !isemped() )
     {
-        self._id_D2DB = var_0;
+        self.player_static_value = var_0;
 
         switch ( var_0 )
         {
             case 0:
-                _id_1106A();
+                stopempjamsequence();
                 break;
             case 1:
-                self._id_2B12 = 1;
+                self.bisplayingjameffects = 1;
                 self notify( "emp_stop_static" );
-                thread _id_5823();
-                thread _id_5826( 1 );
+                thread doempartifactloop();
+                thread doempstaticloop( 1 );
                 break;
             case 2:
-                self._id_2B12 = 1;
+                self.bisplayingjameffects = 1;
                 self notify( "emp_stop_static" );
                 self notify( "emp_stop_artifact" );
-                thread _id_5826( 2 );
+                thread doempstaticloop( 2 );
                 break;
         }
     }
 }
 
-_id_10E49()
+staticfieldgetstrength()
 {
-    return self._id_D2DB;
+    return self.player_static_value;
 }
 
 _id_5AA9()
@@ -238,10 +238,10 @@ _id_20C8( var_0 )
 _id_E24E()
 {
     self._id_619B = undefined;
-    _id_1106B();
+    stopempjamsequenceimmediate();
     self notify( "emp_stop_vfx" );
     self stoploopsound( "emp_nade_lp" );
-    self _meth_82DA( 0 );
+    self setempjammed( 0 );
 }
 
 _id_61A2()
@@ -296,15 +296,15 @@ _id_61C1( var_0 )
 
     foreach ( var_0 in level.players )
     {
-        if ( isdefined( var_0 ) && scripts\mp\utility::_id_9EF0( var_0 ) )
+        if ( isdefined( var_0 ) && scripts\mp\utility::isplayerkillstreak( var_0 ) )
             var_1[var_1.size] = var_0;
     }
 
     level._id_61A1 = var_1;
-    thread empscramblelevels();
+    thread _id_61B1();
 }
 
-empscramblelevels()
+_id_61B1()
 {
     waittillframeend;
     level._id_61A1 = undefined;

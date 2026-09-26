@@ -123,7 +123,7 @@ bot_conf_think()
     }
 }
 
-_id_2D2E( var_0 )
+bot_check_tag_above_head( var_0 )
 {
     if ( isdefined( var_0.on_path_grid ) && var_0.on_path_grid )
     {
@@ -370,7 +370,7 @@ bot_remove_invalid_tags( var_0 )
     {
         if ( var_3.tag scripts\mp\gameobjects::caninteractwith( self.team ) && scripts\mp\bots\bots_util::bot_vectors_are_equal( var_3.tag.curorigin, var_3.origin ) )
         {
-            if ( !_id_2D2E( var_3.tag ) && var_3.tag.on_path_grid )
+            if ( !bot_check_tag_above_head( var_3.tag ) && var_3.tag.on_path_grid )
                 var_1 = scripts\engine\utility::array_add( var_1, var_3 );
         }
     }

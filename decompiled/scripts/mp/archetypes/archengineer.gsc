@@ -50,7 +50,7 @@ createentityeventdata( var_0, var_1, var_2 )
     var_4 = 20;
     var_5 = spawn( "script_model", var_1.origin + ( 0, 0, 10 ) );
     var_6 = _id_7E95( var_2 );
-    var_5 _meth_8594();
+    var_5 scriptmoverthermal();
     var_5 setmodel( var_6 );
     var_5.owner = var_0;
     var_5.team = var_0.team;
@@ -205,7 +205,7 @@ _id_13A1C( var_0 )
         var_1 playlocalsound( "scavenger_pack_pickup" );
 
         if ( var_1 scripts\mp\utility::_hasperk( "specialty_superpack" ) )
-            var_1 scripts\mp\missions::_id_D991( "ch_trait_super_pack" );
+            var_1 scripts\mp\missions::processchallengedaily( "ch_trait_super_pack" );
 
         var_0 delete();
     }
@@ -223,7 +223,7 @@ _id_8363( var_0 )
         thread scripts\mp\rank::scoreeventpopup( "scorestreak_pack" );
         var_1 = scripts\mp\rank::getscoreinfovalue( "scorestreak_pack" );
         thread scripts\mp\rank::scorepointspopup( var_1 );
-        scripts\mp\killstreaks\killstreaks::_id_83A7( "scorestreak_pack", var_1 );
+        scripts\mp\killstreaks\killstreaks::givestreakpoints( "scorestreak_pack", var_1 );
     }
     else if ( var_0.type == "super" )
     {

@@ -4,9 +4,9 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    _id_03B5::_id_DEE8();
-    _id_0F47::_id_2371();
-    _id_9812();
+    behaviortree\zombie_grey::registerbehaviortree();
+    _id_0F47::asm_register();
+    initgrenadethrowanims();
     _id_98E9();
     _id_98E8();
     _id_9885();
@@ -59,7 +59,7 @@ _id_B28D( var_0 )
 
 setupagent()
 {
-    self._id_71D0 = ::_id_1004E;
+    self.fnshouldplaypainanim = ::_id_1004E;
     self.accuracy = 0.5;
     self.noattackeraccuracymod = 0;
     self.sharpturnnotifydist = 48;
@@ -87,18 +87,18 @@ setupagent()
     self.meleemaxdamage = 70;
     self._id_B62B = ::_id_85F8;
     self._id_BF9F = gettime() + randomintrange( 3000, 5000 );
-    self._id_9343 = 1;
+    self.immune_against_special_ammo = 1;
     self.immune_against_freeze = 1;
-    self._id_9342 = 1;
+    self.immune_against_repulsor = 1;
     self.immune_against_nuke = 1;
     self.allowpain = 0;
-    self._id_1A44 = 90;
+    self.aimpitchdifftolerance = 90;
     self.footstepdetectdist = 600;
     self.footstepdetectdistwalk = 600;
     self.footstepdetectdistsprint = 600;
     self._id_4F63 = ::_id_85F6;
     _id_2475();
-    setupdestructibleparts();
+    _id_FAA6();
     self setscriptablepartstate( "backpack_dome_shield", "on" );
 
     if ( isdefined( level.greysetupfunc ) )
@@ -111,9 +111,9 @@ setupagent()
 _id_85F6( var_0, var_1 )
 {
     if ( scripts\engine\utility::is_true( self.i_am_clone ) )
-        scripts\asm\asm_bb::bb_requestcombatmovetype_facemotion();
+        _id_0C33::bb_requestcombatmovetype_facemotion();
     else
-        scripts\asm\asm_bb::bb_requestcombatmovetype_strafe();
+        _id_0C33::bb_requestcombatmovetype_strafe();
 }
 
 _id_85F8( var_0, var_1 )
@@ -151,7 +151,7 @@ _id_2475()
         return;
 
     self.voice = "american";
-    self _meth_82C6( "cloth" );
+    self setclothtype( "cloth" );
     var_0 = [];
     var_0["tag_armor_head_ri"] = 165;
     var_0["tag_armor_head_le"] = 165;
@@ -178,28 +178,28 @@ _id_2475()
     self._id_2AB4 = 1;
 }
 
-setupdestructibleparts()
+_id_FAA6()
 {
     self._id_2AB5 = 1;
 }
 
-_id_17CC( var_0, var_1 )
+addgrenadethrowanimoffset( var_0, var_1 )
 {
-    if ( !isdefined( anim._id_85DF ) )
+    if ( !isdefined( anim.grenadethrowanims ) )
     {
-        anim._id_85DF = [];
-        anim._id_85E1 = [];
+        anim.grenadethrowanims = [];
+        anim.grenadethrowoffsets = [];
     }
 
-    var_2 = anim._id_85DF.size;
-    anim._id_85DF[var_2] = var_0;
-    anim._id_85E1[var_2] = var_1;
+    var_2 = anim.grenadethrowanims.size;
+    anim.grenadethrowanims[var_2] = var_0;
+    anim.grenadethrowoffsets[var_2] = var_1;
 }
 
-_id_9812()
+initgrenadethrowanims()
 {
-    _id_17CC( 0, ( 41.5391, 7.28883, 72.2128 ) );
-    _id_17CC( 1, ( 34.8849, -4.77048, 74.0488 ) );
+    addgrenadethrowanimoffset( 0, ( 41.5391, 7.28883, 72.2128 ) );
+    addgrenadethrowanimoffset( 1, ( 34.8849, -4.77048, 74.0488 ) );
 }
 
 scriptedgoalwaitforarrival()
@@ -336,7 +336,7 @@ _id_12BFD( var_0 )
 {
     _id_B2C4( var_0 );
     var_0.i_am_clone = 0;
-    var_0._id_10AB7 = undefined;
+    var_0.sprint = undefined;
     var_0.desiredenemydistmax = 360;
     var_0.meleerangesq = 90000;
     var_0.strafeifwithindist = var_0.desiredenemydistmax + 100;
@@ -349,7 +349,7 @@ _id_12BFD( var_0 )
     scripts\asm\zombie_grey\zombie_grey_asm::_id_E2FB( var_0 );
     scripts\asm\zombie_grey\zombie_grey_asm::_id_E2FA( var_0 );
     var_0 thread _id_8CAC( var_0 );
-    var_0 scripts\mp\mp_agent::_id_FAFA( "iw7_zapper_grey" );
+    var_0 scripts\mp\mp_agent::setupweapon( "iw7_zapper_grey" );
 }
 
 _id_B2C4( var_0 )

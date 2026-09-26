@@ -24,30 +24,30 @@ onplayerspawned()
         self waittill( "spawned_player" );
 
         if ( level.teambased && level.teamemped[self.team] || !level.teambased && isdefined( level.empplayer ) && level.empplayer != self )
-            self _meth_82DA( 1 );
+            self setempjammed( 1 );
     }
 }
 
-_id_618B( var_0, var_1 )
+emp_use( var_0, var_1 )
 {
     var_2 = self.pers["team"];
 
     if ( level.multiteambased )
-        thread _id_6166( var_2 );
+        thread emp_jamteams( var_2 );
     else if ( level.teambased )
     {
         var_3 = level.otherteam[var_2];
-        thread _id_6165( var_3 );
+        thread emp_jamteam( var_3 );
     }
     else
-        thread _id_6164( self );
+        thread emp_jamplayers( self );
 
     scripts\mp\matchdata::logkillstreakevent( "emp", self.origin );
     self notify( "used_emp" );
     return 1;
 }
 
-_id_6166( var_0 )
+emp_jamteams( var_0 )
 {
     level endon( "game_ended" );
     thread scripts\mp\utility::teamplayercardsplash( "used_emp", self );
@@ -66,7 +66,7 @@ _id_6166( var_0 )
     }
 
     visionsetnaked( "coup_sunblind", 0.1 );
-    thread _id_619F();
+    thread empeffects();
     wait 0.1;
     visionsetnaked( "coup_sunblind", 0 );
     visionsetnaked( "", 3.0 );
@@ -82,11 +82,11 @@ _id_6166( var_0 )
     for ( var_4 = 0; var_4 < level.teamnamelist.size; var_4++ )
     {
         if ( var_0 != level.teamnamelist[var_4] )
-            level _id_52CA( self, level.teamnamelist[var_4] );
+            level destroyactivevehicles( self, level.teamnamelist[var_4] );
     }
 
-    level thread _id_A577();
-    scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( level.empstuntime );
+    level thread keepemptimeremaining();
+    scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( level.emptimeout );
 
     for ( var_4 = 0; var_4 < level.teamnamelist.size; var_4++ )
     {
@@ -106,7 +106,7 @@ _id_6166( var_0 )
     level notify( "emp_update" );
 }
 
-_id_6165( var_0 )
+emp_jamteam( var_0 )
 {
     level endon( "game_ended" );
     thread scripts\mp\utility::teamplayercardsplash( "used_emp", self );
@@ -126,15 +126,15 @@ _id_6165( var_0 )
         var_2 visionsetnakedforplayer( "coup_sunblind", 0.1 );
     }
 
-    thread _id_619F();
+    thread empeffects();
     wait 0.1;
     visionsetnaked( "coup_sunblind", 0 );
     visionsetnaked( "", 3.0 );
     level.teamemped[var_0] = 1;
     level notify( "emp_update" );
-    level _id_52CA( self, var_0 );
-    level thread _id_A577();
-    scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( level.empstuntime );
+    level destroyactivevehicles( self, var_0 );
+    level thread keepemptimeremaining();
+    scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( level.emptimeout );
     level.teamemped[var_0] = 0;
 
     foreach ( var_2 in level.players )
@@ -149,7 +149,7 @@ _id_6165( var_0 )
     level notify( "emp_update" );
 }
 
-_id_6164( var_0 )
+emp_jamplayers( var_0 )
 {
     level notify( "EMP_JamPlayers" );
     level endon( "EMP_JamPlayers" );
@@ -166,17 +166,17 @@ _id_6164( var_0 )
     }
 
     visionsetnaked( "coup_sunblind", 0.1 );
-    thread _id_619F();
+    thread empeffects();
     wait 0.1;
     visionsetnaked( "coup_sunblind", 0 );
     visionsetnaked( "", 3.0 );
     level notify( "emp_update" );
     level.empplayer = var_0;
-    level.empplayer thread empradarwatcher();
-    level _id_52CA( var_0 );
+    level.empplayer thread empplayerffadisconnect();
+    level destroyactivevehicles( var_0 );
     level notify( "emp_update" );
-    level thread _id_A577();
-    scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( level.empstuntime );
+    level thread keepemptimeremaining();
+    scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( level.emptimeout );
 
     foreach ( var_2 in level.players )
     {
@@ -192,17 +192,17 @@ _id_6164( var_0 )
     level notify( "emp_ended" );
 }
 
-_id_A577()
+keepemptimeremaining()
 {
     level notify( "keepEMPTimeRemaining" );
     level endon( "keepEMPTimeRemaining" );
     level endon( "emp_ended" );
 
-    for ( level.emptriggerholdonuse = int( level.empstuntime ); level.emptriggerholdonuse; level.emptriggerholdonuse-- )
+    for ( level.emptimeremaining = int( level.emptimeout ); level.emptimeremaining; level.emptimeremaining-- )
         wait 1.0;
 }
 
-empradarwatcher()
+empplayerffadisconnect()
 {
     level endon( "EMP_JamPlayers" );
     level endon( "emp_ended" );
@@ -210,7 +210,7 @@ empradarwatcher()
     level notify( "emp_update" );
 }
 
-_id_619F()
+empeffects()
 {
     foreach ( var_1 in level.players )
     {
@@ -221,18 +221,18 @@ _id_619F()
         var_4 = spawn( "script_model", var_1.origin + ( 0, 0, 8000 ) + var_2 * var_3 );
         var_4 setmodel( "tag_origin" );
         var_4.angles = var_4.angles + ( 270, 0, 0 );
-        var_4 thread _id_619E( var_1 );
+        var_4 thread empeffect( var_1 );
     }
 }
 
-_id_619E( var_0 )
+empeffect( var_0 )
 {
     var_0 endon( "disconnect" );
     wait 0.5;
     playfxontagforclients( level._effect["emp_flash"], self, "tag_origin", var_0 );
 }
 
-_id_6187()
+emp_teamtracker()
 {
     level endon( "game_ended" );
 
@@ -247,16 +247,16 @@ _id_6187()
 
             if ( !level.teamemped[var_1.team] && !var_1 scripts\mp\killstreaks\emp_common::isemped() )
             {
-                var_1 _id_626B( 0 );
+                var_1 enablejammedeffect( 0 );
                 continue;
             }
 
-            var_1 _id_626B( 1 );
+            var_1 enablejammedeffect( 1 );
         }
     }
 }
 
-_id_617C()
+emp_playertracker()
 {
     level endon( "game_ended" );
 
@@ -271,32 +271,32 @@ _id_617C()
 
             if ( isdefined( level.empplayer ) && level.empplayer != var_1 )
             {
-                var_1 _id_626B( 1 );
+                var_1 enablejammedeffect( 1 );
                 continue;
             }
 
             if ( !var_1 scripts\mp\killstreaks\emp_common::isemped() )
-                var_1 _id_626B( 0 );
+                var_1 enablejammedeffect( 0 );
         }
     }
 }
 
-_id_52CA( var_0, var_1 )
+destroyactivevehicles( var_0, var_1 )
 {
-    thread _id_52C2( var_0, var_1 );
-    thread _id_52C4( var_0, var_1 );
-    thread _id_52C7( var_0, var_1 );
-    thread _id_52C6( var_0, var_1 );
-    thread _id_52C8( var_0, var_1 );
-    thread _id_52C3( var_0, var_1 );
-    thread _id_52C9( var_0, var_1 );
-    thread _id_52C0( var_0, var_1 );
-    thread _id_52C1( var_0, var_1 );
-    thread _id_532B( var_0, var_1, level.remote_uav );
-    thread _id_532B( var_0, var_1, level.uplinks );
+    thread destroyactivehelis( var_0, var_1 );
+    thread destroyactivelittlebirds( var_0, var_1 );
+    thread destroyactiveturrets( var_0, var_1 );
+    thread destroyactiverockets( var_0, var_1 );
+    thread destroyactiveuavs( var_0, var_1 );
+    thread destroyactiveimss( var_0, var_1 );
+    thread destroyactiveugvs( var_0, var_1 );
+    thread destroyactiveac130( var_0, var_1 );
+    thread destroyactiveballdrones( var_0, var_1 );
+    thread destroytargets( var_0, var_1, level.remote_uav );
+    thread destroytargets( var_0, var_1, level.uplinks );
 }
 
-_id_532B( var_0, var_1, var_2 )
+destroytargets( var_0, var_1, var_2 )
 {
     var_3 = "MOD_EXPLOSIVE";
     var_4 = "killstreak_emp_mp";
@@ -323,22 +323,22 @@ _id_532B( var_0, var_1, var_2 )
     }
 }
 
-_id_52C2( var_0, var_1 )
+destroyactivehelis( var_0, var_1 )
 {
-    _id_532B( var_0, var_1, level.helis );
+    destroytargets( var_0, var_1, level.helis );
 }
 
-_id_52C4( var_0, var_1 )
+destroyactivelittlebirds( var_0, var_1 )
 {
-    _id_532B( var_0, var_1, level.littlebirds );
+    destroytargets( var_0, var_1, level.littlebirds );
 }
 
-_id_52C7( var_0, var_1 )
+destroyactiveturrets( var_0, var_1 )
 {
-    _id_532B( var_0, var_1, level.turrets );
+    destroytargets( var_0, var_1, level.turrets );
 }
 
-_id_52C6( var_0, var_1 )
+destroyactiverockets( var_0, var_1 )
 {
     var_2 = "MOD_EXPLOSIVE";
     var_3 = "killstreak_emp_mp";
@@ -360,33 +360,33 @@ _id_52C6( var_0, var_1 )
         else if ( isdefined( var_12.owner ) && var_12.owner == var_0 )
             continue;
 
-        playfx( level.remotekillstreaks["explode"], var_12.origin );
+        playfx( level.remotemissile_fx["explode"], var_12.origin );
         var_12 delete();
         wait 0.05;
     }
 }
 
-_id_52C8( var_0, var_1 )
+destroyactiveuavs( var_0, var_1 )
 {
     var_2 = level.uavmodels;
 
     if ( level.teambased && isdefined( var_1 ) )
         var_2 = level.uavmodels[var_1];
 
-    _id_532B( var_0, var_1, var_2 );
+    destroytargets( var_0, var_1, var_2 );
 }
 
-_id_52C3( var_0, var_1 )
+destroyactiveimss( var_0, var_1 )
 {
-    _id_532B( var_0, var_1, level._id_935F );
+    destroytargets( var_0, var_1, level.ims );
 }
 
-_id_52C9( var_0, var_1 )
+destroyactiveugvs( var_0, var_1 )
 {
-    _id_532B( var_0, var_1, level.ugvs );
+    destroytargets( var_0, var_1, level.ugvs );
 }
 
-_id_52C0( var_0, var_1 )
+destroyactiveac130( var_0, var_1 )
 {
     var_2 = "MOD_EXPLOSIVE";
     var_3 = "killstreak_emp_mp";
@@ -410,18 +410,18 @@ _id_52C0( var_0, var_1 )
     }
 }
 
-_id_52C1( var_0, var_1 )
+destroyactiveballdrones( var_0, var_1 )
 {
-    _id_532B( var_0, var_1, level.balldrones );
+    destroytargets( var_0, var_1, level.balldrones );
 }
 
-_id_626B( var_0 )
+enablejammedeffect( var_0 )
 {
-    self _meth_82DA( var_0 );
+    self setempjammed( var_0 );
     var_1 = 0;
 
     if ( var_0 )
         var_1 = 1;
 
-    thread scripts\mp\killstreaks\emp_common::_id_10D95();
+    thread scripts\mp\killstreaks\emp_common::startempjamsequence();
 }

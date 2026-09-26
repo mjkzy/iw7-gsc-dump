@@ -26,7 +26,7 @@ _id_D68E( var_0, var_1 )
 {
     self endon( "disconnect" );
 
-    if ( scripts\mp\utility::_id_9EF0( self ) || !isplayer( self ) )
+    if ( scripts\mp\utility::isplayerkillstreak( self ) || !isplayer( self ) )
         return;
 
     var_2 = self.origin + ( 0, 0, 2000 );
@@ -133,7 +133,7 @@ _id_468B( var_0, var_1 )
     self endon( "disconnect" );
     var_0 endon( "diconnect" );
     wait 0.05;
-    var_2 = var_0 _meth_8113();
+    var_2 = var_0 getcorpseentity();
 
     if ( !isdefined( var_2 ) )
         return;
@@ -148,7 +148,7 @@ _id_468B( var_0, var_1 )
     if ( isdefined( var_2 ) )
     {
         var_2 hide();
-        var_2.permanentcustommovetransition = 1;
+        var_2.permhidden = 1;
     }
 }
 

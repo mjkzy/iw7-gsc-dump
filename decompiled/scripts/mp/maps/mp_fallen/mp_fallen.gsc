@@ -18,7 +18,7 @@ main()
     game["axis_outfit"] = "woodland";
     thread _id_F9BA();
     thread _id_CBF3();
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     thread scripts\mp\animation_suite::animationsuite();
     thread _id_C853();
     thread fixyourcollision();

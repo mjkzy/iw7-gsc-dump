@@ -36,8 +36,8 @@ main()
     level.upgrade_weapons_func = scripts\cp\zombies\interaction_weapon_upgrade::_id_12F73;
     level._id_13D69 = scripts\cp\zombies\interaction_windowtraps::_id_CC08;
     level.active_volume_check = scripts\cp\loot::is_in_active_volume;
-    level._id_768C = ::_id_13F35;
-    level._id_E49D = ::_id_13F50;
+    level.gametype_interaction_func = ::_id_13F35;
+    level.revive_icon_initial_alpha_func = ::_id_13F50;
     level.splash_grenade_victim_scriptable_state_func = scripts\cp\zombies\zombie_scriptable_states::applyzombiescriptablestate;
     level.laststand_exit_gamemodespecificaction = ::_id_13F20;
     level.onplayerdisconnected = ::_id_13F44;
@@ -72,7 +72,7 @@ main()
     level.insta_kill = 0;
     level.default_weapon = "iw7_g18_zmr";
     level.pap_max = 2;
-    level._id_9B1A = 0;
+    level.inventory_nag = 0;
     level.exploimpactmod = 0.1;
     level.shotgundamagemod = 0.1;
     level.armorpiercingmod = 0.2;
@@ -83,7 +83,7 @@ main()
     scripts\cp\crafted_trap_gascan::init();
     scripts\cp\agents\gametype_zombie::main();
     scripts\cp\crafted_trap_fireworks::init();
-    scripts\cp\zombies\zombie_quest::_id_9700();
+    scripts\cp\zombies\zombie_quest::init_quest_system();
     scripts\cp\zombies\zombies_loadout::init();
     scripts\cp\zombies\directors_cut::init();
     scripts\cp\zombies\direct_boss_fight::init();
@@ -225,7 +225,7 @@ zombie_onstartgametype()
 
     level thread handle_nondeterministic_entities();
     level thread revive_players_between_waves_monitor();
-    level.updaterecentkills_func = ::_id_12EFE;
+    level.updaterecentkills_func = ::updaterecentkills;
     level scripts\engine\utility::delaythread( 0.2, scripts\cp\zombies\zombie_entrances::init_zombie_entrances );
     level.gamemode_perk_callback_init_func = scripts\cp\zombies\zombies_perk_machines::register_zombie_perks;
     scripts\cp\perks\perkmachines::init_zombie_perks_callback();
@@ -240,7 +240,7 @@ zombie_onstartgametype()
         level thread [[ level.spawn_vo_func ]]();
 
     scripts\cp\zombies\zombies_weapons::init();
-    scripts\cp\zombies\zombie_quest::_id_10CEF();
+    scripts\cp\zombies\zombie_quest::start_quest_system();
     level thread _id_95C9();
     level thread scripts\cp\zombies\zombies_spawning::enemy_spawning_run();
     level thread scripts\cp\cp_interaction::init();
@@ -251,9 +251,9 @@ zombie_onstartgametype()
     level thread scripts\cp\zombies\directors_cut::start_directors_cut();
 
     if ( scripts\cp\utility::coop_mode_has( "wall_buys" ) )
-        level thread scripts\cp\zombies\coop_wall_buys::_id_23DA();
+        level thread scripts\cp\zombies\coop_wall_buys::assign_weapons_to_structs();
     else
-        scripts\cp\cp_interaction::_id_55A2();
+        scripts\cp\cp_interaction::disable_wall_buy_interactions();
 
     if ( isdefined( level._id_F9F1 ) )
         level [[ level._id_F9F1 ]]();
@@ -270,7 +270,7 @@ _id_F9F0()
 
 _id_95C9()
 {
-    scripts\cp\zombies\_id_0D60::_id_13F54();
+    _id_0D60::_id_13F54();
     scripts\cp\zombies\zombies_spawning::enemy_spawner_init();
 }
 
@@ -336,7 +336,7 @@ onplayerconnect()
             {
                 var_1 = getdvarint( "online_zombie_party_weapon_xpscale" );
                 var_2 = getdvarint( "online_zombie_party_xpscale" );
-                var_3 = var_0 _meth_85BE() > 1;
+                var_3 = var_0 getprivatepartysize() > 1;
 
                 if ( isdefined( var_1 ) )
                 {
@@ -354,8 +354,8 @@ onplayerconnect()
             var_0 thread scripts\cp\cp_globallogic::player_init_health_regen();
             var_0 scripts\cp\cp_gamescore::init_player_score();
             var_0 scripts\cp\cp_persistence::session_stats_init();
-            var_0._id_C1F6 = [];
-            var_0._id_BF74 = 0;
+            var_0.num_of_plays = [];
+            var_0.nextcasheffecttime = 0;
             var_0.total_currency_earned = 0;
             var_0.can_give_revive_xp = 1;
 
@@ -374,14 +374,14 @@ onplayerconnect()
             if ( !isdefined( var_0.disabled_interactions ) )
                 var_0.disabled_interactions = [];
 
-            if ( !isdefined( var_0._id_C54A ) )
-                var_0._id_C54A = [];
+            if ( !isdefined( var_0.onkillweaponpassives ) )
+                var_0.onkillweaponpassives = [];
 
-            if ( !isdefined( var_0._id_C5C9 ) )
-                var_0._id_C5C9 = [];
+            if ( !isdefined( var_0.onuseweaponpassives ) )
+                var_0.onuseweaponpassives = [];
 
-            if ( !isdefined( var_0._id_C4E6 ) )
-                var_0._id_C4E6 = [];
+            if ( !isdefined( var_0.ondamagerelics ) )
+                var_0.ondamagerelics = [];
 
             var_0 thread zombie_player_connect_black_screen();
             var_0.disabledteleportation = 0;
@@ -393,7 +393,7 @@ onplayerconnect()
             var_0.self_revives_purchased = 0;
             var_0.max_self_revive_machine_use = 3;
             var_0.cash_scalar = 1;
-            var_0._id_DDC2 = 0;
+            var_0.recentkillcount = 0;
             var_0.enabledignoreme = 0;
             var_0.infiniteammocounter = 0;
             var_0 scripts\cp\zombies\zombie_afterlife_arcade::init_soul_power( var_0 );
@@ -415,9 +415,9 @@ onplayerconnect()
             var_0 scripts\cp\zombies\zombie_afterlife_arcade::player_init_afterlife( var_0 );
             var_0 scripts\cp\cp_persistence::lb_player_update_stat( "waveNum", level.wave_num, 1 );
             var_0 scripts\cp\zombies\zombies_consumable_replenishment::player_init( var_0 );
-            var_0 scripts\cp\zombies\coop_wall_buys::_id_FA1D( var_0 );
+            var_0 scripts\cp\zombies\coop_wall_buys::setup_player_weapon_models( var_0 );
             var_0 scripts\cp\cp_persistence::player_persistence_init();
-            var_0 thread scripts\cp\zombies\zombie_analytics::_id_97A4( var_0 );
+            var_0 thread scripts\cp\zombies\zombie_analytics::init_weapon_and_player_analytics( var_0 );
             var_0 thread streamweaponsonzonechange( var_0 );
 
             if ( isdefined( level.custom_onplayerconnect_func ) )
@@ -672,7 +672,7 @@ onspawnplayer()
     self.lastkilltime = gettime();
     self.lastmultikilltime = gettime();
     self setclientomnvar( "zm_ui_player_in_laststand", 0 );
-    _id_98B8();
+    initplayeromnvars();
     thread scripts\cp\perks\perkfunctions::watchcombatspeedscaler();
 
     if ( !scripts\engine\utility::is_true( level.dont_resume_wave_after_solo_afterlife ) )
@@ -705,9 +705,9 @@ onspawnplayer()
     thread scripts\cp\zombies\zombies_weapons::reload_watcher();
 
     if ( getdvar( "ui_mapname" ) == "cp_zmb" )
-        thread _id_9B1A();
+        thread inventory_nag();
 
-    thread _id_172D();
+    thread add_player_to_threatbias_group();
     thread scripts\cp\cp_weapon::watchweaponusage();
     thread scripts\cp\cp_weapon::watchweaponchange();
     thread scripts\cp\cp_weapon::watchweaponfired();
@@ -722,13 +722,13 @@ onspawnplayer()
     scripts\cp\utility::force_usability_enabled();
 }
 
-_id_98B8()
+initplayeromnvars()
 {
     self setclientomnvar( "zombie_arcade_game_time", -1 );
     self setclientomnvar( "zombie_arcade_game_ticket_earned", 0 );
 }
 
-_id_172D()
+add_player_to_threatbias_group()
 {
     for ( var_0 = 0; var_0 < level.players.size; var_0++ )
     {
@@ -945,7 +945,7 @@ zombie_get_player_respawn_loc( var_0 )
         return [[ level.respawn_loc_override_func ]]( var_0 );
 
     var_1 = get_available_players( var_0 );
-    var_2 = _id_784D( var_1 );
+    var_2 = get_available_respawn_locs( var_1 );
 
     if ( var_2.size == 0 )
         return get_respawn_loc_near_team_center( var_0, var_1 );
@@ -974,7 +974,7 @@ get_available_players( var_0 )
     return var_1;
 }
 
-_id_784D( var_0 )
+get_available_respawn_locs( var_0 )
 {
     var_1 = [];
 
@@ -986,10 +986,10 @@ _id_784D( var_0 )
         if ( positionwouldtelefrag( var_3.origin ) )
             continue;
 
-        if ( _id_9CA5( var_3, var_0 ) )
+        if ( is_respawn_loc_near_available_players( var_3, var_0 ) )
             continue;
 
-        if ( _id_9CA4( var_3 ) )
+        if ( is_respawn_loc_near_alive_enemies( var_3 ) )
             continue;
 
         var_1[var_1.size] = var_3;
@@ -998,7 +998,7 @@ _id_784D( var_0 )
     return var_1;
 }
 
-_id_9CA5( var_0, var_1 )
+is_respawn_loc_near_available_players( var_0, var_1 )
 {
     var_2 = 250000;
 
@@ -1011,7 +1011,7 @@ _id_9CA5( var_0, var_1 )
     return 0;
 }
 
-_id_9CA4( var_0 )
+is_respawn_loc_near_alive_enemies( var_0 )
 {
     var_1 = 250000;
     var_2 = scripts\mp\mp_agent::getaliveagentsofteam( "axis" );
@@ -1412,7 +1412,7 @@ _id_13F1F( var_0 )
     var_0 visionsetnakedforplayer( "last_stand_cp_zmb", 1.0 );
 }
 
-_id_9B1A()
+inventory_nag()
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
@@ -1462,13 +1462,13 @@ _id_13F50( var_0 )
         return 1;
 }
 
-_id_12EFE( var_0, var_1 )
+updaterecentkills( var_0, var_1 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
     self notify( "updateRecentKills" );
     self endon( "updateRecentKills" );
-    self._id_DDC2++;
+    self.recentkillcount++;
     var_2 = getweaponbasename( var_1 );
 
     if ( var_1 == "zmb_fireworksprojectile_mp" )
@@ -1484,27 +1484,27 @@ _id_12EFE( var_0, var_1 )
     else
         self.killsperweaponlog[var_2]++;
 
-    if ( !isdefined( self._id_DDC3 ) )
-        self._id_DDC3 = [];
+    if ( !isdefined( self.recentkillsperweapon ) )
+        self.recentkillsperweapon = [];
 
-    if ( !isdefined( self._id_DDC3[var_1] ) )
-        self._id_DDC3[var_1] = 1;
+    if ( !isdefined( self.recentkillsperweapon[var_1] ) )
+        self.recentkillsperweapon[var_1] = 1;
     else
-        self._id_DDC3[var_1]++;
+        self.recentkillsperweapon[var_1]++;
 
     var_3 = scripts\cp\utility::getequipmenttype( var_1 );
 
     if ( isdefined( var_3 ) && var_3 == "lethal" )
     {
-        if ( self._id_DDC3[var_1] > 0 && self._id_DDC3[var_1] % 2 == 0 )
+        if ( self.recentkillsperweapon[var_1] > 0 && self.recentkillsperweapon[var_1] % 2 == 0 )
         {
 
         }
     }
 
     wait 1.25;
-    self._id_DDC2 = 0;
-    self._id_DDC3 = undefined;
+    self.recentkillcount = 0;
+    self.recentkillsperweapon = undefined;
 }
 
 _id_11010()
@@ -1732,7 +1732,7 @@ check_for_movement()
 
 add_to_kick_queue( var_0 )
 {
-    if ( !scripts\engine\utility::exist_in_array_MAYBE( level.kick_player_queue, var_0 ) )
+    if ( !scripts\engine\utility::_id_693B( level.kick_player_queue, var_0 ) )
         level.kick_player_queue = scripts\engine\utility::add_to_array( level.kick_player_queue, var_0 );
 }
 

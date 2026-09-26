@@ -11,7 +11,7 @@ _id_819B( var_0, var_1 )
     scripts\engine\utility::allow_usability( 0 );
     self setscriptablepartstate( "killstreak", "visor_active", 0 );
     scripts\mp\utility::_id_1254();
-    scripts\mp\utility::_id_1C47( 0 );
+    scripts\mp\utility::allow_gesture( 0 );
     var_2 = undefined;
 
     if ( var_0.streakname == "dronedrop" )
@@ -22,8 +22,8 @@ _id_819B( var_0, var_1 )
         var_2 = "deploy_warden_mp";
 
     var_3 = undefined;
-    thread _id_13A47( var_2 );
-    thread _id_13A2F( var_2 );
+    thread watchforinvalidweapon( var_2 );
+    thread watchforammouse( var_2 );
     thread watchforphaseshiftuse( var_2 );
     thread watchforempapply( var_2 );
 
@@ -41,7 +41,7 @@ _id_819B( var_0, var_1 )
 
     for (;;)
     {
-        var_3 = _id_13808( "equip_deploy_succeeded", "equip_deploy_failed", "equip_deploy_end" );
+        var_3 = waittill_succeed_fail_end( "equip_deploy_succeeded", "equip_deploy_failed", "equip_deploy_end" );
 
         if ( var_3.string == "equip_deploy_failed" )
             continue;
@@ -63,11 +63,11 @@ _id_819B( var_0, var_1 )
 
     if ( isdefined( var_3.location ) && isdefined( var_3.angles ) )
     {
-        var_3._id_1349C = spawn( "script_model", var_3.location );
-        var_3._id_1349C setmodel( "ks_marker_mp" );
-        var_3._id_1349C setotherent( self );
-        var_3._id_1349C setscriptablepartstate( "target", "placed", 0 );
-        var_3._id_1349C _meth_85C8( 1 );
+        var_3.visual = spawn( "script_model", var_3.location );
+        var_3.visual setmodel( "ks_marker_mp" );
+        var_3.visual setotherent( self );
+        var_3.visual setscriptablepartstate( "target", "placed", 0 );
+        var_3.visual _meth_85C8( 1 );
     }
 
     if ( scripts\mp\utility::isreallyalive( self ) )
@@ -75,12 +75,12 @@ _id_819B( var_0, var_1 )
 
     self setscriptablepartstate( "killstreak", "neutral", 0 );
     scripts\mp\utility::_id_11DB();
-    scripts\mp\utility::_id_1C47( 1 );
+    scripts\mp\utility::allow_gesture( 1 );
     thread scripts\engine\utility::delaythread( 0.05, scripts\engine\utility::allow_usability, 1 );
     return var_3;
 }
 
-_id_13A47( var_0 )
+watchforinvalidweapon( var_0 )
 {
     self endon( "disconnect" );
     self endon( "killstreak_finished_with_weapon_" + var_0 );
@@ -97,7 +97,7 @@ _id_13A47( var_0 )
     }
 }
 
-_id_13A2F( var_0 )
+watchforammouse( var_0 )
 {
     self endon( "disconnect" );
     self endon( "killstreak_finished_with_weapon_" + var_0 );
@@ -137,20 +137,20 @@ watchforempapply( var_0 )
     self notify( "equip_deploy_end" );
 }
 
-_id_13808( var_0, var_1, var_2 )
+waittill_succeed_fail_end( var_0, var_1, var_2 )
 {
     var_3 = spawnstruct();
 
     if ( isdefined( var_0 ) )
-        childthread _id_137F9( var_0, var_3 );
+        childthread waittill_return( var_0, var_3 );
 
     if ( isdefined( var_1 ) )
-        childthread _id_137F9( var_1, var_3 );
+        childthread waittill_return( var_1, var_3 );
 
     if ( isdefined( var_2 ) )
-        childthread _id_137F9( var_2, var_3 );
+        childthread waittill_return( var_2, var_3 );
 
-    childthread _id_137F9( "death", var_3 );
+    childthread waittill_return( "death", var_3 );
     var_3 waittill( "returned", var_4, var_5, var_6, var_7 );
     var_3 notify( "die" );
     var_8 = spawnstruct();
@@ -161,7 +161,7 @@ _id_13808( var_0, var_1, var_2 )
     return var_8;
 }
 
-_id_137F9( var_0, var_1 )
+waittill_return( var_0, var_1 )
 {
     if ( var_0 != "death" )
         self endon( "death" );

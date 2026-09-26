@@ -87,10 +87,10 @@ _id_CC08( var_0, var_1 )
     level thread _id_A86F( var_0, var_2, var_1 );
     var_1 notify( "window_trap_placed" );
 
-    if ( !isdefined( var_1._id_1193D["crafted_windowtrap"] ) )
-        var_1._id_1193D["crafted_windowtrap"] = gettime();
+    if ( !isdefined( var_1.timewithitem["crafted_windowtrap"] ) )
+        var_1.timewithitem["crafted_windowtrap"] = gettime();
     else
-        var_1._id_1193D["crafted_windowtrap"] = var_1._id_1193D["crafted_windowtrap"] + ( gettime() - var_1._id_1193D["crafted_windowtrap"] );
+        var_1.timewithitem["crafted_windowtrap"] = var_1.timewithitem["crafted_windowtrap"] + ( gettime() - var_1.timewithitem["crafted_windowtrap"] );
 
     var_1.itemtype = "crafted_windowtrap";
     var_1.killswithitem["crafted_windowtrap"] = 0;

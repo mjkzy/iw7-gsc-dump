@@ -174,7 +174,7 @@ _id_13B34( var_0, var_1, var_2, var_3, var_4, var_5 )
 
     for ( var_17 = 0; var_17 < var_16; var_17++ )
     {
-        var_18 = _id_80B9( var_7, var_0 );
+        var_18 = getrandomdirection( var_7, var_0 );
         var_19 = undefined;
 
         if ( isdefined( var_14 ) && var_14.size > 0 )
@@ -189,7 +189,7 @@ _id_13B34( var_0, var_1, var_2, var_3, var_4, var_5 )
     }
 }
 
-_id_80B9( var_0, var_1 )
+getrandomdirection( var_0, var_1 )
 {
     var_2 = anglestoup( var_1 );
     var_3 = anglestoright( var_1 );
@@ -212,7 +212,7 @@ _id_6D81( var_0, var_1, var_2, var_3, var_4 )
         var_5 = var_3;
 
     var_6 = scripts\mp\utility::_magicbullet( "iw6_semtexshards_mp", var_0, var_5, self );
-    var_6._id_1653 = var_4;
+    var_6.activeid = var_4;
 
     if ( isdefined( var_2 ) )
         var_6 setentityowner( var_2 );

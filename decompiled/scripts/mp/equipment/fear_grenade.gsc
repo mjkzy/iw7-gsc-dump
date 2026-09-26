@@ -76,7 +76,7 @@ _id_13A3E( var_0, var_1 )
         if ( !scripts\mp\equipment\phase_shift::areentitiesinphase( var_0, var_2 ) )
             continue;
 
-        var_3 = _id_370F( var_0.owner, var_2 );
+        var_3 = calculatedroplocationnearlocation( var_0.owner, var_2 );
 
         if ( var_3._id_13378 > 0.0 )
             var_2 thread _id_127C3( var_3._id_13378, var_0.owner, var_1 );
@@ -86,7 +86,7 @@ _id_13A3E( var_0, var_1 )
     }
 }
 
-_id_370F( var_0, var_1 )
+calculatedroplocationnearlocation( var_0, var_1 )
 {
     var_2 = spawnstruct();
     var_2.attackerendzone = 0.0;
@@ -135,12 +135,12 @@ _id_2A67( var_0, var_1, var_2 )
 
     for (;;)
     {
-        var_4 = ( self._id_6BB9._id_6393 - gettime() ) / 1000.0;
+        var_4 = ( self._id_6BB9.endtime - gettime() ) / 1000.0;
         var_5 = scripts\engine\utility::waittill_any_timeout( var_4, "fear_update_duration" );
 
         if ( var_5 == "timeout" )
         {
-            _id_6319();
+            endfaceenemyaimtracking();
             break;
         }
         else
@@ -163,7 +163,7 @@ _id_E84C()
     childthread _id_E854();
 }
 
-_id_6319()
+endfaceenemyaimtracking()
 {
     self notify( "stop_fear_effects" );
     scripts\engine\utility::waitframe();
@@ -182,20 +182,20 @@ watchfordeath()
 {
     self endon( "finished_stop_fear_effects" );
     self waittill( "death" );
-    _id_6319();
+    endfaceenemyaimtracking();
 }
 
 _id_F703( var_0 )
 {
     var_1 = gettime() + int( var_0 * 1000 );
 
-    if ( isdefined( self._id_6BB9._id_6393 ) )
+    if ( isdefined( self._id_6BB9.endtime ) )
     {
-        if ( self._id_6BB9._id_6393 > var_1 )
+        if ( self._id_6BB9.endtime > var_1 )
             return;
     }
 
-    self._id_6BB9._id_6393 = var_1;
+    self._id_6BB9.endtime = var_1;
     self notify( "fear_update_duration" );
 }
 

@@ -162,7 +162,7 @@ _id_56E7()
 
         foreach ( var_2 in level.players )
         {
-            if ( var_2.team != self.team && distance2d( self.origin, var_2.origin ) < 512 && istargetingoff( var_2 ) && scripts\common\trace::ray_trace_passed( self geteye(), var_2 geteye(), undefined, scripts\common\trace::create_contents( 0, 1, 1, 1, 0, 1, 0 ) ) )
+            if ( var_2.team != self.team && distance2d( self.origin, var_2.origin ) < 512 && _id_9F98( var_2 ) && scripts\common\trace::ray_trace_passed( self geteye(), var_2 geteye(), undefined, scripts\common\trace::create_contents( 0, 1, 1, 1, 0, 1, 0 ) ) )
             {
                 if ( scripts\mp\equipment\phase_shift::isentityphaseshifted( var_2 ) )
                 {
@@ -172,7 +172,7 @@ _id_56E7()
 
                 var_3 = anglestoright( self getplayerangles() );
                 var_4 = rotatepointaroundvector( var_3, var_0, 20 );
-                var_2 _meth_84DC( var_4, 512 );
+                var_2 knockback( var_4, 512 );
                 var_2 shellshock( "concussion_grenade_mp", 2.5, 0, 1 );
                 var_2 notify( "flashbang", var_2.origin, 1.0, 30, self, 1 );
                 playfx( scripts\engine\utility::getfx( "disruptor_impact" ), var_2.origin + ( 0, 0, 36 ) );
@@ -181,7 +181,7 @@ _id_56E7()
     }
 }
 
-istargetingoff( var_0 )
+_id_9F98( var_0 )
 {
     var_1 = self getplayerangles();
     var_2 = anglestoforward( var_1 );

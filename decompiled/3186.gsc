@@ -92,7 +92,7 @@ _id_CF1B( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     self endon( "death" );
     self endon( "terminate_ai_threads" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     _id_5815( var_1, var_4 );
     _id_41A7();
 }
@@ -103,7 +103,7 @@ _id_5815( var_0, var_1 )
     self endon( "death" );
     self endon( "terminate_ai_threads" );
     self scragentsetanimscale( 1, 1 );
-    scripts\anim\notetracks_mp::_id_CED3( var_0, var_1, self._id_C081, "end" );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_0, var_1, self._id_C081, "end" );
 }
 
 _id_9EA5()

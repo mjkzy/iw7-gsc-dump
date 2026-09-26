@@ -6,17 +6,17 @@ main()
 
 }
 
-_id_10DC6()
+startmonitoringflash()
 {
-    thread _id_B9D9();
+    thread monitorflash();
 }
 
-_id_1107E( var_0 )
+stopmonitoringflash( var_0 )
 {
     self notify( "stop_monitoring_flash" );
 }
 
-_id_6EDC( var_0 )
+flashrumbleloop( var_0 )
 {
     self endon( "stop_monitoring_flash" );
     self endon( "flash_rumble_loop" );
@@ -30,7 +30,7 @@ _id_6EDC( var_0 )
     }
 }
 
-_id_B9D9()
+monitorflash()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -104,7 +104,7 @@ _id_B9D9()
 
         if ( var_8 && isdefined( self ) )
         {
-            thread _id_20CA( var_9, var_10 );
+            thread applyflash( var_9, var_10 );
 
             if ( isdefined( var_4 ) && var_4 != self )
             {
@@ -117,23 +117,23 @@ _id_B9D9()
         }
 
         if ( var_7 && isdefined( var_4 ) )
-            var_4 thread _id_20CA( var_9, var_10 );
+            var_4 thread applyflash( var_9, var_10 );
     }
 }
 
-_id_20CA( var_0, var_1 )
+applyflash( var_0, var_1 )
 {
     self endon( "disconnect" );
 
-    if ( !isdefined( self._id_6EC8 ) || var_0 > self._id_6EC8 )
-        self._id_6EC8 = var_0;
+    if ( !isdefined( self.flashduration ) || var_0 > self.flashduration )
+        self.flashduration = var_0;
 
-    if ( !isdefined( self._id_6EDB ) || var_1 > self._id_6EDB )
-        self._id_6EDB = var_1;
+    if ( !isdefined( self.flashrumbleduration ) || var_1 > self.flashrumbleduration )
+        self.flashrumbleduration = var_1;
 
     wait 0.05;
-    self._id_6EC8 = undefined;
-    self._id_6EDB = undefined;
+    self.flashduration = undefined;
+    self.flashrumbleduration = undefined;
 }
 
 isflashbanged()

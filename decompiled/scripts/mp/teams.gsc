@@ -5,22 +5,22 @@ init()
 {
     level.teambalance = getdvarint( "scr_teambalance" );
     level.maxclients = getmaxclients();
-    _id_F7F6();
-    level._id_7371 = [];
+    setplayermodels();
+    level.freeplayers = [];
 
     if ( level.teambased )
     {
         level thread onplayerconnect();
-        level thread _id_12F37();
+        level thread updateteambalance();
         wait 0.15;
-        level thread _id_12EF3();
+        level thread updateplayertimes();
         level thread finalizeplayertimes();
     }
     else
     {
-        level thread _id_C532();
+        level thread onfreeplayerconnect();
         wait 0.15;
-        level thread _id_12E95();
+        level thread updatefreeplayertimes();
     }
 
     if ( scripts\mp\utility::matchmakinggame() )
@@ -32,23 +32,23 @@ onplayerconnect()
     for (;;)
     {
         level waittill( "connected", var_0 );
-        var_0 thread _id_C541();
-        var_0 thread _id_C540();
+        var_0 thread onjoinedteam();
+        var_0 thread onjoinedspectators();
         var_0 thread onplayerspawned();
-        var_0 thread _id_11B01();
+        var_0 thread trackplayedtime();
     }
 }
 
-_id_C532()
+onfreeplayerconnect()
 {
     for (;;)
     {
         level waittill( "connected", var_0 );
-        var_0 thread _id_11B01();
+        var_0 thread trackplayedtime();
     }
 }
 
-_id_C541()
+onjoinedteam()
 {
     self endon( "disconnect" );
 
@@ -59,7 +59,7 @@ _id_C541()
     }
 }
 
-_id_C540()
+onjoinedspectators()
 {
     self endon( "disconnect" );
 
@@ -70,7 +70,7 @@ _id_C540()
     }
 }
 
-_id_11B01()
+trackplayedtime()
 {
     self endon( "disconnect" );
     self.timeplayed["allies"] = 0;
@@ -134,7 +134,7 @@ _id_11B01()
     }
 }
 
-_id_12EF3()
+updateplayertimes()
 {
     level endon( "game_ended" );
 
@@ -143,7 +143,7 @@ _id_12EF3()
         scripts\mp\hostmigration::waittillhostmigrationdone();
 
         foreach ( var_1 in level.players )
-            var_1 _id_12EEE();
+            var_1 updateplayedtime();
 
         wait 10.0;
     }
@@ -156,13 +156,13 @@ finalizeplayertimes()
 
     foreach ( var_1 in level.players )
     {
-        var_1 _id_12EEE();
+        var_1 updateplayedtime();
         var_1 scripts\mp\persistence::writebufferedstats();
-        var_1 scripts\mp\persistence::_id_12F5E();
+        var_1 scripts\mp\persistence::updateweaponbufferedstats();
     }
 }
 
-_id_12EEE()
+updateplayedtime()
 {
     if ( isai( self ) )
         return;
@@ -269,9 +269,9 @@ updateteambalancedvar()
     }
 }
 
-_id_12F37()
+updateteambalance()
 {
-    level._id_115D7 = level.maxclients / 2;
+    level.teamlimit = level.maxclients / 2;
     level thread updateteambalancedvar();
     wait 0.15;
 
@@ -287,7 +287,7 @@ _id_12F37()
             level balanceteams();
             game["BalanceTeamsNextRound"] = undefined;
         }
-        else if ( !_id_81A2() )
+        else if ( !getteambalance() )
             game["BalanceTeamsNextRound"] = 1;
     }
     else
@@ -298,12 +298,12 @@ _id_12F37()
         {
             if ( level.teambalance )
             {
-                if ( !_id_81A2() )
+                if ( !getteambalance() )
                 {
                     scripts\mp\hud_message::showerrormessagetoallplayers( "MP_AUTOBALANCE_SECONDS", 15 );
                     wait 15.0;
 
-                    if ( !_id_81A2() )
+                    if ( !getteambalance() )
                         level balanceteams();
                 }
 
@@ -315,7 +315,7 @@ _id_12F37()
     }
 }
 
-_id_81A2()
+getteambalance()
 {
     level.team["allies"] = 0;
     level.team["axis"] = 0;
@@ -423,12 +423,12 @@ balanceteams()
     }
 }
 
-_id_F7F6()
+setplayermodels()
 {
-    _id_F6B8();
+    setdefaultcharacterdata();
 }
 
-_id_D3D8( var_0, var_1 )
+playermodelforweapon( var_0, var_1 )
 {
 
 }
@@ -455,34 +455,34 @@ countplayers()
     return var_0;
 }
 
-_id_F6B8()
+setdefaultcharacterdata()
 {
-    if ( !isdefined( level._id_503D ) )
+    if ( !isdefined( level.defaultheadmodels ) )
     {
-        level._id_503D = [];
-        level._id_503D["allies"] = "mp_warfighter_head_1_3";
-        level._id_503D["axis"] = "mp_warfighter_head_1_3";
+        level.defaultheadmodels = [];
+        level.defaultheadmodels["allies"] = "mp_warfighter_head_1_3";
+        level.defaultheadmodels["axis"] = "mp_warfighter_head_1_3";
     }
 
-    if ( !isdefined( level._id_5033 ) )
+    if ( !isdefined( level.defaultbodymodels ) )
     {
-        level._id_5033 = [];
-        level._id_5033["allies"] = "mp_warfighter_body_1_3";
-        level._id_5033["axis"] = "mp_warfighter_body_1_3";
+        level.defaultbodymodels = [];
+        level.defaultbodymodels["allies"] = "mp_warfighter_body_1_3";
+        level.defaultbodymodels["axis"] = "mp_warfighter_body_1_3";
     }
 
-    if ( !isdefined( level._id_5050 ) )
+    if ( !isdefined( level.defaultviewarmmodels ) )
     {
-        level._id_5050 = [];
-        level._id_5050["allies"] = "viewhands_us_rangers_urban";
-        level._id_5050["axis"] = "viewhands_us_rangers_woodland";
+        level.defaultviewarmmodels = [];
+        level.defaultviewarmmodels["allies"] = "viewhands_us_rangers_urban";
+        level.defaultviewarmmodels["axis"] = "viewhands_us_rangers_woodland";
     }
 
-    if ( !isdefined( level.dropscavengerfordeath ) )
+    if ( !isdefined( level.defaultvoices ) )
     {
-        level.dropscavengerfordeath = [];
-        level.dropscavengerfordeath["allies"] = "delta";
-        level.dropscavengerfordeath["axis"] = "delta";
+        level.defaultvoices = [];
+        level.defaultvoices["allies"] = "delta";
+        level.defaultvoices["axis"] = "delta";
     }
 }
 
@@ -497,7 +497,7 @@ setcharactermodels( var_0, var_1, var_2 )
     self.headmodel = var_1;
 }
 
-_id_72A5( var_0 )
+forcecustomization( var_0 )
 {
     var_1 = undefined;
     var_2 = undefined;
@@ -573,11 +573,11 @@ setmodelfromcustomization()
     setcharactermodels( var_1, var_2, var_3 );
 }
 
-_id_F6BE()
+setdefaultmodel()
 {
-    var_0 = level._id_5033[self.team];
-    var_1 = level._id_503D[self.team];
-    var_2 = level._id_5050[self.team];
+    var_0 = level.defaultbodymodels[self.team];
+    var_1 = level.defaultheadmodels[self.team];
+    var_2 = level.defaultviewarmmodels[self.team];
     setcharactermodels( var_0, var_1, var_2 );
 }
 
@@ -597,7 +597,7 @@ getplayerheadmodel()
         return self getrankedplayerdata( "privateloadouts", "squadMembers", "head" );
 }
 
-_id_8070( var_0 )
+getplayerfoleytype( var_0 )
 {
     return tablelookup( "mp/cac/bodies.csv", 0, var_0, 5 );
 }
@@ -607,7 +607,7 @@ getplayermodelname( var_0 )
     return tablelookup( "mp/cac/bodies.csv", 0, var_0, 1 );
 }
 
-_id_FADC()
+setupplayermodel()
 {
     if ( isai( self ) || level.gametype == "infect" && self.team == "allies" && isdefined( self.infected_archtype ) && self.infected_archtype == "archetype_scout" )
         var_0 = scripts\mp\archetypes\archcommon::getrigindexfromarchetyperef( self.loadoutarchetype ) + 1;
@@ -622,25 +622,25 @@ _id_FADC()
     if ( isplayer( self ) && var_0 == 0 )
         setmodelfromcustomization();
     else
-        _id_72A5( var_0 );
+        forcecustomization( var_0 );
 
     if ( !isai( self ) )
     {
         var_1 = getplayermodelindex();
         self.bodyindex = var_1;
-        var_2 = _id_8070( var_1 );
+        var_2 = getplayerfoleytype( var_1 );
     }
     else
-        self _meth_82C6( "vestLight" );
+        self setclothtype( "vestLight" );
 
-    self.voice = level.dropscavengerfordeath[self.team];
+    self.voice = level.defaultvoices[self.team];
 
     if ( scripts\mp\utility::isanymlgmatch() && !isai( self ) )
     {
         var_3 = getplayermodelname( getplayermodelindex() );
 
         if ( issubstr( var_3, "fullbody_sniper" ) )
-            thread _id_72B2();
+            thread forcedefaultmodel();
     }
 
     if ( scripts\mp\utility::isjuggernaut() )
@@ -654,7 +654,7 @@ _id_FADC()
     }
 }
 
-_id_72B2()
+forcedefaultmodel()
 {
     if ( self.team == "axis" )
     {
@@ -675,10 +675,10 @@ _id_72B2()
 
     self attach( "head_mp_infected", "", 1 );
     self.headmodel = "head_mp_infected";
-    self _meth_82C6( "cloth" );
+    self setclothtype( "cloth" );
 }
 
-_id_12E95()
+updatefreeplayertimes()
 {
     if ( !level.rankedmatch )
         return;
@@ -693,13 +693,13 @@ _id_12E95()
             var_0 = 0;
 
         if ( isdefined( level.players[var_0] ) )
-            level.players[var_0] _id_12E94();
+            level.players[var_0] updatefreeplayedtime();
 
         wait 1.0;
     }
 }
 
-_id_12E94()
+updatefreeplayedtime()
 {
     if ( isai( self ) )
         return;
@@ -863,7 +863,7 @@ getjointeampermissions( var_0 )
         }
     }
 
-    if ( var_1 < level._id_115D7 )
+    if ( var_1 < level.teamlimit )
         return 1;
     else if ( var_2 > 0 )
         return 1;
@@ -893,22 +893,22 @@ onplayerspawned()
         self waittill( "spawned_player" );
 }
 
-_id_BD73( var_0 )
+mt_getteamname( var_0 )
 {
     return tablelookupistring( "mp/MTTable.csv", 0, var_0, 1 );
 }
 
-_id_BD72( var_0 )
+mt_getteamicon( var_0 )
 {
     return tablelookup( "mp/MTTable.csv", 0, var_0, 2 );
 }
 
-_id_BD71( var_0 )
+mt_getteamheadicon( var_0 )
 {
     return tablelookup( "mp/MTTable.csv", 0, var_0, 3 );
 }
 
-_id_81B5( var_0 )
+getteamname( var_0 )
 {
     return tablelookupistring( "mp/factionTable.csv", 0, game[var_0], 1 );
 }
@@ -918,7 +918,7 @@ _id_81B7( var_0 )
     return tablelookupistring( "mp/factionTable.csv", 0, game[var_0], 2 );
 }
 
-_id_81AF( var_0 )
+getteamforfeitedstring( var_0 )
 {
     return tablelookupistring( "mp/factionTable.csv", 0, game[var_0], 4 );
 }
@@ -928,17 +928,17 @@ _id_81A8( var_0 )
     return tablelookupistring( "mp/factionTable.csv", 0, game[var_0], 3 );
 }
 
-_id_81B2( var_0 )
+getteamicon( var_0 )
 {
     return tablelookup( "mp/factionTable.csv", 0, game[var_0], 5 );
 }
 
-_id_81B1( var_0 )
+getteamhudicon( var_0 )
 {
     return tablelookup( "mp/factionTable.csv", 0, game[var_0], 6 );
 }
 
-_id_81B0( var_0 )
+getteamheadicon( var_0 )
 {
     return tablelookup( "mp/factionTable.csv", 0, game[var_0], 17 );
 }
@@ -963,7 +963,7 @@ _id_81AE( var_0 )
     return tablelookup( "mp/factionTable.csv", 0, game[var_0], 10 );
 }
 
-_id_81AA( var_0 )
+getteamflagcarrymodel( var_0 )
 {
     return tablelookup( "mp/factionTable.csv", 0, game[var_0], 11 );
 }
@@ -978,9 +978,9 @@ _id_81AC( var_0 )
     return tablelookup( "mp/factionTable.csv", 0, game[var_0], 13 );
 }
 
-_id_81A4( var_0 )
+getteamcolor( var_0 )
 {
-    return ( scripts\mp\utility::_id_1114F( tablelookup( "mp/factionTable.csv", 0, game[var_0], 14 ) ), scripts\mp\utility::_id_1114F( tablelookup( "mp/factionTable.csv", 0, game[var_0], 15 ) ), scripts\mp\utility::_id_1114F( tablelookup( "mp/factionTable.csv", 0, game[var_0], 16 ) ) );
+    return ( scripts\mp\utility::stringtofloat( tablelookup( "mp/factionTable.csv", 0, game[var_0], 14 ) ), scripts\mp\utility::stringtofloat( tablelookup( "mp/factionTable.csv", 0, game[var_0], 15 ) ), scripts\mp\utility::stringtofloat( tablelookup( "mp/factionTable.csv", 0, game[var_0], 16 ) ) );
 }
 
 _id_81A5( var_0 )

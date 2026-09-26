@@ -4,7 +4,7 @@
 init()
 {
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "aa_launcher", ::_id_6D69, undefined, ::_id_5FBC, undefined, ::_id_11378 );
-    scripts\mp\laserguidedlauncher::_id_AC0B( "vfx/core/mp/killstreaks/vfx_maaws_split", "vfx/core/mp/killstreaks/vfx_maaws_homing" );
+    scripts\mp\laserguidedlauncher::lgm_init( "vfx/core/mp/killstreaks/vfx_maaws_split", "vfx/core/mp/killstreaks/vfx_maaws_homing" );
 }
 
 getaalaunchername()
@@ -46,7 +46,7 @@ monitorweaponswitch( var_0 )
     self endon( "death" );
     self endon( "disconnect" );
     self waittill( "weapon_change", var_1 );
-    thread scripts\mp\laserguidedlauncher::_id_AC08( getaalaunchername(), getaalauncherchildname(), getaalauncherhomingname() );
+    thread scripts\mp\laserguidedlauncher::lgm_firing_monitormissilefire( getaalaunchername(), getaalauncherchildname(), getaalauncherhomingname() );
     self waittill( "weapon_change" );
-    scripts\mp\laserguidedlauncher::_id_AC07();
+    scripts\mp\laserguidedlauncher::lgm_firing_endmissilefire();
 }

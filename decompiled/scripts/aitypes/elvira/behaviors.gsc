@@ -115,7 +115,7 @@ checkforearlyteleport( var_0 )
     if ( scripts\asm\asm::asm_isinstate( "traverse_external" ) )
         return 0;
 
-    var_3 = self _meth_84F9( var_2 );
+    var_3 = self getnearbynegotiationinfo( var_2 );
 
     if ( !isdefined( var_3 ) )
         return 0;
@@ -179,22 +179,22 @@ decidemovetype( var_0, var_1 )
     var_3 = scripts\mp\agents\elvira\elvira_tunedata::gettunedata();
 
     if ( self.last_enemy_sight_time < 0 || var_2 - self.last_enemy_sight_time < var_3.maxtimetostrafewithoutlos )
-        scripts\asm\asm_bb::bb_requestcombatmovetype_strafe();
+        _id_0C33::bb_requestcombatmovetype_strafe();
     else
     {
         if ( var_1 < var_3.strafeifwithindist )
         {
-            scripts\asm\asm_bb::bb_requestcombatmovetype_strafe();
+            _id_0C33::bb_requestcombatmovetype_strafe();
             return;
         }
 
         if ( !var_0 )
         {
-            scripts\asm\asm_bb::bb_requestcombatmovetype_facemotion();
+            _id_0C33::bb_requestcombatmovetype_facemotion();
             return;
         }
 
-        scripts\asm\asm_bb::bb_requestcombatmovetype_strafe();
+        _id_0C33::bb_requestcombatmovetype_strafe();
     }
 }
 
@@ -606,7 +606,7 @@ doreloadstate( var_0, var_1 )
 
 acquire_begin( var_0, var_1 )
 {
-    scripts\asm\asm_bb::bb_requestcombatmovetype_facemotion();
+    _id_0C33::bb_requestcombatmovetype_facemotion();
     stopshootingattarget();
 }
 
@@ -714,7 +714,7 @@ backpedal_tick( var_0 )
     }
 
     self scragentsetgoalpos( var_1.backpedalspot );
-    scripts\asm\asm_bb::bb_requestcombatmovetype_strafe();
+    _id_0C33::bb_requestcombatmovetype_strafe();
     return 1;
 }
 

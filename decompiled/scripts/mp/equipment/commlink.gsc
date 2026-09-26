@@ -89,7 +89,7 @@ _id_2652()
                 var_6._id_12AF1.origin = var_6.origin;
                 var_6._id_12AF2.origin = var_6.origin;
                 var_6._id_12AF2.alpha = 0.95;
-                var_6._id_12AF2 thread _id_6AB8( var_1, var_3 );
+                var_6._id_12AF2 thread fadeout( var_1, var_3 );
             }
             else
             {
@@ -100,7 +100,7 @@ _id_2652()
                 var_6._id_12AF2 = var_7 scripts\mp\entityheadicons::setheadicon( self, "headicon_enemy", ( 0, 0, 48 ), 2, 2, 1, 0.01, 0, 1, 1, 0 );
                 var_6._id_12AF2 setwaypointedgestyle_rotatingicon();
                 var_6._id_12AF2.alpha = 0.95;
-                var_6._id_12AF2 thread _id_6AB8( var_1, var_3 );
+                var_6._id_12AF2 thread fadeout( var_1, var_3 );
             }
 
             wait( var_2 );
@@ -131,7 +131,7 @@ _id_B37E()
         self._id_12AF1.origin = self.origin;
         self._id_12AF2.origin = self.origin;
         self._id_12AF2.alpha = 0.95;
-        self._id_12AF2 thread _id_6AB8( var_1, var_2 );
+        self._id_12AF2 thread fadeout( var_1, var_2 );
     }
     else
     {
@@ -141,7 +141,7 @@ _id_B37E()
         self._id_12AF1 = var_3;
         self._id_12AF2 = var_3 scripts\mp\entityheadicons::setheadicon( scripts\mp\utility::getotherteam( self.team ), "headicon_enemy", ( 0, 0, 48 ), 14, 14, 1, 0.01, 0, 1, 1, 0 );
         self._id_12AF2.alpha = 0.95;
-        self._id_12AF2 thread _id_6AB8( var_1, var_2 );
+        self._id_12AF2 thread fadeout( var_1, var_2 );
         self._id_12AF2 setwaypointedgestyle_rotatingicon();
     }
 
@@ -151,7 +151,7 @@ _id_B37E()
         self._id_2A3B delete();
 }
 
-_id_6AB8( var_0, var_1 )
+fadeout( var_0, var_1 )
 {
     self notify( "fadeOut" );
     self endon( "fadeOut" );

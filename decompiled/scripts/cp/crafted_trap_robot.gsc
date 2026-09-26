@@ -14,9 +14,9 @@ init()
     var_0.cannotplacestring = &"COOP_CRAFTABLES_CANNOT_PLACE";
     var_0.placecancelablestring = &"COOP_CRAFTABLES_PLACE_CANCELABLE";
     var_0.lifespan = 120.0;
-    var_0._id_DDAC = 2;
-    var_0._id_C228 = 12;
-    var_0._id_6A03 = "cp_disco_rocket_ammo_tag";
+    var_0.rearmtime = 2;
+    var_0.numexplosives = 12;
+    var_0.explosivemodel = "cp_disco_rocket_ammo_tag";
     var_0.placementheighttolerance = 30.0;
     var_0.placementradius = 16.0;
     var_0.carriedtrapoffset = ( 0, 0, 15 );
@@ -153,7 +153,7 @@ create_robot_trap( var_0, var_1 )
     var_3 = var_0.robot_trap_type;
     var_4 = spawn( "script_model", var_0.origin + ( 0, 0, 2 ) );
     var_4 setmodel( level.robot_trap_settings[var_3].modelbase );
-    var_4._id_EB9C = 3;
+    var_4.scale = 3;
     var_4.angles = ( 0, var_0.carried_robot_trap.angles[1], 0 );
     var_4.robot_trap_type = var_3;
     var_4.owner = var_2;
@@ -162,8 +162,8 @@ create_robot_trap( var_0, var_1 )
     var_4.name = "crafted_ims";
     var_4.shouldsplash = 0;
     var_4.hidden = 0;
-    var_4._id_252E = 1;
-    var_4._id_8BF0 = [];
+    var_4.attacks = 1;
+    var_4.hasexplosivefired = [];
     var_4.config = level.robot_trap_settings[var_3];
     var_4 thread robot_trap_handleuse();
 
@@ -175,13 +175,13 @@ create_robot_trap( var_0, var_1 )
     return var_4;
 }
 
-_id_936D( var_0 )
+ims_moving_platform_death( var_0 )
 {
-    self._id_933C = 1;
+    self.immediatedeath = 1;
     self notify( "death" );
 }
 
-_id_9367( var_0 )
+ims_handledeath( var_0 )
 {
     self endon( "carried" );
     self waittill( "death" );
@@ -198,11 +198,11 @@ _id_9367( var_0 )
         wait 1.0;
     }
 
-    _id_66A7();
+    equipmentdeletefx();
     self delete();
 }
 
-_id_66A7()
+equipmentdeletefx()
 {
     self setscriptablepartstate( "main", "anim_death" );
     wait 3.0;
@@ -264,7 +264,7 @@ robot_trap_setplaced( var_0 )
     self.firstplacement = undefined;
     var_1 = create_robot_trap( self, var_0 );
     var_1.isplaced = 1;
-    var_1 thread _id_9367( self.owner );
+    var_1 thread ims_handledeath( self.owner );
     self playsound( "trap_boom_box_drop" );
     self notify( "placed" );
     var_1 thread robot_trap_setactive();
@@ -274,7 +274,7 @@ robot_trap_setplaced( var_0 )
         var_2.linkparent = self.moving_platform;
 
     var_2.endonstring = "carried";
-    var_2.deathoverridecallback = ::_id_936D;
+    var_2.deathoverridecallback = ::ims_moving_platform_death;
     var_1 thread scripts\cp\cp_movers::handle_moving_platforms( var_2 );
     self.carried_robot_trap delete();
     self delete();
@@ -292,7 +292,7 @@ robot_trap_setcancelled( var_0 )
     }
 
     if ( isdefined( var_0 ) && var_0 )
-        _id_66A7();
+        equipmentdeletefx();
 
     self.carried_robot_trap delete();
     self delete();
@@ -307,8 +307,8 @@ robot_trap_setcarried( var_0 )
     var_0.iscarrying = 1;
     var_0 thread scripts\cp\utility::update_trap_placement_internal( self, self.carried_robot_trap, level.robot_trap_settings["crafted_ims"] );
     thread scripts\cp\utility::item_oncarrierdeath( var_0 );
-    thread _id_936F( var_0 );
-    thread _id_9371( var_0 );
+    thread ims_oncarrierdisconnect( var_0 );
+    thread ims_ongameended( var_0 );
 
     if ( isdefined( level._id_5CF2 ) )
         self thread [[ level._id_5CF2 ]]( var_0 );
@@ -316,7 +316,7 @@ robot_trap_setcarried( var_0 )
     self notify( "carried" );
 }
 
-_id_936F( var_0 )
+ims_oncarrierdisconnect( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -325,7 +325,7 @@ _id_936F( var_0 )
     robot_trap_setcancelled();
 }
 
-_id_9371( var_0 )
+ims_ongameended( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -345,22 +345,22 @@ robot_trap_setactive()
     self setusefov( 120 );
     self setuserange( 96 );
     wait 0.05;
-    self._id_2514 = self gettagorigin( "tag_rocket_tube_01" ) + ( 0, 0, 72 );
-    self.alt_attackheightpos = self._id_2514;
-    var_1 = bullettrace( self._id_2514, self._id_2514 + ( 0, 0, 500 ), 0, self );
+    self.attackheightpos = self gettagorigin( "tag_rocket_tube_01" ) + ( 0, 0, 72 );
+    self.alt_attackheightpos = self.attackheightpos;
+    var_1 = bullettrace( self.attackheightpos, self.attackheightpos + ( 0, 0, 500 ), 0, self );
     var_2 = var_1["position"] - ( 0, 0, 20 ) - self.origin;
 
     if ( var_2[2] > 250 )
-        self._id_2514 = self gettagorigin( "tag_rocket_tube_01" ) + ( 0, 0, 250 );
+        self.attackheightpos = self gettagorigin( "tag_rocket_tube_01" ) + ( 0, 0, 250 );
 
     self.attacklaunchpos = [];
     self.attacklaunchpos[0] = self gettagorigin( "tag_rocket_tube_01" ) + ( 0, 0, -10 );
     self.attacklaunchpos[1] = self gettagorigin( "tag_rocket_tube_02" ) + ( 0, 0, -10 );
     var_3 = spawn( "trigger_radius", self.origin, 0, 300, 100 );
-    self._id_2536 = var_3;
-    self._id_2536 enablelinkto();
-    self._id_2536 linkto( self );
-    self._id_2528 = 0.72;
+    self.attacktrigger = var_3;
+    self.attacktrigger enablelinkto();
+    self.attacktrigger linkto( self );
+    self.attackmovetime = 0.72;
     wait 0.75;
     self setscriptablepartstate( "main", "anim_idle" );
     self setscriptablepartstate( "head_coils", "on" );
@@ -391,13 +391,13 @@ robot_trap_setinactive()
     self makeunusable();
     self stoploopsound();
 
-    if ( isdefined( self._id_2536 ) )
-        self._id_2536 delete();
+    if ( isdefined( self.attacktrigger ) )
+        self.attacktrigger delete();
 
-    if ( isdefined( self._id_69F6 ) )
+    if ( isdefined( self.explosive1 ) )
     {
-        self._id_69F6 delete();
-        self._id_69F6 = undefined;
+        self.explosive1 delete();
+        self.explosive1 = undefined;
     }
 
     scripts\cp\utility::removefromtraplist();
@@ -446,10 +446,10 @@ robot_trap_attackzombies()
 
     for (;;)
     {
-        if ( !isdefined( self._id_2536 ) )
+        if ( !isdefined( self.attacktrigger ) )
             break;
 
-        self._id_2536 waittill( "trigger", var_0 );
+        self.attacktrigger waittill( "trigger", var_0 );
 
         if ( isplayer( var_0 ) )
             continue;
@@ -478,7 +478,7 @@ robot_trap_attackzombies()
         var_1 = var_0.origin + ( 0, 0, 50 );
         var_2 = 0;
 
-        if ( !sighttracepassed( self._id_2514, var_1, 0, self ) )
+        if ( !sighttracepassed( self.attackheightpos, var_1, 0, self ) )
         {
             if ( !sighttracepassed( self.alt_attackheightpos, var_1, 0, self ) )
                 continue;
@@ -486,26 +486,26 @@ robot_trap_attackzombies()
             var_2 = 1;
         }
 
-        if ( !isdefined( self._id_2536 ) )
+        if ( !isdefined( self.attacktrigger ) )
             break;
 
-        if ( !isdefined( self._id_8BF0[self._id_252E] ) )
+        if ( !isdefined( self.hasexplosivefired[self.attacks] ) )
         {
             var_0.robot_target = 1;
-            self._id_8BF0[self._id_252E] = 1;
-            self._id_252E++;
-            thread launch_rocket( var_0, self._id_252E, var_2 );
+            self.hasexplosivefired[self.attacks] = 1;
+            self.attacks++;
+            thread launch_rocket( var_0, self.attacks, var_2 );
         }
 
-        if ( self._id_252E % 2 )
+        if ( self.attacks % 2 )
             self waittill( "firework_exploded" );
 
-        wait( self.config._id_DDAC );
+        wait( self.config.rearmtime );
 
         if ( !isdefined( self.owner ) )
             break;
 
-        if ( self._id_252E >= level.robot_trap_settings["crafted_ims"]._id_C228 )
+        if ( self.attacks >= level.robot_trap_settings["crafted_ims"].numexplosives )
             break;
     }
 
@@ -565,17 +565,17 @@ launch_rocket( var_0, var_1, var_2 )
         self.last_launch_tube = 0;
 
     var_4 = spawn( "script_model", var_3 );
-    var_4 setmodel( self.config._id_6A03 );
+    var_4 setmodel( self.config.explosivemodel );
     var_4.angles = self.angles;
     var_5 = self.config.weaponinfo;
     var_6 = self.owner;
-    var_7 = self._id_2514;
+    var_7 = self.attackheightpos;
 
     if ( var_2 )
         var_7 = self.alt_attackheightpos;
 
-    var_4 moveto( var_7, self._id_2528, self._id_2528 * 0.5, 0 );
-    wait( self._id_2528 );
+    var_4 moveto( var_7, self.attackmovetime, self.attackmovetime * 0.5, 0 );
+    wait( self.attackmovetime );
     var_4 setscriptablepartstate( "rocket", "explode" );
 
     if ( isdefined( var_6 ) )
@@ -599,7 +599,7 @@ launch_anim()
     self setscriptablepartstate( "LED_Face", "Sad" );
     wait 1;
 
-    if ( self._id_252E % 2 )
+    if ( self.attacks % 2 )
     {
         self setscriptablepartstate( "main", "anim_headspin" );
         wait 1;

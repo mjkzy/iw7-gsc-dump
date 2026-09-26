@@ -99,10 +99,10 @@ _id_127D8()
     if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
     {
         var_0 notify( "destroyed_equipment" );
-        var_0 scripts\mp\killstreaks\killstreaks::_id_83A0();
+        var_0 scripts\mp\killstreaks\killstreaks::givescoreforequipment();
 
         if ( isdefined( var_3 ) && var_3 == "emp_grenade_mp" )
-            var_0 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+            var_0 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
     }
 
     var_5 = "";
@@ -128,7 +128,7 @@ _id_127DB( var_0 )
 {
     thread _id_127D6( 0.1 );
     self setentityowner( var_0 );
-    self _meth_8593();
+    self clearscriptabledamageowner();
     self setscriptablepartstate( "plant", "neutral", 0 );
     self setscriptablepartstate( "arm", "neutral", 0 );
     self setscriptablepartstate( "trigger", "neutral", 0 );
@@ -380,7 +380,7 @@ _id_127E4( var_0, var_1 )
 
     if ( isplayer( var_0 ) || isagent( var_0 ) )
     {
-        if ( scripts\mp\utility::_id_9F72( var_0 ) )
+        if ( scripts\mp\utility::isspidergrenade( var_0 ) )
             return 0;
 
         if ( scripts\mp\utility::_id_9F22( var_0 ) )

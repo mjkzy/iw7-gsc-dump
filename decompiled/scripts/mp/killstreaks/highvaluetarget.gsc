@@ -3,23 +3,23 @@
 
 init()
 {
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "high_value_target", ::_id_128E9 );
-    level._id_9264["axis"] = 0;
-    level._id_9264["allies"] = 0;
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "high_value_target", ::tryusehighvaluetarget );
+    level.hvts_active["axis"] = 0;
+    level.hvts_active["allies"] = 0;
     game["dialog"]["hvt_gone"] = "hvt_gone";
 }
 
-_id_128E9( var_0, var_1 )
+tryusehighvaluetarget( var_0, var_1 )
 {
     return usehighvaluetarget( self, var_0 );
 }
 
-_id_DD18()
+reached_max_xp_multiplier()
 {
     if ( level.teambased )
-        return level._id_9264[self.team] >= 4;
-    else if ( isdefined( self._id_9264 ) )
-        return self._id_9264 >= 2;
+        return level.hvts_active[self.team] >= 4;
+    else if ( isdefined( self.hvts_active ) )
+        return self.hvts_active >= 2;
 
     return 0;
 }
@@ -32,24 +32,24 @@ usehighvaluetarget( var_0, var_1 )
     if ( var_0.team == "spectator" )
         return 0;
 
-    if ( _id_DD18() || isdefined( var_0._id_9264 ) && var_0._id_9264 >= 2 )
+    if ( reached_max_xp_multiplier() || isdefined( var_0.hvts_active ) && var_0.hvts_active >= 2 )
     {
         self iprintlnbold( &"KILLSTREAKS_HVT_MAX" );
         return 0;
     }
 
-    var_0 thread _id_F745();
+    var_0 thread sethighvaluetarget();
     level thread scripts\mp\utility::teamplayercardsplash( "used_hvt", var_0, var_0.team );
     return 1;
 }
 
-_id_F745()
+sethighvaluetarget()
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
     var_0 = self.team;
-    _id_93F0();
-    thread _id_13AA6( var_0 );
+    increasexpboost();
+    thread watchhvtowner( var_0 );
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 10 );
 
     if ( level.teambased )
@@ -58,68 +58,68 @@ _id_F745()
         scripts\mp\utility::leaderdialogonplayer( "hvt_gone" );
 
     if ( level.teambased )
-        level _id_4FBA( var_0 );
+        level decreasexpboost( var_0 );
     else
-        _id_4FBA();
+        decreasexpboost();
 }
 
-_id_93F0()
+increasexpboost()
 {
     var_0 = 0;
 
     if ( level.teambased )
     {
-        level._id_9264[self.team]++;
-        var_0 = level._id_9264[self.team];
+        level.hvts_active[self.team]++;
+        var_0 = level.hvts_active[self.team];
         var_1 = self.team;
     }
     else
     {
-        if ( !isdefined( self._id_9264 ) )
-            self._id_9264 = 1;
+        if ( !isdefined( self.hvts_active ) )
+            self.hvts_active = 1;
         else
-            self._id_9264++;
+            self.hvts_active++;
 
-        var_0 = self._id_9264;
+        var_0 = self.hvts_active;
         var_1 = self getentitynumber();
     }
 
     var_2 = 1 + var_0 * 0.5;
-    level._id_115F3[var_1] = clamp( var_2, 1, 4 );
+    level.teamxpscale[var_1] = clamp( var_2, 1, 4 );
 }
 
-_id_4FBA( var_0 )
+decreasexpboost( var_0 )
 {
     var_1 = 0;
 
     if ( level.teambased )
     {
-        if ( level._id_9264[var_0] > 0 )
-            level._id_9264[var_0]--;
+        if ( level.hvts_active[var_0] > 0 )
+            level.hvts_active[var_0]--;
 
-        var_1 = level._id_9264[var_0];
+        var_1 = level.hvts_active[var_0];
         var_2 = var_0;
     }
     else
     {
-        if ( self._id_9264 > 0 )
-            self._id_9264--;
+        if ( self.hvts_active > 0 )
+            self.hvts_active--;
 
-        var_1 = self._id_9264;
+        var_1 = self.hvts_active;
         var_2 = self getentitynumber();
     }
 
     var_3 = 1 + var_1 * 0.5;
-    level._id_115F3[var_2] = clamp( var_3, 1, 4 );
+    level.teamxpscale[var_2] = clamp( var_3, 1, 4 );
 }
 
-_id_13AA6( var_0 )
+watchhvtowner( var_0 )
 {
     level endon( "game_ended" );
     var_1 = scripts\engine\utility::waittill_any_return( "disconnect", "joined_team", "joined_spectators" );
 
     if ( level.teambased )
-        level _id_4FBA( var_0 );
+        level decreasexpboost( var_0 );
     else if ( isdefined( self ) && var_1 != "disconnect" )
-        _id_4FBA();
+        decreasexpboost();
 }

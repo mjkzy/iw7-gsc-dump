@@ -149,7 +149,7 @@ create_mindcontrol_trap( var_0, var_1 )
     var_3 = var_0.mindcontrol_trap_type;
     var_4 = spawn( "script_model", var_0.origin + ( 0, 0, 2 ) );
     var_4 setmodel( level.mindcontrol_trap_settings[var_3].modelbase );
-    var_4._id_EB9C = 3;
+    var_4.scale = 3;
     var_4.angles = ( 0, var_0.carried_mindcontrol_trap.angles[1], 0 );
     var_4.mindcontrol_trap_type = var_3;
     var_4.owner = var_2;
@@ -169,13 +169,13 @@ create_mindcontrol_trap( var_0, var_1 )
     return var_4;
 }
 
-_id_936D( var_0 )
+ims_moving_platform_death( var_0 )
 {
-    self._id_933C = 1;
+    self.immediatedeath = 1;
     self notify( "death" );
 }
 
-_id_9367( var_0 )
+ims_handledeath( var_0 )
 {
     self endon( "carried" );
     self waittill( "death" );
@@ -192,11 +192,11 @@ _id_9367( var_0 )
         wait 1.0;
     }
 
-    _id_66A7();
+    equipmentdeletefx();
     self delete();
 }
 
-_id_66A7()
+equipmentdeletefx()
 {
     self playsound( "trap_boom_box_explode" );
     playfx( level._effect["violet_light_explode"], self.origin );
@@ -257,7 +257,7 @@ mindcontrol_trap_setplaced( var_0 )
     self.firstplacement = undefined;
     var_1 = create_mindcontrol_trap( self, var_0 );
     var_1.isplaced = 1;
-    var_1 thread _id_9367( self.owner );
+    var_1 thread ims_handledeath( self.owner );
     self playsound( "trap_boom_box_drop" );
     self notify( "placed" );
     var_1 thread mindcontrol_trap_setactive();
@@ -267,7 +267,7 @@ mindcontrol_trap_setplaced( var_0 )
         var_2.linkparent = self.moving_platform;
 
     var_2.endonstring = "carried";
-    var_2.deathoverridecallback = ::_id_936D;
+    var_2.deathoverridecallback = ::ims_moving_platform_death;
     var_1 thread scripts\cp\cp_movers::handle_moving_platforms( var_2 );
     self.carried_mindcontrol_trap delete();
     self delete();
@@ -285,7 +285,7 @@ mindcontrol_trap_setcancelled( var_0 )
     }
 
     if ( isdefined( var_0 ) && var_0 )
-        _id_66A7();
+        equipmentdeletefx();
 
     self.carried_mindcontrol_trap delete();
     self delete();
@@ -300,8 +300,8 @@ mindcontrol_trap_setcarried( var_0 )
     var_0.iscarrying = 1;
     var_0 thread scripts\cp\utility::update_trap_placement_internal( self, self.carried_mindcontrol_trap, level.mindcontrol_trap_settings["crafted_mindcontrol"] );
     thread scripts\cp\utility::item_oncarrierdeath( var_0 );
-    thread _id_936F( var_0 );
-    thread _id_9371( var_0 );
+    thread ims_oncarrierdisconnect( var_0 );
+    thread ims_ongameended( var_0 );
 
     if ( isdefined( level._id_5CF2 ) )
         self thread [[ level._id_5CF2 ]]( var_0 );
@@ -309,7 +309,7 @@ mindcontrol_trap_setcarried( var_0 )
     self notify( "carried" );
 }
 
-_id_936F( var_0 )
+ims_oncarrierdisconnect( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -318,7 +318,7 @@ _id_936F( var_0 )
     mindcontrol_trap_setcancelled();
 }
 
-_id_9371( var_0 )
+ims_ongameended( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -413,7 +413,7 @@ control_zombie( var_0 )
     self endon( "death" );
     self.controlled = 1;
     self.owner = var_0.owner;
-    self._id_C384 = self.health;
+    self.og_health = self.health;
     self.og_maxhealth = self.maxhealth;
     self.og_movemode = self.movemode;
     self.goalradius_old = self.goalradius;
@@ -428,7 +428,7 @@ control_zombie( var_0 )
     wait 60;
     self notify( "end_control" );
     self.maxhealth = self.og_maxhealth;
-    self.health = self._id_C384;
+    self.health = self.og_health;
     self.is_turned = undefined;
     self.melee_damage_amt = undefined;
     self.controlled = 0;

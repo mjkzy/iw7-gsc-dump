@@ -91,7 +91,7 @@ use_arcade_game( var_0, var_1 )
     {
         var_1 waittill( "adjustedStance" );
 
-        if ( var_1 _meth_81CE() )
+        if ( var_1 jumpbuttonpressed() )
             continue;
         else
             break;

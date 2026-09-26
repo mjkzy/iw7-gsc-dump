@@ -43,7 +43,7 @@ _id_D41C()
     var_0 maketurretinoperable();
     var_0 makeunusable();
     self.vehicle = var_0;
-    var_0._id_1E2D = 100;
+    var_0.ammo = 100;
 
     if ( level.teambased )
         var_0 setturretteam( self.team );
@@ -56,7 +56,7 @@ _id_D41C()
     var_0 settoparc( 30 );
     var_0 thread balldrone_attacktargets( self, 1 );
     var_0 setturretminimapvisible( 1, "buddy_turret" );
-    self setclientomnvar( "ui_shoulder_cannon_ammo", var_0._id_1E2D );
+    self setclientomnvar( "ui_shoulder_cannon_ammo", var_0.ammo );
     self setclientomnvar( "ui_eng_drone_ammo_type", 1 );
     self setclientomnvar( "ui_shoulder_cannon_state", 0 );
     var_0 setotherent( self );
@@ -192,10 +192,10 @@ balldrone_attacktargets( var_0, var_1 )
 
         if ( var_1 == 1 )
         {
-            if ( self isfiringturret() && self._id_1E2D > 0 && ( isdefined( self.stunned ) && !self.stunned ) )
+            if ( self isfiringturret() && self.ammo > 0 && ( isdefined( self.stunned ) && !self.stunned ) )
             {
                 self laseron();
-                balldrone_burstfirestop( 0.2, var_0 );
+                dolockon( 0.2, var_0 );
                 thread balldrone_burstfirestart( var_0 );
             }
             else
@@ -226,10 +226,10 @@ balldrone_burstfirestart( var_0 )
     var_5 = 0.01;
     self.owner waittill( "begin_firing" );
 
-    while ( self._id_1E2D > 0 )
+    while ( self.ammo > 0 )
     {
-        if ( self._id_1E2D <= 20 )
-            var_6 = self._id_1E2D;
+        if ( self.ammo <= 20 )
+            var_6 = self.ammo;
         else
             var_6 = randomintrange( 10, 20 );
 
@@ -249,14 +249,14 @@ balldrone_burstfirestart( var_0 )
                 triggerfx( var_0._id_38D8 );
                 self.owner playrumbleonentity( "shoulder_turret_fire" );
                 wait( var_4 );
-                self._id_1E2D--;
+                self.ammo--;
 
-                if ( self._id_1E2D < 0 )
-                    self._id_1E2D = 0;
+                if ( self.ammo < 0 )
+                    self.ammo = 0;
 
-                var_0 setclientomnvar( "ui_shoulder_cannon_ammo", self._id_1E2D );
+                var_0 setclientomnvar( "ui_shoulder_cannon_ammo", self.ammo );
                 var_0 setclientomnvar( "ui_shoulder_cannon_state", 2 );
-                var_0 notify( "shoulder_cannon_update", self._id_1E2D * var_5 );
+                var_0 notify( "shoulder_cannon_update", self.ammo * var_5 );
 
                 if ( isdefined( var_0._id_38D8 ) )
                     var_0._id_38D8 delete();
@@ -268,7 +268,7 @@ balldrone_burstfirestart( var_0 )
 
     var_0 setclientomnvar( "ui_shoulder_cannon_hud_reticle", 0 );
 
-    if ( self._id_1E2D <= 0 )
+    if ( self.ammo <= 0 )
     {
         var_0 setclientomnvar( "ui_shoulder_cannon_ammo", 0 );
         var_0 setclientomnvar( "ui_shoulder_cannon", 0 );
@@ -278,7 +278,7 @@ balldrone_burstfirestart( var_0 )
     }
 }
 
-balldrone_burstfirestop( var_0, var_1 )
+dolockon( var_0, var_1 )
 {
     var_2 = level._effect["shoulder_cannon_charge"];
     playfxontag( var_2, self, "tag_flash" );
@@ -350,7 +350,7 @@ _id_1000B( var_0 )
     self endon( "disconnect" );
     level endon( "game_ended" );
     var_1 = 1;
-    var_2 = scripts\mp\powers::_id_D735( "power_shoulderCannon" );
+    var_2 = scripts\mp\powers::power_getinputcommand( "power_shoulderCannon" );
 
     for (;;)
     {

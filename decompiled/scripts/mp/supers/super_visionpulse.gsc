@@ -116,7 +116,7 @@ _id_13151( var_0, var_1, var_2, var_3 )
     if ( var_0 == self )
         return 0;
 
-    if ( scripts\mp\utility::_id_9E05( self.team, var_0 ) )
+    if ( scripts\mp\utility::isfriendly( self.team, var_0 ) )
         return 0;
 
     if ( _id_9EF9( var_0 ) )

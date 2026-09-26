@@ -7,14 +7,14 @@ waitforsharpturnv2( var_0, var_1, var_2 )
     self waittill( "path_dir_change", var_3 );
     var_4 = [ var_3, 0 ];
     scripts\asm\asm::asm_fireevent( var_1, "sharp_turn", var_4 );
-    thread _id_0F3C::_id_136E7( var_0, var_1, var_2 );
+    thread scripts\asm\shared\mp\utility::waitforsharpturn_mp( var_0, var_1, var_2 );
 }
 
 playmoveloopv2( var_0, var_1, var_2, var_3 )
 {
-    thread _id_0F3C::_id_136B4( var_0, var_1, var_3 );
+    thread scripts\asm\shared\mp\utility::waitforcoverapproach_mp( var_0, var_1, var_3 );
     thread waitforsharpturnv2( var_0, var_1, var_3 );
-    thread _id_0F3C::_id_136CC( var_0, var_1, var_3 );
+    thread scripts\asm\shared\mp\utility::waitforpathchange( var_0, var_1, var_3 );
     var_4 = 1.0;
 
     if ( isdefined( self.asm.moveplaybackrate ) )
@@ -22,23 +22,23 @@ playmoveloopv2( var_0, var_1, var_2, var_3 )
     else if ( isdefined( self.moveplaybackrate ) )
         var_4 = self.moveplaybackrate;
 
-    scripts\asm\asm_mp::_id_235F( var_0, var_1, var_2, var_4 );
+    scripts\asm\asm_mp::asm_loopanimstate( var_0, var_1, var_2, var_4 );
 }
 
 playsharpturnanimv2( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    self._id_FC61 = undefined;
-    self _meth_8281( "anim deltas" );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    self.sharpturnindex = undefined;
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetorientmode( "face angle abs", self.angles );
-    var_5 = scripts\asm\asm::_id_2341( var_0, var_1 );
+    var_5 = scripts\asm\asm::asm_getnotehandler( var_0, var_1 );
 
     if ( isdefined( self.moveplaybackrate ) )
-        scripts\anim\notetracks_mp::_id_CED2( var_1, var_4, self.moveplaybackrate, var_1, "code_move", var_5 );
+        scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack( var_1, var_4, self.moveplaybackrate, var_1, "code_move", var_5 );
     else
-        scripts\anim\notetracks_mp::_id_CED5( var_1, var_4, var_1, "code_move", var_5 );
+        scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_1, var_4, var_1, "code_move", var_5 );
 
     self scragentsetorientmode( "face motion" );
-    self _meth_8281( "code_move" );
+    self scragentsetanimmode( "code_move" );
 }

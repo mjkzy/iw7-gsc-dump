@@ -92,7 +92,7 @@ _id_13643()
 
         if ( var_1 )
         {
-            level thread _id_51EB( self, var_0, 1 );
+            level thread deny_wheel_hint_func( self, var_0, 1 );
             continue;
         }
 
@@ -123,11 +123,11 @@ _id_13643()
             continue;
         }
 
-        level thread _id_51EB( self, var_0 );
+        level thread deny_wheel_hint_func( self, var_0 );
     }
 }
 
-_id_51EB( var_0, var_1, var_2 )
+deny_wheel_hint_func( var_0, var_1, var_2 )
 {
     var_1 endon( "disconnect" );
     var_1 playlocalsound( "purchase_deny" );
@@ -197,7 +197,7 @@ init_magic_wheel( var_0 )
         var_2 = scripts\engine\utility::getclosest( var_0.origin, var_1 );
         var_2 hide();
         var_0 makeusable();
-        var_0 _meth_84A7( "tag_use" );
+        var_0 sethinttag( "tag_use" );
         var_0 setusefov( 60 );
         var_0 setuserange( 72 );
         level.current_active_wheel = var_0;
@@ -244,7 +244,7 @@ _id_100ED( var_0 )
     wait 1;
     var_0._id_10A03 setscriptablepartstate( "spinner", "idle" );
     var_0 makeusable();
-    var_0 _meth_84A7( "tag_use" );
+    var_0 sethinttag( "tag_use" );
     var_0 setusefov( 60 );
     var_0 setuserange( 72 );
 
@@ -381,7 +381,7 @@ _id_12FFA( var_0, var_1, var_2 )
             }
 
             var_1 makeusable();
-            var_1 _meth_84A7( "tag_use" );
+            var_1 sethinttag( "tag_use" );
             var_1 setusefov( 60 );
             var_1 setuserange( 72 );
         }
@@ -390,7 +390,7 @@ _id_12FFA( var_0, var_1, var_2 )
     {
         wait 0.5;
         var_1 makeusable();
-        var_1 _meth_84A7( "tag_use" );
+        var_1 sethinttag( "tag_use" );
         var_1 setusefov( 60 );
         var_1 setuserange( 72 );
     }

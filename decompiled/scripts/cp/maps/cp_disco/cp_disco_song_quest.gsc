@@ -650,7 +650,7 @@ clock_hand_logic( var_0 )
         {
             if ( var_0 )
             {
-                var_8 = -0.00833333;
+                var_8 = -0.008333334;
                 self rotateroll( var_8, 1, 0, 0 );
                 wait 1;
             }

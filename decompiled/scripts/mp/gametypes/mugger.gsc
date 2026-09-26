@@ -52,7 +52,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_mugger_roundswitch", 0 );
     scripts\mp\utility::registerroundswitchdvar( "mugger", 0, 0, 9 );
     setdynamicdvar( "scr_mugger_roundlimit", 1 );
@@ -676,13 +676,13 @@ onuse( var_0 )
     else if ( isdefined( self.attacker ) && var_0 == self.attacker )
     {
         self.trigger playsound( "mp_killconfirm_tags_pickup" );
-        var_0 scripts\mp\utility::incperstat( "confirmed", 1 );
+        var_0 scripts\mp\utility::incpersstat( "confirmed", 1 );
         var_0 scripts\mp\persistence::statsetchild( "round", "confirmed", var_0.pers["confirmed"] );
     }
     else
     {
         self.trigger playsound( "mp_killconfirm_tags_deny" );
-        var_0 scripts\mp\utility::incperstat( "denied", 1 );
+        var_0 scripts\mp\utility::incpersstat( "denied", 1 );
         var_0 scripts\mp\persistence::statsetchild( "round", "denied", var_0.pers["denied"] );
     }
 

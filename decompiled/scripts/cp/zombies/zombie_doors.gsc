@@ -48,8 +48,8 @@ init_door_buys()
 
     foreach ( var_2 in var_0 )
     {
-        if ( isdefined( var_2._id_EEAA ) )
-            var_2 setuserange( var_2._id_EEAA );
+        if ( isdefined( var_2.script_sightrange ) )
+            var_2 setuserange( var_2.script_sightrange );
 
         level thread _id_95B5( var_2 );
         wait 0.05;
@@ -198,9 +198,9 @@ init_team_killdoors()
         var_3.goal_mult = 1;
         var_3.kill_captured = 0;
         var_3.players = [];
-        var_3._id_E0E2 = 0;
-        var_3._id_ED9A = "flag_" + var_2;
-        scripts\engine\utility::flag_init( var_3._id_ED9A );
+        var_3.removed = 0;
+        var_3.script_flag = "flag_" + var_2;
+        scripts\engine\utility::flag_init( var_3.script_flag );
         var_3._id_4348 = undefined;
         var_3.scriptable = undefined;
         var_3.progress_meters = [];
@@ -248,7 +248,7 @@ team_killdoor_think()
 
     for (;;)
     {
-        scripts\engine\utility::flag_wait( self._id_ED9A );
+        scripts\engine\utility::flag_wait( self.script_flag );
         level waittill( "zombie_killed", var_0, var_1, var_2, var_3 );
 
         if ( scripts\engine\utility::is_true( var_3.is_skeleton ) && isdefined( var_3.playerowner ) )
@@ -273,10 +273,10 @@ team_killdoor_activate()
         if ( !isplayer( var_0 ) )
             continue;
 
-        scripts\engine\utility::flag_set( self._id_ED9A );
+        scripts\engine\utility::flag_set( self.script_flag );
         self.scriptable setscriptablepartstate( "fx", "active" );
         team_killdoor_deactivate();
-        scripts\engine\utility::flag_clear( self._id_ED9A );
+        scripts\engine\utility::flag_clear( self.script_flag );
         self.scriptable setscriptablepartstate( "fx", "normal" );
     }
 }
@@ -339,7 +339,7 @@ capture_soul( var_0, var_1 )
 {
     soul_to_door( var_0 );
 
-    if ( self._id_E0E2 )
+    if ( self.removed )
         return;
 
     scripts\cp\zombies\zombie_analytics::log_purchasingforateamdoor( 1, var_1, self.name, self.kill_goal, level.wave_num );
@@ -376,13 +376,13 @@ soul_to_door( var_0 )
         var_1 moveto( var_2, var_4 );
         wait 0.05;
 
-        if ( !self._id_E0E2 && distancesquared( var_1.origin, var_2 ) > 256 )
+        if ( !self.removed && distancesquared( var_1.origin, var_2 ) > 256 )
             continue;
         else
             break;
     }
 
-    if ( !self._id_E0E2 )
+    if ( !self.removed )
         self.kill_captured++;
 
     var_1 delete();
@@ -391,7 +391,7 @@ soul_to_door( var_0 )
 open_team_killdoor( var_0 )
 {
     level notify( "open_killdoor_" + self.name );
-    self._id_E0E2 = 1;
+    self.removed = 1;
 
     foreach ( var_0 in self.players )
     {

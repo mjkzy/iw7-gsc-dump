@@ -60,7 +60,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_dom_flagCaptureTime", getmatchrulesdata( "domData", "flagCaptureTime" ) );
     setdynamicdvar( "scr_dom_flagsRequiredToScore", getmatchrulesdata( "domData", "flagsRequiredToScore" ) );
     setdynamicdvar( "scr_dom_pointsPerFlag", getmatchrulesdata( "domData", "pointsPerFlag" ) );
@@ -117,8 +117,8 @@ updategametypedvars()
 {
     scripts\mp\gametypes\common::updategametypedvars();
     level.flagcapturetime = scripts\mp\utility::dvarfloatvalue( "flagCaptureTime", 10, 0, 30 );
-    level._id_6E7B = scripts\mp\utility::dvarintvalue( "flagsRequiredToScore", 1, 1, 3 );
-    level._id_D649 = scripts\mp\utility::dvarintvalue( "pointsPerFlag", 1, 1, 300 );
+    level.flagsrequiredtoscore = scripts\mp\utility::dvarintvalue( "flagsRequiredToScore", 1, 1, 3 );
+    level.pointsperflag = scripts\mp\utility::dvarintvalue( "pointsPerFlag", 1, 1, 300 );
     level.flagneutralization = scripts\mp\utility::dvarintvalue( "flagNeutralization", 0, 0, 1 );
 }
 
@@ -160,7 +160,7 @@ getspawnpoint()
         var_4 = getteamdompoints( var_0 );
         var_5 = scripts\mp\utility::getotherteam( var_0 );
         var_6 = getteamdompoints( var_5 );
-        var_7 = getpreferreddompoints( var_4, var_6 );
+        var_7 = getperfereddompoints( var_4, var_6 );
         var_2 = scripts\mp\spawnlogic::getteamspawnpoints( var_0 );
         var_8 = scripts\mp\spawnlogic::getteamfallbackspawnpoints( var_0 );
         var_9 = [];
@@ -184,7 +184,7 @@ getteamdompoints( var_0 )
     return var_1;
 }
 
-getpreferreddompoints( var_0, var_1 )
+getperfereddompoints( var_0, var_1 )
 {
     var_2 = [];
     var_2[0] = 0;
@@ -231,7 +231,7 @@ getpreferreddompoints( var_0, var_1 )
 
         if ( var_1.size > 0 && var_1.size < level.domflags.size )
         {
-            var_5 = _id_81EF( var_4 );
+            var_5 = getunownedflagneareststart( var_4 );
             level.bestspawnflag[var_4] = var_5;
         }
 
@@ -295,13 +295,13 @@ domflags()
     level.startpos["allies"] = var_5[0].origin;
     level.startpos["axis"] = var_4[0].origin;
     level.bestspawnflag = [];
-    level.bestspawnflag["allies"] = _id_81EF( "allies", undefined );
-    level.bestspawnflag["axis"] = _id_81EF( "axis", level.bestspawnflag["allies"] );
+    level.bestspawnflag["allies"] = getunownedflagneareststart( "allies", undefined );
+    level.bestspawnflag["axis"] = getunownedflagneareststart( "axis", level.bestspawnflag["allies"] );
     flagsetup();
     thread modifieddefendradiussetup();
 }
 
-_id_81EF( var_0, var_1 )
+getunownedflagneareststart( var_0, var_1 )
 {
     var_2 = undefined;
     var_3 = undefined;
@@ -335,11 +335,11 @@ updatedomscores()
     {
         var_2 = getowneddomflags();
 
-        if ( !isdefined( level._id_EC50 ) )
-            level._id_EC50 = [];
+        if ( !isdefined( level.scoretick ) )
+            level.scoretick = [];
 
-        level._id_EC50["allies"] = 0;
-        level._id_EC50["axis"] = 0;
+        level.scoretick["allies"] = 0;
+        level.scoretick["axis"] = 0;
 
         if ( var_2.size )
         {
@@ -362,8 +362,8 @@ updatedomscores()
                 var_1 = getteamscore( var_9 );
                 var_10 = getteamflagcount( var_8 );
 
-                if ( var_10 >= level._id_6E7B )
-                    level._id_EC50[var_8] = level._id_EC50[var_8] + level._id_D649;
+                if ( var_10 >= level.flagsrequiredtoscore )
+                    level.scoretick[var_8] = level.scoretick[var_8] + level.pointsperflag;
             }
         }
 
@@ -377,21 +377,21 @@ updatedomscores()
 updatescores()
 {
     var_0 = level.roundscorelimit;
-    var_1 = game["teamScores"]["allies"] + level._id_EC50["allies"];
-    var_2 = game["teamScores"]["axis"] + level._id_EC50["axis"];
+    var_1 = game["teamScores"]["allies"] + level.scoretick["allies"];
+    var_2 = game["teamScores"]["axis"] + level.scoretick["axis"];
     var_3 = var_1 >= var_0;
     var_4 = var_2 >= var_0;
 
     if ( var_3 && !var_4 )
-        level._id_EC50["allies"] = var_0 - game["teamScores"]["allies"];
+        level.scoretick["allies"] = var_0 - game["teamScores"]["allies"];
     else if ( var_4 && !var_3 )
-        level._id_EC50["axis"] = var_0 - game["teamScores"]["axis"];
+        level.scoretick["axis"] = var_0 - game["teamScores"]["axis"];
 
-    if ( level._id_EC50["allies"] > 0 )
-        scripts\mp\gamescore::giveteamscoreforobjective( "allies", level._id_EC50["allies"], 1 );
+    if ( level.scoretick["allies"] > 0 )
+        scripts\mp\gamescore::giveteamscoreforobjective( "allies", level.scoretick["allies"], 1 );
 
-    if ( level._id_EC50["axis"] > 0 )
-        scripts\mp\gamescore::giveteamscoreforobjective( "axis", level._id_EC50["axis"], 1 );
+    if ( level.scoretick["axis"] > 0 )
+        scripts\mp\gamescore::giveteamscoreforobjective( "axis", level.scoretick["axis"], 1 );
 }
 
 checkendgame( var_0 )
@@ -400,7 +400,7 @@ checkendgame( var_0 )
 
     if ( scripts\mp\utility::matchmakinggame() && var_0 < 2 && var_1 > 120000 )
     {
-        level._id_72B3 = 1;
+        level.forcedend = 1;
         thread scripts\mp\gamelogic::endgame( "none", game["end_reason"]["time_limit_reached"] );
         return;
     }
@@ -466,7 +466,7 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
 
                         var_11 = 1;
                         var_1 thread scripts\mp\awards::givemidmatchaward( "mode_x_assault" );
-                        thread scripts\mp\matchdata::loginitialstats( var_9, "assaulting" );
+                        thread scripts\mp\matchdata::logkillevent( var_9, "assaulting" );
                         continue;
                     }
                 }
@@ -479,10 +479,10 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
 
                         var_12 = 1;
                         var_1 thread scripts\mp\awards::givemidmatchaward( "mode_x_defend" );
-                        var_1 scripts\mp\utility::incperstat( "defends", 1 );
+                        var_1 scripts\mp\utility::incpersstat( "defends", 1 );
                         var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
                         var_1 scripts\mp\utility::setextrascore1( var_1.pers["defends"] );
-                        thread scripts\mp\matchdata::loginitialstats( var_9, "defending" );
+                        thread scripts\mp\matchdata::logkillevent( var_9, "defending" );
                         continue;
                     }
                 }
@@ -501,7 +501,7 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
 
                     var_11 = 1;
                     var_1 thread scripts\mp\awards::givemidmatchaward( "mode_x_assault" );
-                    thread scripts\mp\matchdata::loginitialstats( var_9, "assaulting" );
+                    thread scripts\mp\matchdata::logkillevent( var_9, "assaulting" );
                     continue;
                 }
             }
@@ -517,10 +517,10 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
 
                 var_12 = 1;
                 var_1 thread scripts\mp\awards::givemidmatchaward( "mode_x_defend" );
-                var_1 scripts\mp\utility::incperstat( "defends", 1 );
+                var_1 scripts\mp\utility::incpersstat( "defends", 1 );
                 var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
                 var_1 scripts\mp\utility::setextrascore1( var_1.pers["defends"] );
-                thread scripts\mp\matchdata::loginitialstats( var_9, "defending" );
+                thread scripts\mp\matchdata::logkillevent( var_9, "defending" );
                 continue;
             }
         }
@@ -695,7 +695,7 @@ giveflagcapturexp( var_0 )
             continue;
 
         var_5 thread updatecpm();
-        var_5 scripts\mp\utility::incperstat( "captures", 1 );
+        var_5 scripts\mp\utility::incpersstat( "captures", 1 );
         var_5 scripts\mp\persistence::statsetchild( "round", "captures", var_5.pers["captures"] );
         var_5 scripts\mp\missions::processchallenge( "ch_domcap" );
         var_5 scripts\mp\utility::setextrascore0( var_5.pers["captures"] );
@@ -795,7 +795,7 @@ onflagcapture( var_0, var_1, var_2, var_3, var_4, var_5 )
     }
 
     if ( var_5.touchlist[var_3].size == 0 )
-        var_5.touchlist = var_5._id_C405;
+        var_5.touchlist = var_5.oldtouchlist;
 
     var_5 thread giveflagcapturexp( var_5.touchlist[var_3] );
 }

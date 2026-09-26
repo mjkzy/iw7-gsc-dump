@@ -42,38 +42,38 @@ init()
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "specialty_deadeye_ks", ::tryuseperkstreak );
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "specialty_chain_reaction_ks", ::tryuseperkstreak );
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "teleport", ::tryuseperkstreak );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "all_perks_bonus", ::_id_128D6 );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "speed_boost", ::_id_12904 );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "refill_grenades", ::_id_128FA );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "refill_ammo", ::_id_128F9 );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "regen_faster", ::_id_128FB );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "all_perks_bonus", ::tryuseallperks );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "speed_boost", ::tryusespeedboost );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "refill_grenades", ::tryuserefillgrenades );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "refill_ammo", ::tryuserefillammo );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "regen_faster", ::tryuseregenfaster );
 }
 
-_id_12904( var_0, var_1 )
+tryusespeedboost( var_0, var_1 )
 {
     _id_58E3( "specialty_juiced", "speed_boost" );
     return 1;
 }
 
-_id_128FA( var_0, var_1 )
+tryuserefillgrenades( var_0, var_1 )
 {
     _id_58E3( "specialty_refill_grenades", "refill_grenades" );
     return 1;
 }
 
-_id_128F9( var_0, var_1 )
+tryuserefillammo( var_0, var_1 )
 {
     _id_58E3( "specialty_refill_ammo", "refill_ammo" );
     return 1;
 }
 
-_id_128FB( var_0, var_1 )
+tryuseregenfaster( var_0, var_1 )
 {
     _id_58E3( "specialty_regenfaster", "regen_faster" );
     return 1;
 }
 
-_id_128D6( var_0, var_1 )
+tryuseallperks( var_0, var_1 )
 {
     return 1;
 }
@@ -81,18 +81,18 @@ _id_128D6( var_0, var_1 )
 tryuseperkstreak( var_0, var_1 )
 {
     var_2 = scripts\mp\utility::strip_suffix( var_1, "_ks" );
-    _id_5A5D( var_2 );
+    doperkfunctions( var_2 );
     return 1;
 }
 
-_id_5A5D( var_0 )
+doperkfunctions( var_0 )
 {
     scripts\mp\utility::giveperk( var_0 );
-    thread _id_139E8( var_0 );
-    thread _id_3E15( var_0 );
+    thread watchdeath( var_0 );
+    thread checkforperkupgrade( var_0 );
 
     if ( var_0 == "specialty_hardline" )
-        scripts\mp\killstreaks\killstreaks::_id_F866();
+        scripts\mp\killstreaks\killstreaks::setstreakcounttonext();
 
     scripts\mp\matchdata::logkillstreakevent( var_0 + "_ks", self.origin );
 }
@@ -105,31 +105,31 @@ _id_58E3( var_0, var_1 )
         scripts\mp\matchdata::logkillstreakevent( var_1, self.origin );
 }
 
-_id_139E8( var_0 )
+watchdeath( var_0 )
 {
     self endon( "disconnect" );
     self waittill( "death" );
     scripts\mp\utility::removeperk( var_0 );
 }
 
-_id_3E15( var_0 )
+checkforperkupgrade( var_0 )
 {
-    var_1 = scripts\mp\class::_id_805D( var_0 );
+    var_1 = scripts\mp\class::getperkupgrade( var_0 );
 
     if ( var_1 != "specialty_null" )
     {
         scripts\mp\utility::giveperk( var_1 );
-        thread _id_139E8( var_1 );
+        thread watchdeath( var_1 );
     }
 }
 
-_id_9EE0( var_0 )
+isperkstreakon( var_0 )
 {
     for ( var_1 = 1; var_1 < 4; var_1++ )
     {
         if ( isdefined( self.pers["killstreaks"][var_1].streakname ) && self.pers["killstreaks"][var_1].streakname == var_0 )
         {
-            if ( self.pers["killstreaks"][var_1]._id_269A )
+            if ( self.pers["killstreaks"][var_1].available )
                 return 1;
         }
     }

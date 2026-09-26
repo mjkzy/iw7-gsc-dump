@@ -398,11 +398,11 @@ init_analytics( var_0 )
     }
 }
 
-_id_AF6A( var_0, var_1, var_2, var_3, var_4 )
+log_event( var_0, var_1, var_2, var_3, var_4 )
 {
     var_5 = get_data_to_update( var_0 );
     log_matchdata( var_0, var_5, var_1, var_3 );
-    _id_AF65( var_0, var_5, var_1, var_4 );
+    log_clientmatchdata( var_0, var_5, var_1, var_4 );
 }
 
 log_matchdata_at_game_end()
@@ -505,7 +505,7 @@ log_matchdata( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_AF65( var_0, var_1, var_2, var_3 )
+log_clientmatchdata( var_0, var_1, var_2, var_3 )
 {
     if ( !isdefined( var_3 ) )
         return;

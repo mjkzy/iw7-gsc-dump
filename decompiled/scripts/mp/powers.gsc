@@ -4,11 +4,11 @@
 init()
 {
     level.powers = [];
-    level._id_D786 = [];
-    level._id_D79B = [];
-    level._id_D7A4 = [];
+    level.powersetfuncs = [];
+    level.powerunsetfuncs = [];
+    level.powerweaponmap = [];
     thread scripts\cp_mp\powershud::powershud_init();
-    _id_D77D();
+    powerparsetable();
     _id_D780();
     powersetupfunctions( "power_siegeMode", undefined, ::_id_12D2C, ::_id_130D5, "powers_siegemode_update", undefined, undefined );
     powersetupfunctions( "power_dash", ::_id_F6B1, ::_id_12C9F, ::_id_13072, undefined, undefined, undefined );
@@ -23,10 +23,10 @@ init()
     powersetupfunctions( "power_barrier", ::_id_F658, ::_id_12C78, ::_id_13049, undefined, "powers_barrier_used", undefined );
     powersetupfunctions( "power_mortarMount", ::_id_F7A5, ::_id_12CF3, ::_id_130A5, undefined, "powers_mortarMount_used", undefined );
     powersetupfunctions( "power_tripMine", undefined, undefined, undefined, "trip_mine_update", undefined, undefined );
-    powersetupfunctions( "power_adrenaline", ::_id_F62E, ::_id_12C67, ::useadrenaline, "power_adrenaline_update", undefined, "removeAdrenaline" );
+    powersetupfunctions( "power_adrenaline", ::setactivespawnquerycontext, ::_id_12C67, ::useadrenaline, "power_adrenaline_update", undefined, "removeAdrenaline" );
     powersetupfunctions( "power_multiVisor", ::_id_F7AB, ::_id_12CF6, ::_id_130A7, "power_multi_visor_update", undefined, undefined );
     powersetupfunctions( "power_trophy", ::_id_F899, ::_id_12D52, undefined, "trophy_update", undefined, undefined );
-    powersetupfunctions( "power_stealthMode", ::_id_F861, ::_id_12D38, ::_id_130E0, "powers_stealth_mode_update", undefined, undefined );
+    powersetupfunctions( "power_stealthMode", ::_id_F861, ::unsetstealth, ::_id_130E0, "powers_stealth_mode_update", undefined, undefined );
     powersetupfunctions( "power_disruptor", undefined, undefined, undefined, undefined, undefined, undefined );
     powersetupfunctions( "power_pulseGrenade", undefined, undefined, undefined, undefined, undefined, undefined );
     powersetupfunctions( "power_niagara", ::_id_F7B5, ::_id_12CF7, ::_id_130AA, "powers_niagara_update", undefined, undefined );
@@ -36,7 +36,7 @@ init()
     powersetupfunctions( "power_cryoMine", undefined, undefined, undefined, "cryo_mine_update", undefined, undefined );
     powersetupfunctions( "power_coneFlash", ::_id_F69E, ::unsetcooldown, ::_id_13057, undefined, undefined, undefined );
     powersetupfunctions( "power_blackhat", ::_id_F664, ::_id_12C80, ::_id_1304D, undefined, "powers_blackhat_used", undefined );
-    powersetupfunctions( "power_periphVis", undefined, ::_id_12D03, ::usepercent, "periphVis_update", undefined, undefined );
+    powersetupfunctions( "power_periphVis", undefined, ::_id_12D03, ::_id_130BB, "periphVis_update", undefined, undefined );
     powersetupfunctions( "power_deployableCover", undefined, undefined, undefined, undefined, undefined, undefined );
     powersetupfunctions( "power_blackholeGrenade", undefined, undefined, undefined, undefined, undefined, undefined );
     powersetupfunctions( "power_shardBall", undefined, undefined, undefined, undefined, "powers_shardBall_used", undefined );
@@ -49,30 +49,30 @@ init()
     thread scripts\mp\blackhole_grenade::blackholegrenadeinit();
     thread scripts\mp\equipment\split_grenade::init();
     thread scripts\mp\equipment\spider_grenade::spidergrenade_init();
-    thread scripts\mp\trophy_system::_id_12813();
+    thread scripts\mp\trophy_system::trophy_init();
     thread scripts\mp\domeshield::domeshield_init();
     thread scripts\mp\powers\blink_knife::blinkknifeinit();
 }
 
-_id_D724( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
+power_createdefaultstruct( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
 {
     var_9 = spawnstruct();
-    var_9._id_130F3 = var_1;
+    var_9.usetype = var_1;
     var_9.weaponuse = var_2;
     var_9.cooldowntime = var_4;
     var_9.id = var_3;
     var_9.maxcharges = var_5;
-    var_9._id_4E5A = var_6;
-    var_9._id_13058 = var_7;
-    var_9._id_12B2B = var_8;
+    var_9.deathreset = var_6;
+    var_9.usecooldown = var_7;
+    var_9.uitype = var_8;
 
-    if ( var_9._id_12B2B == "interact" )
-        var_9._id_12B2B = "charges";
+    if ( var_9.uitype == "interact" )
+        var_9.uitype = "charges";
 
     level.powers[var_0] = var_9;
 }
 
-_id_D77D()
+powerparsetable()
 {
     var_0 = 1;
 
@@ -91,9 +91,9 @@ _id_D77D()
         var_7 = tablelookupbyrow( "mp/powertable.csv", var_0, 10 );
         var_8 = tablelookupbyrow( "mp/powertable.csv", var_0, 11 );
         var_9 = tablelookupbyrow( "mp/powertable.csv", var_0, 15 );
-        _id_D724( var_2, var_3, var_4, int( var_1 ), float( var_5 ), int( var_6 ), int( var_7 ), int( var_8 ), var_9 );
+        power_createdefaultstruct( var_2, var_3, var_4, int( var_1 ), float( var_5 ), int( var_6 ), int( var_7 ), int( var_8 ), var_9 );
 
-        if ( isdefined( level._id_D7A4[var_4] ) && var_4 != "<power_script_generic_weapon>" )
+        if ( isdefined( level.powerweaponmap[var_4] ) && var_4 != "<power_script_generic_weapon>" )
         {
             switch ( var_4 )
             {
@@ -102,7 +102,7 @@ _id_D77D()
             }
         }
 
-        level._id_D7A4[var_4] = var_2;
+        level.powerweaponmap[var_4] = var_2;
         var_0++;
     }
 }
@@ -129,7 +129,7 @@ _id_D780()
         if ( var_4 != "" )
         {
             var_5._id_23B1 = var_4;
-            level._id_D7A4[var_4] = var_2;
+            level.powerweaponmap[var_4] = var_2;
         }
 
         if ( !isdefined( level._id_D77F[var_2] ) )
@@ -200,35 +200,35 @@ powersetupfunctions( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     if ( !isdefined( var_7 ) )
         scripts\engine\utility::error( "No configuration data for " + var_0 + " found! Is it in powertable.csv? Or make sure powerSetupFunctions is called after the table is initialized." );
 
-    level._id_D786[var_0] = var_1;
-    level._id_D79B[var_0] = var_2;
+    level.powersetfuncs[var_0] = var_1;
+    level.powerunsetfuncs[var_0] = var_2;
 
     if ( isdefined( var_3 ) )
         var_7.usefunc = var_3;
 
     if ( isdefined( var_4 ) )
-        var_7._id_12ED9 = var_4;
+        var_7.updatenotify = var_4;
 
     if ( isdefined( var_5 ) )
         var_7.usednotify = var_5;
 
     if ( isdefined( var_6 ) )
-        var_7._id_9A90 = var_6;
+        var_7.interruptnotify = var_6;
 }
 
-_id_D750( var_0, var_1 )
+power_sethudstate( var_0, var_1 )
 {
-    var_2 = getcurrentequipment( var_0 );
+    var_2 = getpower( var_0 );
     var_3 = self.powers[var_2];
     var_4 = level.powers[var_2];
-    var_5 = var_3._id_91B1;
+    var_5 = var_3.hudstate;
     var_6 = var_3.charges;
 
     if ( isdefined( var_5 ) && var_5 == var_1 )
         return;
 
     if ( isdefined( var_5 ) )
-        _id_D75E( var_0 );
+        power_unsethudstate( var_0 );
 
     switch ( var_1 )
     {
@@ -236,36 +236,36 @@ _id_D750( var_0, var_1 )
             scripts\cp_mp\powershud::powershud_beginpowerdrain( var_0 );
             scripts\cp_mp\powershud::powershud_updatepowermeter( var_0, 1 );
             scripts\cp_mp\powershud::powershud_updatepowercharges( var_0, var_6 );
-            thread _id_D76E( var_2 );
+            thread power_watchhuddrainmeter( var_2 );
             break;
         case 1:
             scripts\cp_mp\powershud::powershud_beginpowercooldown( var_0, 0 );
             scripts\cp_mp\powershud::powershud_updatepowercharges( var_0, var_6 );
-            thread _id_D76D( var_2 );
+            thread power_watchhudcooldownmeter( var_2 );
             break;
         case 2:
             scripts\cp_mp\powershud::powershud_updatepowerdisabled( var_0, 0 );
             scripts\cp_mp\powershud::powershud_updatepowermeter( var_0, 1 );
             scripts\cp_mp\powershud::powershud_updatepowercharges( var_0, var_6 );
-            thread _id_D76C( var_2 );
+            thread power_watchhudcharges( var_2 );
             break;
         case 3:
             break;
     }
 
-    var_3._id_91B1 = var_1;
-    thread _id_D75F( var_0 );
+    var_3.hudstate = var_1;
+    thread power_unsethudstateonremoved( var_0 );
 }
 
-_id_D75E( var_0 )
+power_unsethudstate( var_0 )
 {
-    var_1 = getcurrentequipment( var_0 );
+    var_1 = getpower( var_0 );
 
     if ( !isdefined( var_1 ) )
         return;
 
     var_2 = self.powers[var_1];
-    var_3 = var_2._id_91B1;
+    var_3 = var_2.hudstate;
 
     if ( !isdefined( var_3 ) )
         return;
@@ -284,17 +284,17 @@ _id_D75E( var_0 )
             break;
     }
 
-    var_2._id_91B1 = undefined;
+    var_2.hudstate = undefined;
 }
 
-_id_D75F( var_0 )
+power_unsethudstateonremoved( var_0 )
 {
     self endon( "disconnect" );
     self notify( "power_unsetHudStateOnRemoved_" + var_0 );
     self endon( "power_unsetHudStateOnRemoved_" + var_0 );
-    var_1 = getcurrentequipment( var_0 );
+    var_1 = getpower( var_0 );
     self waittill( "power_removed_" + var_1 );
-    _id_D75E( var_0 );
+    power_unsethudstate( var_0 );
 }
 
 givepower( var_0, var_1, var_2, var_3, var_4 )
@@ -310,7 +310,7 @@ givepower( var_0, var_1, var_2, var_3, var_4 )
     if ( var_1 == "scripted" )
         var_5++;
 
-    _id_D725( var_0, var_1, var_4 );
+    power_createplayerstruct( var_0, var_1, var_4 );
     var_6 = self.powers[var_0];
     var_7 = level.powers[var_0];
     scripts\cp_mp\powershud::powershud_updatepowermaxcharges( var_6.slot, var_6.maxcharges );
@@ -320,10 +320,10 @@ givepower( var_0, var_1, var_2, var_3, var_4 )
 
     var_11 = 0.0;
 
-    if ( isdefined( self._id_D76F ) && isdefined( self._id_D76F[var_0] ) )
+    if ( isdefined( self.powercooldowns ) && isdefined( self.powercooldowns[var_0] ) )
     {
-        var_12 = self._id_D76F[var_0];
-        var_13 = _id_D720( var_12 );
+        var_12 = self.powercooldowns[var_0];
+        var_13 = power_cooldownremaining( var_12 );
 
         if ( var_13 > 0.0 )
         {
@@ -367,17 +367,17 @@ givepower( var_0, var_1, var_2, var_3, var_4 )
         self.powersecondarygrenade = var_16;
     }
 
-    if ( isdefined( level._id_D786[var_0] ) )
-        self [[ level._id_D786[var_0] ]]( var_0 );
+    if ( isdefined( level.powersetfuncs[var_0] ) )
+        self [[ level.powersetfuncs[var_0] ]]( var_0 );
 
-    thread _id_D73D( var_0 );
-    thread _id_B2F0( var_7, var_0, var_6.slot, var_7.cooldowntime, var_7._id_12ED9, var_7.usednotify, var_16, var_11, var_2 );
+    thread power_modifychargesonpickuporfailure( var_0 );
+    thread managepowerbuttonuse( var_7, var_0, var_6.slot, var_7.cooldowntime, var_7.updatenotify, var_7.usednotify, var_16, var_11, var_2 );
 }
 
 removepower( var_0 )
 {
-    if ( isdefined( level._id_D79B[var_0] ) )
-        self [[ level._id_D79B[var_0] ]]();
+    if ( isdefined( level.powerunsetfuncs[var_0] ) )
+        self [[ level.powerunsetfuncs[var_0] ]]();
 
     if ( isdefined( self.powers[var_0].weaponuse ) )
         scripts\mp\utility::_takeweapon( self.powers[var_0].weaponuse );
@@ -402,10 +402,10 @@ _id_110C2()
 {
     if ( isdefined( self.powers ) )
     {
-        if ( !isdefined( self._id_D76F ) )
-            self._id_D76F = [];
+        if ( !isdefined( self.powercooldowns ) )
+            self.powercooldowns = [];
         else
-            _id_4042();
+            cleanpowercooldowns();
 
         foreach ( var_3, var_1 in self.powers )
         {
@@ -413,49 +413,49 @@ _id_110C2()
                 continue;
             else if ( isdefined( level._id_C81F ) && level._id_C81F != 0 )
             {
-                if ( level.powers[var_3]._id_4E5A == 1 )
+                if ( level.powers[var_3].deathreset == 1 )
                     continue;
             }
             else if ( !isdefined( level._id_C81F ) )
             {
-                if ( level.powers[var_3]._id_4E5A == 1 )
+                if ( level.powers[var_3].deathreset == 1 )
                     continue;
             }
 
-            if ( var_1._id_4619 > 0 )
+            if ( var_1.cooldownleft > 0 )
             {
                 var_2 = spawnstruct();
                 var_2.power = var_3;
-                var_2._id_4619 = var_1._id_4619;
+                var_2.cooldownleft = var_1.cooldownleft;
                 var_2.charges = var_1.charges;
                 var_2.maxcharges = var_1.maxcharges;
-                var_2._id_4E5A = var_1._id_4E5A;
-                var_2._id_11931 = gettime();
-                self._id_D76F[var_3] = var_2;
+                var_2.deathreset = var_1.deathreset;
+                var_2.timestamp = gettime();
+                self.powercooldowns[var_3] = var_2;
             }
         }
     }
 }
 
-_id_4042()
+cleanpowercooldowns()
 {
-    if ( isdefined( self._id_D76F ) && self._id_D76F.size > 0 )
+    if ( isdefined( self.powercooldowns ) && self.powercooldowns.size > 0 )
     {
-        var_0 = self._id_D76F;
+        var_0 = self.powercooldowns;
 
         foreach ( var_3, var_2 in var_0 )
         {
-            if ( _id_D720( var_2 ) == 0.0 )
-                self._id_D76F[var_3] = undefined;
+            if ( power_cooldownremaining( var_2 ) == 0.0 )
+                self.powercooldowns[var_3] = undefined;
         }
     }
 }
 
-_id_D720( var_0 )
+power_cooldownremaining( var_0 )
 {
     var_1 = level.powers[var_0.power];
-    var_2 = ( var_0.maxcharges - var_0.charges ) * var_1.cooldowntime - ( var_1.cooldowntime - var_0._id_4619 );
-    var_3 = ( gettime() - var_0._id_11931 ) / 1000;
+    var_2 = ( var_0.maxcharges - var_0.charges ) * var_1.cooldowntime - ( var_1.cooldowntime - var_0.cooldownleft );
+    var_3 = ( gettime() - var_0.timestamp ) / 1000;
     return max( 0, var_2 - var_3 );
 }
 
@@ -474,7 +474,7 @@ clearpowers()
     }
 }
 
-getcurrentequipment( var_0 )
+getpower( var_0 )
 {
     if ( !isdefined( self.powers ) )
         return undefined;
@@ -501,7 +501,7 @@ _id_E265()
         if ( var_2 != var_3 )
         {
             self.powers[var_4].charges = self.powers[var_4].maxcharges;
-            _id_D765( var_4 );
+            power_updateammo( var_4 );
             self notify( "power_charges_adjusted_" + var_4, self.powers[var_4].charges );
         }
     }
@@ -526,13 +526,13 @@ _id_1813( var_0 )
         if ( var_6 > 0 )
         {
             self.powers[var_7].charges = var_5;
-            _id_D765( var_7 );
+            power_updateammo( var_7 );
             self notify( "power_charges_adjusted_" + var_7, self.powers[var_7].charges );
         }
     }
 }
 
-_id_D735( var_0 )
+power_getinputcommand( var_0 )
 {
     return scripts\engine\utility::ter_op( self.powers[var_0].slot == "primary", "+frag", "+smoke" );
 }
@@ -549,7 +549,7 @@ _id_D736( var_0 )
 
 _id_D737( var_0 )
 {
-    return level._id_D7A4[var_0];
+    return level.powerweaponmap[var_0];
 }
 
 _id_D738( var_0 )
@@ -560,7 +560,7 @@ _id_D738( var_0 )
     return level.powers[var_0].id;
 }
 
-_id_D725( var_0, var_1, var_2 )
+power_createplayerstruct( var_0, var_1, var_2 )
 {
     var_3 = level.powers[var_0];
     var_4 = spawnstruct();
@@ -571,15 +571,15 @@ _id_D725( var_0, var_1, var_2 )
         var_4.charges++;
 
     var_4.maxcharges = var_4.charges;
-    var_4._id_93DD = 0;
+    var_4.incooldown = 0;
     var_4.active = 0;
-    var_4._id_4619 = 0;
+    var_4.cooldownleft = 0;
     var_4.cooldownratemod = 1.0;
     var_4.passives = [];
     self.powers[var_0] = var_4;
 }
 
-_id_B2F0( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
+managepowerbuttonuse( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -592,19 +592,19 @@ _id_B2F0( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     scripts\cp_mp\powershud::powershud_assignpower( var_2, int( var_0.id ), 1, int( self.powers[var_1].charges ) );
     scripts\mp\utility::gameflagwait( "prematch_done" );
     var_3 = scripts\mp\powerloot::_id_7FBF( var_1, var_3 );
-    _id_D750( var_2, 2 );
+    power_sethudstate( var_2, 2 );
     scripts\cp_mp\powershud::powershud_updatepoweroffcooldown( var_2, 0 );
     self notify( "power_available", var_1, var_2 );
     thread scripts\mp\weapons::_id_13AB5( self, var_1, var_2 );
 
     for (;;)
     {
-        _id_D765( var_1 );
+        power_updateammo( var_1 );
         var_9 = var_6 + "_success";
-        thread _id_13A0E( var_3, var_1, var_9, var_2 );
-        var_10 = scripts\engine\utility::ter_op( var_0._id_130F3 == "weapon_hold", "offhand_pullback", "offhand_fired" );
+        thread watchearlyout( var_3, var_1, var_9, var_2 );
+        var_10 = scripts\engine\utility::ter_op( var_0.usetype == "weapon_hold", "offhand_pullback", "offhand_fired" );
 
-        if ( var_0._id_130F3 == "weapon_hold" )
+        if ( var_0.usetype == "weapon_hold" )
         {
             self waittill( var_10, var_11 );
 
@@ -640,14 +640,14 @@ _id_B2F0( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
         power_adjustcharges( -1, self.powers[var_1].slot );
         combatrecordpoweruse( var_1 );
 
-        if ( isdefined( var_4 ) && level.powers[var_1]._id_12B2B == "drain" && !scripts\mp\utility::istrue( self.powers[var_1]._id_940B ) )
-            _id_D72B( var_1 );
+        if ( isdefined( var_4 ) && level.powers[var_1].uitype == "drain" && !scripts\mp\utility::istrue( self.powers[var_1].indrain ) )
+            power_dodrain( var_1 );
 
-        thread _id_D72A( var_1, var_3, var_8, var_2 );
+        thread power_docooldown( var_1, var_3, var_8, var_2 );
     }
 }
 
-_id_D73F( var_0 )
+power_modifychargesonscavenge( var_0 )
 {
     self endon( "disconnect" );
     self endon( "powers_cleanUp" );
@@ -669,19 +669,19 @@ _id_D73F( var_0 )
 
 _id_D74C( var_0 )
 {
-    if ( hasequipment( var_0 ) )
+    if ( haspower( var_0 ) )
     {
         var_1 = self.powers[var_0];
         _id_D71B( 1, var_0 );
-        _id_D765( var_0 );
-        var_2 = var_1._id_91B1;
+        power_updateammo( var_0 );
+        var_2 = var_1.hudstate;
 
         if ( isdefined( var_2 ) && var_2 == 1 )
-            _id_D750( var_1.slot, 2 );
+            power_sethudstate( var_1.slot, 2 );
     }
 }
 
-_id_D73D( var_0 )
+power_modifychargesonpickuporfailure( var_0 )
 {
     self endon( "disconnect" );
     self endon( "powers_cleanUp" );
@@ -710,25 +710,25 @@ _id_D74F( var_0, var_1 )
 {
     var_2 = self.powers[var_0];
     var_3 = level.powers[var_0];
-    var_2._id_4617 = min( var_1, var_3.cooldowntime );
-    var_2._id_4619 = var_3.cooldowntime - var_1;
+    var_2.cooldowncounter = min( var_1, var_3.cooldowntime );
+    var_2.cooldownleft = var_3.cooldowntime - var_1;
 
-    if ( var_2._id_4619 <= 0.0 )
+    if ( var_2.cooldownleft <= 0.0 )
         self notify( "finish_power_cooldown_" + var_0 );
 }
 
-_id_D752( var_0, var_1 )
+power_shouldcooldown( var_0, var_1 )
 {
     if ( var_1 scripts\mp\utility::_hasperk( "specialty_powercell" ) )
         return 1;
 
-    if ( level.powers[var_0]._id_13058 )
+    if ( level.powers[var_0].usecooldown )
         return 1;
 
     return 0;
 }
 
-_id_D72A( var_0, var_1, var_2, var_3 )
+power_docooldown( var_0, var_1, var_2, var_3 )
 {
     self endon( "disconnect" );
     self endon( "powers_cleanUp" );
@@ -744,100 +744,100 @@ _id_D72A( var_0, var_1, var_2, var_3 )
     var_5 = self.powers[var_0];
     var_3 = var_5.slot;
     var_6 = var_0 + "_cooldown_update";
-    var_5._id_93DD = 1;
+    var_5.incooldown = 1;
 
-    if ( !isdefined( var_5._id_461C ) )
-        var_5._id_461C = 0;
+    if ( !isdefined( var_5.cooldownsqueued ) )
+        var_5.cooldownsqueued = 0;
 
-    var_5._id_461C++;
+    var_5.cooldownsqueued++;
 
-    if ( !isdefined( var_5._id_4617 ) )
-        var_5._id_4617 = 0;
+    if ( !isdefined( var_5.cooldowncounter ) )
+        var_5.cooldowncounter = 0;
 
-    if ( !isdefined( var_5._id_4619 ) )
-        var_5._id_4619 = 0;
+    if ( !isdefined( var_5.cooldownleft ) )
+        var_5.cooldownleft = 0;
 
-    var_5._id_4619 = var_5._id_4619 + var_1;
-    var_7 = var_5._id_91B1;
+    var_5.cooldownleft = var_5.cooldownleft + var_1;
+    var_7 = var_5.hudstate;
 
     if ( isdefined( var_7 ) && var_7 != 0 && var_5.charges == 0 )
     {
-        _id_D750( var_3, 1 );
+        power_sethudstate( var_3, 1 );
         self notify( "power_unavailable", var_0, var_3 );
     }
 
     while ( var_5.charges < var_5.maxcharges )
     {
-        if ( _id_D752( var_0, self ) )
+        if ( power_shouldcooldown( var_0, self ) )
             wait 0.1;
         else
             self waittill( "power_charges_adjusted_" + var_0 );
 
-        if ( var_5._id_4617 > var_1 )
+        if ( var_5.cooldowncounter > var_1 )
         {
             power_adjustcharges( 1, var_3 );
-            _id_D765( var_0 );
+            power_updateammo( var_0 );
 
             if ( var_5.charges == var_5.maxcharges )
-                thread _id_D730( var_0, var_2 );
+                thread power_endcooldown( var_0, var_2 );
 
-            var_5._id_4617 = var_5._id_4617 - var_1;
-            var_5._id_4619 = var_5._id_4619 - var_1;
-            var_5._id_461C--;
+            var_5.cooldowncounter = var_5.cooldowncounter - var_1;
+            var_5.cooldownleft = var_5.cooldownleft - var_1;
+            var_5.cooldownsqueued--;
 
             if ( isdefined( var_7 ) && var_7 != 0 )
-                _id_D750( var_3, 2 );
+                power_sethudstate( var_3, 2 );
         }
         else
         {
-            var_5._id_4617 = var_5._id_4617 + 0.1;
-            var_5._id_4619 = var_5._id_4619 - 0.1;
+            var_5.cooldowncounter = var_5.cooldowncounter + 0.1;
+            var_5.cooldownleft = var_5.cooldownleft - 0.1;
         }
 
-        var_8 = min( 1, var_5._id_4617 / var_1 );
+        var_8 = min( 1, var_5.cooldowncounter / var_1 );
         self notify( var_6, var_8 );
     }
 
-    thread _id_D730( var_0, var_2 );
+    thread power_endcooldown( var_0, var_2 );
 }
 
-_id_D730( var_0, var_1 )
+power_endcooldown( var_0, var_1 )
 {
     self notify( "power_cooldown_ended" + var_0 );
     var_2 = self.powers[var_0];
-    var_2._id_93DD = 0;
-    var_2._id_4617 = 0;
-    var_2._id_4619 = 0;
-    var_2._id_461C = 0;
+    var_2.incooldown = 0;
+    var_2.cooldowncounter = 0;
+    var_2.cooldownleft = 0;
+    var_2.cooldownsqueued = 0;
 
     if ( isdefined( var_1 ) && var_1 )
         self notify( "copycat_reset" );
 
-    var_3 = var_2._id_91B1;
+    var_3 = var_2.hudstate;
     var_4 = var_2.slot;
 
     if ( var_3 == 0 )
         return;
 
-    _id_D750( var_4, 2 );
+    power_sethudstate( var_4, 2 );
 }
 
-_id_D72B( var_0 )
+power_dodrain( var_0 )
 {
     self endon( "death" );
     self endon( "power_drain_ended_" + var_0 );
     self notify( "power_cooldown_ended_" + var_0 );
     var_1 = level.powers[var_0];
     var_2 = self.powers[var_0];
-    var_3 = var_1._id_12ED9;
-    var_4 = var_1._id_9A90;
+    var_3 = var_1.updatenotify;
+    var_4 = var_1.interruptnotify;
     var_5 = var_2.slot;
-    var_2._id_940B = 1;
-    _id_D727( var_0 );
-    _id_D750( var_5, 0 );
+    var_2.indrain = 1;
+    power_disableactivation( var_0 );
+    power_sethudstate( var_5, 0 );
 
     if ( isdefined( var_4 ) )
-        thread _id_D732( var_0, var_5, var_4 );
+        thread power_enddrainoninterrupt( var_0, var_5, var_4 );
 
     for (;;)
     {
@@ -847,31 +847,31 @@ _id_D72B( var_0 )
             break;
     }
 
-    thread _id_D731( var_0 );
+    thread power_enddrain( var_0 );
 }
 
-_id_D732( var_0, var_1, var_2 )
+power_enddrainoninterrupt( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     self endon( "powers_cleanUp" );
     self endon( "power_removed_" + var_0 );
     self endon( "power_drain_ended_" + var_0 );
     self waittill( var_2 );
-    thread _id_D731( var_0 );
+    thread power_enddrain( var_0 );
 }
 
-_id_D731( var_0 )
+power_enddrain( var_0 )
 {
     self notify( "power_drain_ended_" + var_0 );
     var_1 = self.powers[var_0];
     var_2 = var_1.slot;
-    var_1._id_940B = 0;
-    _id_D72D( var_0 );
+    var_1.indrain = 0;
+    power_enableactivation( var_0 );
 
     if ( var_1.charges > 0 )
-        _id_D750( var_2, 2 );
+        power_sethudstate( var_2, 2 );
     else
-        _id_D750( var_2, 1 );
+        power_sethudstate( var_2, 1 );
 }
 
 _id_12D2C()
@@ -929,12 +929,12 @@ _id_130B4()
     scripts\mp\equipment\optic_wave::_id_C6AF();
 }
 
-_id_F7E7( var_0 )
+setphasesplit( var_0 )
 {
 
 }
 
-_id_12D0B()
+unsetphasesplit()
 {
     scripts\mp\equipment\phase_split::_id_CABB();
 }
@@ -1121,7 +1121,7 @@ _id_130A5()
     scripts\mp\equipment\mortar_mount::_id_BB94();
 }
 
-_id_F62E( var_0 )
+setactivespawnquerycontext( var_0 )
 {
 
 }
@@ -1156,7 +1156,7 @@ _id_F861( var_0 )
     scripts\mp\archetypes\archscout::_id_F861();
 }
 
-_id_12D38()
+unsetstealth()
 {
     scripts\mp\archetypes\archscout::_id_E175();
 }
@@ -1186,7 +1186,7 @@ _id_12D03()
     scripts\mp\equipment\peripheral_vision::_id_CA2B();
 }
 
-usepercent()
+_id_130BB()
 {
     scripts\mp\equipment\peripheral_vision::_id_CA2C();
 }
@@ -1246,7 +1246,7 @@ _id_12D6A()
     scripts\mp\equipment\wrist_rocket::wristrocket_unset();
 }
 
-hasequipment( var_0 )
+haspower( var_0 )
 {
     if ( !isdefined( self.powers[var_0] ) )
         return 0;
@@ -1254,7 +1254,7 @@ hasequipment( var_0 )
     return 1;
 }
 
-_id_13709( var_0 )
+waitonpowerbutton( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -1282,7 +1282,7 @@ power_modifycooldownrate( var_0, var_1 )
     if ( !isdefined( var_1 ) )
         var_1 = "all";
 
-    var_2 = _id_D739();
+    var_2 = power_getpowerkeys();
 
     foreach ( var_4 in var_2 )
     {
@@ -1296,7 +1296,7 @@ _id_D74E( var_0 )
     if ( !isdefined( var_0 ) )
         var_0 = "all";
 
-    var_1 = _id_D739();
+    var_1 = power_getpowerkeys();
 
     foreach ( var_3 in var_1 )
     {
@@ -1310,7 +1310,7 @@ power_adjustcharges( var_0, var_1 )
     if ( !isdefined( var_1 ) )
         var_1 = "all";
 
-    var_2 = _id_D739();
+    var_2 = power_getpowerkeys();
 
     foreach ( var_4 in var_2 )
     {
@@ -1332,7 +1332,7 @@ _id_D71B( var_0, var_1 )
     power_adjustcharges( var_0, self.powers[var_1].slot );
 }
 
-_id_D739()
+power_getpowerkeys()
 {
     var_0 = getarraykeys( level.powers );
     var_1 = getarraykeys( self.powers );
@@ -1374,25 +1374,25 @@ usequickslothealitem( var_0 )
     scripts\mp\utility::_takeweapon( var_0 );
 }
 
-_id_50A4( var_0 )
+definepowerovertimeduration( var_0 )
 {
-    if ( !isdefined( self._id_D775 ) )
-        self._id_D775 = [];
+    if ( !isdefined( self.powerdurations ) )
+        self.powerdurations = [];
 
-    if ( !isdefined( self._id_D775[var_0] ) )
-        self._id_D775[var_0] = 0.0;
+    if ( !isdefined( self.powerdurations[var_0] ) )
+        self.powerdurations[var_0] = 0.0;
 }
 
-_id_808F( var_0 )
+getpowerovertimeduration( var_0 )
 {
-    _id_50A4( var_0 );
-    return self._id_D775[var_0];
+    definepowerovertimeduration( var_0 );
+    return self.powerdurations[var_0];
 }
 
-_id_F809( var_0, var_1 )
+setpowerovertimeduration( var_0, var_1 )
 {
-    _id_50A4( var_0 );
-    self._id_D775[var_0] = var_1;
+    definepowerovertimeduration( var_0 );
+    self.powerdurations[var_0] = var_1;
 }
 
 _id_4575( var_0, var_1, var_2 )
@@ -1407,18 +1407,18 @@ _id_4575( var_0, var_1, var_2 )
     var_0 = var_0 * 1000;
     var_3 = 1.0 / var_0;
     var_4 = gettime();
-    _id_F809( var_1, var_0 );
-    var_5 = _id_808F( var_1 );
+    setpowerovertimeduration( var_1, var_0 );
+    var_5 = getpowerovertimeduration( var_1 );
 
     while ( var_5 > 0 )
     {
         _id_C170( var_1, var_5 * var_3 );
         wait 0.1;
-        var_5 = _id_808F( var_1 );
+        var_5 = getpowerovertimeduration( var_1 );
         var_6 = gettime();
         var_5 = var_5 - ( var_6 - var_4 );
         var_4 = var_6;
-        _id_F809( var_1, var_5 );
+        setpowerovertimeduration( var_1, var_5 );
     }
 
     _id_C170( var_1, 0 );
@@ -1426,7 +1426,7 @@ _id_4575( var_0, var_1, var_2 )
 
 _id_3885( var_0 )
 {
-    _id_F809( var_0, 0 );
+    setpowerovertimeduration( var_0, 0 );
     self notify( "cancel_" + var_0 );
     _id_C170( var_0, 0 );
 }
@@ -1436,7 +1436,7 @@ _id_C170( var_0, var_1 )
     self notify( var_0, var_1 );
 }
 
-_id_13A0E( var_0, var_1, var_2, var_3 )
+watchearlyout( var_0, var_1, var_2, var_3 )
 {
     self endon( "disconnect" );
     self endon( "powers_cleanUp" );
@@ -1456,10 +1456,10 @@ _id_13A0E( var_0, var_1, var_2, var_3 )
                 power_adjustcharges( -1, var_5.slot );
             }
 
-            if ( !var_5._id_93DD )
+            if ( !var_5.incooldown )
             {
-                var_5._id_4619 = level.powers[var_1].cooldowntime;
-                thread _id_D72A( var_1, var_0, undefined, var_3 );
+                var_5.cooldownleft = level.powers[var_1].cooldowntime;
+                thread power_docooldown( var_1, var_0, undefined, var_3 );
             }
         }
     }
@@ -1504,18 +1504,18 @@ _id_D767( var_0, var_1, var_2, var_3 )
     var_2 = var_2 - 1;
     var_5 = 0;
     var_6 = 0.05;
-    var_7 = _id_D735( var_0 );
+    var_7 = power_getinputcommand( var_0 );
     var_8 = undefined;
     var_9 = var_3;
 
     for (;;)
     {
-        if ( !_id_9F09( var_7 ) )
+        if ( !ispowersbuttonpressed( var_7 ) )
             break;
 
-        if ( _id_9F09( var_7 ) )
+        if ( ispowersbuttonpressed( var_7 ) )
         {
-            while ( _id_9F09( var_7 ) )
+            while ( ispowersbuttonpressed( var_7 ) )
             {
                 if ( self usebuttonpressed() )
                 {
@@ -1569,7 +1569,7 @@ _id_D767( var_0, var_1, var_2, var_3 )
     return var_1;
 }
 
-_id_9F09( var_0 )
+ispowersbuttonpressed( var_0 )
 {
     if ( var_0 == "+frag" && self fragbuttonpressed() || var_0 == "+smoke" && self secondaryoffhandbuttonpressed() )
         return 1;
@@ -1587,11 +1587,11 @@ _id_D769( var_0, var_1 )
     else
         var_1 = var_1 * 1000;
 
-    var_2 = _id_D735( var_0 );
+    var_2 = power_getinputcommand( var_0 );
     var_3 = gettime();
     var_4 = var_3 + var_1;
 
-    while ( _id_9F09( var_2 ) && gettime() < var_4 )
+    while ( ispowersbuttonpressed( var_2 ) && gettime() < var_4 )
         wait 0.05;
 
     return ( gettime() - var_3 ) / 1000;
@@ -1656,7 +1656,7 @@ _id_9F0A( var_0 )
     }
 }
 
-_id_F808( var_0, var_1 )
+setpowerovertime( var_0, var_1 )
 {
     if ( !isdefined( var_1 ) )
         var_1 = 0;
@@ -1667,7 +1667,7 @@ _id_F808( var_0, var_1 )
         _id_3885( var_0 );
 }
 
-_id_D76C( var_0 )
+power_watchhudcharges( var_0 )
 {
     self endon( "death" );
     self endon( "power_available_ended_" + var_0 );
@@ -1681,7 +1681,7 @@ _id_D76C( var_0 )
     }
 }
 
-_id_D76E( var_0 )
+power_watchhuddrainmeter( var_0 )
 {
     self endon( "disconnect" );
     self endon( "power_removed_" + var_0 );
@@ -1689,7 +1689,7 @@ _id_D76E( var_0 )
     var_1 = self.powers[var_0];
     var_2 = level.powers[var_0];
     var_3 = var_1.slot;
-    var_4 = var_2._id_12ED9;
+    var_4 = var_2.updatenotify;
 
     if ( !isdefined( var_4 ) )
         var_4 = var_0 + "_update";
@@ -1702,7 +1702,7 @@ _id_D76E( var_0 )
     }
 }
 
-_id_D76D( var_0 )
+power_watchhudcooldownmeter( var_0 )
 {
     self endon( "disconnect" );
     self endon( "power_removed_" + var_0 );
@@ -1763,38 +1763,38 @@ _id_13A2D( var_0, var_1 )
     self notify( "grenadeOffhandFiredRace_" + var_0 + "_begin" );
 }
 
-_id_D727( var_0 )
+power_disableactivation( var_0 )
 {
     var_1 = self.powers[var_0];
 
-    if ( !isdefined( var_1._id_55AB ) )
-        var_1._id_55AB = 0;
+    if ( !isdefined( var_1.disableactivation ) )
+        var_1.disableactivation = 0;
 
-    var_1._id_55AB++;
+    var_1.disableactivation++;
 
-    if ( var_1._id_55AB == 1 )
-        _id_D765( var_0 );
+    if ( var_1.disableactivation == 1 )
+        power_updateammo( var_0 );
 }
 
-_id_D72D( var_0 )
+power_enableactivation( var_0 )
 {
     var_1 = self.powers[var_0];
-    var_1._id_55AB--;
+    var_1.disableactivation--;
 
-    if ( var_1._id_55AB == 0 )
-        _id_D765( var_0 );
+    if ( var_1.disableactivation == 0 )
+        power_updateammo( var_0 );
 }
 
 _id_D71E( var_0 )
 {
     var_1 = self.powers[var_0];
-    return !isdefined( var_1._id_55AB ) || var_1._id_55AB == 0;
+    return !isdefined( var_1.disableactivation ) || var_1.disableactivation == 0;
 }
 
-_id_D765( var_0 )
+power_updateammo( var_0 )
 {
     var_1 = self.powers[var_0];
-    var_2 = isdefined( var_1._id_55AB ) && var_1._id_55AB;
+    var_2 = isdefined( var_1.disableactivation ) && var_1.disableactivation;
     var_3 = var_1.charges > 0;
 
     if ( !var_2 && var_3 )
@@ -1841,9 +1841,9 @@ equipmenthit( var_0, var_1, var_2, var_3 )
 
         if ( var_5 <= var_4 )
         {
-            var_1 scripts\mp\persistence::_id_10E55( "hits", var_5 );
-            var_1 scripts\mp\persistence::_id_10E55( "misses", int( var_4 - var_5 ) );
-            var_1 scripts\mp\persistence::_id_10E55( "accuracy", int( var_5 * 10000 / var_4 ) );
+            var_1 scripts\mp\persistence::statsetbuffered( "hits", var_5 );
+            var_1 scripts\mp\persistence::statsetbuffered( "misses", int( var_4 - var_5 ) );
+            var_1 scripts\mp\persistence::statsetbuffered( "accuracy", int( var_5 * 10000 / var_4 ) );
         }
 
         if ( isdefined( var_3 ) && scripts\engine\utility::isbulletdamage( var_3 ) || scripts\mp\utility::isprojectiledamage( var_3 ) )

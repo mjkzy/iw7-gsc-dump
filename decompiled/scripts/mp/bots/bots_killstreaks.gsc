@@ -22,7 +22,7 @@ bot_killstreak_setup()
         bot_register_killstreak_func( "jackal", ::bot_killstreak_simple_use );
         bot_register_killstreak_func( "uav", ::bot_killstreak_simple_use );
         bot_register_killstreak_func( "counter_uav", ::bot_killstreak_simple_use );
-        bot_register_killstreak_func( "jammer", ::bot_killstreak_simple_use, ::_id_2D28 );
+        bot_register_killstreak_func( "jammer", ::bot_killstreak_simple_use, ::bot_can_use_emp );
         bot_register_killstreak_func( "directional_uav", ::bot_killstreak_simple_use );
 
         if ( isdefined( level.mapcustombotkillstreakfunc ) )
@@ -126,7 +126,7 @@ bot_is_killstreak_supported( var_0 )
     return 1;
 }
 
-_id_2D29( var_0 )
+bot_can_use_killstreak( var_0 )
 {
     var_1 = level.killstreak_botcanuse[var_0];
 
@@ -169,7 +169,7 @@ bot_think_killstreak()
                     if ( isdefined( var_2.streakname ) && isdefined( self.bot_killstreak_wait ) && isdefined( self.bot_killstreak_wait[var_2.streakname] ) && gettime() < self.bot_killstreak_wait[var_2.streakname] )
                         continue;
 
-                    if ( var_2._id_269A )
+                    if ( var_2.available )
                     {
                         var_3 = var_2.streakname;
 
@@ -190,7 +190,7 @@ bot_think_killstreak()
                         if ( isdefined( var_4 ) && !self [[ var_4 ]]() )
                             continue;
 
-                        if ( !scripts\mp\utility::_id_1314A( var_2.streakname, 1 ) )
+                        if ( !scripts\mp\utility::validateusestreak( var_2.streakname, 1 ) )
                             continue;
 
                         var_5 = level.killstreak_botfunc[var_3];
@@ -214,7 +214,7 @@ bot_think_killstreak()
 
                             }
 
-                            var_2._id_269A = 0;
+                            var_2.available = 0;
                         }
 
                         break;
@@ -261,7 +261,7 @@ bot_can_use_air_superiority()
     if ( !aerial_vehicle_allowed() )
         return 0;
 
-    var_0 = scripts\mp\killstreaks\airdrone::_id_6CAA( self, self.team );
+    var_0 = scripts\mp\killstreaks\airdrone::findalltargets( self, self.team );
     var_1 = gettime();
 
     foreach ( var_3 in var_0 )
@@ -289,7 +289,7 @@ vehicle_would_exceed_limit()
     return scripts\mp\utility::currentactivevehiclecount() >= scripts\mp\utility::maxvehiclesallowed() || level.fauxvehiclecount + 1 >= scripts\mp\utility::maxvehiclesallowed();
 }
 
-_id_2D28()
+bot_can_use_emp()
 {
     if ( isdefined( level.empplayer ) )
         return 0;
@@ -373,7 +373,7 @@ bot_killstreak_drop( var_0, var_1, var_2, var_3, var_4 )
         foreach ( var_7 in var_1 )
         {
             if ( isdefined( var_7.streakname ) && var_7.streakname == var_0.streakname )
-                var_7._id_269A = 0;
+                var_7.available = 0;
         }
 
         return 1;
@@ -441,10 +441,10 @@ bot_killstreak_drop( var_0, var_1, var_2, var_3, var_4 )
 
 bot_switch_to_killstreak_weapon( var_0, var_1, var_2 )
 {
-    _id_2E29( var_0, var_1 );
+    bot_notify_streak_used( var_0, var_1 );
 }
 
-_id_2E29( var_0, var_1 )
+bot_notify_streak_used( var_0, var_1 )
 {
     if ( isdefined( var_0.isgimme ) && var_0.isgimme )
     {

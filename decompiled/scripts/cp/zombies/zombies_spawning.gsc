@@ -94,7 +94,7 @@ _id_975C()
     foreach ( var_2 in level.spawn_volume_array )
     {
         var_2.basename = _id_7859( var_2 );
-        level._id_10817[var_2.basename] = var_2;
+        level.spawn_volume_names[var_2.basename] = var_2;
 
         if ( !scripts\cp\utility::is_escape_gametype() )
         {
@@ -575,7 +575,7 @@ _id_1B99( var_0 )
         return;
     }
 
-    if ( ispointinvolume( var_0.origin, level._id_10817["underground_route"] ) )
+    if ( ispointinvolume( var_0.origin, level.spawn_volume_names["underground_route"] ) )
         var_1 = level._effect["goon_spawn_bolt_underground"];
     else
         var_1 = level._effect["goon_spawn_bolt"];
@@ -588,7 +588,7 @@ _id_1B99( var_0 )
 
 _id_3115( var_0 )
 {
-    if ( ispointinvolume( var_0.origin, level._id_10817["underground_route"] ) )
+    if ( ispointinvolume( var_0.origin, level.spawn_volume_names["underground_route"] ) )
         var_1 = level._effect["brute_spawn_bolt_indoor"];
     else
         var_1 = level._effect["brute_spawn_bolt"];
@@ -653,21 +653,21 @@ _id_8456( var_0 )
 
     foreach ( var_6 in var_0 )
     {
-        if ( scripts\cp\zombies\_id_0D60::_id_800B( var_6.volume ) )
+        if ( _id_0D60::_id_800B( var_6.volume ) )
         {
             var_1[var_1.size] = var_6;
-            var_6.modifiedspawnpoints = var_2;
+            var_6.modifier = var_2;
             continue;
         }
 
-        if ( isdefined( var_6.volume._id_186E ) )
+        if ( isdefined( var_6.volume.adjacent_volumes ) )
         {
-            foreach ( var_8 in var_6.volume._id_186E )
+            foreach ( var_8 in var_6.volume.adjacent_volumes )
             {
-                if ( scripts\cp\zombies\_id_0D60::_id_800B( var_8 ) )
+                if ( _id_0D60::_id_800B( var_8 ) )
                 {
                     var_1[var_1.size] = var_6;
-                    var_6.modifiedspawnpoints = var_3;
+                    var_6.modifier = var_3;
                     break;
                 }
             }
@@ -696,7 +696,7 @@ _id_8456( var_0 )
     {
         var_21 = "";
         var_26 = 0;
-        var_27 = var_6.modifiedspawnpoints * randomintrange( var_18, var_19 );
+        var_27 = var_6.modifier * randomintrange( var_18, var_19 );
         var_28 = randomint( 100 );
 
         if ( isdefined( var_6._id_BF6C ) && var_6._id_BF6C >= var_22 )
@@ -1015,14 +1015,14 @@ update_kvp_script_fxid( var_0, var_1 )
     return var_0;
 }
 
-_id_77D3()
+get_adjacent_volumes_from_volume()
 {
-    if ( isdefined( level._id_186E[self.basename] ) )
+    if ( isdefined( level.adjacent_volumes[self.basename] ) )
     {
         var_0 = [];
 
-        foreach ( var_2 in level._id_186E[self.basename] )
-            var_0[var_0.size] = level._id_10817[var_2];
+        foreach ( var_2 in level.adjacent_volumes[self.basename] )
+            var_0[var_0.size] = level.spawn_volume_names[var_2];
 
         return var_0;
     }
@@ -1128,7 +1128,7 @@ _id_10865( var_0 )
                 thread _id_B0D1();
                 break;
             case "spawn_wall_low":
-                self._id_1CAE = 1;
+                self.allowtelefrag = 1;
         }
     }
 }
@@ -1575,7 +1575,7 @@ killplayersifonhead( var_0 )
 
 _id_CCBB()
 {
-    if ( level._id_311A == 1 )
+    if ( level.brutefirstspawn == 1 )
     {
         foreach ( var_1 in level.players )
             var_1 thread scripts\cp\cp_vo::try_to_play_vo( "brute_generic", "zmb_comment_vo", "highest", 20, 0, 0, 1 );
@@ -1585,7 +1585,7 @@ _id_CCBB()
     }
     else
     {
-        level._id_311A = 1;
+        level.brutefirstspawn = 1;
 
         foreach ( var_1 in level.players )
             var_1 thread scripts\cp\cp_vo::try_to_play_vo( "brute_first", "zmb_comment_vo", "highest", 20, 0, 0, 1 );
@@ -1933,7 +1933,7 @@ _id_13F53( var_0, var_1, var_2, var_3, var_4 )
 
     if ( isdefined( var_5.spawner ) )
     {
-        if ( var_4 _id_0C2B::_id_10863() )
+        if ( var_4 scripts\aitypes\zombie\zombie_agent::_id_10863() )
             var_5.entered_playspace = 1;
     }
 
@@ -2251,8 +2251,8 @@ calculatezombiehealth( var_0 )
 
 get_spawn_volumes_players_are_in( var_0, var_1 )
 {
-    if ( isdefined( level._id_7C80 ) )
-        return [[ level._id_7C80 ]]();
+    if ( isdefined( level.get_spawn_volume_func ) )
+        return [[ level.get_spawn_volume_func ]]();
 
     var_2 = [];
     var_3 = level.spawn_volume_array;
@@ -2275,7 +2275,7 @@ get_spawn_volumes_players_are_in( var_0, var_1 )
                 continue;
             }
 
-            if ( scripts\engine\utility::is_true( var_0 ) && var_8 _id_9C0F( var_5 ) )
+            if ( scripts\engine\utility::is_true( var_0 ) && var_8 is_in_adjacent_volume( var_5 ) )
                 var_6 = 1;
         }
 
@@ -2288,8 +2288,8 @@ get_spawn_volumes_players_are_in( var_0, var_1 )
 
 get_spawn_volumes_player_is_in( var_0, var_1, var_2 )
 {
-    if ( isdefined( level._id_7C80 ) )
-        return [[ level._id_7C80 ]]();
+    if ( isdefined( level.get_spawn_volume_func ) )
+        return [[ level.get_spawn_volume_func ]]();
 
     var_3 = [];
     var_4 = level.spawn_volume_array;
@@ -2306,7 +2306,7 @@ get_spawn_volumes_player_is_in( var_0, var_1, var_2 )
 
         if ( var_2 istouching( var_6 ) )
             var_7 = 1;
-        else if ( scripts\engine\utility::is_true( var_0 ) && var_2 _id_9C0F( var_6 ) )
+        else if ( scripts\engine\utility::is_true( var_0 ) && var_2 is_in_adjacent_volume( var_6 ) )
             var_7 = 1;
 
         if ( var_7 )
@@ -2316,15 +2316,15 @@ get_spawn_volumes_player_is_in( var_0, var_1, var_2 )
     return var_3;
 }
 
-_id_9C0F( var_0 )
+is_in_adjacent_volume( var_0 )
 {
     if ( !isdefined( var_0 ) )
         return 0;
 
-    if ( !isdefined( var_0._id_186E ) )
+    if ( !isdefined( var_0.adjacent_volumes ) )
         return 0;
 
-    foreach ( var_2 in var_0._id_186E )
+    foreach ( var_2 in var_0.adjacent_volumes )
     {
         if ( !var_2.active )
             continue;
@@ -2341,8 +2341,8 @@ _id_94D5()
     while ( !isdefined( level.all_interaction_structs ) )
         wait 0.1;
 
-    level._id_186E = [];
-    level._id_186E["hidden_room"] = [];
+    level.adjacent_volumes = [];
+    level.adjacent_volumes["hidden_room"] = [];
     level._id_C50A["mars_3"]["swamp_stage"] = 1;
     var_0 = [];
 
@@ -2391,13 +2391,13 @@ _id_1751( var_0, var_1 )
     if ( var_0.script_area == var_1.script_area )
         return;
 
-    if ( !isdefined( level._id_186E[var_0.script_area] ) )
-        level._id_186E[var_0.script_area] = [];
+    if ( !isdefined( level.adjacent_volumes[var_0.script_area] ) )
+        level.adjacent_volumes[var_0.script_area] = [];
 
-    if ( scripts\engine\utility::array_contains( level._id_186E[var_0.script_area], var_1.script_area ) )
+    if ( scripts\engine\utility::array_contains( level.adjacent_volumes[var_0.script_area], var_1.script_area ) )
         return;
 
-    level._id_186E[var_0.script_area][level._id_186E[var_0.script_area].size] = var_1.script_area;
+    level.adjacent_volumes[var_0.script_area][level.adjacent_volumes[var_0.script_area].size] = var_1.script_area;
     _id_12E46( var_0.script_area, var_1.script_area );
 }
 
@@ -2423,21 +2423,21 @@ _id_12E46( var_0, var_1 )
     if ( !isdefined( level.spawn_volume_array[var_1] ) )
         return;
 
-    if ( !isdefined( level.spawn_volume_array[var_1]._id_186E ) )
-        level.spawn_volume_array[var_1]._id_186E = [];
+    if ( !isdefined( level.spawn_volume_array[var_1].adjacent_volumes ) )
+        level.spawn_volume_array[var_1].adjacent_volumes = [];
 
-    level.spawn_volume_array[var_1]._id_186E[level.spawn_volume_array[var_1]._id_186E.size] = level.spawn_volume_array[var_0];
+    level.spawn_volume_array[var_1].adjacent_volumes[level.spawn_volume_array[var_1].adjacent_volumes.size] = level.spawn_volume_array[var_0];
 }
 
 update_volume_adjacency_by_name( var_0, var_1 )
 {
-    if ( !isdefined( level._id_186E[var_0] ) )
-        level._id_186E[var_0] = [];
+    if ( !isdefined( level.adjacent_volumes[var_0] ) )
+        level.adjacent_volumes[var_0] = [];
 
-    if ( scripts\engine\utility::array_contains( level._id_186E[var_0], var_1 ) )
+    if ( scripts\engine\utility::array_contains( level.adjacent_volumes[var_0], var_1 ) )
         return;
 
-    level._id_186E[var_0][level._id_186E[var_0].size] = var_1;
+    level.adjacent_volumes[var_0][level.adjacent_volumes[var_0].size] = var_1;
     _id_12E46( var_0, var_1 );
 }
 
@@ -3055,7 +3055,7 @@ clown_wave_music()
     wait 3;
 
     if ( soundexists( "mus_zombies_eventwave_start" ) )
-        level thread _id_BDD3();
+        level thread mus_rave_eventwave_start();
 
     level.wait_for_music_clown_wave = 1;
 }
@@ -3118,36 +3118,36 @@ _id_13BDB()
 {
     foreach ( var_1 in level.players )
     {
-        if ( !isdefined( var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1] ) )
+        if ( !isdefined( var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1] ) )
         {
             if ( scripts\engine\utility::is_true( var_1.in_afterlife_arcade ) )
             {
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["bowling_for_planets"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["bowling_for_planets_afterlife"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["coaster"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["laughingclown"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["laughingclown_afterlife"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["basketball_game"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["basketball_game_afterlife"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["clown_tooth_game"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["clown_tooth_game_afterlife"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["game_race"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["shooting_gallery"] = 0;
-                var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["shooting_gallery_afterlife"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["bowling_for_planets"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["bowling_for_planets_afterlife"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["coaster"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["laughingclown"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["laughingclown_afterlife"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["basketball_game"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["basketball_game_afterlife"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["clown_tooth_game"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["clown_tooth_game_afterlife"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["game_race"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["shooting_gallery"] = 0;
+                var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["shooting_gallery_afterlife"] = 0;
             }
 
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["bowling_for_planets"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["bowling_for_planets_afterlife"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["coaster"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["laughingclown"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["laughingclown_afterlife"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["basketball_game"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["basketball_game_afterlife"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["clown_tooth_game"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["clown_tooth_game_afterlife"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["game_race"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["shooting_gallery"] = 0;
-            var_1.pers["timesPerWave"]._id_11930[level.wave_num + 1]["shooting_gallery_afterlife"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["bowling_for_planets"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["bowling_for_planets_afterlife"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["coaster"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["laughingclown"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["laughingclown_afterlife"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["basketball_game"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["basketball_game_afterlife"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["clown_tooth_game"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["clown_tooth_game_afterlife"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["game_race"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["shooting_gallery"] = 0;
+            var_1.pers["timesPerWave"].timesperwave[level.wave_num + 1]["shooting_gallery_afterlife"] = 0;
         }
 
         var_2 = var_1 getcurrentweapon();
@@ -3673,7 +3673,7 @@ _id_51A5( var_0, var_1 )
     if ( var_1 )
     {
         if ( scripts\engine\utility::is_true( self.isactive ) )
-            _id_EDF6();
+            script_killspawn();
         else
         {
 
@@ -3707,12 +3707,12 @@ _id_51A5( var_0, var_1 )
         if ( scripts\engine\utility::is_true( self.isactive ) )
         {
             self.nocorpse = 1;
-            _id_EDF6();
+            script_killspawn();
         }
     }
 }
 
-_id_EDF6()
+script_killspawn()
 {
     self dodamage( self.health + 950, self.origin, self, self, "MOD_SUICIDE" );
 }
@@ -3765,12 +3765,12 @@ _id_8016( var_0, var_1 )
     if ( scripts\engine\utility::is_true( var_1 ) )
         var_6 = var_6 + _id_C1EB( var_2, 1 );
     else
-        var_6 = scripts\cp\zombies\_id_0D60::_id_800B( var_2 );
+        var_6 = _id_0D60::_id_800B( var_2 );
 
-    if ( scripts\engine\utility::is_true( var_0 ) && var_6 == 0 && isdefined( var_2._id_186E ) )
+    if ( scripts\engine\utility::is_true( var_0 ) && var_6 == 0 && isdefined( var_2.adjacent_volumes ) )
     {
-        foreach ( var_4 in var_2._id_186E )
-            var_6 = var_6 + scripts\cp\zombies\_id_0D60::_id_800B( var_4 );
+        foreach ( var_4 in var_2.adjacent_volumes )
+            var_6 = var_6 + _id_0D60::_id_800B( var_4 );
     }
 
     return var_6;
@@ -3804,16 +3804,16 @@ _id_F5EC()
             var_9 = var_6.basename + "_" + ( var_4 + 1 ) + "_despawn_volume";
 
             if ( isdefined( level._id_B789[var_8] ) )
-                level._id_B789[var_7]._id_186E[var_8] = level._id_B789[var_8];
+                level._id_B789[var_7].adjacent_volumes[var_8] = level._id_B789[var_8];
 
             if ( isdefined( level._id_B789[var_9] ) )
-                level._id_B789[var_7]._id_186E[var_9] = level._id_B789[var_9];
+                level._id_B789[var_7].adjacent_volumes[var_9] = level._id_B789[var_9];
 
             if ( isdefined( level._id_B789[var_7].target ) )
             {
                 var_10 = level._id_B789[var_7].target;
-                level._id_B789[var_7]._id_186E[var_10] = level._id_B789[var_10];
-                level._id_B789[var_10]._id_186E[var_7] = level._id_B789[var_7];
+                level._id_B789[var_7].adjacent_volumes[var_10] = level._id_B789[var_10];
+                level._id_B789[var_10].adjacent_volumes[var_7] = level._id_B789[var_7];
             }
 
             var_4++;
@@ -3850,12 +3850,12 @@ _id_C1EB( var_0, var_1 )
 
     if ( isdefined( var_3 ) )
     {
-        var_5 = scripts\cp\zombies\_id_0D60::_id_800B( var_3 );
+        var_5 = _id_0D60::_id_800B( var_3 );
 
-        if ( scripts\engine\utility::is_true( var_1 ) && var_5 == 0 && isdefined( var_3._id_186E ) )
+        if ( scripts\engine\utility::is_true( var_1 ) && var_5 == 0 && isdefined( var_3.adjacent_volumes ) )
         {
-            foreach ( var_8 in var_3._id_186E )
-                var_5 = var_5 + scripts\cp\zombies\_id_0D60::_id_800B( var_8 );
+            foreach ( var_8 in var_3.adjacent_volumes )
+                var_5 = var_5 + _id_0D60::_id_800B( var_8 );
         }
     }
 
@@ -4117,7 +4117,7 @@ _id_BDD1()
     scripts\cp\utility::playsoundinspace( "mus_zombies_endwave", ( 0, 0, 0 ) );
 }
 
-_id_BDD3()
+mus_rave_eventwave_start()
 {
     scripts\cp\utility::playsoundinspace( "mus_zombies_eventwave_start", ( 0, 0, 0 ) );
     level notify( "wave_start_sound_done" );

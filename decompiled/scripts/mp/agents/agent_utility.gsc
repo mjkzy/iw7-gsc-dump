@@ -46,13 +46,13 @@ initplayerscriptvariables( var_0 )
         self.saved_actionslotdata = undefined;
         self.perks = undefined;
         self.weaponlist = undefined;
-        self._id_C47E = undefined;
+        self.omaclasschanged = undefined;
         self.objectivescaler = undefined;
         self.touchtriggers = undefined;
         self.carryobject = undefined;
-        self._id_3FFA = undefined;
-        self._id_38ED = undefined;
-        self._id_A64F = undefined;
+        self.claimtrigger = undefined;
+        self.canpickupobject = undefined;
+        self.killedinuse = undefined;
         self.sessionteam = undefined;
         self.sessionstate = undefined;
         self.lastspawntime = undefined;
@@ -61,8 +61,8 @@ initplayerscriptvariables( var_0 )
         self.disabledweaponswitch = undefined;
         self.disabledoffhandweapons = undefined;
         self.disabledusability = undefined;
-        self._id_FC96 = undefined;
-        self._id_FC95 = undefined;
+        self.shielddamage = undefined;
+        self.shieldbullethits = undefined;
         self.recentshieldxp = undefined;
     }
     else
@@ -73,8 +73,8 @@ initplayerscriptvariables( var_0 )
         self.name = self.guid;
         self.sessionteam = self.team;
         self.sessionstate = "playing";
-        self._id_FC96 = 0;
-        self._id_FC95 = 0;
+        self.shielddamage = 0;
+        self.shieldbullethits = 0;
         self.recentshieldxp = 0;
         self.agent_gameparticipant = 1;
         scripts\mp\playerlogic::setupsavedactionslots();

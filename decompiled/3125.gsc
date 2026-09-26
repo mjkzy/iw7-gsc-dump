@@ -3,20 +3,20 @@
 
 _id_D4D9( var_0, var_1, var_2, var_3 )
 {
-    var_4 = scripts\asm\asm_bb::_id_2923();
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2 );
+    var_4 = scripts\asm\asm_bb::bb_getmeleechargetarget();
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2 );
 }
 
 _id_B644( var_0, var_1, var_2 )
 {
-    var_3 = scripts\asm\asm_bb::_id_2924();
+    var_3 = scripts\asm\asm_bb::bb_getmeleechargetargetpos();
     return distancesquared( self.origin, var_3 ) <= var_2 * var_2;
 }
 
 _id_B643( var_0, var_1, var_2 )
 {
     var_3 = 50;
-    var_4 = scripts\asm\asm_bb::_id_2924();
+    var_4 = scripts\asm\asm_bb::bb_getmeleechargetargetpos();
     return distancesquared( self.origin, var_4 ) <= var_3;
 }
 
@@ -84,7 +84,7 @@ donotetracks_vsplayer( var_0, var_1 )
 
                     break;
                 default:
-                    scripts\asm\asm_mp::_id_2345( var_4, var_1 );
+                    scripts\asm\asm_mp::asm_handlenotetracks( var_4, var_1 );
             }
         }
     }
@@ -112,7 +112,7 @@ _id_CA1F( var_0 )
     if ( isplayer( var_0 ) )
     {
         var_4 = _id_3D76( var_0 );
-        var_5 = _id_3D95( var_0 );
+        var_5 = check_for_player_meleeing( var_0 );
 
         if ( var_4 || var_5 )
             return;
@@ -142,7 +142,7 @@ _id_F5FE( var_0 )
     self setviewkickscale( var_0 );
 }
 
-_id_3D95( var_0 )
+check_for_player_meleeing( var_0 )
 {
     var_1 = anglestoforward( var_0.angles );
     var_2 = vectornormalize( self.origin - var_0.origin );

@@ -37,7 +37,7 @@ tagmarkedplayer( var_0, var_1 )
 {
     self endon( "death" );
     self endon( "disconnect" );
-    scripts\mp\missions::_id_D991( "ch_trait_marked_target" );
+    scripts\mp\missions::processchallengedaily( "ch_trait_marked_target" );
     var_2 = gettime() + 3000;
 
     while ( isalive( var_0 ) && gettime() < var_2 )
@@ -58,7 +58,7 @@ removemarkfromtarget( var_0 )
     self.healthregendisabled = undefined;
 }
 
-_id_13AA0( var_0, var_1, var_2 )
+watchhighlightfadetime( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );

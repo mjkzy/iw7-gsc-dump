@@ -116,7 +116,7 @@ chill_blind()
     self endon( "disconnect" );
     var_0 = self.chill_data;
     var_1 = level.chill_data;
-    var_2 = var_0._id_2B9B;
+    var_2 = var_0.blindid;
     var_3 = scripts\engine\utility::ter_op( scripts\mp\utility::_hasperk( "specialty_stun_resistance" ), 0, 1 );
     var_4 = var_1.blindparts[var_3];
     var_5 = var_1.blindstates[var_3];
@@ -125,7 +125,7 @@ chill_blind()
     if ( !isdefined( var_2 ) )
     {
         self setscriptablepartstate( var_4, var_5, 0 );
-        var_0._id_2B9B = var_3;
+        var_0.blindid = var_3;
     }
     else
     {
@@ -138,14 +138,14 @@ chill_blind()
             self setscriptablepartstate( var_7, "neutral", 0 );
 
         self setscriptablepartstate( var_4, var_5, 0 );
-        var_0._id_2B9B = var_3;
+        var_0.blindid = var_3;
     }
 
     self notify( "chillBlind" );
     self endon( "chillBlind" );
     scripts\engine\utility::waittill_any_timeout( var_6, "chillEnd" );
     self setscriptablepartstate( var_4, "neutral", 0 );
-    var_0._id_2B9B = undefined;
+    var_0.blindid = undefined;
 }
 
 chill_update()

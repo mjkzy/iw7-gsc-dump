@@ -63,7 +63,7 @@ killenemiesinfov()
 
 _id_9C0D( var_0 )
 {
-    if ( scripts\engine\utility::is_true( var_0._id_9342 ) )
+    if ( scripts\engine\utility::is_true( var_0.immune_against_repulsor ) )
         return 1;
 
     return 0;

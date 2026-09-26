@@ -129,5 +129,5 @@ _id_13629( var_0 )
 
 _id_D3B6()
 {
-    return isdefined( self._id_9F59 ) || isdefined( self._id_9F5A ) && gettime() <= self._id_9F5A;
+    return isdefined( self.issliding ) || isdefined( self._id_9F5A ) && gettime() <= self._id_9F5A;
 }

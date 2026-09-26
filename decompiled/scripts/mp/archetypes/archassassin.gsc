@@ -184,7 +184,7 @@ _id_E88E()
     }
 }
 
-_id_20D9( var_0, var_1 )
+applyradiusdamageasmelee( var_0, var_1 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -262,10 +262,10 @@ _id_C7A6( var_0 )
     if ( !isai( var_0 ) )
         var_0 scripts\mp\utility::_hudoutlineviewmodelenable( 5 );
 
-    var_0 _id_13AA0( var_1, self, 6 );
+    var_0 watchhighlightfadetime( var_1, self, 6 );
 }
 
-_id_13AA0( var_0, var_1, var_2 )
+watchhighlightfadetime( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );

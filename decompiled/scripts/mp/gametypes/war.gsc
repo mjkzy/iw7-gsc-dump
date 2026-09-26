@@ -53,7 +53,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_war_halftime", 0 );
     scripts\mp\utility::registerhalftimedvar( level.gametype, 0 );
     setdynamicdvar( "scr_war_promode", 0 );

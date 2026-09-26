@@ -3,7 +3,7 @@
 
 init()
 {
-    level._id_10E4E = [];
+    level.staticsuperdata = [];
     level.superweapons = [];
     level._id_1125E = 1.0;
     level._id_11264 = [];
@@ -35,23 +35,23 @@ init()
             break;
 
         var_5 = spawnstruct();
-        level._id_10E4E[var_4] = var_5;
+        level.staticsuperdata[var_4] = var_5;
         var_5.id = var_3;
         var_5.ref = var_4;
-        var_5.weapon = _id_DD68( var_3, 1 );
-        var_5.cooldown = _id_DD68( var_3, var_2, 1 );
-        var_5._id_EC3E = _id_DD68( var_3, 3, 1 );
-        var_5._id_5F36 = _id_DD68( var_3, var_0, 1 );
-        var_5._id_B473 = _id_DD68( var_3, 5, 1 );
-        var_5.useweapon = _id_DD68( var_3, 10 );
-        var_5._id_130F9 = _id_DD68( var_3, 11, 1 );
-        var_5._id_130FA = _id_DD68( var_3, 12, 1 );
-        var_5._id_BCEF = _id_DD68( var_3, 13, 1 );
-        var_5._id_8487 = _id_DD68( var_3, var_1, 1 );
-        var_5._id_B474 = _id_DD68( var_3, 15, 1 );
-        var_5._id_12B28 = _id_DD68( var_3, 17, 1 );
-        var_5.archetype = _id_DD68( var_3, 16 );
-        var_5._id_9FF8 = _id_DD68( var_3, 18, 1 );
+        var_5.weapon = readsupertablecell( var_3, 1 );
+        var_5.cooldown = readsupertablecell( var_3, var_2, 1 );
+        var_5._id_EC3E = readsupertablecell( var_3, 3, 1 );
+        var_5.duration = readsupertablecell( var_3, var_0, 1 );
+        var_5._id_B473 = readsupertablecell( var_3, 5, 1 );
+        var_5.useweapon = readsupertablecell( var_3, 10 );
+        var_5.useweaponclipammo = readsupertablecell( var_3, 11, 1 );
+        var_5.useweaponstockammo = readsupertablecell( var_3, 12, 1 );
+        var_5.movespeed = readsupertablecell( var_3, 13, 1 );
+        var_5.graceperiod = readsupertablecell( var_3, var_1, 1 );
+        var_5._id_B474 = readsupertablecell( var_3, 15, 1 );
+        var_5._id_12B28 = readsupertablecell( var_3, 17, 1 );
+        var_5.archetype = readsupertablecell( var_3, 16 );
+        var_5._id_9FF8 = readsupertablecell( var_3, 18, 1 );
         level._id_11264[var_3] = var_4;
 
         if ( !isdefined( level._id_2EFC ) )
@@ -64,23 +64,23 @@ init()
             level._id_2EFC[var_5.archetype][level._id_2EFC[var_5.archetype].size] = var_4;
 
         if ( !isdefined( var_5.weapon ) )
-            level._id_10E4E[var_4] = undefined;
+            level.staticsuperdata[var_4] = undefined;
 
         if ( !isdefined( var_5.cooldown ) )
-            level._id_10E4E[var_4] = undefined;
+            level.staticsuperdata[var_4] = undefined;
 
         if ( isdefined( var_5._id_B473 ) )
         {
             if ( var_5._id_B473 > 0 )
-                var_5._id_1616 = var_5._id_5F36 / var_5._id_B473 * 1000.0;
+                var_5._id_1616 = var_5.duration / var_5._id_B473 * 1000.0;
             else
-                var_5._id_1616 = var_5._id_5F36;
+                var_5._id_1616 = var_5.duration;
         }
 
         if ( isdefined( var_5._id_B474 ) )
         {
             if ( var_5._id_B474 > 0 )
-                var_5._id_1617 = var_5._id_5F36 / var_5._id_B474 * 1000.0;
+                var_5._id_1617 = var_5.duration / var_5._id_B474 * 1000.0;
         }
 
         if ( isdefined( var_5.useweapon ) )
@@ -89,10 +89,10 @@ init()
         if ( var_5.weapon == "<default>" )
             var_5.weapon = "super_default_mp";
 
-        if ( isdefined( var_5._id_8487 ) )
-            var_5._id_8487 = var_5._id_8487 * 1000.0;
+        if ( isdefined( var_5.graceperiod ) )
+            var_5.graceperiod = var_5.graceperiod * 1000.0;
         else
-            var_5._id_8487 = 0.0;
+            var_5.graceperiod = 0.0;
 
         if ( isdefined( var_5._id_12B28 ) )
             var_5._id_12B28 = var_5._id_12B28 * 1000.0;
@@ -107,7 +107,7 @@ init()
     if ( isdefined( var_6 ) && var_6 != "" )
         level._id_1125E = float( var_6 );
 
-    _id_DF10();
+    registersupers();
     scripts\mp\supers\super_reaper::_id_DD9E();
     scripts\mp\supers\super_armorup::_id_218F();
     scripts\mp\supers\super_visionpulse::init();
@@ -117,7 +117,7 @@ init()
     scripts\mp\equipment\micro_turret::_id_B703();
     scripts\mp\equipment\charge_mode::_id_3CED();
     scripts\mp\supers\super_blackholegun::init();
-    scripts\mp\supers\super_overdrive::_id_98AB();
+    scripts\mp\supers\super_overdrive::initoverheadcameras();
 }
 
 _id_1831( var_0, var_1, var_2 )
@@ -128,43 +128,43 @@ _id_1831( var_0, var_1, var_2 )
     level.superweapons[var_0].staticdata = var_2;
 }
 
-_id_DF10()
+registersupers()
 {
-    _id_DF0F( "super_claw", undefined, undefined, undefined, undefined );
-    _id_DF0F( "super_amplify", undefined, ::_id_12C70, ::_id_13041, ::_id_630A );
-    _id_DF0F( "super_overdrive", ::_id_F7CE, ::_id_12CFF, undefined, undefined );
-    _id_DF0F( "super_steeldragon", undefined, undefined, undefined, undefined );
-    _id_DF0F( "super_armorup", undefined, undefined, ::_id_13044, ::_id_630C );
-    _id_DF0F( "super_chargemode", ::_id_F68E, ::_id_12C8F, ::_id_13052, ::_id_6313 );
-    _id_DF0F( "super_armmgs", undefined, undefined, undefined, undefined );
-    _id_DF0F( "super_reaper", undefined, undefined, ::_id_130CA, ::_id_637A );
-    _id_DF0F( "super_rewind", ::setrewind, ::unsetrewind, undefined, undefined );
-    _id_DF0F( "super_atomizer", undefined, undefined, undefined, undefined );
-    _id_DF0F( "super_phaseshift", undefined, undefined, ::usephaseshift, ::_id_6376 );
-    _id_DF0F( "super_teleport", ::_id_F87E, ::_id_12D44, undefined, undefined );
-    _id_DF0F( "super_blackholegun", undefined, undefined, ::_id_1304E, ::_id_630F );
-    _id_DF0F( "super_supertrophy", undefined, ::_id_12D3F, ::_id_130E2, ::_id_638F );
-    _id_DF0F( "super_microturret", ::_id_F797, ::_id_12CEF, ::_id_130A4, ::_id_6364 );
-    _id_DF0F( "super_penetrationrailgun", undefined, undefined, undefined, undefined );
-    _id_DF0F( "super_visionpulse", undefined, undefined, ::_id_130F6, undefined );
-    _id_DF0F( "super_invisible", ::_id_F75E, ::_id_12CDA, ::_id_1309A, ::_id_635C );
+    registersuper( "super_claw", undefined, undefined, undefined, undefined );
+    registersuper( "super_amplify", undefined, ::unsetarmorvest, ::_id_13041, ::_id_630A );
+    registersuper( "super_overdrive", ::_id_F7CE, ::_id_12CFF, undefined, undefined );
+    registersuper( "super_steeldragon", undefined, undefined, undefined, undefined );
+    registersuper( "super_armorup", undefined, undefined, ::_id_13044, ::_id_630C );
+    registersuper( "super_chargemode", ::_id_F68E, ::unsetchallenger, ::_id_13052, ::_id_6313 );
+    registersuper( "super_armmgs", undefined, undefined, undefined, undefined );
+    registersuper( "super_reaper", undefined, undefined, ::_id_130CA, ::_id_637A );
+    registersuper( "super_rewind", ::setrewind, ::unsetrewind, undefined, undefined );
+    registersuper( "super_atomizer", undefined, undefined, undefined, undefined );
+    registersuper( "super_phaseshift", undefined, undefined, ::usephaseshift, ::_id_6376 );
+    registersuper( "super_teleport", ::_id_F87E, ::_id_12D44, undefined, undefined );
+    registersuper( "super_blackholegun", undefined, undefined, ::_id_1304E, ::_id_630F );
+    registersuper( "super_supertrophy", undefined, ::_id_12D3F, ::_id_130E2, ::_id_638F );
+    registersuper( "super_microturret", ::_id_F797, ::_id_12CEF, ::_id_130A4, ::_id_6364 );
+    registersuper( "super_penetrationrailgun", undefined, undefined, undefined, undefined );
+    registersuper( "super_visionpulse", undefined, undefined, ::_id_130F6, undefined );
+    registersuper( "super_invisible", ::_id_F75E, ::_id_12CDA, ::_id_1309A, ::_id_635C );
 }
 
-_id_DF0F( var_0, var_1, var_2, var_3, var_4 )
+registersuper( var_0, var_1, var_2, var_3, var_4 )
 {
-    var_5 = level._id_10E4E[var_0];
+    var_5 = level.staticsuperdata[var_0];
 
     if ( !isdefined( var_5 ) )
         return;
 
-    var_5._id_F71E = var_1;
-    var_5._id_12CC4 = var_2;
+    var_5.setfunc = var_1;
+    var_5.unsetfunc = var_2;
     var_5.beginusefunc = var_3;
-    var_5._id_6398 = var_4;
-    var_5._id_9F1D = 1;
+    var_5.endusefunc = var_4;
+    var_5.isregistered = 1;
 }
 
-_id_DD68( var_0, var_1, var_2 )
+readsupertablecell( var_0, var_1, var_2 )
 {
     var_3 = tablelookupbyrow( "mp/supertable.csv", var_0, var_1 );
 
@@ -182,10 +182,10 @@ _id_DD68( var_0, var_1, var_2 )
     return var_3;
 }
 
-_id_83A8( var_0, var_1 )
+givesuper( var_0, var_1 )
 {
     clearsuper( var_1 );
-    var_2 = level._id_10E4E[var_0];
+    var_2 = level.staticsuperdata[var_0];
 
     if ( !isdefined( var_2 ) )
         return;
@@ -196,14 +196,14 @@ _id_83A8( var_0, var_1 )
     var_3.isinuse = 0;
     var_3._id_461F = undefined;
     var_3._id_461E = undefined;
-    var_3._id_130DE = undefined;
+    var_3.usestarttime = undefined;
     var_3._id_130EF = undefined;
-    var_3._id_1CA3 = 1;
-    var_3._id_B143 = -1;
+    var_3.allowrefund = 1;
+    var_3.madeavailabletime = -1;
     var_3.numkills = 0;
-    var_3._id_1391B = 0;
+    var_3.wasrefunded = 0;
     var_3.canstow = 0;
-    var_4 = var_3.staticdata._id_F71E;
+    var_4 = var_3.staticdata.setfunc;
 
     if ( isdefined( var_4 ) )
         self thread [[ var_4 ]]();
@@ -218,9 +218,9 @@ _id_83A8( var_0, var_1 )
         self.pers["superCooldownTime"] = undefined;
     }
 
-    _id_E276( var_5 );
+    resetsuperusepercent( var_5 );
 
-    if ( _id_1125C() )
+    if ( superdelaypassed() )
     {
         scripts\mp\utility::_giveweapon( var_2.weapon );
         var_7 = scripts\engine\utility::ter_op( issuperready(), 1, 0 );
@@ -230,12 +230,12 @@ _id_83A8( var_0, var_1 )
     else
         thread _id_13B6D();
 
-    thread _id_13A6F();
-    thread _id_12F32();
-    thread _id_13A61();
+    thread watchforsuperusebegin();
+    thread updatesuperuithink();
+    thread watchforrespawn();
     thread _id_110C5();
-    thread _id_89E8();
-    thread _id_89F0();
+    thread handlespectating();
+    thread handleteamchange();
 }
 
 clearsuper( var_0 )
@@ -244,14 +244,14 @@ clearsuper( var_0 )
 
     if ( isdefined( var_1 ) && isdefined( var_1.staticdata ) )
     {
-        var_2 = var_1.staticdata._id_12CC4;
+        var_2 = var_1.staticdata.unsetfunc;
 
         if ( isdefined( var_2 ) )
             self thread [[ var_2 ]]();
     }
 
     if ( scripts\mp\utility::istrue( var_0 ) && isdefined( var_1 ) )
-        _id_110C4();
+        storesuperpoints();
 
     self clearoffhandspecial();
 
@@ -267,12 +267,12 @@ clearsuper( var_0 )
     self setclientomnvar( "ui_super_ref", "none" );
 }
 
-_id_E276( var_0 )
+resetsuperusepercent( var_0 )
 {
     var_1 = getcurrentsuper();
     var_1._id_461E = getsupermaxcooldownmsec();
     var_1._id_461F = 0;
-    var_1._id_1CA3 = 1;
+    var_1.allowrefund = 1;
 
     if ( isdefined( var_0 ) )
     {
@@ -282,7 +282,7 @@ _id_E276( var_0 )
 
     self setclientomnvar( "ui_super_state", 1 );
     self setweaponammoclip( var_1.staticdata.weapon, 0 );
-    _id_11257();
+    super_onspawned();
 }
 
 _id_DE3A( var_0 )
@@ -290,13 +290,13 @@ _id_DE3A( var_0 )
     var_1 = getcurrentsuper();
     var_0 = int( var_0 );
     var_1._id_461F = var_1._id_461F + var_0;
-    _id_11257();
+    super_onspawned();
 }
 
-_id_11257()
+super_onspawned()
 {
     self notify( "super_cooldown_altered" );
-    thread _id_12F31();
+    thread updatesuperuistate();
 }
 
 _id_83AA( var_0 )
@@ -311,7 +311,7 @@ _id_83AA( var_0 )
     scripts\mp\analyticslog::logevent_reportsuperscore( var_0, gettime() );
 }
 
-_id_12F32()
+updatesuperuithink()
 {
     self endon( "disconnect" );
     self endon( "remove_super" );
@@ -322,7 +322,7 @@ _id_12F32()
         var_1 = 0.0;
 
         if ( var_0.isinuse )
-            var_1 = _id_818B();
+            var_1 = getsuperuseuiprogress();
         else
         {
             var_2 = var_0._id_461E - var_0._id_461F;
@@ -338,7 +338,7 @@ _id_12F32()
     }
 }
 
-_id_13A61()
+watchforrespawn()
 {
     var_0 = getcurrentsuper();
     self endon( "disconnect" );
@@ -350,7 +350,7 @@ _id_13A61()
 
         if ( issuperready() )
         {
-            scripts\mp\lightbar::_id_1768( 2, 1, 1, 1, 0, "super_use_finished" );
+            scripts\mp\lightbar::add_to_lightbar_stack( 2, 1, 1, 1, 0, "super_use_finished" );
             self setclientomnvar( "ui_super_state", 2 );
         }
 
@@ -358,7 +358,7 @@ _id_13A61()
     }
 }
 
-_id_12F31()
+updatesuperuistate()
 {
     self endon( "disconnect" );
     self endon( "super_cooldown_altered" );
@@ -377,7 +377,7 @@ _id_12F31()
             continue;
         }
 
-        var_1 = int( 50.0 * level._id_11260 * scripts\engine\utility::ter_op( scripts\mp\utility::_hasperk( "specialty_overclock" ), 1.4, 1.0 ) );
+        var_1 = int( 50.0 * level.superfastchargerate * scripts\engine\utility::ter_op( scripts\mp\utility::_hasperk( "specialty_overclock" ), 1.4, 1.0 ) );
         var_0._id_461F = var_0._id_461F + var_1;
         wait 0.05;
     }
@@ -389,11 +389,11 @@ _id_110C5()
 {
     self endon( "disconnect" );
     self endon( "remove_super" );
-    scripts\mp\utility::_id_ABF5( "game_over" );
-    _id_110C4();
+    scripts\mp\utility::levelflagwait( "game_over" );
+    storesuperpoints();
 }
 
-_id_89E8()
+handlespectating()
 {
     self endon( "disconnect" );
     self endon( "remove_super" );
@@ -401,7 +401,7 @@ _id_89E8()
     thread clearsuper( 1 );
 }
 
-_id_89F0()
+handleteamchange()
 {
     self endon( "disconnect" );
     self endon( "remove_super" );
@@ -420,22 +420,22 @@ _id_11258()
     self playlocalsound( "mp_super_ready" );
     self notify( "super_ready" );
 
-    if ( !var_0._id_1391B )
+    if ( !var_0.wasrefunded )
     {
         self.pers["supersEarned"]++;
         self notify( "super_earned" );
     }
 
-    scripts\mp\lightbar::_id_1768( 2, 1, 1, 1, 0, "super_use_finished_lb" );
-    var_0._id_B143 = gettime();
+    scripts\mp\lightbar::add_to_lightbar_stack( 2, 1, 1, 1, 0, "super_use_finished_lb" );
+    var_0.madeavailabletime = gettime();
     var_0.numkills = 0;
-    scripts\mp\analyticslog::logevent_superearned( var_0._id_B143 );
+    scripts\mp\analyticslog::logevent_superearned( var_0.madeavailabletime );
 
     if ( isdefined( self.matchdatalifeindex ) )
         scripts\mp\matchdata::logsuperavailableevent( self.matchdatalifeindex, self.origin );
 }
 
-_id_13A6F()
+watchforsuperusebegin()
 {
     self endon( "disconnect" );
     self endon( "remove_super" );
@@ -449,7 +449,7 @@ _id_13A6F()
             if ( var_0 != getcurrentsuper().staticdata.weapon )
                 continue;
 
-            var_1 = _id_2A79();
+            var_1 = beginsuperuse();
 
             if ( !isdefined( var_1 ) || var_1 == 0 )
                 continue;
@@ -459,7 +459,7 @@ _id_13A6F()
     }
 }
 
-_id_2A79()
+beginsuperuse()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -484,7 +484,7 @@ _id_2A79()
                 var_1 = 0;
             }
             else
-                var_1 = _id_1289E( var_0.staticdata.useweapon, var_0.staticdata._id_130F9, var_0.staticdata._id_130FA );
+                var_1 = trygiveuseweapon( var_0.staticdata.useweapon, var_0.staticdata.useweaponclipammo, var_0.staticdata.useweaponstockammo );
         }
 
         if ( var_1 && ( !isdefined( var_0.staticdata.beginusefunc ) || scripts\mp\utility::istrue( self [[ var_0.staticdata.beginusefunc ]]() ) ) )
@@ -492,9 +492,9 @@ _id_2A79()
             var_2 = [];
             var_2[0] = "super_use_finished_lb";
             var_2[1] = "super_switched";
-            scripts\mp\lightbar::_id_1768( 2, 0, 2, 1, 0, var_2 );
+            scripts\mp\lightbar::add_to_lightbar_stack( 2, 0, 2, 1, 0, var_2 );
             var_0.isinuse = 1;
-            var_0._id_1CA3 = scripts\engine\utility::ter_op( var_0.staticdata._id_8487 > 0, 1, 0 );
+            var_0.allowrefund = scripts\engine\utility::ter_op( var_0.staticdata.graceperiod > 0, 1, 0 );
             _id_10DF7();
 
             if ( isdefined( self.matchdatalifeindex ) )
@@ -511,7 +511,7 @@ _id_2A79()
         else
         {
             if ( isdefined( var_0.staticdata.useweapon ) && var_1 )
-                thread _id_11371();
+                thread switchandtakesuperuseweapon();
 
             self setweaponammoclip( var_0.staticdata.weapon, 1 );
         }
@@ -520,7 +520,7 @@ _id_2A79()
     return 0;
 }
 
-_id_1613( var_0, var_1 )
+activatesuper( var_0, var_1 )
 {
     var_2 = getcurrentsuper();
 
@@ -536,9 +536,9 @@ _id_1613( var_0, var_1 )
         var_2._id_12B2C = var_3;
 
     if ( var_0 && isdefined( var_2.staticdata._id_1617 ) )
-        _id_DE3B( var_2.staticdata._id_1617 * var_1 );
+        reducesuperusepercent( var_2.staticdata._id_1617 * var_1 );
     else if ( isdefined( var_2.staticdata._id_1616 ) )
-        _id_DE3B( var_2.staticdata._id_1616 * var_1 );
+        reducesuperusepercent( var_2.staticdata._id_1616 * var_1 );
 
     return 1;
 }
@@ -547,22 +547,22 @@ _id_10DF7()
 {
     var_0 = getcurrentsuper();
     self notify( "super_use_started" );
-    var_0._id_130DE = gettime();
-    var_0._id_130EF = _id_8188() * 1000.0;
+    var_0.usestarttime = gettime();
+    var_0._id_130EF = getsuperpointsneeded() * 1000.0;
     var_0._id_12B2C = gettime() + var_0.staticdata._id_12B28;
-    _id_112A5();
+    superusedurationupdated();
 }
 
-_id_DE3B( var_0 )
+reducesuperusepercent( var_0 )
 {
     var_1 = getcurrentsuper();
-    self setclientomnvar( "ui_super_flash_progress", _id_818B() );
+    self setclientomnvar( "ui_super_flash_progress", getsuperuseuiprogress() );
     var_1._id_130EF = max( var_1._id_130EF - var_0, 0.0 );
-    var_1._id_1CA3 = 0;
-    _id_112A5();
+    var_1.allowrefund = 0;
+    superusedurationupdated();
 }
 
-_id_112A5()
+superusedurationupdated()
 {
     self notify( "super_use_duration_updated" );
     thread _id_13B71();
@@ -605,47 +605,47 @@ _id_13B71()
 superusefinished( var_0, var_1, var_2 )
 {
     var_3 = getcurrentsuper();
-    var_4 = _id_818B();
+    var_4 = getsuperuseuiprogress();
     self notify( "super_use_finished_lb" );
     var_3.isinuse = 0;
     var_3.canstow = 0;
     var_5 = undefined;
 
-    if ( isdefined( var_3.staticdata._id_6398 ) )
+    if ( isdefined( var_3.staticdata.endusefunc ) )
     {
         if ( !isdefined( var_1 ) )
             var_1 = 0;
 
-        var_5 = self [[ var_3.staticdata._id_6398 ]]( var_1 );
+        var_5 = self [[ var_3.staticdata.endusefunc ]]( var_1 );
     }
 
-    if ( shouldreacttonewenemy( var_2 ) || scripts\mp\utility::istrue( var_0 ) || scripts\mp\utility::istrue( var_5 ) )
+    if ( shouldrefundsuper( var_2 ) || scripts\mp\utility::istrue( var_0 ) || scripts\mp\utility::istrue( var_5 ) )
     {
-        var_3._id_1391B = 1;
-        _id_E276( getsupermaxcooldownsec() );
+        var_3.wasrefunded = 1;
+        resetsuperusepercent( getsupermaxcooldownsec() );
     }
     else if ( scripts\mp\utility::istrue( var_2 ) )
     {
         var_6 = getsupermaxcooldownsec() * var_4;
-        var_3._id_1391B = 1;
-        _id_E276( var_6 );
+        var_3.wasrefunded = 1;
+        resetsuperusepercent( var_6 );
     }
     else
     {
         if ( var_3.staticdata.ref != "super_chargemode" )
         {
             var_7 = getsubstr( self.loadoutarchetype, 10, self.loadoutarchetype.size );
-            scripts\mp\missions::_id_D991( "ch_" + var_7 + "_super" );
+            scripts\mp\missions::processchallengedaily( "ch_" + var_7 + "_super" );
             combatrecordsuperuse( var_3.staticdata.ref );
         }
 
-        var_3._id_A986 = gettime();
-        var_3._id_1391B = 0;
-        _id_E276();
+        var_3.lastfinishtime = gettime();
+        var_3.wasrefunded = 0;
+        resetsuperusepercent();
     }
 
-    thread _id_11371();
-    var_8 = var_3._id_130DE - var_3._id_B143;
+    thread switchandtakesuperuseweapon();
+    var_8 = var_3.usestarttime - var_3.madeavailabletime;
     scripts\mp\analyticslog::logevent_superended( var_3.staticdata.ref, var_8, 0, var_3.numkills );
 
     if ( getdvarint( "com_codcasterEnabled", 0 ) == 1 )
@@ -687,7 +687,7 @@ handledeath()
     superusefinished( undefined, 1 );
 }
 
-_id_BA37( var_0 )
+monitoruseweaponfiring( var_0 )
 {
     self endon( "disconnect" );
     self endon( "death" );
@@ -698,14 +698,14 @@ _id_BA37( var_0 )
     {
         self waittill( "weapon_fired", var_1 );
         var_2 = scripts\mp\weapons::isaltmodeweapon( var_1 );
-        var_1 = scripts\mp\utility::_id_E0CF( var_1 );
+        var_1 = scripts\mp\utility::removealtmodefromweaponname( var_1 );
 
         if ( var_1 == var_0 )
-            _id_1613( var_2 );
+            activatesuper( var_2 );
     }
 }
 
-_id_1289E( var_0, var_1, var_2 )
+trygiveuseweapon( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     self endon( "death" );
@@ -716,16 +716,16 @@ _id_1289E( var_0, var_1, var_2 )
 
     if ( var_3 )
     {
-        thread _id_B2F7( var_0 );
-        thread _id_BA37( var_0 );
+        thread manageuseweapon( var_0 );
+        thread monitoruseweaponfiring( var_0 );
         return 1;
     }
 
-    scripts\mp\utility::_id_1529( var_0 );
+    scripts\mp\utility::abortmonitoredweaponswitch( var_0 );
     return 0;
 }
 
-_id_B2F7( var_0 )
+manageuseweapon( var_0 )
 {
     self endon( "disconnect" );
     self endon( "death" );
@@ -756,7 +756,7 @@ _id_B2F7( var_0 )
     }
 }
 
-_id_11371()
+switchandtakesuperuseweapon()
 {
     self endon( "death" );
     var_0 = getcurrentsuper();
@@ -767,15 +767,15 @@ _id_11371()
 
     if ( scripts\mp\utility::isreliablyswitchingtoweapon( var_1 ) )
     {
-        scripts\mp\utility::_id_1529( var_1 );
+        scripts\mp\utility::abortmonitoredweaponswitch( var_1 );
         return;
     }
 
     self notify( "super_switched" );
-    scripts\mp\utility::_id_80F2( var_1 );
+    scripts\mp\utility::getridofweapon( var_1 );
 }
 
-_id_110C4()
+storesuperpoints()
 {
     var_0 = getcurrentsuper();
 
@@ -787,17 +787,17 @@ _id_110C4()
     else if ( issuperready() )
         self.pers["superCooldownTime"] = getcurrentsuper()._id_461E;
     else if ( issuperinuse() )
-        self.pers["superCooldownTime"] = scripts\engine\utility::ter_op( shouldreacttonewenemy(), getcurrentsuper()._id_461E, 0 );
+        self.pers["superCooldownTime"] = scripts\engine\utility::ter_op( shouldrefundsuper(), getcurrentsuper()._id_461E, 0 );
     else
         self.pers["superCooldownTime"] = 0;
 }
 
-_id_818B()
+getsuperuseuiprogress()
 {
     var_0 = getcurrentsuper();
     var_1 = gettime();
-    var_2 = var_0._id_12B2C - var_0._id_130DE;
-    var_3 = _id_8188() * 1000.0 - var_2;
+    var_2 = var_0._id_12B2C - var_0.usestarttime;
+    var_3 = getsuperpointsneeded() * 1000.0 - var_2;
     var_4 = clamp( var_0._id_130EF / var_3, 0.0, 1.0 );
     return var_4;
 }
@@ -813,9 +813,9 @@ getsupermaxcooldownmsec()
     return int( getsupermaxcooldownsec() * 1000 );
 }
 
-_id_8188()
+getsuperpointsneeded()
 {
-    return getcurrentsuper().staticdata._id_5F36;
+    return getcurrentsuper().staticdata.duration;
 }
 
 issuperready()
@@ -853,11 +853,11 @@ getcurrentsuperref()
     return var_0.staticdata.ref;
 }
 
-shouldreacttonewenemy( var_0 )
+shouldrefundsuper( var_0 )
 {
     var_1 = getcurrentsuper();
-    var_2 = var_1.staticdata._id_8487;
-    var_3 = gettime() - var_1._id_130DE;
+    var_2 = var_1.staticdata.graceperiod;
+    var_3 = gettime() - var_1.usestarttime;
 
     if ( var_3 >= var_2 )
         return 0;
@@ -871,10 +871,10 @@ shouldreacttonewenemy( var_0 )
             return 0;
     }
 
-    return var_1._id_1CA3;
+    return var_1.allowrefund;
 }
 
-_id_11759()
+testsuperbeginuse()
 {
     iprintlnbold( "Super FIRST activate" );
     thread _id_11758();
@@ -892,13 +892,13 @@ _id_11758()
     {
         self waittill( "testsuper_fired" );
         iprintlnbold( "activate" );
-        _id_1613();
+        activatesuper();
     }
 }
 
 _id_130EA()
 {
-    return _id_11759();
+    return testsuperbeginuse();
 }
 
 _id_130CA()
@@ -941,7 +941,7 @@ _id_630A( var_0 )
     scripts\mp\supers\super_amplify::end();
 }
 
-_id_12C70()
+unsetarmorvest()
 {
     scripts\mp\supers\super_amplify::unset();
 }
@@ -1062,7 +1062,7 @@ _id_F68E()
     scripts\mp\equipment\charge_mode::_id_3D0E();
 }
 
-_id_12C8F()
+unsetchallenger()
 {
     scripts\mp\equipment\charge_mode::_id_3D19();
 }
@@ -1103,7 +1103,7 @@ _id_1309C()
     return 1;
 }
 
-_id_8189( var_0 )
+getsuperrefforsuperweapon( var_0 )
 {
     var_0 = scripts\mp\utility::getweaponrootname( var_0 );
 
@@ -1134,7 +1134,7 @@ _id_7F0D( var_0 )
 
     if ( isdefined( var_1 ) )
     {
-        var_2 = level._id_10E4E[var_1];
+        var_2 = level.staticsuperdata[var_1];
 
         if ( isdefined( var_2 ) )
             return var_2.id;
@@ -1143,22 +1143,22 @@ _id_7F0D( var_0 )
     return undefined;
 }
 
-_id_8186( var_0 )
+getsuperid( var_0 )
 {
-    if ( !isdefined( var_0 ) || !isdefined( level._id_10E4E[var_0] ) || var_0 == "none" )
+    if ( !isdefined( var_0 ) || !isdefined( level.staticsuperdata[var_0] ) || var_0 == "none" )
         return 0;
 
-    return level._id_10E4E[var_0].id;
+    return level.staticsuperdata[var_0].id;
 }
 
-_id_7FD0( var_0 )
+getmovespeedforsuperweapon( var_0 )
 {
     var_0 = scripts\mp\utility::getweaponrootname( var_0 );
 
     if ( !isdefined( level.superweapons[var_0] ) )
         return undefined;
 
-    return level.superweapons[var_0].staticdata._id_BCEF;
+    return level.superweapons[var_0].staticdata.movespeed;
 }
 
 getrootsuperref( var_0 )
@@ -1203,7 +1203,7 @@ modifysuperequipmentdamage( var_0, var_1, var_2, var_3, var_4 )
     return var_5;
 }
 
-_id_13B6B()
+watchsuperdelay()
 {
     level endon( "super_delay_end" );
     level endon( "round_end" );
@@ -1211,22 +1211,22 @@ _id_13B6B()
     level waittill( "prematch_over" );
 
     if ( scripts\mp\utility::isanymlgmatch() )
-        level._id_1125A = 0;
+        level.superdelay = 0;
     else
-        level._id_1125A = getdvarfloat( "scr_superDelay", 0 );
+        level.superdelay = getdvarfloat( "scr_superDelay", 0 );
 
-    if ( level._id_1125A == 0 )
+    if ( level.superdelay == 0 )
     {
-        level._id_1125D = scripts\mp\utility::gettimepassed();
-        level._id_1125B = level._id_1125D;
+        level.superdelaystarttime = scripts\mp\utility::gettimepassed();
+        level.superdelayendtime = level.superdelaystarttime;
         level notify( "super_delay_end" );
     }
 
-    level._id_1125D = scripts\mp\utility::gettimepassed();
-    level._id_1125B = level._id_1125D + level._id_1125A * 1000;
+    level.superdelaystarttime = scripts\mp\utility::gettimepassed();
+    level.superdelayendtime = level.superdelaystarttime + level.superdelay * 1000;
     level notify( "super_delay_start" );
 
-    while ( scripts\mp\utility::gettimepassed() < level._id_1125B )
+    while ( scripts\mp\utility::gettimepassed() < level.superdelayendtime )
         scripts\engine\utility::waitframe();
 
     level notify( "super_delay_end" );
@@ -1238,9 +1238,9 @@ _id_13B6D()
     self endon( "disconnect" );
     level endon( "round_end" );
     level endon( "game_ended" );
-    _id_83A9();
-    thread _id_411B();
-    _id_13B6E();
+    givesuperdisableweapon();
+    thread cleanupsuperdisableweapon();
+    watchsuperdisableplayer();
     var_0 = getcurrentsuper().staticdata.weapon;
     var_1 = scripts\engine\utility::ter_op( issuperready(), 1, 0 );
     scripts\mp\utility::_giveweapon( var_0 );
@@ -1249,7 +1249,7 @@ _id_13B6D()
     scripts\mp\utility::_takeweapon( "super_delay_mp" );
 }
 
-_id_13B6E()
+watchsuperdisableplayer()
 {
     level endon( "super_delay_end" );
 
@@ -1267,14 +1267,14 @@ _id_13B6E()
 
         if ( issuperready() )
         {
-            var_1 = ( level._id_1125B - scripts\mp\utility::gettimepassed() ) / 1000;
+            var_1 = ( level.superdelayendtime - scripts\mp\utility::gettimepassed() ) / 1000;
             var_1 = int( max( 0, ceil( var_1 ) ) );
             scripts\mp\hud_message::showerrormessage( "MP_SUPERS_UNAVAILABLE_FOR_N", var_1 );
         }
     }
 }
 
-_id_411B()
+cleanupsuperdisableweapon()
 {
     self endon( "disconnect" );
     level endon( "round_end" );
@@ -1286,7 +1286,7 @@ _id_411B()
     scripts\mp\utility::_takeweapon( "super_delay_mp" );
 }
 
-_id_83A9()
+givesuperdisableweapon()
 {
     scripts\mp\utility::_giveweapon( "super_delay_mp" );
     self setweaponammoclip( "super_delay_mp", 1 );
@@ -1295,23 +1295,23 @@ _id_83A9()
 
 cancelsuperdelay()
 {
-    level._id_1125A = 0;
-    level._id_1125D = scripts\mp\utility::gettimepassed();
-    level._id_1125B = level._id_1125D;
+    level.superdelay = 0;
+    level.superdelaystarttime = scripts\mp\utility::gettimepassed();
+    level.superdelayendtime = level.superdelaystarttime;
     level notify( "super_delay_end" );
 }
 
-_id_1125C()
+superdelaypassed()
 {
-    if ( isdefined( level._id_1125A ) && level._id_1125A == 0 )
+    if ( isdefined( level.superdelay ) && level.superdelay == 0 )
         return 1;
 
-    return isdefined( level._id_1125B ) && scripts\mp\utility::gettimepassed() > level._id_1125B;
+    return isdefined( level.superdelayendtime ) && scripts\mp\utility::gettimepassed() > level.superdelayendtime;
 }
 
 givesuperweapon( var_0 )
 {
-    if ( _id_1125C() )
+    if ( superdelaypassed() )
     {
         if ( !self hasweapon( var_0.staticdata.weapon ) )
         {
@@ -1322,7 +1322,7 @@ givesuperweapon( var_0 )
         }
     }
     else
-        _id_83A9();
+        givesuperdisableweapon();
 }
 
 watchobjuse( var_0, var_1 )
@@ -1344,7 +1344,7 @@ watchobjuse( var_0, var_1 )
 
     while ( issuperinuse() )
     {
-        _id_DE3B( var_0 );
+        reducesuperusepercent( var_0 );
         wait 0.05;
     }
 }

@@ -5,7 +5,7 @@ sasquatch_init( var_0, var_1, var_2, var_3 )
 {
     self.asm.footsteps = spawnstruct();
     self.asm.footsteps.foot = "left";
-    self.asm._id_4C86 = spawnstruct();
+    self.asm.customdata = spawnstruct();
     self.sharpturnnotifydist = 24;
     self._blackboard.btreespawn = 0;
     self._blackboard.movetype = "run";
@@ -20,7 +20,7 @@ sasquatch_playidleanim( var_0, var_1, var_2, var_3 )
     else
         self scragentsetorientmode( "face angle abs", self.angles );
 
-    scripts\asm\asm_mp::_id_235F( var_0, var_1, var_2, 1, 0 );
+    scripts\asm\asm_mp::asm_loopanimstate( var_0, var_1, var_2, 1, 0 );
 }
 
 sas_play_meleeattack( var_0, var_1, var_2, var_3 )
@@ -28,7 +28,7 @@ sas_play_meleeattack( var_0, var_1, var_2, var_3 )
     if ( isdefined( self.bt.meleetarget ) )
         thread sasquatch_faceenemyhelper( self.bt.meleetarget, 500, var_1 );
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 sasquatch_melee_cleanup( var_0, var_1, var_2 )
@@ -121,7 +121,7 @@ sas_play_throw( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     var_4 = scripts\asm\asm_bb::bb_getthrowgrenadetarget();
     thread sasquatch_faceenemyhelper( var_4, 1500, var_1 );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 sas_play_throw_notehandler( var_0, var_1, var_2, var_3 )
@@ -187,7 +187,7 @@ sas_play_throw_terminate( var_0, var_1, var_2 )
 sas_play_rush( var_0, var_1, var_2, var_3 )
 {
     self notify( "attack_charge" );
-    scripts\asm\asm_mp::_id_235F( var_0, var_1, var_2, 1, 1 );
+    scripts\asm\asm_mp::asm_loopanimstate( var_0, var_1, var_2, 1, 1 );
 }
 
 sas_play_rush_orienthelper( var_0, var_1 )
@@ -213,9 +213,9 @@ sas_play_traverseexternal( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
     self endon( "terminate_ai_threads" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\anim\notetracks_mp::_id_CED4( var_1, var_4, 1 );
-    var_5 = self _meth_8146();
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\anim\notetracks_mp::playanimnfortime( var_1, var_4, 1 );
+    var_5 = self getnegotiationendpos();
     self setorigin( var_5 );
     self notify( "killanimscript" );
     scripts\asm\asm::asm_fireevent( var_1, "end" );

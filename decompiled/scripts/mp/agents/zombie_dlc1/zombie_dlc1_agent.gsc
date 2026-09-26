@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\zombie_dlc1::_id_DEE8();
-    scripts\asm\zombie_dlc1\mp\states::_id_2371();
+    behaviortree\zombie_dlc1::registerbehaviortree();
+    scripts\asm\zombie_dlc1\mp\states::asm_register();
     level._id_13BDC = 1;
     level._id_4878 = 0;
     level._id_BF7C = 0;
@@ -84,7 +84,7 @@ onzombiekilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     scripts\mp\agents\zombie\zombie_agent::onzombiekilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 );
 }
 
-_id_C4BD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
+on_zombie_agent_killed_common( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 {
-    scripts\mp\agents\zombie\zombie_agent::_id_C4BD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
+    scripts\mp\agents\zombie\zombie_agent::on_zombie_agent_killed_common( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
 }

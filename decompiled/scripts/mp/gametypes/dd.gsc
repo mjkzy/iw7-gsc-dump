@@ -24,7 +24,7 @@ main()
         scripts\mp\utility::registerwinlimitdvar( level.gametype, 2 );
         scripts\mp\utility::registernumlivesdvar( level.gametype, 0 );
         scripts\mp\utility::registerhalftimedvar( level.gametype, 0 );
-        scripts\mp\utility::_id_F7D3( 2 );
+        scripts\mp\utility::setovertimelimitdvar( 2 );
         level.matchrules_damagemultiplier = 0;
         level.matchrules_vampirism = 0;
     }
@@ -44,7 +44,7 @@ main()
     if ( level.matchrules_damagemultiplier || level.matchrules_vampirism )
         level.modifyplayerdamage = scripts\mp\damage::gamemodemodifyplayerdamage;
 
-    level._id_4DA2 = 1;
+    level.dd = 1;
     level.bombsplanted = 0;
     level.ddbombmodel = [];
     level.aplanted = 0;
@@ -71,7 +71,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_dd_bombtimer", getmatchrulesdata( "bombData", "bombTimer" ) );
     setdynamicdvar( "scr_dd_planttime", getmatchrulesdata( "bombData", "plantTime" ) );
     setdynamicdvar( "scr_dd_defusetime", getmatchrulesdata( "bombData", "defuseTime" ) );
@@ -148,7 +148,7 @@ onstartgametype()
         scripts\mp\utility::setobjectivehinttext( game["defenders"], &"OBJECTIVES_DD_DEFENDER_HINT" );
     }
 
-    thread _id_13849();
+    thread waittoprocess();
     var_2 = scripts\mp\utility::getwatcheddvar( "winlimit" );
     var_3[0] = "dd";
     var_3[1] = "dd_bombzone";
@@ -166,7 +166,7 @@ initspawns()
     scripts\mp\spawnlogic::addstartspawnpoints( "mp_dd_spawn_attacker" );
     scripts\mp\spawnlogic::addstartspawnpoints( "mp_dd_spawn_defender" );
 
-    if ( !isdefined( level._id_10DF1 ) )
+    if ( !isdefined( level.startspawnpoints ) )
     {
         scripts\mp\spawnlogic::addstartspawnpoints( "mp_sd_spawn_attacker" );
         scripts\mp\spawnlogic::addstartspawnpoints( "mp_sd_spawn_defender" );
@@ -179,20 +179,20 @@ initspawns()
     scripts\mp\spawnlogic::addspawnpoints( game["attackers"], "mp_dd_spawn_attacker_a", 1 );
     scripts\mp\spawnlogic::addspawnpoints( game["attackers"], "mp_dd_spawn_attacker_b", 1 );
     scripts\mp\spawnlogic::addspawnpoints( game["attackers"], "mp_tdm_spawn" );
-    level._id_1069E = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_defender" );
-    level._id_1069F = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_defender_a" );
-    level._id_1069F = scripts\engine\utility::array_combine( level._id_1069E, level._id_1069F );
-    level._id_106A0 = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_defender_b" );
-    level._id_106A0 = scripts\engine\utility::array_combine( level._id_1069E, level._id_106A0 );
-    level._id_106A1 = scripts\engine\utility::array_combine( level._id_1069E, level._id_1069F, level._id_106A0 );
-    level._id_10644 = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_attacker" );
-    level._id_10645 = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_attacker_a" );
-    level._id_10645 = scripts\engine\utility::array_combine( level._id_10644, level._id_10645 );
-    level._id_10646 = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_attacker_b" );
-    level._id_10646 = scripts\engine\utility::array_combine( level._id_10644, level._id_10646 );
-    level._id_10647 = scripts\engine\utility::array_combine( level._id_10644, level._id_10645, level._id_10646 );
-    level._id_106A2 = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_defender_start" );
-    level._id_10648 = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_attacker_start" );
+    level.spawn_defenders = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_defender" );
+    level.spawn_defenders_a = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_defender_a" );
+    level.spawn_defenders_a = scripts\engine\utility::array_combine( level.spawn_defenders, level.spawn_defenders_a );
+    level.spawn_defenders_b = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_defender_b" );
+    level.spawn_defenders_b = scripts\engine\utility::array_combine( level.spawn_defenders, level.spawn_defenders_b );
+    level.spawn_defenders_fallback = scripts\engine\utility::array_combine( level.spawn_defenders, level.spawn_defenders_a, level.spawn_defenders_b );
+    level.spawn_attackers = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_attacker" );
+    level.spawn_attackers_a = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_attacker_a" );
+    level.spawn_attackers_a = scripts\engine\utility::array_combine( level.spawn_attackers, level.spawn_attackers_a );
+    level.spawn_attackers_b = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_attacker_b" );
+    level.spawn_attackers_b = scripts\engine\utility::array_combine( level.spawn_attackers, level.spawn_attackers_b );
+    level.spawn_attackers_fallback = scripts\engine\utility::array_combine( level.spawn_attackers, level.spawn_attackers_a, level.spawn_attackers_b );
+    level.spawn_defenders_start = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_defender_start" );
+    level.spawn_attackers_start = scripts\mp\spawnlogic::getspawnpointarray( "mp_dd_spawn_attacker_start" );
     level.mapcenter = scripts\mp\spawnlogic::findboxcenter( level.spawnmins, level.spawnmaxs );
     setmapcenter( level.mapcenter );
 }
@@ -207,7 +207,7 @@ getspawnpointdist( var_0, var_1 )
     return var_2;
 }
 
-_id_13849()
+waittoprocess()
 {
     level endon( "game_end" );
 
@@ -229,9 +229,9 @@ getspawnpoint()
     if ( level.usestartspawns )
     {
         if ( var_0 == game["attackers"] )
-            var_1 = scripts\mp\spawnlogic::getspawnpoint_random( level._id_10648 );
+            var_1 = scripts\mp\spawnlogic::getspawnpoint_random( level.spawn_attackers_start );
         else
-            var_1 = scripts\mp\spawnlogic::getspawnpoint_random( level._id_106A2 );
+            var_1 = scripts\mp\spawnlogic::getspawnpoint_random( level.spawn_defenders_start );
     }
     else
     {
@@ -240,33 +240,33 @@ getspawnpoint()
         if ( var_0 == game["attackers"] )
         {
             if ( scripts\mp\utility::inovertime() )
-                var_2 = level._id_10644;
+                var_2 = level.spawn_attackers;
             else if ( !level.aplanted && !level.bplanted )
-                var_2 = level._id_10644;
+                var_2 = level.spawn_attackers;
             else if ( level.aplanted && !level.bplanted )
-                var_2 = level._id_10645;
+                var_2 = level.spawn_attackers_a;
             else if ( level.bplanted && !level.aplanted )
-                var_2 = level._id_10646;
+                var_2 = level.spawn_attackers_b;
             else
-                var_2 = level._id_10644;
+                var_2 = level.spawn_attackers;
 
-            var_3 = level._id_10647;
+            var_3 = level.spawn_attackers_fallback;
             var_1 = scripts\mp\spawnscoring::getspawnpoint( var_2, var_3 );
         }
         else
         {
             if ( scripts\mp\utility::inovertime() )
-                var_2 = level._id_1069E;
+                var_2 = level.spawn_defenders;
             else if ( !level.aplanted && !level.bplanted )
-                var_2 = level._id_1069E;
+                var_2 = level.spawn_defenders;
             else if ( level.aplanted && !level.bplanted )
-                var_2 = level._id_1069F;
+                var_2 = level.spawn_defenders_a;
             else if ( level.bplanted && !level.aplanted )
-                var_2 = level._id_106A0;
+                var_2 = level.spawn_defenders_b;
             else
-                var_2 = level._id_1069E;
+                var_2 = level.spawn_defenders;
 
-            var_3 = level._id_106A1;
+            var_3 = level.spawn_defenders_fallback;
             var_1 = scripts\mp\spawnscoring::getspawnpoint( var_2, var_3 );
         }
     }
@@ -315,7 +315,7 @@ hidecarryiconongameend()
         self.carryicon.alpha = 0;
 }
 
-_id_4DA3( var_0, var_1 )
+dd_endgame( var_0, var_1 )
 {
     thread scripts\mp\gamelogic::endgame( var_0, var_1 );
 }
@@ -328,19 +328,19 @@ ondeadevent( var_0 )
     if ( var_0 == "all" )
     {
         if ( level.bombplanted )
-            _id_4DA3( game["attackers"], game["end_reason"][game["defenders"] + "_eliminated"] );
+            dd_endgame( game["attackers"], game["end_reason"][game["defenders"] + "_eliminated"] );
         else
-            _id_4DA3( game["defenders"], game["end_reason"][game["attackers"] + "_eliminated"] );
+            dd_endgame( game["defenders"], game["end_reason"][game["attackers"] + "_eliminated"] );
     }
     else if ( var_0 == game["attackers"] )
     {
         if ( level.bombplanted )
             return;
 
-        level thread _id_4DA3( game["defenders"], game["end_reason"][game["attackers"] + "_eliminated"] );
+        level thread dd_endgame( game["defenders"], game["end_reason"][game["attackers"] + "_eliminated"] );
     }
     else if ( var_0 == game["defenders"] )
-        level thread _id_4DA3( game["attackers"], game["end_reason"][game["defenders"] + "_eliminated"] );
+        level thread dd_endgame( game["attackers"], game["end_reason"][game["defenders"] + "_eliminated"] );
 }
 
 onnormaldeath( var_0, var_1, var_2, var_3, var_4 )
@@ -350,14 +350,14 @@ onnormaldeath( var_0, var_1, var_2, var_3, var_4 )
 
     if ( var_0.isplanting )
     {
-        thread scripts\mp\matchdata::loginitialstats( var_2, "planting" );
-        var_1 scripts\mp\utility::incperstat( "defends", 1 );
+        thread scripts\mp\matchdata::logkillevent( var_2, "planting" );
+        var_1 scripts\mp\utility::incpersstat( "defends", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
     }
     else if ( var_0.isdefusing )
     {
-        thread scripts\mp\matchdata::loginitialstats( var_2, "defusing" );
-        var_1 scripts\mp\utility::incperstat( "defends", 1 );
+        thread scripts\mp\matchdata::logkillevent( var_2, "defusing" );
+        var_1 scripts\mp\utility::incpersstat( "defends", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
     }
 
@@ -367,9 +367,9 @@ onnormaldeath( var_0, var_1, var_2, var_3, var_4 )
 ontimelimit()
 {
     if ( scripts\mp\utility::inovertime() )
-        _id_4DA3( "tie", game["end_reason"]["time_limit_reached"] );
+        dd_endgame( "tie", game["end_reason"]["time_limit_reached"] );
     else
-        _id_4DA3( game["defenders"], game["end_reason"]["time_limit_reached"] );
+        dd_endgame( game["defenders"], game["end_reason"]["time_limit_reached"] );
 }
 
 updategametypedvars()
@@ -378,13 +378,13 @@ updategametypedvars()
     level.planttime = scripts\mp\utility::dvarfloatvalue( "planttime", 5, 0, 20 );
     level.defusetime = scripts\mp\utility::dvarfloatvalue( "defusetime", 5, 0, 20 );
     level.bombtimer = scripts\mp\utility::dvarintvalue( "bombtimer", 45, 1, 300 );
-    level._id_4DA5 = scripts\mp\utility::dvarfloatvalue( "extraTime", 2, 0, 5 );
-    level._id_C82B = scripts\mp\utility::dvarfloatvalue( "overtimeLimit", 1, 0, 5 );
-    scripts\mp\utility::_id_F7D3( level._id_C82B );
+    level.ddtimetoadd = scripts\mp\utility::dvarfloatvalue( "extraTime", 2, 0, 5 );
+    level.overtime = scripts\mp\utility::dvarfloatvalue( "overtimeLimit", 1, 0, 5 );
+    scripts\mp\utility::setovertimelimitdvar( level.overtime );
     level.silentplant = scripts\mp\utility::dvarintvalue( "silentPlant", 0, 0, 1 );
 }
 
-_id_132A2( var_0 )
+verifybombzones( var_0 )
 {
     var_1 = "";
 
@@ -423,7 +423,9 @@ _id_132A2( var_0 )
     }
 
     if ( var_1 != "" )
-        return;
+    {
+
+    }
 }
 
 bombs()
@@ -435,7 +437,7 @@ bombs()
     level.bombzones = [];
     var_0 = getentarray( "dd_bombzone", "targetname" );
     level.objectives = var_0;
-    _id_132A2( var_0 );
+    verifybombzones( var_0 );
 
     for ( var_1 = 0; var_1 < var_0.size; var_1++ )
     {
@@ -495,7 +497,7 @@ setupkillcament()
     var_0 delete();
 }
 
-_id_E249()
+resetbombzone()
 {
     if ( scripts\mp\utility::inovertime() )
     {
@@ -524,7 +526,7 @@ _id_E249()
     self.bombexploded = undefined;
 }
 
-_id_FAAE()
+setupfordefusing()
 {
     if ( scripts\mp\utility::inovertime() )
     {
@@ -578,7 +580,7 @@ bombplanted( var_0, var_1 )
 
     level.destroyedobject.bombplanted = 1;
     level.tickingobject = var_0.visuals[0];
-    _id_5D23( var_1, var_0.label );
+    dropbombmodel( var_1, var_0.label );
     var_0.bombdefused = 0;
     var_0 scripts\mp\gameobjects::allowuse( "none" );
     var_0 scripts\mp\gameobjects::setvisibleteam( "none" );
@@ -586,12 +588,12 @@ bombplanted( var_0, var_1 )
     if ( scripts\mp\utility::inovertime() )
         var_0 scripts\mp\gameobjects::setownerteam( level.otherteam[var_1.team] );
 
-    var_0 _id_FAAE();
+    var_0 setupfordefusing();
     var_0 bombtimerwait( var_0 );
-    var_0 thread _id_2C59( var_1, "explode", var_2 );
+    var_0 thread bombhandler( var_1, "explode", var_2 );
 }
 
-_id_2C59( var_0, var_1, var_2 )
+bombhandler( var_0, var_1, var_2 )
 {
     level.bombsplanted = level.bombsplanted - 1;
 
@@ -610,9 +612,9 @@ _id_2C59( var_0, var_1, var_2 )
     {
         self.bombexploded = 1;
 
-        if ( !scripts\mp\utility::inovertime() && level.bombexploded < 2 && level._id_4DA5 > 0 )
+        if ( !scripts\mp\utility::inovertime() && level.bombexploded < 2 && level.ddtimetoadd > 0 )
         {
-            level.extratime = level.bombexploded * level._id_4DA5;
+            level.extratime = level.bombexploded * level.ddtimetoadd;
             var_3 = scripts\mp\gamelogic::gettimeremaining();
             setgameendtime( gettime() + int( var_3 ) );
         }
@@ -620,15 +622,15 @@ _id_2C59( var_0, var_1, var_2 )
         wait 2;
 
         if ( scripts\mp\utility::inovertime() || level.bombexploded > 1 )
-            _id_4DA3( var_2, game["end_reason"]["target_destroyed"] );
-        else if ( level._id_4DA5 > 0 )
+            dd_endgame( var_2, game["end_reason"]["target_destroyed"] );
+        else if ( level.ddtimetoadd > 0 )
             level thread scripts\mp\utility::teamplayercardsplash( "callout_time_added", var_0 );
     }
     else
     {
         var_0 notify( "bomb_defused" + self.label );
         self notify( "defused" );
-        _id_E249();
+        resetbombzone();
     }
 }
 
@@ -642,7 +644,7 @@ _id_F66E()
         setomnvar( "ui_bomb_timer", 0 );
 }
 
-_id_5D23( var_0, var_1 )
+dropbombmodel( var_0, var_1 )
 {
     var_2 = bullettrace( var_0.origin + ( 0, 0, 20 ), var_0.origin - ( 0, 0, 2000 ), 0, var_0 );
     var_3 = randomfloat( 360 );
@@ -678,30 +680,30 @@ bombtimerwait( var_0 )
     level endon( "bomb_defused" + var_0.label );
 
     if ( scripts\mp\utility::inovertime() )
-        var_0._id_13845 = level.bombtimer;
+        var_0.waittime = level.bombtimer;
     else
-        var_0._id_13845 = level.bombtimer;
+        var_0.waittime = level.bombtimer;
 
-    level thread _id_12E43( var_0 );
+    level thread update_ui_timers( var_0 );
 
-    while ( var_0._id_13845 >= 0 )
+    while ( var_0.waittime >= 0 )
     {
-        var_0._id_13845--;
+        var_0.waittime--;
 
-        if ( var_0._id_13845 >= 0 )
+        if ( var_0.waittime >= 0 )
             wait 1;
 
         scripts\mp\hostmigration::waittillhostmigrationdone();
     }
 }
 
-_id_12E43( var_0 )
+update_ui_timers( var_0 )
 {
     level endon( "game_ended" );
     level endon( "disconnect" );
     level endon( "bomb_defused" + var_0.label );
     level endon( "bomb_exploded" + var_0.label );
-    var_1 = var_0._id_13845 * 1000 + gettime();
+    var_1 = var_0.waittime * 1000 + gettime();
     setdvar( "ui_bombtimer" + var_0.label, var_1 );
     level waittill( "host_migration_begin" );
     var_2 = scripts\mp\hostmigration::waittillhostmigrationdone();

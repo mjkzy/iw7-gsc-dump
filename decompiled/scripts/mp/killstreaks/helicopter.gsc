@@ -10,28 +10,28 @@ init()
         return;
 
     level.chopper = undefined;
-    level._id_8D96 = getentarray( "heli_start", "targetname" );
+    level.heli_start_nodes = getentarray( "heli_start", "targetname" );
     level.heli_loop_nodes = getentarray( "heli_loop_start", "targetname" );
-    level._id_110D1 = scripts\engine\utility::getstructarray( "strafe_path", "targetname" );
+    level.strafe_nodes = scripts\engine\utility::getstructarray( "strafe_path", "targetname" );
     level.heli_leave_nodes = getentarray( "heli_leave", "targetname" );
     level.heli_crash_nodes = getentarray( "heli_crash_start", "targetname" );
-    level._id_8D75 = 5;
-    level._id_8D73 = 2000;
+    level.heli_missile_rof = 5;
+    level.heli_maxhealth = 2000;
     level.heli_debug = 0;
-    level._id_8D9A = 0.5;
-    level._id_8D9F = 1.5;
+    level.heli_targeting_delay = 0.5;
+    level.heli_turretreloadtime = 1.5;
     level.heli_turretclipsize = 60;
     level.heli_visual_range = 3700;
-    level._id_8D98 = 5;
-    level._id_8D97 = 0.5;
-    level._id_8D74 = 256;
-    level._id_8D76 = 0.3;
-    level._id_8D2C = 0.3;
-    level._id_8D2E = 1000;
-    level._id_8D2D = 4096;
+    level.heli_target_spawnprotection = 5;
+    level.heli_target_recognition = 0.5;
+    level.heli_missile_friendlycare = 256;
+    level.heli_missile_target_cone = 0.3;
+    level.heli_armor_bulletdamage = 0.3;
+    level.heli_attract_strength = 1000;
+    level.heli_attract_range = 4096;
     level.heli_angle_offset = 90;
-    level._id_8D56 = 0;
-    level _id_D80F();
+    level.heli_forced_wait = 0;
+    level precachehelicoptersounds();
     level.chopper_fx["damage"]["light_smoke"] = loadfx( "vfx/core/smktrail/smoke_trail_white_heli_emitter" );
     level.chopper_fx["damage"]["heavy_smoke"] = loadfx( "vfx/core/mp/killstreaks/vfx_helo_damage.vfx" );
     level.chopper_fx["damage"]["on_fire"] = loadfx( "vfx/core/expl/fire_smoke_trail_l_emitter" );
@@ -53,17 +53,17 @@ init()
     level._effect["vehicle_flares"] = loadfx( "vfx/iw7/core/mp/killstreaks/vfx_warden_em_flares.vfx" );
     level.chopper_fx["fire"]["trail"]["medium"] = loadfx( "vfx/core/expl/fire_smoke_trail_l_emitter" );
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "helicopter", ::usehelicopter );
-    level._id_8DB6["tracking"][0] = "ac130_fco_moreenemy";
-    level._id_8DB6["tracking"][1] = "ac130_fco_getthatguy";
-    level._id_8DB6["tracking"][2] = "ac130_fco_guyrunnin";
-    level._id_8DB6["tracking"][3] = "ac130_fco_gotarunner";
-    level._id_8DB6["tracking"][4] = "ac130_fco_personnelthere";
-    level._id_8DB6["tracking"][5] = "ac130_fco_rightthere";
-    level._id_8DB6["tracking"][6] = "ac130_fco_tracking";
-    level._id_8DB6["locked"][0] = "ac130_fco_lightemup";
-    level._id_8DB6["locked"][1] = "ac130_fco_takehimout";
-    level._id_8DB6["locked"][2] = "ac130_fco_nailthoseguys";
-    level._id_A99A = 0;
+    level.helidialog["tracking"][0] = "ac130_fco_moreenemy";
+    level.helidialog["tracking"][1] = "ac130_fco_getthatguy";
+    level.helidialog["tracking"][2] = "ac130_fco_guyrunnin";
+    level.helidialog["tracking"][3] = "ac130_fco_gotarunner";
+    level.helidialog["tracking"][4] = "ac130_fco_personnelthere";
+    level.helidialog["tracking"][5] = "ac130_fco_rightthere";
+    level.helidialog["tracking"][6] = "ac130_fco_tracking";
+    level.helidialog["locked"][0] = "ac130_fco_lightemup";
+    level.helidialog["locked"][1] = "ac130_fco_takehimout";
+    level.helidialog["locked"][2] = "ac130_fco_nailthoseguys";
+    level.lasthelidialogtime = 0;
     level.heliconfigs = [];
     var_2 = spawnstruct();
     var_2.scorepopup = "destroyed_helicopter";
@@ -79,7 +79,7 @@ init()
     level.heliconfigs["airdrop"] = var_2;
     var_2 = spawnstruct();
     var_2.scorepopup = "destroyed_dronedrop";
-    var_2._id_52DA = "dronedrop_destroyed";
+    var_2.destroyedvo = "dronedrop_destroyed";
     var_2.callout = "callout_destroyed_dronedrop";
     level.heliconfigs["dronedrop"] = var_2;
     var_2 = spawnstruct();
@@ -88,7 +88,7 @@ init()
     var_2.samdamagescale = 0.07;
     var_2.enginevfxtag = "tag_engine_left";
     level.heliconfigs["flares"] = var_2;
-    scripts\mp\utility::_id_DB8D( "helicopter" );
+    scripts\mp\utility::queuecreate( "helicopter" );
 }
 
 makehelitype( var_0, var_1, var_2 )
@@ -143,7 +143,7 @@ tryusehelicopter( var_0, var_1 )
         var_5.lifeid = var_0;
         var_5.helitype = var_1;
         var_5.streakname = var_4;
-        scripts\mp\utility::_id_DB8B( "helicopter", var_5 );
+        scripts\mp\utility::queueadd( "helicopter", var_5 );
         var_6 = undefined;
 
         if ( !self hasweapon( scripts\engine\utility::getlastweapon() ) )
@@ -161,7 +161,7 @@ tryusehelicopter( var_0, var_1 )
     }
 
     var_2 = 1;
-    _id_10DA2( var_0, var_1 );
+    starthelicopter( var_0, var_1 );
     return 1;
 }
 
@@ -172,7 +172,7 @@ deleteonentnotify( var_0, var_1 )
     self delete();
 }
 
-_id_10DA2( var_0, var_1 )
+starthelicopter( var_0, var_1 )
 {
     scripts\mp\utility::incrementfauxvehiclecount();
     var_2 = undefined;
@@ -182,12 +182,12 @@ _id_10DA2( var_0, var_1 )
 
     var_3 = "helicopter";
     var_4 = self.pers["team"];
-    var_2 = level._id_8D96[randomint( level._id_8D96.size )];
+    var_2 = level.heli_start_nodes[randomint( level.heli_start_nodes.size )];
     scripts\mp\matchdata::logkillstreakevent( var_3, self.origin );
-    thread _id_8D9B( var_0, self, var_2, self.pers["team"], var_1 );
+    thread heli_think( var_0, self, var_2, self.pers["team"], var_1 );
 }
 
-_id_D80F()
+precachehelicoptersounds()
 {
     level.heli_sound["allies"]["hit"] = "cobra_helicopter_hit";
     level.heli_sound["allies"]["hitsecondary"] = "cobra_helicopter_secondary_exp";
@@ -215,7 +215,7 @@ heli_getteamforsoundclip()
     return var_0;
 }
 
-_id_1072E( var_0, var_1, var_2, var_3, var_4 )
+spawn_helicopter( var_0, var_1, var_2, var_3, var_4 )
 {
     var_5 = spawnhelicopter( var_0, var_1, var_2, var_3, var_4 );
 
@@ -223,25 +223,25 @@ _id_1072E( var_0, var_1, var_2, var_3, var_4 )
         return undefined;
 
     if ( var_4 == "vehicle_battle_hind" )
-        var_5._id_8DA0 = "cobra";
+        var_5.heli_type = "cobra";
     else
-        var_5._id_8DA0 = level._id_8DA1[var_4];
+        var_5.heli_type = level.heli_types[var_4];
 
-    var_5 thread [[ level.lightfxfunc[var_5._id_8DA0] ]]();
-    var_5 _id_184E();
+    var_5 thread [[ level.lightfxfunc[var_5.heli_type] ]]();
+    var_5 addtohelilist();
     var_5.zoffset = ( 0, 0, var_5 gettagorigin( "tag_origin" )[2] - var_5 gettagorigin( "tag_ground" )[2] );
-    var_5.attractor = missile_createattractorent( var_5, level._id_8D2E, level._id_8D2D );
+    var_5.attractor = missile_createattractorent( var_5, level.heli_attract_strength, level.heli_attract_range );
     return var_5;
 }
 
-_id_8DB6( var_0 )
+helidialog( var_0 )
 {
-    if ( gettime() - level._id_A99A < 6000 )
+    if ( gettime() - level.lasthelidialogtime < 6000 )
         return;
 
-    level._id_A99A = gettime();
-    var_1 = randomint( level._id_8DB6[var_0].size );
-    var_2 = level._id_8DB6[var_0][var_1];
+    level.lasthelidialogtime = gettime();
+    var_1 = randomint( level.helidialog[var_0].size );
+    var_2 = level.helidialog[var_0][var_1];
     var_3 = scripts\mp\teams::getteamvoiceprefix( self.team ) + var_2;
     self playlocalsound( var_3 );
 }
@@ -252,8 +252,8 @@ updateareanodes( var_0 )
 
     foreach ( var_3 in var_0 )
     {
-        var_3._id_1314F = [];
-        var_3._id_C056 = 0;
+        var_3.validplayers = [];
+        var_3.nodescore = 0;
     }
 
     foreach ( var_6 in level.players )
@@ -269,7 +269,7 @@ updateareanodes( var_0 )
             if ( distancesquared( var_6.origin, var_3.origin ) > 1048576 )
                 continue;
 
-            var_3._id_1314F[var_3._id_1314F.size] = var_6;
+            var_3.validplayers[var_3.validplayers.size] = var_6;
         }
     }
 
@@ -279,28 +279,28 @@ updateareanodes( var_0 )
     {
         var_12 = getent( var_3.target, "targetname" );
 
-        foreach ( var_6 in var_3._id_1314F )
+        foreach ( var_6 in var_3.validplayers )
         {
-            var_3._id_C056 = var_3._id_C056 + 1;
+            var_3.nodescore = var_3.nodescore + 1;
 
             if ( bullettracepassed( var_6.origin + ( 0, 0, 32 ), var_12.origin, 0, var_6 ) )
-                var_3._id_C056 = var_3._id_C056 + 3;
+                var_3.nodescore = var_3.nodescore + 3;
         }
 
-        if ( var_3._id_C056 > var_10._id_C056 )
+        if ( var_3.nodescore > var_10.nodescore )
             var_10 = var_3;
     }
 
     return getent( var_10.target, "targetname" );
 }
 
-_id_8D9B( var_0, var_1, var_2, var_3, var_4 )
+heli_think( var_0, var_1, var_2, var_3, var_4 )
 {
     var_5 = var_2.origin;
     var_6 = var_2.angles;
     var_7 = "cobra_mp";
     var_8 = "vehicle_battle_hind";
-    var_9 = _id_1072E( var_1, var_5, var_6, var_7, var_8 );
+    var_9 = spawn_helicopter( var_1, var_5, var_6, var_7, var_8 );
 
     if ( !isdefined( var_9 ) )
         return;
@@ -318,9 +318,9 @@ _id_8D9B( var_0, var_1, var_2, var_3, var_4 )
     var_9.pers["team"] = var_3;
     var_9.owner = var_1;
     var_9 setotherent( var_1 );
-    var_9._id_10DCD = var_2;
-    var_9.maxhealth = level._id_8D73;
-    var_9._id_11568 = level._id_8D9A;
+    var_9.startnode = var_2;
+    var_9.maxhealth = level.heli_maxhealth;
+    var_9.targeting_delay = level.heli_targeting_delay;
     var_9.primarytarget = undefined;
     var_9.secondarytarget = undefined;
     var_9.attacker = undefined;
@@ -337,7 +337,7 @@ _id_8D9B( var_0, var_1, var_2, var_3, var_4 )
     var_9 thread heli_damage_monitor( var_4 );
     var_9 thread heli_watchempdamage();
     var_9 thread heli_watchdeath();
-    var_9 thread _id_8D49();
+    var_9 thread heli_existance();
     var_9 endon( "helicopter_done" );
     var_9 endon( "crashing" );
     var_9 endon( "leaving" );
@@ -351,15 +351,15 @@ _id_8D9B( var_0, var_1, var_2, var_3, var_4 )
     var_9 thread heli_fly_loop_path( var_11 );
 }
 
-_id_8D49()
+heli_existance()
 {
     var_0 = self getentitynumber();
     scripts\engine\utility::waittill_any( "death", "crashing", "leaving" );
-    _id_E109( var_0 );
+    removefromhelilist( var_0 );
     self notify( "helicopter_done" );
     self notify( "helicopter_removed" );
     var_1 = undefined;
-    var_2 = scripts\mp\utility::_id_DB94( "helicopter" );
+    var_2 = scripts\mp\utility::queueremovefirst( "helicopter" );
 
     if ( !isdefined( var_2 ) )
         level.chopper = undefined;
@@ -373,7 +373,7 @@ _id_8D49()
 
         if ( isdefined( var_1 ) && ( var_1.sessionstate == "playing" || var_1.sessionstate == "dead" ) )
         {
-            var_1 _id_10DA2( var_3, var_5 );
+            var_1 starthelicopter( var_3, var_5 );
             return;
         }
 
@@ -398,7 +398,7 @@ heli_targeting()
         {
             wait 0.05;
 
-            if ( !_id_3922( var_2 ) )
+            if ( !cantarget_turret( var_2 ) )
                 continue;
 
             var_0[var_0.size] = var_2;
@@ -406,7 +406,7 @@ heli_targeting()
 
         if ( var_0.size )
         {
-            for ( var_4 = _id_7E00( var_0 ); !isdefined( var_4 ); var_4 = _id_7E00( var_0 ) )
+            for ( var_4 = getbestprimarytarget( var_0 ); !isdefined( var_4 ); var_4 = getbestprimarytarget( var_0 ) )
                 wait 0.05;
 
             self.primarytarget = var_4;
@@ -423,7 +423,7 @@ heli_targeting()
     }
 }
 
-_id_3922( var_0 )
+cantarget_turret( var_0 )
 {
     var_1 = 1;
 
@@ -452,13 +452,13 @@ _id_3922( var_0 )
     var_3 = anglestoforward( self.angles );
     var_4 = var_2 + 144 * var_3;
 
-    if ( var_0 sightconetrace( var_4, self ) < level._id_8D97 )
+    if ( var_0 sightconetrace( var_4, self ) < level.heli_target_recognition )
         return 0;
 
     return var_1;
 }
 
-_id_7E00( var_0 )
+getbestprimarytarget( var_0 )
 {
     foreach ( var_2 in var_0 )
     {
@@ -595,18 +595,18 @@ handledeathdamage( var_0, var_1, var_2, var_3 )
         if ( var_5 != "" )
             var_6 = var_6 + "_" + var_5;
 
-        var_7 = scripts\mp\damage::onkillstreakkilled( self.streakname, var_0, var_1, var_2, var_3, var_4.scorepopup, var_4._id_52DA, var_6 );
+        var_7 = scripts\mp\damage::onkillstreakkilled( self.streakname, var_0, var_1, var_2, var_3, var_4.scorepopup, var_4.destroyedvo, var_6 );
 
         if ( var_7 )
         {
             var_0 notify( "destroyed_helicopter" );
-            self._id_A667 = var_0;
+            self.killingattacker = var_0;
         }
 
         if ( var_1 == "heli_pilot_turret_mp" )
             var_0 scripts\mp\missions::processchallenge( "ch_enemy_down" );
 
-        scripts\mp\missions::_id_3DE3( var_0, self, var_1 );
+        scripts\mp\missions::checkaachallenges( var_0, self, var_1 );
     }
 }
 
@@ -779,16 +779,16 @@ heli_explode( var_0 )
 {
     self notify( "death" );
 
-    if ( isdefined( var_0 ) && isdefined( level.chopper_fx["explode"]["air_death"][self._id_8DA0] ) )
+    if ( isdefined( var_0 ) && isdefined( level.chopper_fx["explode"]["air_death"][self.heli_type] ) )
     {
         var_1 = self gettagangles( "tag_deathfx" );
-        playfx( level.chopper_fx["explode"]["air_death"][self._id_8DA0], self gettagorigin( "tag_deathfx" ), anglestoforward( var_1 ), anglestoup( var_1 ) );
+        playfx( level.chopper_fx["explode"]["air_death"][self.heli_type], self gettagorigin( "tag_deathfx" ), anglestoforward( var_1 ), anglestoup( var_1 ) );
     }
     else
     {
         var_2 = self.origin;
         var_3 = self.origin + ( 0, 0, 1 ) - self.origin;
-        playfx( level.chopper_fx["explode"]["death"][self._id_8DA0], var_2, var_3 );
+        playfx( level.chopper_fx["explode"]["death"][self.heli_type], var_2, var_3 );
     }
 
     var_4 = heli_getteamforsoundclip();
@@ -1089,7 +1089,7 @@ firemissile( var_0 )
     self endon( "crashing" );
     self endon( "leaving" );
 
-    if ( level._id_DADB )
+    if ( level.ps3 )
         var_1 = 1;
     else
         var_1 = 2;
@@ -1443,7 +1443,7 @@ heli_is_threatened()
     return 0;
 }
 
-_id_8D55( var_0 )
+heli_fly_well( var_0 )
 {
     self notify( "flying" );
     self endon( "flying" );
@@ -1477,10 +1477,10 @@ _id_8D55( var_0 )
         _setvehgoalpos( var_1.origin + self.zoffset, 1 );
         self setgoalyaw( var_1.angles[1] + level.heli_angle_offset );
 
-        if ( level._id_8D56 != 0 )
+        if ( level.heli_forced_wait != 0 )
         {
             self waittill( "near_goal" );
-            wait( level._id_8D56 );
+            wait( level.heli_forced_wait );
             continue;
         }
 
@@ -1506,9 +1506,9 @@ heli_leave( var_0 )
     self notify( "leaving" );
     self clearlookatent();
 
-    if ( isdefined( self.helitype ) && self.helitype == "osprey" && isdefined( self._id_C96C ) )
+    if ( isdefined( self.helitype ) && self.helitype == "osprey" && isdefined( self.pathgoal ) )
     {
-        _setvehgoalpos( self._id_C96C, 1 );
+        _setvehgoalpos( self.pathgoal, 1 );
         scripts\engine\utility::waittill_any_timeout( 5, "goal" );
     }
 
@@ -1608,12 +1608,12 @@ draw_line( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_184E()
+addtohelilist()
 {
     level.helis[self getentitynumber()] = self;
 }
 
-_id_E109( var_0 )
+removefromhelilist( var_0 )
 {
     level.helis[var_0] = undefined;
 }
@@ -1626,7 +1626,7 @@ addtolittlebirdlist( var_0 )
     level.littlebirds[self getentitynumber()] = self;
 }
 
-_id_E111( var_0 )
+removefromlittlebirdlistondeath( var_0 )
 {
     var_1 = self getentitynumber();
     self waittill( "death" );
@@ -1645,7 +1645,7 @@ exceededmaxlittlebirds( var_0 )
         return 0;
 }
 
-_id_C9D8()
+pavelowmadeselectionvo()
 {
     self endon( "death" );
     self endon( "disconnect" );

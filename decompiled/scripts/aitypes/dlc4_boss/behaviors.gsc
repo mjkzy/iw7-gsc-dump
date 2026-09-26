@@ -14,7 +14,7 @@ initbehaviors( var_0 )
     self.timers.idletimer = 0;
     self setscriptablepartstate( "flames", "on" );
     resetsoulhealth();
-    self._id_71D0 = ::shouldplaydlc4bosspainanim;
+    self.fnshouldplaypainanim = ::shouldplaydlc4bosspainanim;
     self.unlockedactions = [];
     self.forcingaction = 0;
     self.specialactionnames = scripts\engine\utility::array_randomize( [ "clap", "throw", "air_pound", "tornado" ] );
@@ -58,7 +58,7 @@ setupbehaviorstates()
 
 setupblackboard()
 {
-    self._blackboard._id_4BF7 = undefined;
+    self._blackboard.currentnode = undefined;
     self._blackboard.desirednode = undefined;
     self._blackboard.previousposition = undefined;
     self._blackboard.currentmovedirindex = 5;
@@ -285,7 +285,7 @@ entrance_tick( var_0 )
     {
         if ( scripts\aitypes\dlc4\bt_state_api::btstate_tickstates( var_0 ) )
         {
-            self._blackboard._id_4BF7 = self._blackboard.desirednode;
+            self._blackboard.currentnode = self._blackboard.desirednode;
             return anim.running;
         }
 
@@ -383,7 +383,7 @@ tornado( var_0 )
 teleporttonode( var_0 )
 {
     var_1 = self._blackboard.nodes.size;
-    self._blackboard.desirednode = ( self._blackboard._id_4BF7 + randomint( var_1 - 1 ) + 1 ) % var_1;
+    self._blackboard.desirednode = ( self._blackboard.currentnode + randomint( var_1 - 1 ) + 1 ) % var_1;
     scripts\aitypes\dlc4\simple_action::dosimpleaction_immediate( var_0, "teleport" );
 }
 
@@ -410,7 +410,7 @@ moveleft( var_0 )
     self._blackboard.nodestomove = randomintrange( var_1.min_move_nodes, var_1.max_move_nodes + 1 );
     self.passivetimer = var_1.passive_cooldown;
     self._blackboard.currentmovedirindex = 4;
-    self._blackboard.desirednode = ( self._blackboard._id_4BF7 + 1 ) % self._blackboard.nodes.size;
+    self._blackboard.desirednode = ( self._blackboard.currentnode + 1 ) % self._blackboard.nodes.size;
     self._blackboard.strafeaction = "none";
     self._blackboard.smoothmotion = 1;
     self._blackboard.facecenter = 1;
@@ -423,7 +423,7 @@ moveright( var_0 )
     self._blackboard.nodestomove = randomintrange( var_1.min_move_nodes, var_1.max_move_nodes + 1 );
     self.passivetimer = var_1.passive_cooldown;
     self._blackboard.currentmovedirindex = 6;
-    self._blackboard.desirednode = ( self._blackboard._id_4BF7 - 1 + self._blackboard.nodes.size ) % self._blackboard.nodes.size;
+    self._blackboard.desirednode = ( self._blackboard.currentnode - 1 + self._blackboard.nodes.size ) % self._blackboard.nodes.size;
     self._blackboard.strafeaction = "none";
     self._blackboard.smoothmotion = 1;
     self._blackboard.facecenter = 1;
@@ -443,7 +443,7 @@ movefireballleft( var_0 )
     var_1 = scripts\asm\dlc4\dlc4_asm::gettunedata();
     self._blackboard.nodestomove = var_1.strafe_move_nodes;
     self._blackboard.currentmovedirindex = 4;
-    self._blackboard.desirednode = ( self._blackboard._id_4BF7 + 1 ) % self._blackboard.nodes.size;
+    self._blackboard.desirednode = ( self._blackboard.currentnode + 1 ) % self._blackboard.nodes.size;
     self._blackboard.strafeaction = "fireball";
     self._blackboard.smoothmotion = 1;
     self._blackboard.facecenter = 1;
@@ -455,7 +455,7 @@ movefireballright( var_0 )
     var_1 = scripts\asm\dlc4\dlc4_asm::gettunedata();
     self._blackboard.nodestomove = var_1.strafe_move_nodes;
     self._blackboard.currentmovedirindex = 6;
-    self._blackboard.desirednode = ( self._blackboard._id_4BF7 - 1 + self._blackboard.nodes.size ) % self._blackboard.nodes.size;
+    self._blackboard.desirednode = ( self._blackboard.currentnode - 1 + self._blackboard.nodes.size ) % self._blackboard.nodes.size;
     self._blackboard.strafeaction = "fireball";
     self._blackboard.smoothmotion = 1;
     self._blackboard.facecenter = 1;
@@ -467,7 +467,7 @@ moveclapleft( var_0 )
     var_1 = scripts\asm\dlc4\dlc4_asm::gettunedata();
     self._blackboard.nodestomove = var_1.strafe_move_nodes;
     self._blackboard.currentmovedirindex = 4;
-    self._blackboard.desirednode = ( self._blackboard._id_4BF7 + 1 ) % self._blackboard.nodes.size;
+    self._blackboard.desirednode = ( self._blackboard.currentnode + 1 ) % self._blackboard.nodes.size;
     self._blackboard.strafeaction = "clap";
     self._blackboard.facecenter = 1;
     scripts\aitypes\dlc4\bt_action_api::setdesiredbtaction( var_0, "move_action" );
@@ -478,7 +478,7 @@ moveclapright( var_0 )
     var_1 = scripts\asm\dlc4\dlc4_asm::gettunedata();
     self._blackboard.nodestomove = var_1.strafe_move_nodes;
     self._blackboard.currentmovedirindex = 6;
-    self._blackboard.desirednode = ( self._blackboard._id_4BF7 - 1 + self._blackboard.nodes.size ) % self._blackboard.nodes.size;
+    self._blackboard.desirednode = ( self._blackboard.currentnode - 1 + self._blackboard.nodes.size ) % self._blackboard.nodes.size;
     self._blackboard.strafeaction = "clap";
     self._blackboard.facecenter = 1;
     scripts\aitypes\dlc4\bt_action_api::setdesiredbtaction( var_0, "move_action" );
@@ -502,7 +502,7 @@ groundvul( var_0 )
 dropmove( var_0 )
 {
     var_1 = self._blackboard.nodes.size;
-    self._blackboard.desirednode = ( self._blackboard._id_4BF7 + randomint( var_1 - 5 ) + 3 ) % var_1;
+    self._blackboard.desirednode = ( self._blackboard.currentnode + randomint( var_1 - 5 ) + 3 ) % var_1;
     self.passivetimer = scripts\asm\dlc4\dlc4_asm::gettunedata().passive_cooldown;
     scripts\aitypes\dlc4\bt_action_api::setdesiredbtaction( var_0, "drop_move" );
 }
@@ -514,7 +514,7 @@ flyover( var_0 )
 
     self.specialactiontimer = scripts\asm\dlc4\dlc4_asm::gettunedata().special_cooldown;
     var_1 = self._blackboard;
-    var_1.desirednode = ( var_1._id_4BF7 + scripts\asm\dlc4\dlc4_asm::gettunedata().fly_over_nodes_travelled ) % var_1.nodes.size;
+    var_1.desirednode = ( var_1.currentnode + scripts\asm\dlc4\dlc4_asm::gettunedata().fly_over_nodes_travelled ) % var_1.nodes.size;
     scripts\asm\dlc4_boss\dlc4_boss_asm::facedesirednode();
     scripts\aitypes\dlc4\bt_action_api::setdesiredbtaction( var_0, "fly_over" );
 }
@@ -708,7 +708,7 @@ canflyover()
         return 0;
 
     var_0 = self._blackboard;
-    var_1 = ( var_0._id_4BF7 + scripts\asm\dlc4\dlc4_asm::gettunedata().fly_over_nodes_travelled ) % var_0.nodes.size;
+    var_1 = ( var_0.currentnode + scripts\asm\dlc4\dlc4_asm::gettunedata().fly_over_nodes_travelled ) % var_0.nodes.size;
     var_2 = var_0.nodes[var_1].origin;
     var_3 = scripts\common\trace::create_default_contents( 1 );
     var_4 = scripts\common\trace::ray_trace_passed( self.origin + ( 0, 0, 250 ), var_2 + ( 0, 0, 250 ), undefined, var_3 );
@@ -797,10 +797,10 @@ moveaction_begin( var_0 )
     self setscriptablepartstate( "flame_trail", "on" );
     var_1 = self._blackboard;
     var_1.lookaheadorigin = var_1.nodes[var_1.desirednode].origin;
-    var_1.lookaheadcurrnode = var_1._id_4BF7;
+    var_1.lookaheadcurrnode = var_1.currentnode;
     var_1.lookaheadnextnode = var_1.desirednode;
     moveaction_internalsetup( var_0 );
-    _id_F8A3( var_0, "move" );
+    setup( var_0, "move" );
 }
 
 moveaction_internalsetup( var_0 )
@@ -824,13 +824,13 @@ moveaction_tick( var_0 )
     {
         if ( var_2 >= var_3 )
         {
-            var_1._id_4BF7 = var_1.desirednode;
+            var_1.currentnode = var_1.desirednode;
             var_1.nodestomove--;
 
             if ( var_1.currentmovedirindex == 4 )
-                var_1.desirednode = ( var_1._id_4BF7 + 1 ) % var_1.nodes.size;
+                var_1.desirednode = ( var_1.currentnode + 1 ) % var_1.nodes.size;
             else
-                var_1.desirednode = ( var_1._id_4BF7 - 1 + var_1.nodes.size ) % var_1.nodes.size;
+                var_1.desirednode = ( var_1.currentnode - 1 + var_1.nodes.size ) % var_1.nodes.size;
 
             moveaction_internalsetup( var_0 );
             var_1.desireddir = vectornormalize( var_1.nodes[var_1.desirednode].origin - self.origin );
@@ -846,7 +846,7 @@ moveaction_tick( var_0 )
     }
     else if ( scripts\asm\asm::asm_ephemeraleventfired( "move_arrival", "end" ) )
     {
-        var_1._id_4BF7 = var_1.desirednode;
+        var_1.currentnode = var_1.desirednode;
         return anim.success;
     }
 
@@ -859,7 +859,7 @@ moveaction_end( var_0 )
     cleanup( "move" );
     self.traversallength = undefined;
     var_1 = self._blackboard;
-    var_1._id_4BF7 = var_1.desirednode;
+    var_1.currentnode = var_1.desirednode;
 }
 
 tempidle_begin( var_0 )
@@ -867,7 +867,7 @@ tempidle_begin( var_0 )
     self scragentsetgoalradius( 100000 );
     self clearpath();
     scripts\asm\dlc4\dlc4_asm::clearasmaction();
-    _id_F8A3( var_0, "temp_idle" );
+    setup( var_0, "temp_idle" );
 }
 
 tempidle_tick( var_0 )
@@ -890,8 +890,8 @@ tempidle_end( var_0 )
 
 groundpound_begin( var_0 )
 {
-    _id_F8A3( var_0, "ground_pound" );
-    self._blackboard.desirednode = self._blackboard._id_4BF7;
+    setup( var_0, "ground_pound" );
+    self._blackboard.desirednode = self._blackboard.currentnode;
     scripts\aitypes\dlc4\bt_state_api::asm_wait_state_setup( var_0, "ground_pound", "ground_pound_launch", undefined, undefined, undefined, 2000000 );
     scripts\aitypes\dlc4\bt_state_api::btstate_transitionstate( var_0, "ground_pound" );
 }
@@ -911,8 +911,8 @@ groundpound_end( var_0 )
 
 airpound_begin( var_0 )
 {
-    _id_F8A3( var_0, "air_pound" );
-    self._blackboard.desirednode = self._blackboard._id_4BF7;
+    setup( var_0, "air_pound" );
+    self._blackboard.desirednode = self._blackboard.currentnode;
     scripts\aitypes\dlc4\bt_state_api::asm_wait_state_setup( var_0, "air_pound", "air_pound_teleport_finish", undefined, undefined, undefined, 2000000 );
     scripts\aitypes\dlc4\bt_state_api::btstate_transitionstate( var_0, "air_pound" );
     self.interruptable = 0;
@@ -934,8 +934,8 @@ airpound_end( var_0 )
 
 groundvul_begin( var_0 )
 {
-    _id_F8A3( var_0, "ground_vul" );
-    self._blackboard.desirednode = self._blackboard._id_4BF7;
+    setup( var_0, "ground_vul" );
+    self._blackboard.desirednode = self._blackboard.currentnode;
     scripts\aitypes\dlc4\bt_state_api::asm_wait_state_setup( var_0, "ground_vul", "ground_vul_finish", undefined, undefined, undefined, 2000000 );
     scripts\aitypes\dlc4\bt_state_api::btstate_transitionstate( var_0, "ground_vul" );
     self setscriptablepartstate( "flames", "off" );
@@ -1111,7 +1111,7 @@ frenzydamagecap()
 
 dropmove_begin( var_0 )
 {
-    _id_F8A3( var_0, "drop_move" );
+    setup( var_0, "drop_move" );
     scripts\aitypes\dlc4\bt_state_api::asm_wait_state_setup( var_0, "drop_move", "drop_move_arrival", undefined, undefined, undefined, 2000000 );
     scripts\aitypes\dlc4\bt_state_api::btstate_transitionstate( var_0, "drop_move" );
     self playsound( "final_meph_eclipse" );
@@ -1167,7 +1167,7 @@ flyover_begin( var_0 )
 {
     var_1 = self getanimentry( "fly_over_arrival", 0 );
     self._blackboard.flyoverarrivaldist = length2d( getmovedelta( var_1, 0, 1 ) ) * scripts\asm\dlc4\dlc4_asm::gettunedata().fly_over_speed;
-    _id_F8A3( var_0, "fly_over" );
+    setup( var_0, "fly_over" );
     scripts\aitypes\dlc4\bt_state_api::asm_wait_state_setup( var_0, "fly_over", "fly_over_arrival", undefined, undefined, undefined, 10000000 );
     scripts\aitypes\dlc4\bt_state_api::btstate_transitionstate( var_0, "fly_over" );
     thread stop_flame_trail( 3.5 );
@@ -1189,14 +1189,14 @@ flyover_tick( var_0 )
 
 flyover_end( var_0 )
 {
-    self._blackboard._id_4BF7 = self._blackboard.desirednode;
+    self._blackboard.currentnode = self._blackboard.desirednode;
     cleanup( "fly_over" );
     self.interruptable = 1;
 }
 
 teleport_begin( var_0 )
 {
-    _id_F8A3( var_0, "teleport" );
+    setup( var_0, "teleport" );
     scripts\aitypes\dlc4\bt_state_api::asm_wait_state_setup( var_0, "teleport", "teleport_out", undefined, undefined, undefined, 10000000 );
     scripts\aitypes\dlc4\bt_state_api::btstate_transitionstate( var_0, "teleport" );
 }
@@ -1213,7 +1213,7 @@ teleport_end( var_0 )
 
 death_begin( var_0 )
 {
-    _id_F8A3( var_0, "death" );
+    setup( var_0, "death" );
     scripts\aitypes\dlc4\bt_state_api::asm_wait_state_setup( var_0, "death", "death_death", undefined, undefined, undefined, 10000000 );
     scripts\aitypes\dlc4\bt_state_api::btstate_transitionstate( var_0, "death" );
 }
@@ -1235,7 +1235,7 @@ eclipse_begin( var_0 )
     if ( level.players.size >= 3 )
         level.specialroundcounter = 5;
 
-    _id_F8A3( var_0, "eclipse" );
+    setup( var_0, "eclipse" );
     scripts\aitypes\dlc4\bt_state_api::asm_wait_state_setup( var_0, "eclipse", "eclipse", undefined, undefined, undefined, 10000000 );
     scripts\aitypes\dlc4\bt_state_api::btstate_transitionstate( var_0, "eclipse" );
     self.eclipseanimfinished = 0;
@@ -1325,12 +1325,12 @@ restoreweights()
     self.forcingaction = 0;
 }
 
-_id_593B()
+donothing()
 {
     return;
 }
 
-_id_F8A3( var_0, var_1 )
+setup( var_0, var_1 )
 {
     self scragentsetgoalradius( 100000000 );
     self clearpath();
@@ -1411,7 +1411,7 @@ resettimer( var_0, var_1 )
 
 simplesetup_begin( var_0 )
 {
-    _id_F8A3( var_0, self.simplesetupstartstate );
+    setup( var_0, self.simplesetupstartstate );
     scripts\aitypes\dlc4\bt_state_api::asm_wait_state_setup( var_0, self.simplesetupstartstate, self.simplesetupendstate, undefined, undefined, undefined, 100000 );
     scripts\aitypes\dlc4\bt_state_api::btstate_transitionstate( var_0, self.simplesetupstartstate );
 }

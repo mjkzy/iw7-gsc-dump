@@ -23,7 +23,7 @@ door_setup()
     var_0.doors = [];
 
     if ( isdefined( var_0.script_index ) )
-        var_0._id_5A17 = max( 0.1, float( var_0.script_index ) / 1000 );
+        var_0.doormovetime = max( 0.1, float( var_0.script_index ) / 1000 );
 
     var_1 = getentarray( var_0.target, "targetname" );
 
@@ -31,8 +31,8 @@ door_setup()
     {
         if ( issubstr( var_3.classname, "trigger" ) )
         {
-            if ( !isdefined( var_0._id_12720 ) )
-                var_0._id_12720 = [];
+            if ( !isdefined( var_0.trigblock ) )
+                var_0.trigblock = [];
 
             if ( isdefined( var_3.script_parameters ) )
                 var_3 trigger_parse_parameters( var_3.script_parameters );
@@ -44,7 +44,7 @@ door_setup()
                 var_3 linkto( var_4 );
             }
 
-            var_0._id_12720[var_0._id_12720.size] = var_3;
+            var_0.trigblock[var_0.trigblock.size] = var_3;
             continue;
         }
 
@@ -75,13 +75,13 @@ door_setup()
             }
             else if ( var_3.spawnflags & 2 )
             {
-                if ( !isdefined( var_0._id_19E5 ) )
-                    var_0._id_19E5 = [];
+                if ( !isdefined( var_0.ai_sight_brushes ) )
+                    var_0.ai_sight_brushes = [];
 
                 var_3 notsolid();
                 var_3 hide();
-                var_3 _meth_829D( 0 );
-                var_0._id_19E5[var_0._id_19E5.size] = var_3;
+                var_3 setaisightlinevisible( 0 );
+                var_0.ai_sight_brushes[var_0.ai_sight_brushes.size] = var_3;
             }
             else
                 var_0.doors[var_0.doors.size] = var_3;
@@ -98,14 +98,14 @@ door_setup()
 
     foreach ( var_7 in var_0.doors )
     {
-        var_7._id_D6A4 = var_7.origin;
-        var_7._id_D6AE = scripts\engine\utility::getstruct( var_7.target, "targetname" ).origin;
-        var_7._id_5717 = distance( var_7._id_D6AE, var_7._id_D6A4 );
-        var_7.origin = var_7._id_D6AE;
-        var_7._id_C001 = 0;
+        var_7.posclosed = var_7.origin;
+        var_7.posopen = scripts\engine\utility::getstruct( var_7.target, "targetname" ).origin;
+        var_7.distmove = distance( var_7.posopen, var_7.posclosed );
+        var_7.origin = var_7.posopen;
+        var_7.no_moving_unresolved_collisions = 0;
 
         if ( isdefined( var_7.script_parameters ) )
-            var_7 _id_59BD( var_7.script_parameters );
+            var_7 door_parse_parameters( var_7.script_parameters );
     }
 }
 
@@ -116,18 +116,18 @@ door_think()
 
     for (;;)
     {
-        var_0._id_10E27 = undefined;
-        var_0._id_10E29 = undefined;
+        var_0.statedone = undefined;
+        var_0.stateinterrupted = undefined;
         var_0 scripts\engine\utility::waittill_any( "door_state_done", "door_state_interrupted" );
 
-        if ( isdefined( var_0._id_10E27 ) && var_0._id_10E27 )
+        if ( isdefined( var_0.statedone ) && var_0.statedone )
         {
             var_1 = var_0 door_state_next( var_0.statecurr );
             var_0 door_state_change( var_1, 0 );
             continue;
         }
 
-        if ( isdefined( var_0._id_10E29 ) && var_0._id_10E29 )
+        if ( isdefined( var_0.stateinterrupted ) && var_0.stateinterrupted )
         {
             var_0 door_state_change( 4, 0 );
             continue;
@@ -162,7 +162,7 @@ door_state_update( var_0 )
 {
     var_1 = self;
     var_1 endon( "door_state_interrupted" );
-    var_1._id_10E27 = undefined;
+    var_1.statedone = undefined;
 
     if ( var_1.statecurr == 0 || var_1.statecurr == 2 )
     {
@@ -170,10 +170,10 @@ door_state_update( var_0 )
         {
             foreach ( var_3 in var_1.doors )
             {
-                if ( isdefined( var_3._id_11041 ) )
+                if ( isdefined( var_3.stop_sound ) )
                 {
                     var_3 stoploopsound();
-                    var_3 playsoundonmovingent( var_3._id_11041 );
+                    var_3 playsoundonmovingent( var_3.stop_sound );
                 }
             }
         }
@@ -188,12 +188,12 @@ door_state_update( var_0 )
         {
             if ( var_1.statecurr == 0 )
             {
-                if ( isdefined( var_1._id_19E5 ) )
+                if ( isdefined( var_1.ai_sight_brushes ) )
                 {
-                    foreach ( var_10 in var_1._id_19E5 )
+                    foreach ( var_10 in var_1.ai_sight_brushes )
                     {
                         var_10 show();
-                        var_10 _meth_829D( 1 );
+                        var_10 setaisightlinevisible( 1 );
                     }
                 }
 
@@ -202,12 +202,12 @@ door_state_update( var_0 )
             }
             else
             {
-                if ( isdefined( var_1._id_19E5 ) )
+                if ( isdefined( var_1.ai_sight_brushes ) )
                 {
-                    foreach ( var_10 in var_1._id_19E5 )
+                    foreach ( var_10 in var_1.ai_sight_brushes )
                     {
                         var_10 hide();
-                        var_10 _meth_829D( 0 );
+                        var_10 setaisightlinevisible( 0 );
                     }
                 }
 
@@ -226,7 +226,7 @@ door_state_update( var_0 )
                     var_3 rotatevelocity( ( 0, 0, 0 ), 0.1 );
             }
 
-            if ( var_3._id_C001 )
+            if ( var_3.no_moving_unresolved_collisions )
                 var_3.unresolved_collision_func = undefined;
         }
 
@@ -235,8 +235,8 @@ door_state_update( var_0 )
         var_1 makeusable();
         var_1 waittill( "trigger" );
 
-        if ( isdefined( var_1.button_smash_count ) )
-            var_1 playsound( var_1.button_smash_count );
+        if ( isdefined( var_1.button_sound ) )
+            var_1 playsound( var_1.button_sound );
     }
     else if ( var_1.statecurr == 1 || var_1.statecurr == 3 )
     {
@@ -256,12 +256,12 @@ door_state_update( var_0 )
             {
                 if ( isdefined( var_3.script_noteworthy ) )
                 {
-                    var_19 = scripts\engine\utility::ter_op( isdefined( var_1._id_5A17 ), var_1._id_5A17, 3.0 );
-                    var_20 = scripts\engine\utility::ter_op( var_1.statecurr == 1, var_3._id_D6A4, var_3._id_D6AE );
+                    var_19 = scripts\engine\utility::ter_op( isdefined( var_1.doormovetime ), var_1.doormovetime, 3.0 );
+                    var_20 = scripts\engine\utility::ter_op( var_1.statecurr == 1, var_3.posclosed, var_3.posopen );
                     var_21 = distance( var_3.origin, var_20 );
-                    var_22 = max( 0.1, var_21 / var_3._id_5717 * var_19 );
+                    var_22 = max( 0.1, var_21 / var_3.distmove * var_19 );
                     var_23 = max( var_22 * 0.25, 0.05 );
-                    var_24 = 360 * var_21 / 94.2;
+                    var_24 = 360 * var_21 / 94.200005;
 
                     if ( var_3.script_noteworthy == "clockwise_wheel" )
                         var_3 rotatevelocity( ( 0, 0, -1 * var_24 / var_22 ), var_22, var_23, var_23 );
@@ -272,19 +272,19 @@ door_state_update( var_0 )
         }
         else if ( var_1.statecurr == 3 )
         {
-            if ( isdefined( var_1._id_C607 ) && var_1._id_C607 )
+            if ( isdefined( var_1.open_interrupt ) && var_1.open_interrupt )
                 var_1 thread door_state_on_interrupt();
 
             foreach ( var_3 in var_1.doors )
             {
                 if ( isdefined( var_3.script_noteworthy ) )
                 {
-                    var_19 = scripts\engine\utility::ter_op( isdefined( var_1._id_5A17 ), var_1._id_5A17, 3.0 );
-                    var_20 = scripts\engine\utility::ter_op( var_1.statecurr == 1, var_3._id_D6A4, var_3._id_D6AE );
+                    var_19 = scripts\engine\utility::ter_op( isdefined( var_1.doormovetime ), var_1.doormovetime, 3.0 );
+                    var_20 = scripts\engine\utility::ter_op( var_1.statecurr == 1, var_3.posclosed, var_3.posopen );
                     var_21 = distance( var_3.origin, var_20 );
-                    var_22 = max( 0.1, var_21 / var_3._id_5717 * var_19 );
+                    var_22 = max( 0.1, var_21 / var_3.distmove * var_19 );
                     var_23 = max( var_22 * 0.25, 0.05 );
-                    var_24 = 360 * var_21 / 94.2;
+                    var_24 = 360 * var_21 / 94.200005;
 
                     if ( var_3.script_noteworthy == "clockwise_wheel" )
                         var_3 rotatevelocity( ( 0, 0, var_24 / var_22 ), var_22, var_23, var_23 );
@@ -295,23 +295,23 @@ door_state_update( var_0 )
         }
 
         wait 0.1;
-        var_1 childthread _id_59F1( "garage_door_start", "garage_door_loop" );
-        var_19 = scripts\engine\utility::ter_op( isdefined( var_1._id_5A17 ), var_1._id_5A17, 3.0 );
+        var_1 childthread door_state_update_sound( "garage_door_start", "garage_door_loop" );
+        var_19 = scripts\engine\utility::ter_op( isdefined( var_1.doormovetime ), var_1.doormovetime, 3.0 );
         var_28 = undefined;
 
         foreach ( var_3 in var_1.doors )
         {
-            var_20 = scripts\engine\utility::ter_op( var_1.statecurr == 1, var_3._id_D6A4, var_3._id_D6AE );
+            var_20 = scripts\engine\utility::ter_op( var_1.statecurr == 1, var_3.posclosed, var_3.posopen );
 
             if ( var_3.origin != var_20 )
             {
-                var_22 = max( 0.1, distance( var_3.origin, var_20 ) / var_3._id_5717 * var_19 );
+                var_22 = max( 0.1, distance( var_3.origin, var_20 ) / var_3.distmove * var_19 );
                 var_23 = max( var_22 * 0.25, 0.05 );
                 var_3 moveto( var_20, var_22, var_23, var_23 );
                 var_3 scripts\mp\movers::notify_moving_platform_invalid();
 
-                if ( var_3._id_C001 )
-                    var_3.unresolved_collision_func = scripts\mp\movers::_id_12BEE;
+                if ( var_3.no_moving_unresolved_collisions )
+                    var_3.unresolved_collision_func = scripts\mp\movers::unresolved_collision_void;
 
                 if ( !isdefined( var_28 ) || var_22 > var_28 )
                     var_28 = var_22;
@@ -328,7 +328,7 @@ door_state_update( var_0 )
             var_3 moveto( var_3.origin, 0.05, 0.0, 0.0 );
             var_3 scripts\mp\movers::notify_moving_platform_invalid();
 
-            if ( var_3._id_C001 )
+            if ( var_3.no_moving_unresolved_collisions )
                 var_3.unresolved_collision_func = undefined;
 
             if ( isdefined( var_3.script_noteworthy ) )
@@ -348,8 +348,8 @@ door_state_update( var_0 )
 
         foreach ( var_3 in var_1.doors )
         {
-            if ( isdefined( var_3._id_9A88 ) )
-                var_3 playsound( var_3._id_9A88 );
+            if ( isdefined( var_3.interrupt_sound ) )
+                var_3 playsound( var_3.interrupt_sound );
         }
 
         wait 1.0;
@@ -359,15 +359,15 @@ door_state_update( var_0 )
 
     }
 
-    var_1._id_10E27 = 1;
+    var_1.statedone = 1;
 
     foreach ( var_3 in var_1.doors )
-        var_3._id_10E27 = 1;
+        var_3.statedone = 1;
 
     var_1 notify( "door_state_done" );
 }
 
-_id_59F1( var_0, var_1 )
+door_state_update_sound( var_0, var_1 )
 {
     var_2 = self;
     var_3 = 1;
@@ -378,10 +378,10 @@ _id_59F1( var_0, var_1 )
     {
         foreach ( var_7 in var_2.doors )
         {
-            if ( isdefined( var_7._id_10D2A ) )
+            if ( isdefined( var_7.start_sound ) )
             {
-                var_7 playsoundonmovingent( var_7._id_10D2A );
-                var_5 = lookupsoundlength( var_7._id_10D2A ) / 1000;
+                var_7 playsoundonmovingent( var_7.start_sound );
+                var_5 = lookupsoundlength( var_7.start_sound ) / 1000;
                 var_3 = 0;
             }
         }
@@ -470,7 +470,7 @@ door_state_on_interrupt()
     var_0 endon( "door_state_done" );
     var_1 = [];
 
-    foreach ( var_3 in var_0._id_12720 )
+    foreach ( var_3 in var_0.trigblock )
     {
         if ( var_0.statecurr == 1 )
         {
@@ -490,9 +490,9 @@ door_state_on_interrupt()
     {
         var_5 = var_0 waittill_any_triggered_return_triggerer( var_1 );
 
-        if ( !isdefined( var_5.fauxdeath ) || var_5.fauxdeath == 0 )
+        if ( !isdefined( var_5.fauxdead ) || var_5.fauxdead == 0 )
         {
-            var_0._id_10E29 = 1;
+            var_0.stateinterrupted = 1;
             var_0 notify( "door_state_interrupted" );
         }
     }
@@ -549,7 +549,7 @@ return_triggerer( var_0 )
 button_parse_parameters( var_0 )
 {
     var_1 = self;
-    var_1.button_smash_count = undefined;
+    var_1.button_sound = undefined;
 
     if ( !isdefined( var_0 ) )
         var_0 = "";
@@ -572,10 +572,10 @@ button_parse_parameters( var_0 )
         switch ( var_5[0] )
         {
             case "open_interrupt":
-                var_1._id_C607 = string_to_bool( var_5[1] );
+                var_1.open_interrupt = string_to_bool( var_5[1] );
                 break;
             case "button_sound":
-                var_1.button_smash_count = var_5[1];
+                var_1.button_sound = var_5[1];
                 break;
             default:
                 break;
@@ -583,13 +583,13 @@ button_parse_parameters( var_0 )
     }
 }
 
-_id_59BD( var_0 )
+door_parse_parameters( var_0 )
 {
     var_1 = self;
-    var_1._id_10D2A = undefined;
-    var_1._id_11041 = undefined;
+    var_1.start_sound = undefined;
+    var_1.stop_sound = undefined;
     var_1.loop_sound = undefined;
-    var_1._id_9A88 = undefined;
+    var_1.interrupt_sound = undefined;
 
     if ( !isdefined( var_0 ) )
         var_0 = "";
@@ -612,25 +612,25 @@ _id_59BD( var_0 )
         switch ( var_5[0] )
         {
             case "stop_sound":
-                var_1._id_11041 = var_5[1];
+                var_1.stop_sound = var_5[1];
                 break;
             case "interrupt_sound":
-                var_1._id_9A88 = var_5[1];
+                var_1.interrupt_sound = var_5[1];
                 break;
             case "loop_sound":
                 var_1.loop_sound = var_5[1];
                 break;
             case "open_interrupt":
-                var_1._id_C607 = string_to_bool( var_5[1] );
+                var_1.open_interrupt = string_to_bool( var_5[1] );
                 break;
             case "start_sound":
-                var_1._id_10D2A = var_5[1];
+                var_1.start_sound = var_5[1];
                 break;
             case "unresolved_collision_nodes":
                 var_1.unresolved_collision_nodes = getnodearray( var_5[1], "targetname" );
                 break;
             case "no_moving_unresolved_collisions":
-                var_1._id_C001 = string_to_bool( var_5[1] );
+                var_1.no_moving_unresolved_collisions = string_to_bool( var_5[1] );
                 break;
             default:
                 break;

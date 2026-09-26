@@ -4,19 +4,19 @@
 init()
 {
     level.uplinks = [];
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "uplink", ::_id_1290C );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "uplink_support", ::_id_1290C );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "uplink", ::tryuseuplink );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "uplink_support", ::tryuseuplink );
     level._id_768F = 0;
-    level._id_4418 = [];
-    level._id_4418["giveComExpBenefits"] = ::_id_835B;
-    level._id_4418["removeComExpBenefits"] = ::_id_E0DF;
-    level._id_4418["getRadarStrengthForTeam"] = ::_id_80A8;
-    level._id_4418["getRadarStrengthForPlayer"] = ::_id_80A7;
+    level.comexpfuncs = [];
+    level.comexpfuncs["giveComExpBenefits"] = ::givecomexpbenefits;
+    level.comexpfuncs["removeComExpBenefits"] = ::removecomexpbenefits;
+    level.comexpfuncs["getRadarStrengthForTeam"] = ::getradarstrengthforteam;
+    level.comexpfuncs["getRadarStrengthForPlayer"] = ::getradarstrengthforplayer;
     level._effect["uav_beam"] = loadfx( "vfx/old/_requests/mp_gameplay/vfx_energy_beam" );
     unblockteamradar( "axis" );
     unblockteamradar( "allies" );
-    level thread _id_12F82();
-    level thread _id_12F83();
+    level thread uplinktracker();
+    level thread uplinkupdateeyeson();
 
     if ( level._id_768F )
         level thread _id_C799();
@@ -31,25 +31,25 @@ init()
     var_0.hintstring = &"KILLSTREAKS_HINTS_UPLINK_PICKUP";
     var_0.placestring = &"KILLSTREAKS_HINTS_UPLINK_PLACE";
     var_0.cannotplacestring = &"KILLSTREAKS_HINTS_UPLINK_CANNOT_PLACE";
-    var_0._id_8C79 = 42;
-    var_0._id_10A38 = "used_uplink";
+    var_0.headiconheight = 42;
+    var_0.splashname = "used_uplink";
     var_0.lifespan = 30;
     var_0.maxhealth = 340;
     var_0.allowmeleedamage = 1;
-    var_0._id_1C8F = 1;
+    var_0.allowempdamage = 1;
     var_0.damagefeedback = "trophy";
     var_0.scorepopup = "destroyed_uplink";
-    var_0._id_52DA = "satcom_destroyed";
+    var_0.destroyedvo = "satcom_destroyed";
     var_0.placementheighttolerance = 30.0;
     var_0.placementradius = 16.0;
-    var_0._id_CC23 = 16;
+    var_0.placementoffsetz = 16;
     var_0.onplaceddelegate = ::onplaced;
     var_0.oncarrieddelegate = ::oncarried;
-    var_0._id_CC15 = "mp_killstreak_satcom_deploy";
-    var_0._id_1673 = "mp_killstreak_satcom_loop";
-    var_0._id_C55B = ::_id_12F80;
-    var_0.ondeathdelegate = ::ondeath_clearscriptedanim;
-    var_0._id_C4F3 = ::_id_C4F2;
+    var_0.placedsfx = "mp_killstreak_satcom_deploy";
+    var_0.activesfx = "mp_killstreak_satcom_loop";
+    var_0.onmovingplatformcollision = ::uplink_override_moving_platform_death;
+    var_0.ondeathdelegate = ::ondeath;
+    var_0.ondestroyeddelegate = ::ondestroyed;
     var_0.deathvfx = loadfx( "vfx/core/mp/killstreaks/vfx_ballistic_vest_death" );
     level.placeableconfigs["uplink"] = var_0;
     level.placeableconfigs["uplink_support"] = var_0;
@@ -80,7 +80,7 @@ _id_1383D()
     }
 }
 
-_id_12F82()
+uplinktracker()
 {
     level endon( "game_ended" );
 
@@ -95,20 +95,20 @@ _id_12E5B()
 {
     self notify( "updateAllUplinkThreads" );
     self endon( "updateAllUplinkThreads" );
-    level childthread _id_4419();
+    level childthread comexpnotifywatcher();
 
     if ( level.teambased )
     {
-        level childthread _id_12F41( "axis" );
-        level childthread _id_12F41( "allies" );
+        level childthread updateteamuplink( "axis" );
+        level childthread updateteamuplink( "allies" );
     }
     else
-        level childthread _id_12EF4();
+        level childthread updateplayeruplink();
 
-    level childthread _id_12E79();
+    level childthread updatecomexpuplink();
 }
 
-_id_4419()
+comexpnotifywatcher()
 {
     var_0 = [];
 
@@ -126,9 +126,9 @@ _id_4419()
     level notify( "start_com_exp" );
 }
 
-_id_12F41( var_0 )
+updateteamuplink( var_0 )
 {
-    var_1 = _id_80A8( var_0 );
+    var_1 = getradarstrengthforteam( var_0 );
     var_2 = var_1 == 1;
     var_3 = var_1 >= 2;
     var_4 = var_1 >= 3;
@@ -150,11 +150,11 @@ _id_12F41( var_0 )
         if ( var_7.team != var_0 )
             continue;
 
-        var_7._id_FFC7 = var_2;
-        var_7 _meth_82DF( var_2 );
+        var_7.shouldbeeyeson = var_2;
+        var_7 seteyesonuplinkenabled( var_2 );
         var_7.radarmode = level.radarmode[var_7.team];
         var_7.radarshowenemydirection = var_5;
-        var_7 _id_12F09( var_0 );
+        var_7 updatesatcomactiveomnvar( var_0 );
         wait 0.05;
     }
 
@@ -162,23 +162,23 @@ _id_12F41( var_0 )
     level notify( "radar_status_change", var_0 );
 }
 
-_id_12EF4()
+updateplayeruplink()
 {
     foreach ( var_1 in level.participants )
     {
         if ( !isdefined( var_1 ) )
             continue;
 
-        var_2 = _id_80A7( var_1 );
-        _id_F7F7( var_1, var_2 );
-        var_1 _id_12F09();
+        var_2 = getradarstrengthforplayer( var_1 );
+        setplayerradareffect( var_1, var_2 );
+        var_1 updatesatcomactiveomnvar();
         wait 0.05;
     }
 
     level notify( "radar_status_change_players" );
 }
 
-_id_12E79()
+updatecomexpuplink()
 {
     level waittill( "start_com_exp" );
 
@@ -187,32 +187,32 @@ _id_12E79()
         if ( !isdefined( var_1 ) )
             continue;
 
-        var_1 _id_835B();
+        var_1 givecomexpbenefits();
         wait 0.05;
     }
 }
 
-_id_835B()
+givecomexpbenefits()
 {
     if ( scripts\mp\utility::_hasperk( "specialty_comexp" ) )
     {
-        var_0 = _id_80A6( self );
-        _id_F7F7( self, var_0 );
-        _id_12F09();
+        var_0 = getradarstrengthforcomexp( self );
+        setplayerradareffect( self, var_0 );
+        updatesatcomactiveomnvar();
     }
 }
 
-_id_12F09( var_0 )
+updatesatcomactiveomnvar( var_0 )
 {
     var_1 = 0;
 
     if ( isdefined( var_0 ) )
-        var_1 = _id_80A8( var_0 );
+        var_1 = getradarstrengthforteam( var_0 );
     else
-        var_1 = _id_80A7( self );
+        var_1 = getradarstrengthforplayer( self );
 
     if ( scripts\mp\utility::_hasperk( "specialty_comexp" ) )
-        var_1 = _id_80A6( self );
+        var_1 = getradarstrengthforcomexp( self );
 
     if ( var_1 > 0 )
         self setclientomnvar( "ui_satcom_active", 1 );
@@ -220,24 +220,24 @@ _id_12F09( var_0 )
         self setclientomnvar( "ui_satcom_active", 0 );
 }
 
-_id_E0DF()
+removecomexpbenefits()
 {
-    self._id_FFC7 = 0;
-    self _meth_82DF( 0 );
+    self.shouldbeeyeson = 0;
+    self seteyesonuplinkenabled( 0 );
     self.radarshowenemydirection = 0;
     self.radarmode = "normal_radar";
     self.hasradar = 0;
     self.isradarblocked = 0;
 }
 
-_id_F7F7( var_0, var_1 )
+setplayerradareffect( var_0, var_1 )
 {
     var_2 = var_1 == 1;
     var_3 = var_1 >= 2;
     var_4 = var_1 >= 3;
     var_5 = var_1 >= 4;
-    var_0._id_FFC7 = var_2;
-    var_0 _meth_82DF( var_2 );
+    var_0.shouldbeeyeson = var_2;
+    var_0 seteyesonuplinkenabled( var_2 );
     var_0.radarshowenemydirection = var_5;
     var_0.radarmode = "normal_radar";
     var_0.hasradar = var_3;
@@ -247,7 +247,7 @@ _id_F7F7( var_0, var_1 )
         var_0.radarmode = "fast_radar";
 }
 
-_id_1290C( var_0, var_1 )
+tryuseuplink( var_0, var_1 )
 {
     var_2 = scripts\mp\killstreaks\placeable::giveplaceable( var_1, 1 );
 
@@ -263,7 +263,7 @@ oncarried( var_0 )
     var_1 = self getentitynumber();
 
     if ( isdefined( level.uplinks[var_1] ) )
-        _id_11099();
+        stopuplink();
 }
 
 _id_13A7B()
@@ -314,7 +314,7 @@ _id_12AEF()
                 var_4._id_12AF1.origin = var_4.origin;
                 var_4._id_12AF2.origin = var_4.origin;
                 var_4._id_12AF2.alpha = 0.95;
-                var_4._id_12AF2 thread _id_6AB8( var_1, var_2 );
+                var_4._id_12AF2 thread fadeout( var_1, var_2 );
             }
             else
             {
@@ -324,7 +324,7 @@ _id_12AEF()
                 var_4._id_12AF1 = var_5;
                 var_4._id_12AF2 = var_5 scripts\mp\entityheadicons::setheadicon( self.team, "headicon_enemy", ( 0, 0, 32 ), 2, 2, 1, 0.01, 0, 1, 1, 0 );
                 var_4._id_12AF2.alpha = 0.95;
-                var_4._id_12AF2 thread _id_6AB8( var_1, var_2 );
+                var_4._id_12AF2 thread fadeout( var_1, var_2 );
             }
 
             var_4._id_2A3B = playloopedfx( scripts\engine\utility::getfx( "uav_beam" ), var_0, var_4.origin );
@@ -351,7 +351,7 @@ _id_B37E()
         self._id_12AF1.origin = self.origin;
         self._id_12AF2.origin = self.origin;
         self._id_12AF2.alpha = 0.95;
-        self._id_12AF2 thread _id_6AB8( var_1, var_2 );
+        self._id_12AF2 thread fadeout( var_1, var_2 );
     }
     else
     {
@@ -361,7 +361,7 @@ _id_B37E()
         self._id_12AF1 = var_3;
         self._id_12AF2 = var_3 scripts\mp\entityheadicons::setheadicon( scripts\mp\utility::getotherteam( self.team ), "headicon_enemy", ( 0, 0, 32 ), 14, 14, 1, 0.01, 0, 1, 1, 0 );
         self._id_12AF2.alpha = 0.95;
-        self._id_12AF2 thread _id_6AB8( var_1, var_2 );
+        self._id_12AF2 thread fadeout( var_1, var_2 );
     }
 
     self._id_2A3B = playloopedfx( scripts\engine\utility::getfx( "uav_beam" ), var_0, self.origin );
@@ -371,7 +371,7 @@ _id_B37E()
         self._id_2A3B delete();
 }
 
-_id_6AB8( var_0, var_1 )
+fadeout( var_0, var_1 )
 {
     self notify( "fadeOut" );
     self endon( "fadeOut" );
@@ -390,7 +390,7 @@ onplaced( var_0 )
     var_1 = level.placeableconfigs[var_0];
     self.owner notify( "uplink_deployed" );
     self setmodel( var_1.modelbase );
-    self._id_933C = 0;
+    self.immediatedeath = 0;
     self setotherent( self.owner );
     scripts\mp\sentientpoolmanager::registersentient( "Killstreak_Ground", self.owner );
     self.config = var_1;
@@ -398,17 +398,17 @@ onplaced( var_0 )
     if ( level._id_768F )
         thread _id_12AEF();
 
-    _id_10E04( 1 );
+    startuplink( 1 );
     thread watchempdamage();
 }
 
-_id_10E04( var_0 )
+startuplink( var_0 )
 {
-    _id_1868( self );
-    self playloopsound( self.config._id_1673 );
+    adduplinktolevellist( self );
+    self playloopsound( self.config.activesfx );
 }
 
-_id_11099()
+stopuplink()
 {
     scripts\mp\weapons::stopblinkinglight();
     self scriptmodelclearanim();
@@ -416,36 +416,36 @@ _id_11099()
     if ( isdefined( self.bombsquadmodel ) )
         self.bombsquadmodel scriptmodelclearanim();
 
-    _id_E188( self );
+    removeuplinkfromlevellist( self );
     self stoploopsound();
 }
 
-_id_C4F2( var_0, var_1, var_2, var_3 )
+ondestroyed( var_0, var_1, var_2, var_3 )
 {
     var_1 notify( "destroyed_equipment" );
 }
 
-ondeath_clearscriptedanim( var_0, var_1, var_2, var_3 )
+ondeath( var_0, var_1, var_2, var_3 )
 {
     scripts\mp\weapons::stopblinkinglight();
     scripts\mp\weapons::equipmentdeathvfx();
-    _id_E188( self );
+    removeuplinkfromlevellist( self );
     self scriptmodelclearanim();
 
-    if ( !self._id_933C )
+    if ( !self.immediatedeath )
         wait 3.0;
 
     scripts\mp\weapons::equipmentdeletevfx();
 }
 
-_id_1868( var_0 )
+adduplinktolevellist( var_0 )
 {
     var_1 = var_0 getentitynumber();
     level.uplinks[var_1] = var_0;
     level notify( "update_uplink" );
 }
 
-_id_E188( var_0 )
+removeuplinkfromlevellist( var_0 )
 {
     var_0 notify( "satComTimedOut" );
     var_1 = var_0 getentitynumber();
@@ -453,7 +453,7 @@ _id_E188( var_0 )
     level notify( "update_uplink" );
 }
 
-_id_80A8( var_0 )
+getradarstrengthforteam( var_0 )
 {
     var_1 = 0;
 
@@ -463,7 +463,7 @@ _id_80A8( var_0 )
             var_1++;
     }
 
-    if ( var_1 == 0 && isdefined( level._id_8DD7 ) && level._id_8DD7.team == var_0 )
+    if ( var_1 == 0 && isdefined( level.helisnipereyeson ) && level.helisnipereyeson.team == var_0 )
         var_1++;
 
     if ( var_1 == 1 )
@@ -472,7 +472,7 @@ _id_80A8( var_0 )
     return clamp( var_1, 0, 4 );
 }
 
-_id_80A7( var_0 )
+getradarstrengthforplayer( var_0 )
 {
     var_1 = 0;
 
@@ -499,7 +499,7 @@ _id_80A7( var_0 )
     return clamp( var_1, 0, 4 );
 }
 
-_id_80A6( var_0 )
+getradarstrengthforcomexp( var_0 )
 {
     var_1 = 0;
 
@@ -515,9 +515,9 @@ _id_80A6( var_0 )
     return clamp( var_1, 0, 4 );
 }
 
-_id_12F80( var_0 )
+uplink_override_moving_platform_death( var_0 )
 {
-    self._id_933C = 1;
+    self.immediatedeath = 1;
     self notify( "death" );
 }
 
@@ -530,20 +530,20 @@ watchempdamage()
     {
         self waittill( "emp_damage", var_0, var_1 );
         scripts\mp\weapons::equipmentempstunvfx();
-        _id_11099();
+        stopuplink();
         wait( var_1 );
-        _id_10E04( 0 );
+        startuplink( 0 );
     }
 }
 
-_id_12F83()
+uplinkupdateeyeson()
 {
     level endon( "game_ended" );
 
     for (;;)
     {
         level waittill( "player_spawned", var_0 );
-        var_1 = isdefined( var_0._id_FFC7 ) && var_0._id_FFC7;
-        var_0 _meth_82DF( var_1 );
+        var_1 = isdefined( var_0.shouldbeeyeson ) && var_0.shouldbeeyeson;
+        var_0 seteyesonuplinkenabled( var_1 );
     }
 }

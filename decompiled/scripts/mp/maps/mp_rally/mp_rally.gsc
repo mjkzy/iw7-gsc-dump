@@ -26,7 +26,7 @@ main()
     level._effect["burn_kill"] = loadfx( "vfx/iw7/levels/mp_rally/vfx_burninator_death.vfx" );
     level._effect["blade_kill"] = loadfx( "vfx/iw7/levels/mp_rally/vfx_body_exp.vfx" );
     level._effect["shock_kill"] = loadfx( "vfx/iw7/levels/mp_rally/vfx_shock_death.vfx" );
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     thread apex_not_outofbounds();
     level.modifiedspawnpoints["-560 -1344 131"]["mp_tdm_spawn"]["remove"] = 1;
     level.modifiedspawnpoints["-560 -1344 131"]["mp_dom_spawn"]["remove"] = 1;
@@ -172,8 +172,8 @@ barreldroppersetup( var_0, var_1, var_2, var_3 )
     var_4 = getent( var_0, "targetname" );
     var_4 makeusable();
     var_4 sethintstring( &"MP_RALLY_ACTIVATE_BARREL" );
-    var_4 _meth_84A4( 64 );
-    var_4 _meth_84A6( 60 );
+    var_4 sethintdisplayrange( 64 );
+    var_4 sethintdisplayfov( 60 );
     var_4 setuserange( 64 );
     var_4 setusefov( 60 );
     var_5 = getent( var_3, "targetname" );
@@ -226,7 +226,7 @@ barreldropperloop( var_0, var_1, var_2, var_3 )
         var_2 moveto( var_2.initialpos, 1.0, 0.5, 0.5 );
         wait 1.0;
         var_6 = level.players;
-        var_7 = level._id_1655;
+        var_7 = level.activekillstreaks;
         var_3 scripts\engine\utility::trigger_on( var_3.targetname, "targetname" );
         var_8 = scripts\engine\utility::array_combine( var_6, var_7 );
 
@@ -291,7 +291,7 @@ barreldropperloop( var_0, var_1, var_2, var_3 )
             }
         }
 
-        var_15 = scripts\mp\perks\perkfunctions::_id_7D96();
+        var_15 = scripts\mp\perks\perkfunctions::getactiveequipmentarray();
 
         if ( isdefined( var_15 ) )
         {
@@ -343,7 +343,7 @@ playeringaswatcher( var_0, var_1, var_2, var_3, var_4 )
 
     while ( var_1 && var_0.isindoomjuice )
     {
-        if ( scripts\mp\utility::_id_9EF0( var_0 ) )
+        if ( scripts\mp\utility::isplayerkillstreak( var_0 ) )
             break;
 
         if ( var_0 istouching( var_2 ) )
@@ -375,8 +375,8 @@ burninatorsetup( var_0, var_1 )
     var_2.bigredbutton = getent( var_1, "targetname" );
     var_2.bigredbutton makeusable();
     var_2.bigredbutton sethintstring( &"MP_RALLY_ACTIVATE_FIRE" );
-    var_2.bigredbutton _meth_84A4( 64 );
-    var_2.bigredbutton _meth_84A6( 60 );
+    var_2.bigredbutton sethintdisplayrange( 64 );
+    var_2.bigredbutton sethintdisplayfov( 60 );
     var_2.bigredbutton setuserange( 64 );
     var_2.bigredbutton setusefov( 60 );
     var_2.killcament = spawn( "script_model", ( 956, 996, 268 ) );
@@ -409,8 +409,8 @@ burninantordestroyequipment( var_0, var_1 )
 {
     while ( var_0.flameon )
     {
-        var_2 = level._id_1655;
-        var_3 = scripts\mp\perks\perkfunctions::_id_7D96();
+        var_2 = level.activekillstreaks;
+        var_3 = scripts\mp\perks\perkfunctions::getactiveequipmentarray();
 
         if ( isdefined( var_3 ) )
         {
@@ -489,12 +489,12 @@ burninatorplaydeathfx( var_0, var_1, var_2 )
     scripts\engine\utility::waitframe();
     scripts\engine\utility::waitframe();
     var_3 = anglestoforward( var_1.angles );
-    var_4 = var_1 _meth_8113();
+    var_4 = var_1 getcorpseentity();
 
     if ( isdefined( var_4 ) )
     {
         var_4 hide( 1 );
-        var_4.permanentcustommovetransition = 1;
+        var_4.permhidden = 1;
 
         if ( var_1.loadoutarchetype == "archetype_scout" )
             playfx( level._effect["reaper_kill_robot"], var_1.origin + ( 0, 0, 0 ) );

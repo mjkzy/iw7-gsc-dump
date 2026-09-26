@@ -18,7 +18,7 @@ _id_12F9B()
         return 0;
 
     self._id_9D8B = 1;
-    self._id_5583 = 1;
+    self.disable_sniper_glint = 1;
     scripts\mp\utility::giveperk( "specialty_noscopeoutline" );
     scripts\mp\utility::giveperk( "specialty_spygame" );
     scripts\mp\utility::giveperk( "specialty_blindeye" );
@@ -41,7 +41,7 @@ _id_13A14()
     self endon( "disconnect" );
     self endon( "cloak_end" );
     scripts\engine\utility::waittill_any( "grenade_throw", "weapon_fired", "melee_fired" );
-    scripts\mp\supers::_id_DE3B( 9999 );
+    scripts\mp\supers::reducesuperusepercent( 9999 );
 }
 
 end( var_0, var_1 )
@@ -58,7 +58,7 @@ end( var_0, var_1 )
     {
         self setscriptablepartstate( "cloak", "offImmediate", 0 );
         self._id_9D8B = undefined;
-        self._id_5583 = 0;
+        self.disable_sniper_glint = 0;
         self._id_423A = undefined;
     }
     else if ( var_1 )
@@ -88,14 +88,14 @@ enddelayed()
     }
 
     self._id_9D8B = undefined;
-    self._id_5583 = 0;
+    self.disable_sniper_glint = 0;
     self._id_423A = undefined;
 }
 
 enddelayedinternal()
 {
     self endon( "death" );
-    wait 0.05;
+    wait 0.050000012;
 
     if ( !scripts\mp\utility::istrue( level.broshotrunning ) )
         self setscriptablepartstate( "cloak", "off", 0 );
@@ -120,11 +120,11 @@ endimmediate()
     }
 
     self._id_9D8B = undefined;
-    self._id_5583 = 0;
+    self.disable_sniper_glint = 0;
     self._id_423A = undefined;
 }
 
-_id_E26A()
+resetscriptable()
 {
     self setscriptablepartstate( "cloak", "offImmediate", 0 );
 }

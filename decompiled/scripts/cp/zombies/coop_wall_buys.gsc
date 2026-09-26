@@ -3,36 +3,36 @@
 
 init()
 {
-    level._id_138A1 = [];
+    level.wall_buys = [];
     level.magic_weapons = [];
     level.all_magic_weapons = [];
-    level._id_47AD = [];
+    level.craftable_weapons = [];
     level.pap = [];
-    level._id_138CB = [];
-    _id_C906();
+    level.wall_weapon_list = [];
+    parse_weapons_table();
     var_0 = spawnstruct();
-    var_0._id_DB01 = "tickets";
+    var_0.purchase_type = "tickets";
     var_0.model = "zmb_lethal_cryo_grenade_wm";
     var_0.weaponname = "zfreeze_semtex_mp";
-    level._id_138A1["zfreeze_semtex_mp"] = var_0;
+    level.wall_buys["zfreeze_semtex_mp"] = var_0;
     scripts\engine\utility::flag_init( "wall_buy_setup_done" );
 }
 
-_id_48CD( var_0, var_1, var_2, var_3, var_4 )
+create_default_struct( var_0, var_1, var_2, var_3, var_4 )
 {
     var_5 = spawnstruct();
     var_0 = int( var_0 );
     var_5.weapon = var_1;
 
     if ( var_4 != "" )
-        var_5._id_EC13 = var_4;
+        var_5.scopemodel = var_4;
 
     var_5.model = getweaponmodel( var_1 );
-    var_5._id_DB01 = var_3;
-    level._id_138A1[var_2] = var_5;
+    var_5.purchase_type = var_3;
+    level.wall_buys[var_2] = var_5;
 }
 
-_id_C906()
+parse_weapons_table()
 {
     var_0 = 0;
 
@@ -60,7 +60,7 @@ _id_C906()
             switch ( var_10 )
             {
                 case "craft":
-                    level._id_47AD[var_7] = var_3;
+                    level.craftable_weapons[var_7] = var_3;
                     break;
                 case "magic":
                     level.magic_weapons[var_7] = getweaponbasename( var_3 );
@@ -71,7 +71,7 @@ _id_C906()
                     break;
                 case "wall":
                 case "tickets":
-                    _id_48CD( var_2, var_3, var_7, var_10, var_6 );
+                    create_default_struct( var_2, var_3, var_7, var_10, var_6 );
                     break;
             }
         }
@@ -80,7 +80,7 @@ _id_C906()
     }
 }
 
-_id_FA1D( var_0 )
+setup_player_weapon_models( var_0 )
 {
     level endon( "game_ended" );
     var_0 endon( "disconnect" );
@@ -91,7 +91,7 @@ _id_FA1D( var_0 )
     var_5 = 6;
     var_0.weapon_build_models = [];
     var_0.rofweaponslist = [];
-    var_0._id_13C38 = [];
+    var_0.weapon_passives = [];
 
     if ( scripts\cp\utility::map_check( 2 ) )
         var_6 = "cp/cp_disco_wall_buy_models.csv";
@@ -127,7 +127,7 @@ _id_FA1D( var_0 )
                 var_16 = scripts\cp\cp_weaponpassives::_id_7D6C( var_0, var_13 );
 
                 if ( var_16.size > 0 )
-                    var_0._id_13C38[var_13] = var_16;
+                    var_0.weapon_passives[var_13] = var_16;
 
                 for ( var_17 = 0; var_17 < var_5; var_17++ )
                 {
@@ -164,7 +164,7 @@ _id_FA1D( var_0 )
     var_0 notify( "player_weapon_build_kit_initialized" );
 }
 
-_id_23DA()
+assign_weapons_to_structs()
 {
     if ( scripts\cp\utility::map_check( 2 ) )
         var_0 = "cp/cp_disco_wall_buy_models.csv";
@@ -232,7 +232,7 @@ _id_23DA()
         var_17 = scripts\cp\utility::getrawbaseweaponname( var_15.script_noteworthy );
         var_18 = undefined;
 
-        if ( !isdefined( level._id_138A1[var_17] ) )
+        if ( !isdefined( level.wall_buys[var_17] ) )
         {
             var_15.disabled = 1;
             continue;
@@ -280,7 +280,7 @@ _id_23DA()
                 var_15.trigger = spawn( "script_model", var_20 + var_22 );
 
                 if ( isdefined( var_16 ) )
-                    var_15.trigger setmodel( level._id_138A1[var_17].model );
+                    var_15.trigger setmodel( level.wall_buys[var_17].model );
                 else
                     var_15.trigger setmodel( "tag_origin" );
             }
@@ -288,8 +288,8 @@ _id_23DA()
             if ( isdefined( var_21 ) )
                 var_15.trigger.angles = var_21;
 
-            var_15.trigger thread _id_16F5( var_15, var_15.trigger, var_16, var_17 );
-            level._id_138CB[level._id_138CB.size] = var_15.trigger;
+            var_15.trigger thread add_item_to_outline_watcher( var_15, var_15.trigger, var_16, var_17 );
+            level.wall_weapon_list[level.wall_weapon_list.size] = var_15.trigger;
         }
         else if ( isdefined( var_15.parent_struct.trigger ) )
             var_15.trigger = var_15.parent_struct.trigger;
@@ -312,7 +312,7 @@ applyparentstructvalues( var_0 )
     var_0.trigger = var_0.parent_struct.trigger;
 }
 
-_id_16F5( var_0, var_1, var_2, var_3 )
+add_item_to_outline_watcher( var_0, var_1, var_2, var_3 )
 {
     if ( !scripts\engine\utility::flag( "init_interaction_done" ) )
         scripts\engine\utility::flag_wait( "init_interaction_done" );
@@ -327,9 +327,9 @@ _id_16F5( var_0, var_1, var_2, var_3 )
         level.outline_weapon_watch_list[level.outline_weapon_watch_list.size] = var_1;
 }
 
-_id_A02D( var_0 )
+item_pickup( var_0 )
 {
-    var_0 _id_834A( self );
+    var_0 give_weapon_coop( self );
 }
 
 givevalidweapon( var_0, var_1 )
@@ -375,7 +375,7 @@ givevalidweapon( var_0, var_1 )
     var_0 switchtoweapon( var_1 );
 }
 
-_id_834A( var_0 )
+give_weapon_coop( var_0 )
 {
     var_1 = 0;
     var_2 = undefined;
@@ -596,16 +596,16 @@ _id_834A( var_0 )
     scripts\cp\cp_interaction::refresh_interaction();
 }
 
-_id_E229( var_0 )
+reset_special_ammo( var_0 )
 {
-    if ( isdefined( self._id_10936 ) )
-        self._id_10936 = undefined;
+    if ( isdefined( self.special_ammocount_ap ) )
+        self.special_ammocount_ap = undefined;
 
-    if ( isdefined( self._id_10939 ) )
-        self._id_10939 = undefined;
+    if ( isdefined( self.special_ammocount_in ) )
+        self.special_ammocount_in = undefined;
 
-    if ( isdefined( self._id_10938 ) )
-        self._id_10938 = undefined;
+    if ( isdefined( self.special_ammocount_explo ) )
+        self.special_ammocount_explo = undefined;
 
     if ( isdefined( self.special_ammocount_comb ) )
         self.special_ammocount_comb = undefined;
@@ -614,7 +614,7 @@ _id_E229( var_0 )
         self.special_ammocount = undefined;
 }
 
-_id_82F4()
+give_pistol_ammo_if_nerf_active()
 {
     if ( scripts\cp\perks\prestige::prestige_getnodeployables() == 1 )
     {
@@ -637,7 +637,7 @@ _id_82F4()
     }
 }
 
-_id_7D6F( var_0 )
+get_weapon_ref( var_0 )
 {
     var_1 = self getweaponslistprimaries();
 
@@ -652,7 +652,7 @@ _id_7D6F( var_0 )
     return undefined;
 }
 
-_id_7C04()
+get_replaceable_weapon()
 {
     var_0 = self getweaponslistprimaries();
     var_1 = 3;
@@ -689,7 +689,7 @@ _id_7C04()
         self.copy_fullweaponlist = undefined;
 
         if ( weaponinventorytype( var_5 ) == "altmode" )
-            var_5 = _id_7D66( var_5 );
+            var_5 = get_weapon_name_from_alt( var_5 );
 
         return var_5;
     }
@@ -697,7 +697,7 @@ _id_7C04()
     return undefined;
 }
 
-_id_7D66( var_0 )
+get_weapon_name_from_alt( var_0 )
 {
     if ( weaponinventorytype( var_0 ) != "altmode" )
         return var_0;
@@ -725,8 +725,8 @@ can_give_weapon( var_0 )
     else
         var_8 = 4;
 
-    if ( isdefined( self._id_C20E ) )
-        var_8 = var_8 + self._id_C20E;
+    if ( isdefined( self.numadditionalprimaries ) )
+        var_8 = var_8 + self.numadditionalprimaries;
 
     while ( self isswitchingweapon() )
         wait 0.05;
@@ -734,9 +734,9 @@ can_give_weapon( var_0 )
     if ( var_2 == "none" )
         return 0;
 
-    if ( isdefined( level._id_4C40 ) )
+    if ( isdefined( level.custom_cangive_weapon_func ) )
     {
-        if ( ![[ level._id_4C40 ]]( var_1, var_2, var_3, var_8 ) )
+        if ( ![[ level.custom_cangive_weapon_func ]]( var_1, var_2, var_3, var_8 ) )
             return 0;
     }
 
@@ -799,7 +799,7 @@ interaction_purchase_weapon( var_0, var_1 )
             if ( !isdefined( level.venomx_count ) )
                 level.venomx_count = 1;
 
-            var_0 _id_A02D( var_1 );
+            var_0 item_pickup( var_1 );
             var_1.last_interaction_point = undefined;
             var_1 scripts\cp\zombies\achievement::update_achievement( "EGG_SLAYER", 1 );
             scripts\cp\cp_interaction::remove_from_current_interaction_list_for_player( var_0, var_1 );
@@ -808,7 +808,7 @@ interaction_purchase_weapon( var_0, var_1 )
     }
     else
     {
-        var_0 _id_A02D( var_1 );
+        var_0 item_pickup( var_1 );
         var_1.last_interaction_point = undefined;
     }
 }

@@ -3,7 +3,7 @@
 
 init()
 {
-    level._id_90AE = getserverhostname();
+    level.hostname = getserverhostname();
     setfriendlyfire( scripts\mp\tweakables::gettweakablevalue( "team", "fftype" ) );
     constraingametype( getdvar( "g_gametype" ) );
 

@@ -1916,7 +1916,7 @@ delayed_remove_kung_fu_powers( var_0, var_1, var_2 )
         {
             var_6 = var_5.rb;
 
-            if ( var_1 scripts\cp\powers\coop_powers::hasequipment( var_6 ) )
+            if ( var_1 scripts\cp\powers\coop_powers::haspower( var_6 ) )
                 var_3 = 1;
         }
 
@@ -1924,7 +1924,7 @@ delayed_remove_kung_fu_powers( var_0, var_1, var_2 )
         {
             var_6 = var_5.lb;
 
-            if ( var_1 scripts\cp\powers\coop_powers::hasequipment( var_6 ) )
+            if ( var_1 scripts\cp\powers\coop_powers::haspower( var_6 ) )
                 var_3 = 1;
         }
 

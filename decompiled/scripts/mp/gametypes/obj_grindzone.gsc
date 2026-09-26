@@ -42,7 +42,7 @@ setupobjective( var_0 )
     var_4 scripts\mp\gameobjects::cancontestclaim( 1 );
     var_4 scripts\mp\gameobjects::mustmaintainclaim( 1 );
     var_4 scripts\mp\gameobjects::setusetext( &"MP_SECURING_POSITION" );
-    var_5 = var_4 scripts\mp\gameobjects::getlaserangles();
+    var_5 = var_4 scripts\mp\gameobjects::getlabel();
     var_4.label = var_5;
     var_4.onbeginuse = ::zone_onusebegin;
     var_4.onuseupdate = ::zone_onuseupdate;

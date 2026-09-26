@@ -43,7 +43,7 @@ _id_4963( var_0, var_1 )
     return var_2;
 }
 
-_id_48B7( var_0, var_1, var_2 )
+create_client_overlay( var_0, var_1, var_2 )
 {
     var_3 = newclienthudelem( var_0 );
     var_3.x = 0;

@@ -73,7 +73,7 @@ main()
     level.powerup_drop_max_per_round = 2500;
     level.powerup_drop_count = 0;
     level.score_to_drop = level.powerup_drop_increment;
-    level._id_76EC = 0;
+    level.gate_number = 0;
     level thread scripts\cp\cp_interaction::coop_interaction_pregame();
     level thread scripts\cp\utility::global_physics_sound_monitor();
     level thread wave_num_loop();
@@ -428,10 +428,10 @@ open_current_door( var_0 )
     foreach ( var_4, var_3 in var_0.panels )
         var_3 thread move_up_and_delete( var_4 );
 
-    level._id_76EC = level._id_76EC + 1;
+    level.gate_number = level.gate_number + 1;
 
     foreach ( var_6 in level.players )
-        var_6 setclientomnvar( "zombie_wave_number", level._id_76EC );
+        var_6 setclientomnvar( "zombie_wave_number", level.gate_number );
 
     level.current_exit_path = getent( var_0.script_noteworthy + "_exit_path", "script_noteworthy" );
 

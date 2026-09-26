@@ -132,7 +132,7 @@ domeshield_handledamagefatal( var_0, var_1, var_2, var_3, var_4 )
     domeshield_awardpoints( var_0 );
 
     if ( isdefined( var_0 ) && isplayer( var_0 ) && isdefined( var_2 ) && scripts\engine\utility::isbulletdamage( var_2 ) && var_0 != self.owner )
-        var_0 scripts\mp\missions::_id_D991( "ch_dome_kill" );
+        var_0 scripts\mp\missions::processchallengedaily( "ch_dome_kill" );
 
     thread domeshield_destroy( 1 );
 }
@@ -149,7 +149,7 @@ domeshield_domehandledamage( var_0, var_1, var_2, var_3, var_4 )
     }
 
     if ( var_3 > 0 )
-        self.owner scripts\mp\missions::_id_D991( "ch_tactical_domeshield", var_3 );
+        self.owner scripts\mp\missions::processchallengedaily( "ch_tactical_domeshield", var_3 );
 
     self.owner scripts\mp\missions::_id_D998( var_0, var_1, self );
     self.owner scripts\mp\damage::combatrecordtacticalstat( "power_domeshield", var_3 );
@@ -194,7 +194,7 @@ domeshield_destroyonemp()
     if ( isdefined( var_3 ) && var_3 == "emp_grenade_mp" )
     {
         if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
-            var_0 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+            var_0 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
     }
 
     domeshield_awardpoints( var_0 );

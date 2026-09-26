@@ -16,14 +16,14 @@ _id_10D6F( var_0, var_1, var_2 )
     var_3.starttime = gettime();
 
     if ( !isdefined( var_2 ) )
-        var_2 = _id_7F68( max( 0, getweightedchanceroll( var_1, self ) + getwholescenedurationmin( var_0 ) ) );
+        var_2 = getlevelbink( max( 0, _id_823D( var_1, self ) + getwholescenedurationmin( var_0 ) ) );
 
     switch ( var_2 )
     {
         case 4:
             var_3._id_5FEB = 4;
             var_3.refreshwindowms = 3000;
-            var_3._id_10475 = "blackout_grenade_drone_lr";
+            var_3.soundalias = "blackout_grenade_drone_lr";
             var_3.blurstrength = 7;
             var_3.blursnapstrength = 12;
             var_3.blurindur = 0.2;
@@ -49,7 +49,7 @@ _id_10D6F( var_0, var_1, var_2 )
         case 3:
             var_3._id_5FEB = 3;
             var_3.refreshwindowms = 2000;
-            var_3._id_10475 = "blackout_grenade_drone_lr";
+            var_3.soundalias = "blackout_grenade_drone_lr";
             var_3.blurstrength = 7;
             var_3.blursnapstrength = 12;
             var_3.blurindur = 0.2;
@@ -75,7 +75,7 @@ _id_10D6F( var_0, var_1, var_2 )
         case 2:
             var_3._id_5FEB = 2;
             var_3.refreshwindowms = 1000;
-            var_3._id_10475 = "blackout_grenade_drone_lr";
+            var_3.soundalias = "blackout_grenade_drone_lr";
             var_3.blurstrength = 7;
             var_3.blursnapstrength = 12;
             var_3.blurindur = 0.2;
@@ -101,7 +101,7 @@ _id_10D6F( var_0, var_1, var_2 )
         case 1:
             var_3._id_5FEB = 1;
             var_3.refreshwindowms = 1000;
-            var_3._id_10475 = "blackout_grenade_drone_short_lr";
+            var_3.soundalias = "blackout_grenade_drone_short_lr";
             var_3.blurstrength = 7;
             var_3.blursnapstrength = 12;
             var_3.blurindur = 0.2;
@@ -144,7 +144,7 @@ _id_10D6F( var_0, var_1, var_2 )
     var_4.alpha = 0;
     var_4.foreground = 1;
     var_4 setshader( "black", 640, 480 );
-    var_3._id_C7FD = var_4;
+    var_3.overlay = var_4;
     var_3 thread _id_B9BB();
     var_0 scripts\mp\damage::combatrecordtacticalstat( "power_blackoutGrenade" );
 }
@@ -172,14 +172,14 @@ _id_6310( var_0, var_1, var_2 )
             if ( isdefined( var_3 ) )
                 scripts\mp\gamescore::untrackdebuffassist( var_3, var_4, "blackout_grenade_mp" );
 
-            var_4 scripts\mp\weapons::_id_F7FF();
+            var_4 scripts\mp\weapons::setplayerunblinded();
             var_4 scripts\mp\utility::_id_8EC4();
         }
         else
             thread endblackoutsfx();
     }
 
-    self._id_C7FD destroy();
+    self.overlay destroy();
 }
 
 endblackoutsfx( var_0 )
@@ -203,15 +203,15 @@ _id_B9BB()
     var_0 endon( "disconnect" );
     self endon( "blackoutEnded" );
     var_1 = self.attacker;
-    var_2 = self._id_10475;
+    var_2 = self.soundalias;
     var_3 = self.durtotal;
     var_0 shellshock( "blackout_grenade_mp", 1 );
     var_0 playlocalsound( var_2 );
-    var_0 scripts\mp\weapons::_id_F7EE();
+    var_0 scripts\mp\weapons::setplayerblinded();
     var_0 scripts\mp\utility::_id_8EC6();
 
     if ( isdefined( self.attacker ) )
-        scripts\mp\gamescore::_id_11ACE( var_1, var_0, "blackout_grenade_mp" );
+        scripts\mp\gamescore::trackdebuffassist( var_1, var_0, "blackout_grenade_mp" );
 
     thread monitorvictimdeathdisconnect();
     childthread monitorblur();
@@ -251,7 +251,7 @@ monitoroverlay()
     var_0 = self.victim;
     var_0 endon( "disconnect" );
     self endon( "blackoutEnded" );
-    var_1 = self._id_C7FD;
+    var_1 = self.overlay;
     var_2 = self.overlayinalpha;
     var_3 = self.overlayindur;
     var_4 = self.overlaydur;
@@ -315,7 +315,7 @@ monitorgameended()
     thread _id_6310( 0, 1, 1 );
 }
 
-getweightedchanceroll( var_0, var_1 )
+_id_823D( var_0, var_1 )
 {
     var_2 = var_0 - var_1 geteye();
     var_3 = clamp( length( var_2 ), 100, 512 );
@@ -327,7 +327,7 @@ getweightedchanceroll( var_0, var_1 )
     return var_4 + var_7;
 }
 
-_id_7F68( var_0 )
+getlevelbink( var_0 )
 {
     if ( var_0 > 70 )
         return 4;

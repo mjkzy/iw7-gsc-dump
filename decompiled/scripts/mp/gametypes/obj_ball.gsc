@@ -272,44 +272,44 @@ ball_spawn( var_0 )
         {
             case 0:
                 var_6 scripts\mp\gameobjects::setvisibleteam( "friendly" );
-                var_6.objidpingenemy = 0;
-                var_6.objidpingfriendly = 1;
+                var_6.objidpingfriendly = 0;
+                var_6.objidpingenemy = 1;
                 var_6.objpingdelay = 60.0;
                 break;
             case 1:
                 var_6 scripts\mp\gameobjects::setvisibleteam( "any" );
-                var_6.objidpingenemy = 0;
                 var_6.objidpingfriendly = 0;
+                var_6.objidpingenemy = 0;
                 var_6.objpingdelay = 0.05;
                 break;
             case 2:
                 var_6 scripts\mp\gameobjects::setvisibleteam( "any" );
-                var_6.objidpingenemy = 0;
-                var_6.objidpingfriendly = 1;
+                var_6.objidpingfriendly = 0;
+                var_6.objidpingenemy = 1;
                 var_6.objpingdelay = 1.0;
                 break;
             case 3:
                 var_6 scripts\mp\gameobjects::setvisibleteam( "any" );
-                var_6.objidpingenemy = 0;
-                var_6.objidpingfriendly = 1;
+                var_6.objidpingfriendly = 0;
+                var_6.objidpingenemy = 1;
                 var_6.objpingdelay = 1.5;
                 break;
             case 4:
                 var_6 scripts\mp\gameobjects::setvisibleteam( "any" );
-                var_6.objidpingenemy = 0;
-                var_6.objidpingfriendly = 1;
+                var_6.objidpingfriendly = 0;
+                var_6.objidpingenemy = 1;
                 var_6.objpingdelay = 2.0;
                 break;
             case 5:
                 var_6 scripts\mp\gameobjects::setvisibleteam( "any" );
-                var_6.objidpingenemy = 0;
-                var_6.objidpingfriendly = 1;
+                var_6.objidpingfriendly = 0;
+                var_6.objidpingenemy = 1;
                 var_6.objpingdelay = 3.0;
                 break;
             case 6:
                 var_6 scripts\mp\gameobjects::setvisibleteam( "any" );
-                var_6.objidpingenemy = 0;
-                var_6.objidpingfriendly = 1;
+                var_6.objidpingfriendly = 0;
+                var_6.objidpingenemy = 1;
                 var_6.objpingdelay = 4.0;
                 break;
         }
@@ -317,8 +317,8 @@ ball_spawn( var_0 )
     else
     {
         var_6 scripts\mp\gameobjects::setvisibleteam( "any" );
-        var_6.objidpingenemy = 0;
-        var_6.objidpingfriendly = 1;
+        var_6.objidpingfriendly = 0;
+        var_6.objidpingenemy = 1;
         var_6.objpingdelay = 3.0;
     }
 
@@ -460,7 +460,7 @@ ball_on_pickup( var_0 )
     var_0 scripts\engine\utility::allow_usability( 0 );
 
     foreach ( var_5, var_4 in var_0.powers )
-        var_0 scripts\mp\powers::_id_D727( var_5 );
+        var_0 scripts\mp\powers::power_disableactivation( var_5 );
 
     self.visuals[0] physicslaunchserver( self.visuals[0].origin, ( 0, 0, 0 ) );
     self.visuals[0] physicsstopserver();
@@ -686,7 +686,7 @@ ball_set_dropped( var_0, var_1, var_2, var_3 )
         var_6 player_update_pass_target_hudoutline();
 
     scripts\mp\gameobjects::updatecompassicons();
-    scripts\mp\gameobjects::_id_12F68();
+    scripts\mp\gameobjects::updateworldicons();
     self.isresetting = 0;
 
     if ( !var_0 )
@@ -754,7 +754,7 @@ ball_carrier_cleanup( var_0 )
         if ( scripts\mp\utility::istrue( var_0 ) )
         {
             foreach ( var_3, var_2 in self.carrier.powers )
-                self.carrier scripts\mp\powers::_id_D72D( var_3 );
+                self.carrier scripts\mp\powers::power_enableactivation( var_3 );
         }
 
         self.carrier setballpassallowed( 0 );
@@ -1029,7 +1029,7 @@ ball_pass_or_throw_active()
     self.pass_or_throw_active = 0;
 
     foreach ( var_2, var_1 in self.powers )
-        scripts\mp\powers::_id_D72D( var_2 );
+        scripts\mp\powers::power_enableactivation( var_2 );
 }
 
 ball_physics_launch_drop( var_0, var_1, var_2 )
@@ -1688,7 +1688,7 @@ ball_return_home( var_0, var_1 )
         self.carrier scripts\engine\utility::delaythread( 0.05, ::player_update_pass_target_hudoutline );
 
     self.visuals[0] setscriptablepartstate( "uplink_drone_hide", "show", 0 );
-    thread scripts\mp\gameobjects::returnobjectiveid();
+    thread scripts\mp\gameobjects::returnhome();
 }
 
 ball_overridemovingplatformdeath( var_0 )
@@ -1830,7 +1830,7 @@ ball_physics_bad_trigger_watch()
 
         if ( !self.visuals[0] scripts\mp\utility::touchingballallowedtrigger() )
         {
-            if ( self.visuals[0] scripts\mp\utility::touchingbadtrigger() || self.visuals[0] scripts\mp\utility::_id_11A44() )
+            if ( self.visuals[0] scripts\mp\utility::touchingbadtrigger() || self.visuals[0] scripts\mp\utility::touchingoobtrigger() )
             {
                 ball_return_home( 0, 1 );
                 return;

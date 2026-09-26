@@ -53,7 +53,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_infect_numInitialInfected", getmatchrulesdata( "infectData", "numInitialInfected" ) );
     setdynamicdvar( "scr_infect_weaponSurvivorPrimary", getmatchrulesdata( "infectData", "weaponSurvivorPrimary" ) );
     setdynamicdvar( "scr_infect_weaponSurvivorSecondary", getmatchrulesdata( "infectData", "weaponSurvivorSecondary" ) );
@@ -379,14 +379,14 @@ onspawnfinished()
 
         spawnwithplayersecondary();
         var_0 = "primary";
-        var_1 = scripts\mp\powers::getcurrentequipment( var_0 );
+        var_1 = scripts\mp\powers::getpower( var_0 );
 
         if ( isdefined( var_1 ) )
             scripts\mp\powers::removepower( var_1 );
 
         scripts\mp\powers::givepower( level.survivorlethal, var_0, 0 );
         var_0 = "secondary";
-        var_1 = scripts\mp\powers::getcurrentequipment( var_0 );
+        var_1 = scripts\mp\powers::getpower( var_0 );
 
         if ( isdefined( var_1 ) )
             scripts\mp\powers::removepower( var_1 );
@@ -402,7 +402,7 @@ onspawnfinished()
         refundinfectedsuper();
         thread setinfectedmsg();
 
-        if ( !level.supportdoublejump_MAYBE )
+        if ( !level.supportdoublejump )
             var_2 = 1.1;
         else
             var_2 = 1.05;
@@ -413,7 +413,7 @@ onspawnfinished()
         self.overrideweaponspeed_speedscale = var_2;
         scripts\mp\weapons::updatemovespeedscale();
         var_0 = "primary";
-        var_1 = scripts\mp\powers::getcurrentequipment( var_0 );
+        var_1 = scripts\mp\powers::getpower( var_0 );
 
         if ( isdefined( var_1 ) )
             scripts\mp\powers::removepower( var_1 );
@@ -423,7 +423,7 @@ onspawnfinished()
         if ( level.infectedtactical != "power_tacInsert" )
         {
             var_0 = "secondary";
-            var_1 = scripts\mp\powers::getcurrentequipment( var_0 );
+            var_1 = scripts\mp\powers::getpower( var_0 );
 
             if ( isdefined( var_1 ) )
                 scripts\mp\powers::removepower( var_1 );
@@ -726,12 +726,12 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
     if ( isplayer( var_1 ) && var_1.team == "allies" && var_1 != self )
     {
         var_1 thread scripts\mp\perks\weaponpassives::_id_8974( var_1, self );
-        var_1 scripts\mp\utility::incperstat( "killsAsSurvivor", 1 );
+        var_1 scripts\mp\utility::incpersstat( "killsAsSurvivor", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "killsAsSurvivor", var_1.pers["killsAsSurvivor"] );
     }
     else if ( isplayer( var_1 ) && var_1.team == "axis" && var_1 != self )
     {
-        var_1 scripts\mp\utility::incperstat( "killsAsInfected", 1 );
+        var_1 scripts\mp\utility::incpersstat( "killsAsInfected", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "killsAsInfected", var_1.pers["killsAsInfected"] );
 
         if ( isplayer( var_1 ) )

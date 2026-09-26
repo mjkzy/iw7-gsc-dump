@@ -17,7 +17,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     thread _id_CDA4( "mp_moon_screen_destinations_v2" );
     thread _id_5364();
     thread securitymetaldetectors();

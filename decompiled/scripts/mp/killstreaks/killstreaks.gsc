@@ -44,7 +44,7 @@ onplayerconnect()
 
         var_0 visionsetmissilecamforplayer( game["thermal_vision"] );
         var_0 thread onplayerspawned();
-        var_0 thread _id_B9CB();
+        var_0 thread monitordisownkillstreaks();
         var_0 thread _id_110C3();
         var_0 thread monitorrigswitch();
     }
@@ -58,17 +58,17 @@ onplayerspawned()
     {
         self waittill( "spawned_player" );
         self._id_13111 = undefined;
-        _id_F1C5();
+        selectfirstavailablekillstreak();
         thread _id_A6BA();
         thread _id_A69C();
         thread _id_A69B();
         thread _id_A69D();
         thread _id_A6B8();
-        thread _id_A6B0();
-        thread _id_FAC6();
+        thread killstreakselectionwatcher();
+        thread setupinputnotifications();
 
-        if ( !isdefined( self._id_5FBE ) )
-            self._id_5FBE = 0;
+        if ( !isdefined( self.earnedstreaklevel ) )
+            self.earnedstreaklevel = 0;
 
         if ( !scripts\mp\utility::istrue( self._id_AE15 ) )
         {
@@ -77,7 +77,7 @@ onplayerspawned()
             self._id_AE15 = 1;
         }
 
-        _id_F866();
+        setstreakcounttonext();
         updatekillstreakselectedui();
         _id_12F2E( self.streakpoints );
     }
@@ -92,25 +92,25 @@ monitorrigswitch()
     {
         self waittill( "giveLoadout" );
 
-        if ( scripts\mp\utility::istrue( level._id_3B1E ) )
+        if ( scripts\mp\utility::istrue( level.casualscorestreaks ) )
             continue;
 
         if ( isdefined( self.oldperks ) && isdefined( self.perks ) && self.oldperks.size > 0 )
         {
-            if ( scripts\mp\utility::_id_2287( self.perks, "specialty_support_killstreaks" ) && scripts\mp\utility::_id_2287( self.oldperks, "specialty_support_killstreaks" ) )
+            if ( scripts\mp\utility::array_contains_key( self.perks, "specialty_support_killstreaks" ) && scripts\mp\utility::array_contains_key( self.oldperks, "specialty_support_killstreaks" ) )
                 continue;
-            else if ( !scripts\mp\utility::_id_2287( self.oldperks, "specialty_support_killstreaks" ) )
+            else if ( !scripts\mp\utility::array_contains_key( self.oldperks, "specialty_support_killstreaks" ) )
                 continue;
             else
             {
-                _id_E275();
+                resetstreakpoints();
                 updatekillstreakselectedui();
             }
         }
     }
 }
 
-_id_B9CB()
+monitordisownkillstreaks()
 {
     while ( isdefined( self ) )
     {
@@ -123,7 +123,7 @@ _id_B9CB()
     }
 }
 
-_id_FAC6()
+setupinputnotifications()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -153,45 +153,45 @@ updatestreakcount()
     var_0 = self.streakpoints;
     self setkillstreakpoints( int( min( self.streakpoints, 16384 ) ) );
 
-    if ( self.streakpoints >= self._id_BFB0 )
-        _id_F866();
+    if ( self.streakpoints >= self.nextstreakcost )
+        setstreakcounttonext();
 }
 
-_id_E274()
+resetstreakcount()
 {
     self setkillstreakpoints( 0 );
     self setclientomnvar( "ui_score_streak_cost", 0 );
     self setclientomnvar( "ui_score_streak_two_cost", 0 );
     self setclientomnvar( "ui_score_streak_three_cost", 0 );
-    _id_F866();
+    setstreakcounttonext();
 }
 
-_id_F866()
+setstreakcounttonext()
 {
     if ( !isdefined( self.streaktype ) )
     {
-        self._id_BFB0 = 0;
+        self.nextstreakcost = 0;
         self setnextkillstreakcost( 0 );
         return;
     }
 
-    if ( _id_7FA2() == 0 )
+    if ( getmaxstreakcost() == 0 )
     {
-        self._id_BFB0 = 0;
+        self.nextstreakcost = 0;
         self setnextkillstreakcost( 0 );
         return;
     }
 
-    var_0 = self._id_BFB0;
-    var_1 = _id_7FEE();
+    var_0 = self.nextstreakcost;
+    var_1 = getnextstreakname();
 
     if ( !isdefined( var_1 ) )
         return;
 
     var_2 = getstreakcost( var_1 );
-    self._id_BFB0 = var_2;
+    self.nextstreakcost = var_2;
 
-    if ( scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) && isdefined( self.pers["killstreaks"][1] ) && !scripts\mp\utility::istrue( self._id_5FBD ) )
+    if ( scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) && isdefined( self.pers["killstreaks"][1] ) && !scripts\mp\utility::istrue( self.earnedmaxkillstreak ) )
     {
         var_3 = 0;
 
@@ -206,10 +206,10 @@ _id_F866()
             var_3 = 0;
         }
 
-        if ( var_3 && !isdefined( self._id_5FBD ) )
+        if ( var_3 && !isdefined( self.earnedmaxkillstreak ) )
         {
-            self._id_5FBD = 1;
-            self._id_BFB0 = 0;
+            self.earnedmaxkillstreak = 1;
+            self.nextstreakcost = 0;
             self setnextkillstreakcost( 0 );
             self setkillstreakpoints( 0 );
             self setclientomnvar( "ui_score_streak_cost", 0 );
@@ -223,14 +223,14 @@ _id_F866()
     self setnextkillstreakcost( var_2 );
 }
 
-_id_7FEE()
+getnextstreakname()
 {
-    if ( self.streakpoints == _id_7FA2() && self.streaktype != "specialist" )
+    if ( self.streakpoints == getmaxstreakcost() && self.streaktype != "specialist" )
         var_0 = 0;
     else
         var_0 = self.streakpoints;
 
-    foreach ( var_2 in self._id_A6AB )
+    foreach ( var_2 in self.killstreaks )
     {
         var_3 = getstreakcost( var_2 );
 
@@ -243,7 +243,7 @@ _id_7FEE()
 
 _id_12F2E( var_0 )
 {
-    if ( scripts\mp\utility::istrue( self._id_5FBD ) && scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) )
+    if ( scripts\mp\utility::istrue( self.earnedmaxkillstreak ) && scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) )
     {
         self setclientomnvar( "ui_score_streak", 0 );
         self setclientomnvar( "ui_score_streak_two", 0 );
@@ -257,9 +257,9 @@ _id_12F2E( var_0 )
 
     var_1 = 0;
 
-    if ( isdefined( self._id_A6AB ) )
+    if ( isdefined( self.killstreaks ) )
     {
-        foreach ( var_3 in self._id_A6AB )
+        foreach ( var_3 in self.killstreaks )
         {
             if ( var_1 == 0 )
             {
@@ -286,11 +286,11 @@ _id_12F2E( var_0 )
     }
 }
 
-_id_7FA2()
+getmaxstreakcost()
 {
     var_0 = 0;
 
-    foreach ( var_2 in self._id_A6AB )
+    foreach ( var_2 in self.killstreaks )
     {
         var_3 = getstreakcost( var_2 );
 
@@ -315,7 +315,7 @@ updatekillstreakselectedui()
         if ( isdefined( var_2 ) && isdefined( var_2.streakname ) )
         {
             self setclientomnvar( "ui_score_streak_index_" + var_1, scripts\mp\utility::getkillstreakindex( var_2.streakname ) );
-            self setclientomnvar( "ui_score_streak_available_" + var_1, var_0[var_1]._id_269A );
+            self setclientomnvar( "ui_score_streak_available_" + var_1, var_0[var_1].available );
             continue;
         }
 
@@ -323,7 +323,7 @@ updatekillstreakselectedui()
         self setclientomnvar( "ui_score_streak_available_" + var_1, 0 );
     }
 
-    var_3 = _id_8111();
+    var_3 = getselectedkillstreakindex();
 
     if ( isdefined( var_3 ) )
         self setclientomnvar( "ui_score_streak_selected_slot", var_3 );
@@ -341,7 +341,7 @@ _id_A6B8()
     for (;;)
     {
         self waittill( "joined_team" );
-        _id_41C0();
+        clearkillstreaks();
     }
 }
 
@@ -359,14 +359,14 @@ _id_A6BA()
     for (;;)
     {
         var_0 = scripts\engine\utility::waittill_any_return( "ks_action_3", "ks_action_4", "ks_action_5", "ks_action_6" );
-        var_1 = _id_81D9( var_0 );
+        var_1 = gettriggeredslotfromnotify( var_0 );
 
         if ( !isdefined( var_1 ) )
             continue;
 
-        var_2 = _id_7F45( var_1 );
+        var_2 = getkillstreakinslot( var_1 );
 
-        if ( !isdefined( var_2 ) || !var_2._id_269A )
+        if ( !isdefined( var_2 ) || !var_2.available )
             continue;
 
         if ( !scripts\engine\utility::isusabilityallowed() )
@@ -384,7 +384,7 @@ _id_A6BA()
                 var_4 = undefined;
 
                 if ( var_3 == "KILLSTREAKS_UNAVAILABLE_FOR_N" )
-                    var_4 = level._id_A6AA - ( level._id_8487 - level.ingraceperiod );
+                    var_4 = level._id_A6AA - ( level.graceperiod - level.ingraceperiod );
 
                 scripts\mp\hud_message::showerrormessage( var_3, var_4 );
                 continue;
@@ -397,18 +397,18 @@ _id_A6BA()
             continue;
         }
 
-        var_5 = var_2.streakshouldchain;
+        var_5 = var_2._id_110F1;
 
-        if ( isdefined( var_5._id_127BD ) )
+        if ( isdefined( var_5.triggeredfunc ) )
         {
-            if ( !self [[ var_5._id_127BD ]]( var_2 ) )
+            if ( !self [[ var_5.triggeredfunc ]]( var_2 ) )
                 continue;
         }
 
         self._id_AA35 = var_2;
 
         if ( !scripts\engine\utility::is_player_gamepad_enabled() )
-            _id_F837( var_1 );
+            setselectedkillstreak( var_1 );
 
         if ( var_2._id_EF88 == "no_fire_weapon" )
             thread _id_127C7( var_2.weapon, var_2, 1 );
@@ -418,7 +418,7 @@ _id_A6BA()
             thread _id_127C7( var_2.weapon, var_2 );
         else
         {
-            var_1 = _id_8111();
+            var_1 = getselectedkillstreakindex();
             thread _id_A69A( var_2 );
         }
 
@@ -437,14 +437,14 @@ _id_A6BA()
     }
 }
 
-_id_81D9( var_0 )
+gettriggeredslotfromnotify( var_0 )
 {
     var_1 = undefined;
 
     if ( !isai( self ) && scripts\engine\utility::is_player_gamepad_enabled() )
     {
         if ( var_0 == "ks_action_4" )
-            var_1 = _id_8111();
+            var_1 = getselectedkillstreakindex();
     }
     else if ( level.gametype == "grnd" && !scripts\engine\utility::is_player_gamepad_enabled() )
     {
@@ -492,7 +492,7 @@ _id_392B( var_0, var_1 )
     {
         if ( isdefined( level._id_A6AA ) && level._id_A6AA > 0 )
         {
-            if ( level._id_8487 - level.ingraceperiod < level._id_A6AA )
+            if ( level.graceperiod - level.ingraceperiod < level._id_A6AA )
                 return "KILLSTREAKS_UNAVAILABLE_FOR_N";
         }
     }
@@ -509,10 +509,10 @@ _id_392B( var_0, var_1 )
     if ( !scripts\engine\utility::isweaponswitchallowed() )
         return "KILLSTREAKS_CANNOT_BE_USED";
 
-    if ( scripts\mp\utility::_id_9FAE( self ) )
+    if ( scripts\mp\utility::istouchingboundstrigger( self ) )
         return "KILLSTREAKS_CANNOT_BE_USED";
 
-    if ( ( scripts\mp\utility::_id_9F2C( var_1.streakname ) || scripts\mp\utility::_id_9E90( var_1.streakname ) ) && ( !self isonground() || self iswallrunning() ) )
+    if ( ( scripts\mp\utility::isridekillstreak( var_1.streakname ) || scripts\mp\utility::_id_9E90( var_1.streakname ) ) && ( !self isonground() || self iswallrunning() ) )
         return "KILLSTREAKS_CANNOT_BE_USED";
 
     return;
@@ -531,7 +531,7 @@ _id_127C7( var_0, var_1, var_2 )
     thread triggerkillstreakweaponwatchdeath();
     scripts\mp\supers::allowsuperweaponstow();
     scripts\mp\utility::_giveweapon( var_0, 0, 0, 1 );
-    var_3 = var_1.streakshouldchain;
+    var_3 = var_1._id_110F1;
 
     if ( isdefined( var_3._id_13C8D ) )
     {
@@ -548,8 +548,8 @@ _id_127C7( var_0, var_1, var_2 )
 
     var_5 = scripts\mp\utility::_id_11383( var_0 );
 
-    if ( isdefined( var_3.weaponswapwatcher ) )
-        self [[ var_3.weaponswapwatcher ]]( var_1, var_5 );
+    if ( isdefined( var_3._id_13CD6 ) )
+        self [[ var_3._id_13CD6 ]]( var_1, var_5 );
 
     if ( var_5 )
     {
@@ -565,7 +565,7 @@ _id_127C7( var_0, var_1, var_2 )
     if ( self hasweapon( var_0 ) )
     {
         scripts\mp\supers::unstowsuperweapon();
-        scripts\mp\utility::_id_80F2( var_0 );
+        scripts\mp\utility::getridofweapon( var_0 );
 
         if ( self getcurrentweapon() == "none" )
             scripts\mp\utility::_switchtoweapon( self.lastdroppableweaponobj );
@@ -702,7 +702,7 @@ _id_128A4( var_0, var_1, var_2 )
         thread _id_A69A( var_3, var_2 );
 }
 
-_id_9E6B( var_0 )
+iskillstreakvisibleforcodcaster( var_0 )
 {
     if ( !isdefined( var_0 ) )
         return 0;
@@ -725,9 +725,9 @@ _id_A69A( var_0, var_1 )
     self endon( "disconnect" );
     self endon( "joined_team" );
     level endon( "game_ended" );
-    var_2 = var_0.streakshouldchain;
+    var_2 = var_0._id_110F1;
 
-    if ( !scripts\mp\utility::_id_1314A( var_0.streakname ) )
+    if ( !scripts\mp\utility::validateusestreak( var_0.streakname ) )
     {
         if ( isdefined( var_2._id_9B12 ) )
             self [[ var_2._id_9B12 ]]( var_0 );
@@ -740,7 +740,7 @@ _id_A69A( var_0, var_1 )
 
     if ( getdvarint( "com_codcasterEnabled", 0 ) == 1 )
     {
-        if ( _id_9E6B( var_0.streakname ) )
+        if ( iskillstreakvisibleforcodcaster( var_0.streakname ) )
             self setnoteworthykillstreakactive( 1 );
     }
 
@@ -764,33 +764,33 @@ _id_A69A( var_0, var_1 )
     if ( !var_3 || !var_4 )
         return 0;
 
-    _id_C5A9( var_0 );
+    onsuccessfulstreakactivation( var_0 );
 }
 
-_id_729F( var_0, var_1 )
+forceactivatekillstreak( var_0, var_1 )
 {
-    var_2 = _id_4A1C( var_0, var_1 );
+    var_2 = createstreakitemstruct( var_0, var_1 );
     _id_A69A( var_2 );
 }
 
-_id_729E()
+forceactivategimmekillstreak()
 {
-    var_0 = _id_7F45( 0 );
+    var_0 = getkillstreakinslot( 0 );
     _id_A69A( var_0, 0 );
 }
 
-_id_C5A9( var_0 )
+onsuccessfulstreakactivation( var_0 )
 {
     var_1 = var_0.streakname;
-    var_2 = _id_6CBA( var_0 );
-    var_0._id_269A = 0;
+    var_2 = findkillstreakslotnumber( var_0 );
+    var_0.available = 0;
 
     if ( isdefined( var_2 ) )
     {
         if ( var_2 == 0 || var_2 >= 4 )
-            _id_E131( var_2 );
+            removekillstreak( var_2 );
 
-        _id_F1CB();
+        selectmostexpensivekillstreak();
     }
     else
     {
@@ -801,8 +801,8 @@ _id_C5A9( var_0 )
     thread scripts\mp\missions::_id_13079( var_1 );
     scripts\mp\utility::printgameaction( "killstreak started - " + var_1, self );
     self notify( "killstreak_used", var_1 );
-    scripts\mp\utility::_id_D4B7( var_1 );
-    var_6 = gettime() - var_0._id_B143;
+    scripts\mp\utility::playkillstreakusedialog( var_1 );
+    var_6 = gettime() - var_0.madeavailabletime;
     scripts\mp\analyticslog::logevent_killstreakavailable( var_1, var_6 );
     combatrecordkillstreakuse( var_1 );
 }
@@ -821,28 +821,28 @@ _id_DDF0( var_0 )
     }
 }
 
-_id_4A1C( var_0, var_1, var_2 )
+createstreakitemstruct( var_0, var_1, var_2 )
 {
     var_3 = spawnstruct();
-    var_3._id_269A = 0;
+    var_3.available = 0;
     var_3.streakname = var_0;
     var_3._id_9E0B = 0;
     var_3._id_FFC4 = 0;
     var_3.owner = var_1;
-    var_3._id_A5B0 = _id_81ED( self );
+    var_3._id_A5B0 = getuniquekillstreakid( self );
     var_3.lifeid = self.pers["deaths"];
     var_3.isgimme = 0;
-    var_3._id_9F6E = 0;
+    var_3.isspecialist = 0;
     var_3.weapon = scripts\mp\utility::getkillstreakweapon( var_0 );
     var_3._id_6D6B = _id_7F41( var_0 );
-    var_3.streakshouldchain = getkillstreaksetupinfo( var_0 );
+    var_3._id_110F1 = getkillstreaksetupinfo( var_0 );
     var_3._id_EF88 = scripts\mp\utility::_id_7F4F( var_0 );
-    var_3._id_B143 = -1;
+    var_3.madeavailabletime = -1;
     var_3.variantid = var_2;
     return var_3;
 }
 
-_id_81ED( var_0 )
+getuniquekillstreakid( var_0 )
 {
     if ( !isdefined( var_0.pers["nextKillstreakID"] ) )
         var_0.pers["nextKillstreakID"] = 0;
@@ -854,20 +854,20 @@ _id_81ED( var_0 )
 
 awardkillstreak( var_0, var_1, var_2, var_3 )
 {
-    var_4 = _id_4A1C( var_0, var_1, var_3 );
-    _id_26D5( var_4, var_2 );
+    var_4 = createstreakitemstruct( var_0, var_1, var_3 );
+    awardkillstreakfromstruct( var_4, var_2 );
 }
 
-_id_26D5( var_0, var_1 )
+awardkillstreakfromstruct( var_0, var_1 )
 {
     var_0.isgimme = 1;
 
     if ( isdefined( var_1 ) && var_1.size > 0 )
         scripts\mp\killstreak_loot::_id_988A( var_0, var_1 );
 
-    _id_1030D( var_0, 0 );
-    _id_F837( 0 );
-    _id_B2A9( 0 );
+    slotkillstreak( var_0, 0 );
+    setselectedkillstreak( 0 );
+    makekillstreakavailable( 0 );
 }
 
 _id_6693( var_0, var_1, var_2, var_3 )
@@ -875,14 +875,14 @@ _id_6693( var_0, var_1, var_2, var_3 )
     if ( !isdefined( var_0 ) || !isdefined( var_1 ) )
         return;
 
-    var_4 = _id_4A1C( var_0, self, var_3 );
+    var_4 = createstreakitemstruct( var_0, self, var_3 );
     var_4._id_9E0B = 1;
     var_4._id_FFC4 = 1;
 
     if ( isdefined( var_2 ) && var_2.size > 0 )
         scripts\mp\killstreak_loot::_id_988A( var_4, var_2 );
 
-    _id_1030D( var_4, var_1 );
+    slotkillstreak( var_4, var_1 );
 }
 
 _id_66B9( var_0, var_1, var_2 )
@@ -900,7 +900,7 @@ _id_66BA( var_0, var_1, var_2 )
     _id_6693( var_0, 3, var_1, var_2 );
 }
 
-_id_DB1C()
+pushgimmeslotstreakontostack()
 {
     var_0 = self.pers["killstreaks"];
 
@@ -926,7 +926,7 @@ _id_DB1C()
     return 1;
 }
 
-_id_D65E()
+popstackedstreakintogimmeslot()
 {
     var_0 = self.pers["killstreaks"];
     var_1 = var_0[0];
@@ -953,7 +953,7 @@ _id_D65E()
         self.pers["killstreaks"][var_3] = undefined;
 }
 
-_id_51D3( var_0 )
+deletestackedstreak( var_0 )
 {
     if ( var_0 == 35 )
     {
@@ -976,29 +976,29 @@ _id_51D3( var_0 )
     self.pers["killstreaks"] = var_1;
 }
 
-_id_E131( var_0 )
+removekillstreak( var_0 )
 {
     self.pers["killstreaks"][var_0] = undefined;
 
     if ( var_0 == 0 )
-        _id_D65E();
+        popstackedstreakintogimmeslot();
     else if ( var_0 >= 4 )
-        _id_51D3( var_0 );
+        deletestackedstreak( var_0 );
 }
 
-_id_41C0()
+clearkillstreaks()
 {
     self.pers["killstreaks"] = [];
-    _id_E275();
+    resetstreakpoints();
     clearkillstreakselection();
     updatekillstreakselectedui();
 }
 
-_id_1030D( var_0, var_1 )
+slotkillstreak( var_0, var_1 )
 {
     if ( var_1 == 0 )
     {
-        if ( !_id_DB1C() )
+        if ( !pushgimmeslotstreakontostack() )
             return;
     }
     else
@@ -1010,12 +1010,12 @@ _id_1030D( var_0, var_1 )
     updatekillstreakselectedui();
 }
 
-_id_5FBF( var_0, var_1 )
+earnkillstreak( var_0, var_1 )
 {
-    var_2 = _id_7F45( var_0 );
+    var_2 = getkillstreakinslot( var_0 );
     var_3 = var_2.streakname;
     scripts\mp\utility::bufferednotify( "earned_killstreak_buffered", var_3 );
-    self._id_5FBE = var_1;
+    self.earnedstreaklevel = var_1;
 
     if ( scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) )
         self.pers["killstreaks"][var_0].earned = 1;
@@ -1032,42 +1032,42 @@ _id_5FBF( var_0, var_1 )
     }
 
     if ( scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) )
-        scripts\mp\missions::_id_D991( "ch_trait_support" );
+        scripts\mp\missions::processchallengedaily( "ch_trait_support" );
 
     _id_DDF0( var_3 );
-    _id_F866();
-    _id_B2A9( var_0 );
+    setstreakcounttonext();
+    makekillstreakavailable( var_0 );
 }
 
-_id_B2A9( var_0 )
+makekillstreakavailable( var_0 )
 {
-    var_1 = _id_7F45( var_0 );
+    var_1 = getkillstreakinslot( var_0 );
 
     if ( !isdefined( var_1 ) )
         return;
 
     var_2 = var_1.streakname;
-    var_3 = var_1.streakshouldchain;
+    var_3 = var_1._id_110F1;
 
     if ( self.team == "spectator" )
         return;
 
-    var_1._id_269A = 1;
+    var_1.available = 1;
 
     if ( var_0 >= 0 && var_0 <= 3 )
-        _id_F837( var_0 );
+        setselectedkillstreak( var_0 );
 
     updatekillstreakselectedui();
 
-    if ( isdefined( var_3._id_26A2 ) )
-        self [[ var_3._id_26A2 ]]( var_1 );
+    if ( isdefined( var_3.availablefunc ) )
+        self [[ var_3.availablefunc ]]( var_1 );
 
     if ( isdefined( var_1._id_9E0B ) && var_1._id_9E0B && isdefined( var_1._id_FFC4 ) && var_1._id_FFC4 )
         self notify( "received_earned_killstreak" );
 
-    var_1._id_B143 = gettime();
+    var_1.madeavailabletime = gettime();
     var_4 = scripts\mp\utility::getkillstreakindex( var_2 );
-    scripts\mp\analyticslog::logevent_killstreakearned( var_4, var_1._id_B143 );
+    scripts\mp\analyticslog::logevent_killstreakearned( var_4, var_1.madeavailabletime );
     scripts\mp\matchdata::logkillstreakavailableevent( var_2 );
 }
 
@@ -1078,7 +1078,7 @@ givekillstreak( var_0, var_1, var_2, var_3 )
 
 getstreakcost( var_0 )
 {
-    var_1 = int( scripts\mp\utility::_id_7F46( var_0 ) );
+    var_1 = int( scripts\mp\utility::getkillstreakkills( var_0 ) );
 
     if ( isdefined( self ) && isplayer( self ) )
     {
@@ -1166,7 +1166,7 @@ _id_8057( var_0, var_1 )
     return var_2;
 }
 
-_id_A6B0()
+killstreakselectionwatcher()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -1182,7 +1182,7 @@ _id_A6B0()
 
         if ( !scripts\mp\utility::isjuggernaut() && !scripts\mp\utility::istrue( self.iscarrying ) && !isdefined( self._id_13111 ) )
         {
-            var_1 = _id_8111();
+            var_1 = getselectedkillstreakindex();
 
             if ( !isdefined( var_1 ) )
                 continue;
@@ -1190,20 +1190,20 @@ _id_A6B0()
             var_2 = var_1;
 
             if ( var_0 == "ks_select_up" )
-                var_2 = _id_7FED( var_1 );
+                var_2 = getnextselectablekillstreakslot( var_1 );
             else if ( var_0 == "ks_select_down" )
-                var_2 = _id_8099( var_1 );
+                var_2 = getpreviousselectablekillstreakslot( var_1 );
             else
             {
 
             }
 
-            _id_F837( var_2 );
+            setselectedkillstreak( var_2 );
         }
     }
 }
 
-_id_F1C5()
+selectfirstavailablekillstreak()
 {
     var_0 = self.pers["killstreaks"];
 
@@ -1211,9 +1211,9 @@ _id_F1C5()
     {
         var_2 = var_0[var_1];
 
-        if ( isdefined( var_2 ) && var_2._id_269A )
+        if ( isdefined( var_2 ) && var_2.available )
         {
-            _id_F837( var_1 );
+            setselectedkillstreak( var_1 );
             return;
         }
     }
@@ -1221,7 +1221,7 @@ _id_F1C5()
     clearkillstreakselection();
 }
 
-_id_7FED( var_0 )
+getnextselectablekillstreakslot( var_0 )
 {
     var_1 = self.pers["killstreaks"];
     var_2 = var_0;
@@ -1233,7 +1233,7 @@ _id_7FED( var_0 )
     {
         var_6 = var_1[var_5];
 
-        if ( isdefined( var_6 ) && var_6._id_269A )
+        if ( isdefined( var_6 ) && var_6.available )
         {
             var_2 = var_5;
             break;
@@ -1248,7 +1248,7 @@ _id_7FED( var_0 )
     return var_2;
 }
 
-_id_8099( var_0 )
+getpreviousselectablekillstreakslot( var_0 )
 {
     var_1 = self.pers["killstreaks"];
     var_2 = var_0;
@@ -1260,7 +1260,7 @@ _id_8099( var_0 )
     {
         var_6 = var_1[var_5];
 
-        if ( isdefined( var_6 ) && var_6._id_269A )
+        if ( isdefined( var_6 ) && var_6.available )
         {
             var_2 = var_5;
             break;
@@ -1275,7 +1275,7 @@ _id_8099( var_0 )
     return var_2;
 }
 
-_id_F1CB()
+selectmostexpensivekillstreak()
 {
     var_0 = self.pers["killstreaks"];
     var_1 = undefined;
@@ -1285,7 +1285,7 @@ _id_F1CB()
     {
         var_4 = var_0[var_3];
 
-        if ( isdefined( var_4 ) && var_4._id_269A )
+        if ( isdefined( var_4 ) && var_4.available )
         {
             var_5 = getstreakcost( var_4.streakname );
 
@@ -1303,12 +1303,12 @@ _id_F1CB()
         return;
     }
 
-    _id_F837( var_1 );
+    setselectedkillstreak( var_1 );
 }
 
-_id_F837( var_0 )
+setselectedkillstreak( var_0 )
 {
-    var_1 = _id_7F45( var_0 );
+    var_1 = getkillstreakinslot( var_0 );
     self.currentselectedkillstreakslot = var_0;
     updatekillstreakselectedui();
 }
@@ -1319,9 +1319,9 @@ clearkillstreakselection()
     updatekillstreakselectedui();
 }
 
-_id_8110()
+getselectedkillstreak()
 {
-    var_0 = _id_8111();
+    var_0 = getselectedkillstreakindex();
 
     if ( !isdefined( var_0 ) )
         return undefined;
@@ -1329,12 +1329,12 @@ _id_8110()
     return self.pers["killstreaks"][var_0];
 }
 
-_id_8111()
+getselectedkillstreakindex()
 {
     return self.currentselectedkillstreakslot;
 }
 
-_id_7F45( var_0 )
+getkillstreakinslot( var_0 )
 {
     return self.pers["killstreaks"][var_0];
 }
@@ -1377,14 +1377,14 @@ _id_8207( var_0 )
     {
         var_3 = var_1[var_2];
 
-        if ( isdefined( var_3 ) && var_3.streakname == var_0 && var_3._id_269A )
+        if ( isdefined( var_3 ) && var_3.streakname == var_0 && var_3.available )
             return var_2;
     }
 
     return undefined;
 }
 
-_id_7F54( var_0 )
+getkillstreakvisibleslotbyname( var_0 )
 {
     var_1 = self.pers["killstreaks"];
 
@@ -1399,11 +1399,11 @@ _id_7F54( var_0 )
     return undefined;
 }
 
-_id_7ED6()
+getgimmeslotkillstreakstructs()
 {
     var_0 = [];
     var_1 = self.pers["killstreaks"];
-    var_2 = _id_7F45( 0 );
+    var_2 = getkillstreakinslot( 0 );
 
     if ( isdefined( var_2 ) )
     {
@@ -1426,7 +1426,7 @@ _id_7ED6()
     return var_0;
 }
 
-_id_7DE7()
+getavailableequippedkillstreakstructs()
 {
     var_0 = [];
     var_1 = self.pers["killstreaks"];
@@ -1437,7 +1437,7 @@ _id_7DE7()
         {
             var_3 = var_1[var_2];
 
-            if ( isdefined( var_3 ) && isdefined( var_3.streakname ) && var_3._id_269A )
+            if ( isdefined( var_3 ) && isdefined( var_3.streakname ) && var_3.available )
                 var_0[var_0.size] = var_3;
         }
     }
@@ -1454,12 +1454,12 @@ registerkillstreak( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_
     level.killstreaksetups[var_0] = var_9;
     var_9.usefunc = var_1;
     var_9.user_triggered = var_2;
-    var_9._id_26A2 = var_3;
-    var_9._id_127BD = var_4;
+    var_9.availablefunc = var_3;
+    var_9.triggeredfunc = var_4;
     var_9._id_13C8D = var_5;
     var_9.weapontouse = var_6;
     var_9._id_9B12 = var_7;
-    var_9.weaponswapwatcher = var_8;
+    var_9._id_13CD6 = var_8;
 }
 
 getkillstreaksetupinfo( var_0 )
@@ -1502,25 +1502,25 @@ _id_7F61()
     return self._id_AA35;
 }
 
-_id_3E4E( var_0 )
+checkstreakreward( var_0 )
 {
-    foreach ( var_2 in self._id_A6AB )
+    foreach ( var_2 in self.killstreaks )
     {
         var_3 = getstreakcost( var_2 );
         var_4 = _id_7E9F( var_2 );
-        var_5 = _id_7F45( var_4 );
+        var_5 = getkillstreakinslot( var_4 );
 
         if ( self.previousstreakpoints < var_3 && var_0 >= var_3 )
         {
             if ( scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) && scripts\mp\utility::istrue( self.pers["killstreaks"][var_4].earned ) )
                 continue;
 
-            _id_5FBF( var_4, var_3 );
+            earnkillstreak( var_4, var_3 );
         }
     }
 }
 
-_id_213F( var_0 )
+arekillstreaksequipped( var_0 )
 {
     var_1 = self.pers["killstreaks"];
 
@@ -1560,7 +1560,7 @@ _id_213F( var_0 )
     return 1;
 }
 
-_id_6CBA( var_0 )
+findkillstreakslotnumber( var_0 )
 {
     var_1 = self.pers["killstreaks"];
 
@@ -1580,7 +1580,7 @@ _id_6CBA( var_0 )
     return undefined;
 }
 
-_id_83A7( var_0, var_1 )
+givestreakpoints( var_0, var_1 )
 {
     if ( !isdefined( var_1 ) )
         var_1 = scripts\mp\rank::getscoreinfovalue( var_0 );
@@ -1590,13 +1590,13 @@ _id_83A7( var_0, var_1 )
 
     var_2 = self.streakpoints + var_1;
     var_3 = var_2;
-    var_4 = _id_7FA2();
+    var_4 = getmaxstreakcost();
 
     if ( var_3 >= var_4 )
         var_3 = var_3 - var_4;
 
     setstreakpoints( var_3 );
-    _id_3E4E( var_2 );
+    checkstreakreward( var_2 );
 
     if ( var_2 >= var_4 )
         setstreakpoints( var_3 );
@@ -1605,11 +1605,11 @@ _id_83A7( var_0, var_1 )
     scripts\mp\analyticslog::logevent_reportstreakscore( var_1, gettime(), scripts\mp\rank::getscoreinfocategory( var_0, "eventID" ) );
 }
 
-_id_E275()
+resetstreakpoints()
 {
-    self._id_5FBE = 0;
+    self.earnedstreaklevel = 0;
     setstreakpoints( 0 );
-    _id_E274();
+    resetstreakcount();
     _id_12F2E( 0 );
 }
 
@@ -1631,7 +1631,7 @@ _id_110C3()
 {
     self endon( "disconnect" );
     level waittill( "game_ended" );
-    scripts\mp\utility::_id_F7DF( "streakPoints", scripts\engine\utility::ter_op( isdefined( self.streakpoints ), self.streakpoints, 0 ) );
+    scripts\mp\utility::setpersstat( "streakPoints", scripts\engine\utility::ter_op( isdefined( self.streakpoints ), self.streakpoints, 0 ) );
 }
 
 findunobstructedfiringpointaroundz( var_0, var_1, var_2, var_3 )
@@ -1688,7 +1688,7 @@ findunobstructedfiringpoint( var_0, var_1, var_2 )
     return var_3;
 }
 
-isusinggunship()
+isusinghelisniper()
 {
     return isdefined( self.onhelisniper ) && self.onhelisniper;
 }
@@ -1698,7 +1698,7 @@ _id_9FC4()
     return isdefined( self._id_98FF ) && self._id_98FF;
 }
 
-_id_532A( var_0, var_1, var_2, var_3 )
+destroytargetarray( var_0, var_1, var_2, var_3 )
 {
     var_4 = "MOD_EXPLOSIVE";
     var_5 = 5000;
@@ -1716,7 +1716,7 @@ _id_532A( var_0, var_1, var_2, var_3 )
     {
         foreach ( var_13 in var_3 )
         {
-            if ( scripts\mp\utility::_id_9FE7( var_0, var_1, var_13 ) )
+            if ( scripts\mp\utility::isvalidteamtarget( var_0, var_1, var_13 ) )
             {
                 var_13 notify( "damage", var_5, var_0, var_6, var_7, var_4, var_8, var_9, var_10, var_11, var_2 );
                 wait 0.05;
@@ -1727,7 +1727,7 @@ _id_532A( var_0, var_1, var_2, var_3 )
     {
         foreach ( var_13 in var_3 )
         {
-            if ( scripts\mp\utility::_id_9FD8( var_0, var_1, var_13 ) )
+            if ( scripts\mp\utility::isvalidffatarget( var_0, var_1, var_13 ) )
             {
                 var_13 notify( "damage", var_5, var_0, var_6, var_7, var_4, var_8, var_9, var_10, var_11, var_2 );
                 wait 0.05;
@@ -1758,9 +1758,9 @@ killstreakhit( var_0, var_1, var_2, var_3 )
 
             if ( var_5 <= var_4 )
             {
-                var_0 scripts\mp\persistence::_id_10E55( "hits", var_5 );
-                var_0 scripts\mp\persistence::_id_10E55( "misses", int( var_4 - var_5 ) );
-                var_0 scripts\mp\persistence::_id_10E55( "accuracy", int( var_5 * 10000 / var_4 ) );
+                var_0 scripts\mp\persistence::statsetbuffered( "hits", var_5 );
+                var_0 scripts\mp\persistence::statsetbuffered( "misses", int( var_4 - var_5 ) );
+                var_0 scripts\mp\persistence::statsetbuffered( "accuracy", int( var_5 * 10000 / var_4 ) );
             }
 
             if ( isdefined( var_3 ) && scripts\engine\utility::isbulletdamage( var_3 ) || scripts\mp\utility::isprojectiledamage( var_3 ) )
@@ -1781,7 +1781,7 @@ killstreakhit( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_83A0()
+givescoreforequipment()
 {
     thread scripts\mp\utility::giveunifiedpoints( "destroyed_equipment" );
 }
@@ -1796,7 +1796,7 @@ givescoreforblackhat()
     thread scripts\mp\utility::giveunifiedpoints( "blackhat_hack" );
 }
 
-_id_9E9F( var_0 )
+isminigun( var_0 )
 {
     return var_0 == "iw6_minigunjugg_mp";
 }
@@ -1829,7 +1829,7 @@ initridekillstreak( var_0 )
 
 initridekillstreak_internal( var_0 )
 {
-    if ( isdefined( var_0 ) && _id_9E6F( var_0 ) )
+    if ( isdefined( var_0 ) && islaptoptimeoutkillstreak( var_0 ) )
         var_1 = "timeout";
     else
         var_1 = scripts\engine\utility::waittill_any_timeout( 1.0, "disconnect", "death", "weapon_switch_started" );
@@ -1903,7 +1903,7 @@ initridekillstreak_internal( var_0 )
         return "success";
 }
 
-_id_9E6F( var_0 )
+islaptoptimeoutkillstreak( var_0 )
 {
     switch ( var_0 )
     {
@@ -2034,7 +2034,7 @@ _id_D507( var_0, var_1 )
     }
 
     self setscriptablepartstate( "killstreak", "visor_active", 0 );
-    thread _id_13BA2();
+    thread watchvisordeath();
     scripts\mp\utility::freezecontrolswrapper( 0 );
     self setclientomnvar( "ui_remote_control_sequence", 0 );
     return 1;
@@ -2058,14 +2058,14 @@ _id_13A4C( var_0 )
     if ( self hasweapon( var_0 ) )
     {
         scripts\mp\supers::unstowsuperweapon();
-        scripts\mp\utility::_id_80F2( var_0 );
+        scripts\mp\utility::getridofweapon( var_0 );
 
         if ( self getcurrentweapon() == "none" )
             scripts\mp\utility::_switchtoweapon( self.lastdroppableweaponobj );
     }
 }
 
-_id_13BA2()
+watchvisordeath()
 {
     self endon( "stop_remote_sequence" );
     self endon( "disconnect" );
@@ -2082,8 +2082,8 @@ _id_11086( var_0 )
 
     if ( scripts\mp\utility::isreallyalive( self ) )
     {
-        if ( scripts\mp\utility::istrue( level.nukedetonated ) && !scripts\mp\utility::istrue( level._id_C1B2 ) )
-            thread scripts\mp\killstreaks\nuke::_id_FB0F( 0.05 );
+        if ( scripts\mp\utility::istrue( level.nukedetonated ) && !scripts\mp\utility::istrue( level.nukecancel ) )
+            thread scripts\mp\killstreaks\nuke::setvisionforplayer( 0.05 );
 
         self setclientomnvar( "ui_remote_control_sequence", 2 );
         var_1 = "ks_remote_device_mp";

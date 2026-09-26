@@ -1770,7 +1770,7 @@ killnearbyzombies( var_0 )
         if ( isdefined( var_8.agent_type ) && ( var_8.agent_type == "zombie_sasquatch" || var_8.agent_type == "slasher" || var_8.agent_type == "superslasher" || var_8.agent_type == "zombie_brute" || var_8.agent_type == "zombie_grey" || var_8.agent_type == "zombie_clown" || var_8.agent_type == "alien_rhino" ) )
             continue;
 
-        if ( scripts\engine\utility::is_true( var_8._id_9342 ) )
+        if ( scripts\engine\utility::is_true( var_8.immune_against_repulsor ) )
         {
             var_8 killrepulsorvictim( self, var_8.maxhealth, var_8.origin, self.origin );
             continue;
@@ -3465,7 +3465,7 @@ wait_for_player_activation( var_0 )
                 if ( level.script == "cp_zmb" )
                     enable_arcade_cabinet_next_to_ghost_n_skull( var_2 );
 
-                level thread complete_clean_arcade_cabinet();
+                level thread complete_wait_for_player_activation();
                 return;
             }
         }
@@ -3474,7 +3474,7 @@ wait_for_player_activation( var_0 )
     }
 }
 
-complete_clean_arcade_cabinet()
+complete_wait_for_player_activation()
 {
     level.entered_thru_card = 1;
     scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::notify_activation_progress( level.skulls_before_activation, 0.5 );
@@ -3549,7 +3549,7 @@ choose_random_weapon_from_list( var_0 )
 
         if ( can_upgrade_via_pap2fnfcard( var_1, 1 ) )
         {
-            thread _id_834A( self, var_0, var_3, var_1 );
+            thread give_weapon_coop( self, var_0, var_3, var_1 );
             self.isusingsupercard = 0;
             return 1;
         }
@@ -3561,7 +3561,7 @@ choose_random_weapon_from_list( var_0 )
     }
 }
 
-_id_834A( var_0, var_1, var_2, var_3 )
+give_weapon_coop( var_0, var_1, var_2, var_3 )
 {
     var_4 = 0;
     var_5 = undefined;

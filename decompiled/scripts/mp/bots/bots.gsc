@@ -53,7 +53,7 @@ setup_callbacks()
     level.bot_can_use_box_by_type["scavenger_bag"] = ::bot_should_use_scavenger_bag;
     level.bot_can_use_box_by_type["deployable_grenades"] = ::bot_should_use_grenade_crate;
     level.bot_can_use_box_by_type["deployable_juicebox"] = ::bot_should_use_juicebox_crate;
-    level.bot_pre_use_box_of_type["deployable_ammo"] = ::bot_post_use_ammo_crate;
+    level.bot_pre_use_box_of_type["deployable_ammo"] = ::bot_pre_use_ammo_crate;
     level.bot_post_use_box_of_type["deployable_ammo"] = ::bot_post_use_ammo_crate;
     level.bot_find_defend_node_func["capture"] = scripts\mp\bots\bots_strategy::find_defend_node_capture;
     level.bot_find_defend_node_func["capture_zone"] = scripts\mp\bots\bots_strategy::find_defend_node_capture_zone;
@@ -2174,7 +2174,7 @@ bot_should_use_ammo_crate( var_0 )
     return 1;
 }
 
-bot_post_use_ammo_crate( var_0 )
+bot_pre_use_ammo_crate( var_0 )
 {
     scripts\mp\utility::_switchtoweapon( self.secondaryweapon );
     wait 1.0;
@@ -2207,7 +2207,7 @@ bot_should_use_scavenger_bag( var_0 )
 
 bot_should_use_grenade_crate( var_0 )
 {
-    var_1 = self getweaponslistall();
+    var_1 = self getweaponslistoffhands();
 
     foreach ( var_3 in var_1 )
     {
@@ -2527,8 +2527,8 @@ revive_player( var_0 )
     }
 
     var_1 = self.team;
-    self botpressbutton( "use", level.laststandrevivetimer / 1000 + 0.5 );
-    wait( level.laststandrevivetimer / 1000 + 1.5 );
+    self botpressbutton( "use", level.laststandusetime / 1000 + 0.5 );
+    wait( level.laststandusetime / 1000 + 1.5 );
 
     if ( isdefined( var_0.object.owner ) )
         var_0.object.bots[var_1] = 0;

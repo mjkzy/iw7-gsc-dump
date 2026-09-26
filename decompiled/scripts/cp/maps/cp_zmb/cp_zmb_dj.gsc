@@ -90,7 +90,7 @@ play_dj_willard_exchange( var_0 )
     level.pause_nag_vo = 1;
     level.disable_broadcast = 1;
     scripts\cp\maps\cp_zmb\cp_zmb_vo::clear_up_all_vo( var_0 );
-    scripts\cp\cp_vo::_id_C9CB( [ var_0 ] );
+    scripts\cp\cp_vo::pause_vo_system( [ var_0 ] );
     level.dj set_dj_state( "approach_mic" );
 
     if ( randomint( 100 ) >= 50 )
@@ -123,7 +123,7 @@ play_dj_willard_exchange( var_0 )
     }
 
     level.dj set_dj_state( "open_window" );
-    scripts\cp\cp_vo::_id_12BE3( [ var_0 ] );
+    scripts\cp\cp_vo::unpause_vo_system( [ var_0 ] );
     level.pause_nag_vo = 0;
     level.disable_broadcast = undefined;
 }
@@ -1782,7 +1782,7 @@ play_dj_broadcast_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
         if ( !isdefined( var_9 ) )
             continue;
 
-        if ( var_9 issplitscreenplayer() && !var_9 isreloading() )
+        if ( var_9 issplitscreenplayer() && !var_9 issplitscreenplayerprimary() )
             continue;
 
         var_9 thread scripts\cp\cp_vo::play_vo_system( var_7 );

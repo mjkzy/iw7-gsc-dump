@@ -22,7 +22,7 @@ _id_139F9()
             continue;
 
         self.dodging = 1;
-        scripts\mp\missions::_id_D991( "ch_scout_dodge_uses" );
+        scripts\mp\missions::processchallengedaily( "ch_scout_dodge_uses" );
 
         if ( scripts\mp\utility::_hasperk( "specialty_dodge_defense" ) )
             self setclientomnvar( "ui_light_armor", 1 );

@@ -170,7 +170,7 @@ _id_627D()
 {
     self._id_FCA5 = 1;
     self._id_FC9F.angles = self.angles + ( 0, 90, 0 );
-    self._id_FC9F.origin = scripts\mp\archetypes\archreaper::_id_36DB( 64 );
+    self._id_FC9F.origin = scripts\mp\archetypes\archreaper::calcfrontposbasedonvelocity( 64 );
     self._id_FC9F show();
     self._id_FC9F setcandamage( 1 );
     thread scripts\mp\archetypes\archreaper::_id_BCEE( 64 );

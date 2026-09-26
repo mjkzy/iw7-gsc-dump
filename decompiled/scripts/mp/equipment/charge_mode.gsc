@@ -228,7 +228,7 @@ _id_3CF7()
     if ( scripts\mp\utility::istrue( var_1 ) || var_0 && _id_3CDF() )
         thread _id_3CE9();
 
-    scripts\mp\supers::_id_DE3B( 9999 );
+    scripts\mp\supers::reducesuperusepercent( 9999 );
 }
 
 chargemode_monitorkillstreakusage()
@@ -258,7 +258,7 @@ chargemode_monitorshield()
 
     for (;;)
     {
-        if ( !self _meth_853E() )
+        if ( !self isusingoffhandshield() )
         {
             waittillframeend;
             self notify( "bullChargeEnd", 0, 0, 1 );
@@ -347,14 +347,14 @@ _id_3CFA()
         else
         {
             var_1 = getsubstr( self.loadoutarchetype, 10, self.loadoutarchetype.size );
-            scripts\mp\missions::_id_D991( "ch_" + var_1 + "_super" );
+            scripts\mp\missions::processchallengedaily( "ch_" + var_1 + "_super" );
             scripts\mp\supers::combatrecordsuperuse( "super_chargemode" );
         }
     }
     else
     {
         var_1 = getsubstr( self.loadoutarchetype, 10, self.loadoutarchetype.size );
-        scripts\mp\missions::_id_D991( "ch_" + var_1 + "_super" );
+        scripts\mp\missions::processchallengedaily( "ch_" + var_1 + "_super" );
         scripts\mp\supers::combatrecordsuperuse( "super_chargemode" );
     }
 
@@ -519,7 +519,7 @@ _id_3D18( var_0, var_1 )
     else
     {
         thread _id_3D14( var_0, var_1 );
-        thread scripts\mp\gamescore::_id_11ACF( self, var_1, "chargemode_mp", 5 );
+        thread scripts\mp\gamescore::trackdebuffassistfortime( self, var_1, "chargemode_mp", 5 );
 
         if ( !chargemode_isqueuedforepicimpact( var_1 ) )
         {
@@ -682,7 +682,7 @@ _id_3CF5( var_0, var_1 )
         var_5 = var_5 + ( 0, 0, 250 );
         var_6 = clamp( var_5[2], 100, 500 );
         var_5 = ( var_5[0], var_5[1], var_6 );
-        var_0 _meth_84DC( var_5, length( var_5 ) );
+        var_0 knockback( var_5, length( var_5 ) );
         var_0 shellshock( "chargemode_mp", 0.85 );
     }
 }
@@ -789,7 +789,7 @@ _id_3CE7( var_0 )
     if ( vectordot( var_5, var_3 ) < 0 )
         var_6 = var_6 * -1;
 
-    if ( var_0 _meth_853E() )
+    if ( var_0 isusingoffhandshield() )
     {
         if ( var_6 >= -45 && var_6 <= 30 )
             return 1;

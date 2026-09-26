@@ -5,9 +5,9 @@ init()
 {
     level.airstrikefx = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
     level.airstrikessfx = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
-    level._id_1AF6 = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
+    level.airstrikeexplosion = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
     level._id_A87D = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
-    level._id_BB68 = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
+    level.mortareffect = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
     level.bombstrike = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
     level._id_1A8D = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
     level._id_A3BA = loadfx( "vfx/iw7/core/vehicle/jackal/vfx_jackal_death_01_cheap.vfx" );
@@ -18,8 +18,8 @@ init()
     level.dangerforwardpush["precision_airstrike"] = 2.0;
     level.dangerovalscale["precision_airstrike"] = 6.0;
     level.artillerydangercenters = [];
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "precision_airstrike", ::_id_128D4, undefined, undefined, undefined, ::_id_13C8A );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "jackal", ::_id_128D4, undefined, undefined, ::triggerjackalweapon, ::_id_13C8A );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "precision_airstrike", ::tryuseairstrike, undefined, undefined, undefined, ::_id_13C8A );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "jackal", ::tryuseairstrike, undefined, undefined, ::triggerjackalweapon, ::_id_13C8A );
     var_0 = [ "passive_precision_strike", "passive_increased_speed", "passive_decreased_damage", "passive_split_strike", "passive_increased_cost", "passive_one_plane", "passive_speed_cost" ];
     scripts\mp\killstreak_loot::_id_DF07( "precision_airstrike", var_0 );
     var_1 = [ "passive_extra_flare", "passive_decreased_duration", "passive_moving_fortress", "passive_no_cannon", "passive_slow_turret", "passive_support_drop" ];
@@ -49,7 +49,7 @@ _id_13C8A( var_0 )
 
     if ( var_0.streakname == "precision_airstrike" )
     {
-        if ( scripts\mp\utility::istrue( level._id_1AF9 ) )
+        if ( scripts\mp\utility::istrue( level.airstrikeinprogress ) )
         {
             scripts\mp\hud_message::showerrormessage( "KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
             return 0;
@@ -64,9 +64,9 @@ _id_13C8A( var_0 )
     return 1;
 }
 
-_id_128D4( var_0 )
+tryuseairstrike( var_0 )
 {
-    if ( var_0.streakname == "jackal" && ( isdefined( level._id_A22D ) || level.jackals.size > 0 ) )
+    if ( var_0.streakname == "jackal" && ( isdefined( level.jackal_incoming ) || level.jackals.size > 0 ) )
     {
         scripts\mp\hud_message::showerrormessage( "KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
 
@@ -87,12 +87,12 @@ _id_128D4( var_0 )
     return 1;
 }
 
-_id_57DD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
+doairstrike( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 {
     if ( var_5 == "precision_airstrike" )
     {
-        level._id_1AF9 = 1;
-        thread _id_1399E();
+        level.airstrikeinprogress = 1;
+        thread watchairstrikeowner();
     }
 
     var_8 = scripts\common\trace::ray_trace( var_1, var_1 + ( 0, 0, -1000000.0 ) );
@@ -108,7 +108,7 @@ _id_57DD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
     var_12 = [];
 
     if ( var_5 == "precision_airstrike" )
-        level._id_1AF9 = undefined;
+        level.airstrikeinprogress = undefined;
 
     self notify( "airstrike_finished" );
 
@@ -116,20 +116,20 @@ _id_57DD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
         scripts\mp\utility::printgameaction( "killstreak ended - precision_airstrike", var_3 );
 }
 
-_id_1399E()
+watchairstrikeowner()
 {
     self endon( "airstrike_finished" );
     level endon( "game_ended" );
     scripts\engine\utility::waittill_any( "disconnect", "joined_team" );
 
-    if ( scripts\mp\utility::istrue( level._id_1AF9 ) )
-        level._id_1AF9 = undefined;
+    if ( scripts\mp\utility::istrue( level.airstrikeinprogress ) )
+        level.airstrikeinprogress = undefined;
 }
 
 clearprogress( var_0 )
 {
     wait 2.0;
-    level._id_1AF9 = undefined;
+    level.airstrikeinprogress = undefined;
 }
 
 getairstrikedanger( var_0 )
@@ -293,7 +293,7 @@ artilleryshellshock( var_0, var_1 )
     self.beingartilleryshellshocked = 0;
 }
 
-_id_3786( var_0, var_1, var_2, var_3 )
+callstrike_bomb( var_0, var_1, var_2, var_3 )
 {
     if ( !isdefined( var_1 ) || var_1 scripts\mp\utility::iskillstreakdenied() )
     {
@@ -321,8 +321,8 @@ _id_3786( var_0, var_1, var_2, var_3 )
 
     if ( var_3 )
     {
-        playfx( level._id_BB68, var_6 );
-        level thread scripts\mp\shellshock::_id_10F44( var_6 );
+        playfx( level.mortareffect, var_6 );
+        level thread scripts\mp\shellshock::stealthairstrike_earthquake( var_6 );
     }
 
     thread scripts\mp\utility::playsoundinspace( "exp_airstrike_bomb", var_6 );
@@ -330,7 +330,7 @@ _id_3786( var_0, var_1, var_2, var_3 )
     losradiusdamage( var_6 + ( 0, 0, 16 ), 896, 300, 50, var_1, self, "stealth_bomb_mp" );
 }
 
-_id_5A60( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
+doplanestrike( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
 {
     if ( !isdefined( var_1 ) )
         return;
@@ -354,10 +354,10 @@ _id_5A60( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
     var_18.lifeid = var_0;
     var_18.streakinfo = var_11;
     var_18 setotherent( var_1 );
-    var_18 _meth_8549();
-    var_18 _meth_8594();
-    var_18 _meth_8548();
-    var_18 scripts\mp\killstreaks\utility::_id_1843( var_9, "Killstreak_Air", var_1, 1, "kill_outline" );
+    var_18 scriptmoveroutline();
+    var_18 scriptmoverthermal();
+    var_18 scriptmoverplane();
+    var_18 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_9, "Killstreak_Air", var_1, 1, "kill_outline" );
     var_18 thread handleemp( var_1 );
 
     if ( var_9 == "precision_airstrike" )
@@ -394,7 +394,7 @@ _id_5A60( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
     if ( var_9 == "precision_airstrike" )
     {
         var_18 setscriptablepartstate( "thrusters", "idle", 0 );
-        thread _id_3788( var_18, var_15, var_7, var_6 - 1.5, var_1 );
+        thread callstrike_precisionbulleteffect( var_18, var_15, var_7, var_6 - 1.5, var_1 );
         wait( var_6 + 1 );
     }
     else
@@ -476,12 +476,12 @@ callstrike_bombeffect( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 
     var_8 = anglestoforward( var_0.angles );
     var_9 = spawnbomb( var_0.origin, var_0.angles );
-    var_9 movegravity( anglestoforward( var_0.angles ) * 4666.67, 3.0 );
+    var_9 movegravity( anglestoforward( var_0.angles ) * 4666.6665, 3.0 );
     var_9.lifeid = var_5;
     var_10 = spawn( "script_model", var_0.origin + ( 0, 0, 100 ) - var_8 * 200 );
     var_9.killcament = var_10;
     var_9.killcament setscriptmoverkillcam( "airstrike" );
-    var_9._id_1AFE = var_6;
+    var_9.airstriketype = var_6;
     var_10.starttime = gettime();
     var_10 thread deleteaftertime( 15.0 );
     var_10.angles = var_8;
@@ -529,7 +529,7 @@ callstrike_bombeffect( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
         var_22 = bullettrace( var_12, var_21, 0, undefined );
         var_23 = var_22["position"];
         var_18 = var_18 + var_23;
-        playfx( level._id_1AF6, var_23 );
+        playfx( level.airstrikeexplosion, var_23 );
         thread losradiusdamage( var_23 + ( 0, 0, 16 ), 512, 200, 30, var_4, var_9, "artillery_mp" );
 
         if ( var_19 % 3 == 0 )
@@ -556,7 +556,7 @@ spawnbomb( var_0, var_1 )
     return var_2;
 }
 
-_id_3788( var_0, var_1, var_2, var_3, var_4 )
+callstrike_precisionbulleteffect( var_0, var_1, var_2, var_3, var_4 )
 {
     var_0 endon( "death" );
     wait( var_3 );
@@ -585,7 +585,7 @@ _id_3788( var_0, var_1, var_2, var_3, var_4 )
         var_13 = scripts\common\trace::ray_trace( var_0.turret gettagorigin( "tag_flash" ), var_0.turrettarget.origin, level.characters, scripts\common\trace::create_contents( 0, 1, 0, 1, 0, 1, 0 ) );
         var_14 = var_13["position"];
         var_8 = var_14 + ( 0, 0, 2 );
-        var_0._id_A87B thread _id_BCA4( var_11, var_8, var_10 );
+        var_0._id_A87B thread moveanddamagepoint( var_11, var_8, var_10 );
         var_0.turret shootturret();
         var_9 = var_8;
 
@@ -600,7 +600,7 @@ _id_3788( var_0, var_1, var_2, var_3, var_4 )
     var_0.turret setscriptablepartstate( "fire", "stop", 0 );
 }
 
-_id_BCA4( var_0, var_1, var_2 )
+moveanddamagepoint( var_0, var_1, var_2 )
 {
     self endon( "death" );
     self.origin = var_1;
@@ -680,7 +680,7 @@ callstrike_explosivebullets( var_0, var_1, var_2, var_3, var_4 )
         var_13 = scripts\common\trace::ray_trace( var_0.turret gettagorigin( "tag_flash" ), var_0.turrettarget.origin, level.characters, scripts\common\trace::create_contents( 0, 1, 0, 1, 0, 1, 0 ) );
         var_14 = var_13["position"];
         var_8 = var_14 + ( 0, 0, 2 );
-        var_0._id_A87B thread _id_BCA4( var_11, var_8, var_10 );
+        var_0._id_A87B thread moveanddamagepoint( var_11, var_8, var_10 );
         var_0.turret shootturret();
         var_9 = var_8;
 
@@ -760,7 +760,7 @@ callstrike( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     {
         var_2 = var_1.origin;
         var_14 = getflightpath( var_2, var_9, var_10, var_7, var_12, var_11, var_8, var_4 );
-        var_1 scripts\mp\killstreaks\jackal::_id_2A6B( var_0, var_14["startPoint"], var_2, var_6 );
+        var_1 scripts\mp\killstreaks\jackal::beginjackal( var_0, var_14["startPoint"], var_2, var_6 );
     }
     else if ( var_4 == "precision_airstrike" )
     {
@@ -769,51 +769,51 @@ callstrike( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 
         if ( scripts\mp\killstreaks\utility::_id_A69F( var_6, "passive_precision_strike" ) )
         {
-            level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+            level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
             playsoundatpos( var_14["startPoint"], "ks_scorchers_init" );
             wait( randomfloatrange( 0.8, 1.0 ) );
             scripts\mp\hostmigration::waittillhostmigrationdone();
-            level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+            level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
             wait( randomfloatrange( 0.8, 1.0 ) );
             scripts\mp\hostmigration::waittillhostmigrationdone();
-            level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+            level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
             return;
         }
 
         if ( scripts\mp\killstreaks\utility::_id_A69F( var_6, "passive_split_strike" ) )
         {
-            level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+            level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
             playsoundatpos( var_14["startPoint"], "ks_scorchers_init" );
             return;
         }
 
-        level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+        level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"], var_14["endPoint"], var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
         playsoundatpos( var_14["startPoint"], "ks_scorchers_init" );
         wait( randomfloatrange( 0.5, 0.7 ) );
         scripts\mp\hostmigration::waittillhostmigrationdone();
-        level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"] + var_15 * 175, var_14["endPoint"] + var_15 * 175, var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+        level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"] + var_15 * 175, var_14["endPoint"] + var_15 * 175, var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
         wait( randomfloatrange( 0.5, 0.7 ) );
         scripts\mp\hostmigration::waittillhostmigrationdone();
-        level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"] - var_15 * 175, var_14["endPoint"] - var_15 * 175, var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+        level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"] - var_15 * 175, var_14["endPoint"] - var_15 * 175, var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
         return;
         return;
     }
     else
     {
         var_14 = getflightpath( var_2, var_9, var_10, var_7, var_12, var_11, var_8, var_4 );
-        level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"] + ( 0, 0, randomint( 500 ) ), var_14["endPoint"] + ( 0, 0, randomint( 500 ) ), var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+        level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"] + ( 0, 0, randomint( 500 ) ), var_14["endPoint"] + ( 0, 0, randomint( 500 ) ), var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
         wait( randomfloatrange( 1.5, 2.5 ) );
         scripts\mp\hostmigration::waittillhostmigrationdone();
-        level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"] + ( 0, 0, randomint( 200 ) ), var_14["endPoint"] + ( 0, 0, randomint( 200 ) ), var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+        level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"] + ( 0, 0, randomint( 200 ) ), var_14["endPoint"] + ( 0, 0, randomint( 200 ) ), var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
         wait( randomfloatrange( 1.5, 2.5 ) );
         scripts\mp\hostmigration::waittillhostmigrationdone();
-        level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"] + ( 0, 0, randomint( 200 ) ), var_14["endPoint"] + ( 0, 0, randomint( 200 ) ), var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+        level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"] + ( 0, 0, randomint( 200 ) ), var_14["endPoint"] + ( 0, 0, randomint( 200 ) ), var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
 
         if ( var_4 == "super_airstrike" )
         {
             wait( randomfloatrange( 2.5, 3.5 ) );
             scripts\mp\hostmigration::waittillhostmigrationdone();
-            level thread _id_5A60( var_0, var_1, var_13, var_2, var_14["startPoint"] + ( 0, 0, randomint( 200 ) ), var_14["endPoint"] + ( 0, 0, randomint( 200 ) ), var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
+            level thread doplanestrike( var_0, var_1, var_13, var_2, var_14["startPoint"] + ( 0, 0, randomint( 200 ) ), var_14["endPoint"] + ( 0, 0, randomint( 200 ) ), var_14["bombTime"], var_14["flyTime"], var_9, var_4, var_5, var_6 );
         }
     }
 }
@@ -953,7 +953,7 @@ selectairstrikelocation( var_0, var_1, var_2 )
         var_4 = scripts\mp\killstreaks\mapselect::_id_8112( var_1, var_12, 1 );
         scripts\engine\utility::allow_weapon_switch( 1 );
     }
-    else if ( var_1 == "jackal" && ( isdefined( level._id_A056 ) || level.jackals.size > 1 ) )
+    else if ( var_1 == "jackal" && ( isdefined( level.jackal ) || level.jackals.size > 1 ) )
     {
         self notify( "cancel_location" );
         scripts\mp\hud_message::showerrormessage( "KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
@@ -970,13 +970,13 @@ selectairstrikelocation( var_0, var_1, var_2 )
 
     if ( isdefined( var_4 ) )
     {
-        if ( scripts\mp\utility::istrue( level._id_1AF9 ) )
+        if ( scripts\mp\utility::istrue( level.airstrikeinprogress ) )
         {
             scripts\mp\hud_message::showerrormessage( "KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
             return 0;
         }
 
-        thread _id_6CDD( var_4, var_7, var_0, var_3, var_5, var_1, var_6, var_2 );
+        thread finishmapselectairstrikeusage( var_4, var_7, var_0, var_3, var_5, var_1, var_6, var_2 );
         self playlocalsound( "bombardment_killstreak_shutdown" );
         self clearsoundsubmix();
     }
@@ -1033,7 +1033,7 @@ selectairstrikelocation( var_0, var_1, var_2 )
     return 1;
 }
 
-_id_6CDD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
+finishmapselectairstrikeusage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 {
     self endon( "disconnect" );
 
@@ -1056,7 +1056,7 @@ finishairstrikeusage( var_0, var_1, var_2, var_3, var_4, var_5 )
     self notify( "used" );
     var_6 = bullettrace( level.mapcenter + ( 0, 0, 1000000.0 ), level.mapcenter, 0, undefined );
     var_1 = ( var_1[0], var_1[1], var_6["position"][2] - 514 );
-    thread _id_57DD( var_0, var_1, var_2, self, self.pers["team"], var_3, var_4, var_5 );
+    thread doairstrike( var_0, var_1, var_2, self, self.pers["team"], var_3, var_4, var_5 );
 }
 
 useairstrike( var_0, var_1, var_2 )

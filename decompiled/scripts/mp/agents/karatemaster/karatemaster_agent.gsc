@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\karatemaster::_id_DEE8();
-    scripts\asm\karatemaster\mp\states::_id_2371();
+    behaviortree\karatemaster::registerbehaviortree();
+    scripts\asm\karatemaster\mp\states::asm_register();
     thread _id_FAB0();
 }
 
@@ -111,7 +111,7 @@ setupzombiegametypevars()
     self.is_cop = undefined;
     self.highlyawareradius = 200;
     self.deathmethod = undefined;
-    self._id_10A57 = undefined;
+    self.spooned = undefined;
     self.gib_fx_override = undefined;
     self._id_CE65 = undefined;
     self._id_29D2 = 1;
@@ -132,8 +132,8 @@ setupagent()
     setupzombiegametypevars();
     self.karatemaster = 1;
     self.aj_karatemaster = 0;
-    self.height = self._id_18F4;
-    self.radius = self._id_18F9;
+    self.height = self.agent_height;
+    self.radius = self.agent_radius;
     self._id_B62D = 70;
     self._id_B62E = 70;
     self.meleeradiuswhentargetnotonnavmesh = 80;
@@ -141,8 +141,8 @@ setupagent()
     self.defaultgoalradius = self.radius + 1;
     self.meleedot = 0.5;
     self._id_B601 = 45;
-    self._id_504E = 55;
-    self._id_129AF = 55;
+    self.defaultturnthreshold = 55;
+    self.turnthreshold = 55;
     self.upaimlimit = -60;
     self.downaimlimit = 60;
     self.ground_pound_damage = 50;

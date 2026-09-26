@@ -5,15 +5,15 @@ _id_98D7()
 {
     level._id_115ED["ammo_regen"] = spawnstruct();
     level._id_115ED["ammo_regen"]._id_118A3 = 1;
-    level._id_115ED["ammo_regen"]._id_5F36 = 60;
+    level._id_115ED["ammo_regen"].duration = 60;
     level._id_115ED["ammo_regen"]._id_6369 = "ammo_regen_complete";
     level._id_115ED["super_speed"] = spawnstruct();
     level._id_115ED["super_speed"]._id_118A3 = 2;
-    level._id_115ED["super_speed"]._id_5F36 = 30;
+    level._id_115ED["super_speed"].duration = 30;
     level._id_115ED["super_speed"]._id_6369 = "super_speed_complete";
     level._id_115ED["jugg_squad"] = spawnstruct();
     level._id_115ED["jugg_squad"]._id_118A3 = 3;
-    level._id_115ED["jugg_squad"]._id_5F36 = 15;
+    level._id_115ED["jugg_squad"].duration = 15;
     level._id_115ED["jugg_squad"]._id_6369 = "jugg_squad_complete";
     var_0 = scripts\mp\utility::getscorelimit();
     level._id_D410 = [];
@@ -103,7 +103,7 @@ _id_11B02()
             if ( level._id_D410[var_0.team] >= 4500 )
             {
                 var_2 = _id_81BB( 3 );
-                var_3 = level._id_115ED[var_2]._id_5F36;
+                var_3 = level._id_115ED[var_2].duration;
                 var_4 = level._id_115ED[var_2]._id_6369;
 
                 foreach ( var_6 in level.players )

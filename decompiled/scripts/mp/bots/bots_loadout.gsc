@@ -722,7 +722,7 @@ bot_loadout_choose_from_attachmenttable( var_0, var_1, var_2, var_3, var_4 )
 init_bot_camotable()
 {
     var_0 = "mp/camotable.csv";
-    level._id_2D1E = [];
+    level.bot_camotable = [];
     var_1 = 0;
 
     for (;;)
@@ -735,7 +735,7 @@ init_bot_camotable()
         var_3 = tablelookupbyrow( var_0, var_1, scripts\engine\utility::getcamotablecolumnindex( "bot_valid" ) );
 
         if ( isdefined( var_3 ) && int( var_3 ) )
-            level._id_2D1E[level._id_2D1E.size] = var_2;
+            level.bot_camotable[level.bot_camotable.size] = var_2;
 
         var_1++;
     }

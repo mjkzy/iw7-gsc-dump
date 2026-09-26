@@ -9,7 +9,7 @@ init_ghost_n_skull_2_quest()
     scripts\cp\zombies\zombie_quest::register_quest_step( "ghostTwo", 3, ::blank, ::spell_skull, ::complete_spell_skull, ::debug_spell_skull );
     scripts\cp\zombies\zombie_quest::register_quest_step( "ghostTwo", 4, ::blank, ::shoot_skull_during_boat, ::complete_shoot_skull_during_boat, ::debug_shoot_skull_during_boat );
     scripts\cp\zombies\zombie_quest::register_quest_step( "ghostTwo", 5, ::blank, ::hit_gns_cabinet_with_ben_franklin, ::complete_hit_gns_cabinet_with_ben_franklin, ::debug_hit_gns_cabinet_with_ben_franklin );
-    scripts\cp\zombies\zombie_quest::register_quest_step( "ghostTwo", 6, ::blank, ::wait_for_player_activation, ::complete_clean_arcade_cabinet, ::debug_wait_for_player_activation );
+    scripts\cp\zombies\zombie_quest::register_quest_step( "ghostTwo", 6, ::blank, ::wait_for_player_activation, ::complete_wait_for_player_activation, ::debug_wait_for_player_activation );
 }
 
 blank()
@@ -616,7 +616,7 @@ wait_for_player_activation()
     }
 }
 
-complete_clean_arcade_cabinet()
+complete_wait_for_player_activation()
 {
     scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::notify_activation_progress( -1, 0.5 );
     scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::start_ghost_wave();
@@ -632,7 +632,7 @@ reactive_ghost_n_skull_cabinet()
     if ( !scripts\cp\zombies\zombie_quest::quest_line_exist( "reactivateghost" ) )
     {
         scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 0, scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::reactivate_cabinet, ::hit_gns_cabinet_with_ben_franklin, ::complete_hit_gns_cabinet_with_ben_franklin, ::debug_hit_gns_cabinet_with_ben_franklin );
-        scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 1, ::blank, ::wait_for_player_activation, ::complete_clean_arcade_cabinet, ::debug_wait_for_player_activation );
+        scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 1, ::blank, ::wait_for_player_activation, ::complete_wait_for_player_activation, ::debug_wait_for_player_activation );
     }
 
     level thread scripts\cp\zombies\zombie_quest::start_quest_line( "reactivateghost" );

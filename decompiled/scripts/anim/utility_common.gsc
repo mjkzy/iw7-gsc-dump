@@ -276,25 +276,25 @@ isusingsecondary()
 
 isusingsidearm()
 {
-    if ( !isdefined( self._id_101B4 ) )
+    if ( !isdefined( self.sidearm ) )
         return 0;
 
-    return self.weapon == self._id_101B4 && self.weapon != "none";
+    return self.weapon == self.sidearm && self.weapon != "none";
 }
 
-_id_7E28()
+getclaimednode()
 {
     var_0 = self.node;
 
-    if ( isdefined( var_0 ) && ( self _meth_8215( var_0 ) || isdefined( self.covernode ) && var_0 == self.covernode ) )
+    if ( isdefined( var_0 ) && ( self nearnode( var_0 ) || isdefined( self.covernode ) && var_0 == self.covernode ) )
         return var_0;
 
     return undefined;
 }
 
-_id_7FFE()
+getnodetype()
 {
-    var_0 = _id_7E28();
+    var_0 = getclaimednode();
 
     if ( isdefined( var_0 ) )
         return var_0.type;
@@ -304,7 +304,7 @@ _id_7FFE()
 
 getnodedirection()
 {
-    var_0 = _id_7E28();
+    var_0 = getclaimednode();
 
     if ( isdefined( var_0 ) )
         return var_0.angles[1];
@@ -314,7 +314,7 @@ getnodedirection()
 
 getnodeforward()
 {
-    var_0 = _id_7E28();
+    var_0 = getclaimednode();
 
     if ( isdefined( var_0 ) )
         return anglestoforward( var_0.angles );
@@ -322,9 +322,9 @@ getnodeforward()
     return anglestoforward( self.angles );
 }
 
-_id_7FFD()
+getnodeorigin()
 {
-    var_0 = _id_7E28();
+    var_0 = getclaimednode();
 
     if ( isdefined( var_0 ) )
         return var_0.origin;
@@ -395,7 +395,7 @@ getyawtoenemy()
     return var_2;
 }
 
-getyaw2d( var_0 )
+_id_8245( var_0 )
 {
     var_1 = vectortoangles( ( var_0[0], var_0[1], 0 ) - ( self.origin[0], self.origin[1], 0 ) );
     return var_1[1];
@@ -414,7 +414,7 @@ absyawtoenemy()
 
 absyawtoenemy2d()
 {
-    var_0 = self.angles[1] - getyaw2d( self.enemy.origin );
+    var_0 = self.angles[1] - _id_8245( self.enemy.origin );
     var_0 = angleclamp180( var_0 );
 
     if ( var_0 < 0 )
@@ -685,8 +685,8 @@ canseeenemyfromexposed()
 
 checkpitchvisibility( var_0, var_1, var_2 )
 {
-    var_3 = self.upaimlimit - anim._id_1A44;
-    var_4 = self.downaimlimit + anim._id_1A44;
+    var_3 = self.upaimlimit - anim.aimpitchdifftolerance;
+    var_4 = self.downaimlimit + anim.aimpitchdifftolerance;
     var_5 = var_1 - var_0;
 
     if ( scripts\engine\utility::actor_is3d() )

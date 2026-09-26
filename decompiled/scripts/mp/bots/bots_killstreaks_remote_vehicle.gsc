@@ -14,7 +14,7 @@ remote_vehicle_setup()
     level.bot_ks_funcs["isUsing"]["odin_assault"] = scripts\mp\utility::isusingremote;
     level.bot_ks_funcs["isUsing"]["odin_support"] = scripts\mp\utility::isusingremote;
     level.bot_ks_funcs["isUsing"]["heli_pilot"] = scripts\mp\utility::isusingremote;
-    level.bot_ks_funcs["isUsing"]["heli_sniper"] = ::isusinggunship;
+    level.bot_ks_funcs["isUsing"]["heli_sniper"] = ::isusinghelisniper;
     level.bot_ks_funcs["isUsing"]["switchblade_cluster"] = scripts\mp\utility::isusingremote;
     level.bot_ks_funcs["isUsing"]["vanguard"] = ::isusingvanguard;
     level.bot_ks_funcs["waittill_initial_goal"]["heli_pilot"] = ::heli_pilot_waittill_initial_goal;
@@ -90,10 +90,10 @@ remote_vehicle_setup()
             level.outside_zones = scripts\engine\utility::array_add( level.outside_zones, var_14 );
     }
 
-    level._id_2E35["recruit"] = 1.0;
-    level._id_2E35["regular"] = 0.7;
-    level._id_2E35["hardened"] = 0.4;
-    level._id_2E35["veteran"] = 0.05;
+    level.bot_odin_time_to_move["recruit"] = 1.0;
+    level.bot_odin_time_to_move["regular"] = 0.7;
+    level.bot_odin_time_to_move["hardened"] = 0.4;
+    level.bot_odin_time_to_move["veteran"] = 0.05;
     level.bot_initialized_remote_vehicles = 1;
 }
 
@@ -1224,13 +1224,13 @@ bot_control_odin_assault()
 
 odin_assault_perform_action()
 {
-    if ( _id_2E3A() )
+    if ( bot_odin_try_spawn_juggernaut() )
         return 1;
 
-    if ( _id_2E38() )
+    if ( bot_odin_try_rods() )
         return 1;
 
-    if ( _id_2E36() )
+    if ( bot_odin_try_airdrop() )
         return 1;
 
     return 0;
@@ -1238,22 +1238,22 @@ odin_assault_perform_action()
 
 odin_assault_get_target()
 {
-    return _id_2E2B();
+    return bot_odin_find_target_for_rods();
 }
 
-_id_2E2B()
+bot_odin_find_target_for_rods()
 {
     var_0 = undefined;
 
     if ( isdefined( self.last_large_rod_target ) && gettime() - self.last_large_rod_time < 5000 )
         var_0 = self.last_large_rod_target;
 
-    return _id_2E2C( "enemy", 1, var_0 );
+    return bot_odin_get_closest_visible_outside_player( "enemy", 1, var_0 );
 }
 
-_id_2E38()
+bot_odin_try_rods()
 {
-    var_0 = _id_2E34();
+    var_0 = bot_odin_should_fire_rod_at_marker();
 
     if ( var_0 == "large" )
     {
@@ -1270,20 +1270,20 @@ _id_2E38()
     return 0;
 }
 
-_id_2E34()
+bot_odin_should_fire_rod_at_marker()
 {
     var_0 = gettime() >= self.odin.odin_largerodusetime;
     var_1 = gettime() >= self.odin.odin_smallrodusetime;
 
     if ( var_0 || var_1 )
     {
-        var_2 = _id_2E30( "enemy", 0 );
+        var_2 = bot_odin_get_visible_outside_players( "enemy", 0 );
         var_3 = [];
         var_4 = distancesquared( self.origin, self.odin.targeting_marker.origin );
 
         for ( var_5 = 0; var_5 < var_2.size; var_5++ )
         {
-            var_6 = _id_2E2F( var_2[var_5] );
+            var_6 = bot_odin_get_player_target_point( var_2[var_5] );
             var_3[var_5] = distancesquared( self.odin.targeting_marker.origin, var_6 );
         }
 
@@ -1331,24 +1331,24 @@ bot_control_odin_support()
 
 odin_support_perform_action()
 {
-    if ( _id_2E3A() )
+    if ( bot_odin_try_spawn_juggernaut() )
         return 1;
 
-    if ( _id_2E36() )
+    if ( bot_odin_try_airdrop() )
         return 1;
 
-    if ( _id_2E39() )
+    if ( bot_odin_try_smoke() )
         return 1;
 
-    if ( _id_2E37() )
+    if ( bot_odin_try_flash() )
         return 1;
 
     return 0;
 }
 
-_id_2E37()
+bot_odin_try_flash()
 {
-    if ( _id_2E33() )
+    if ( bot_odin_should_fire_flash_at_marker() )
     {
         self notify( "marking_action" );
         return 1;
@@ -1357,17 +1357,17 @@ _id_2E37()
     return 0;
 }
 
-_id_2E33()
+bot_odin_should_fire_flash_at_marker()
 {
     if ( gettime() < self.odin.odin_markingusetime )
         return 0;
 
-    var_0 = _id_2E30( "enemy", 0 );
+    var_0 = bot_odin_get_visible_outside_players( "enemy", 0 );
     var_1 = [];
 
     for ( var_2 = 0; var_2 < var_0.size; var_2++ )
     {
-        var_3 = _id_2E2F( var_0[var_2] );
+        var_3 = bot_odin_get_player_target_point( var_0[var_2] );
         var_1[var_2] = distancesquared( self.odin.targeting_marker.origin, var_3 );
 
         if ( var_1[var_2] < squared( level.odin_flash_radius / 2 ) )
@@ -1377,9 +1377,9 @@ _id_2E33()
     return 0;
 }
 
-_id_2E39()
+bot_odin_try_smoke()
 {
-    if ( _id_2E32() )
+    if ( bot_odin_should_drop_smoke_at_marker() )
     {
         self notify( "smoke_action" );
         return 1;
@@ -1388,12 +1388,12 @@ _id_2E39()
     return 0;
 }
 
-_id_2E32()
+bot_odin_should_drop_smoke_at_marker()
 {
     if ( gettime() < self.odin.odin_smokeusetime )
         return 0;
 
-    var_0 = _id_2E2D();
+    var_0 = bot_odin_get_high_priority_smoke_locations();
 
     foreach ( var_2 in var_0 )
     {
@@ -1418,7 +1418,7 @@ _id_2E32()
     return 0;
 }
 
-_id_2E2D()
+bot_odin_get_high_priority_smoke_locations()
 {
     var_0 = [];
 
@@ -1437,7 +1437,7 @@ _id_2E2D()
         }
     }
 
-    var_6 = _id_2E30( "ally", 0 );
+    var_6 = bot_odin_get_visible_outside_players( "ally", 0 );
 
     foreach ( var_8 in var_6 )
     {
@@ -1450,12 +1450,12 @@ _id_2E2D()
 
 odin_support_get_target()
 {
-    var_0 = _id_2E2D();
+    var_0 = bot_odin_get_high_priority_smoke_locations();
 
     if ( var_0.size > 0 )
         return var_0[0];
 
-    return _id_2E2C( "enemy", 1 );
+    return bot_odin_get_closest_visible_outside_player( "enemy", 1 );
 }
 
 monitor_odin_marker()
@@ -1519,7 +1519,7 @@ bot_control_odin( var_0 )
 
         if ( gettime() > var_3 || !isdefined( var_4 ) )
         {
-            var_9 = level._id_2E35[self botgetdifficulty()];
+            var_9 = level.bot_odin_time_to_move[self botgetdifficulty()];
             var_3 = gettime() + var_9 * 1000;
             var_10 = self [[ level.bot_ks_funcs["odin_get_target"][var_0] ]]();
 
@@ -1528,7 +1528,7 @@ bot_control_odin( var_0 )
                 var_2 = undefined;
 
                 if ( isplayer( var_10 ) )
-                    var_4 = _id_2E2F( var_10 );
+                    var_4 = bot_odin_get_player_target_point( var_10 );
                 else
                     var_4 = var_10;
             }
@@ -1577,7 +1577,7 @@ bot_end_odin_watcher( var_0 )
     self botsetawareness( 1.0 );
 }
 
-_id_2E2F( var_0 )
+bot_odin_get_player_target_point( var_0 )
 {
     if ( level.teambased && self.team == var_0.team )
         return var_0.origin;
@@ -1622,9 +1622,9 @@ _id_2E2F( var_0 )
     }
 }
 
-_id_2E2C( var_0, var_1, var_2 )
+bot_odin_get_closest_visible_outside_player( var_0, var_1, var_2 )
 {
-    var_3 = _id_2E30( var_0, var_1 );
+    var_3 = bot_odin_get_visible_outside_players( var_0, var_1 );
 
     if ( isdefined( var_2 ) )
         var_3 = scripts\engine\utility::array_remove( var_3, var_2 );
@@ -1638,7 +1638,7 @@ _id_2E2C( var_0, var_1, var_2 )
     return undefined;
 }
 
-_id_2E3A()
+bot_odin_try_spawn_juggernaut()
 {
     if ( gettime() >= self.odin.odin_juggernautusetime )
     {
@@ -1649,14 +1649,14 @@ _id_2E3A()
     return 0;
 }
 
-_id_2E2A()
+bot_odin_find_target_for_airdrop()
 {
-    return _id_2E2C( "ally", 0 );
+    return bot_odin_get_closest_visible_outside_player( "ally", 0 );
 }
 
-_id_2E36()
+bot_odin_try_airdrop()
 {
-    if ( _id_2E31() )
+    if ( bot_odin_should_airdrop_at_marker() )
     {
         self notify( "airdrop_action" );
         self notify( "juggernaut_action" );
@@ -1666,7 +1666,7 @@ _id_2E36()
     return 0;
 }
 
-_id_2E31()
+bot_odin_should_airdrop_at_marker()
 {
     if ( gettime() < self.odin.odin_airdropusetime )
         return 0;
@@ -1674,7 +1674,7 @@ _id_2E31()
     if ( !isdefined( self.odin.targeting_marker.nearest_node ) )
         return 0;
 
-    if ( _id_2E2E() > 2 )
+    if ( bot_odin_get_num_valid_care_packages() > 2 )
         return 0;
 
     if ( !isdefined( self.odin.targeting_marker.nearest_point_on_pathgrid ) )
@@ -1696,7 +1696,7 @@ _id_2E31()
     if ( var_4 == 0 )
     {
         var_5 = 0;
-        var_6 = _id_2E30( "enemy", 1 );
+        var_6 = bot_odin_get_visible_outside_players( "enemy", 1 );
 
         foreach ( var_8 in var_6 )
         {
@@ -1722,7 +1722,7 @@ _id_2E31()
     return 0;
 }
 
-_id_2E2E()
+bot_odin_get_num_valid_care_packages()
 {
     var_0 = 0;
 
@@ -1735,7 +1735,7 @@ _id_2E2E()
     return var_0;
 }
 
-_id_2E30( var_0, var_1, var_2 )
+bot_odin_get_visible_outside_players( var_0, var_1, var_2 )
 {
     var_3 = bot_killstreak_get_outside_players( self.team, var_0, var_1 );
     var_4 = self botgetfovdot();
@@ -1766,7 +1766,7 @@ is_indoor_map()
 
 bot_body_is_dead()
 {
-    return isdefined( self.fauxdeath ) && self.fauxdeath;
+    return isdefined( self.fauxdead ) && self.fauxdead;
 }
 
 heli_pick_node_furthest_from_center( var_0, var_1 )
@@ -2116,7 +2116,7 @@ get_random_outside_target()
     return var_5;
 }
 
-isusinggunship()
+isusinghelisniper()
 {
     return isdefined( self.onhelisniper ) && self.onhelisniper;
 }

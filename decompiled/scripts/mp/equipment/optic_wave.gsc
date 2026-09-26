@@ -69,12 +69,12 @@ _id_C6AD( var_0 )
             }
         }
 
-        thread _id_C7A7( var_4, distance2d( self.origin, var_4.origin ) / var_2, var_0 );
+        thread outlineplayerbydistance( var_4, distance2d( self.origin, var_4.origin ) / var_2, var_0 );
         var_1 = 1;
     }
 }
 
-_id_C7A7( var_0, var_1, var_2 )
+outlineplayerbydistance( var_0, var_1, var_2 )
 {
     wait( var_2 * var_1 );
     var_3 = scripts\mp\utility::outlineenableforplayer( var_0, "orange", self, 0, 1, "level_script" );
@@ -83,10 +83,10 @@ _id_C7A7( var_0, var_1, var_2 )
         var_0 scripts\mp\utility::_hudoutlineviewmodelenable( 5 );
 
     var_4 = scripts\mp\powerloot::_id_7FC1( "power_opticWave", 1.35 );
-    _id_13AA0( var_3, var_0, var_4 );
+    watchhighlightfadetime( var_3, var_0, var_4 );
 }
 
-_id_13AA0( var_0, var_1, var_2 )
+watchhighlightfadetime( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );

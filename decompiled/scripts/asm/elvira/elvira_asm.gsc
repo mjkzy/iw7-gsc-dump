@@ -36,16 +36,16 @@ clearaction()
 
 isanimdone( var_0, var_1, var_2, var_3 )
 {
-    if ( scripts\asm\asm::_id_232B( var_1, "end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "early_end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "early_end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "finish_early" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "finish_early" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "code_move" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "code_move" ) )
         return 1;
 
     return 0;
@@ -85,7 +85,7 @@ playreviveanim( var_0, var_1, var_2, var_3 )
         thread dorevive( var_1, self.reviveplayer );
     }
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 shouldabortaction( var_0, var_1, var_2, var_3 )
@@ -128,13 +128,13 @@ playanimwithplaybackrate( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     var_4 = var_3;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, var_4 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, var_4 );
 }
 
-_id_3EE4( var_0, var_1, var_2 )
+choosepainanim_covercorner( var_0, var_1, var_2 )
 {
-    return _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+    return scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 }
 
 playmovingpainanim( var_0, var_1, var_2, var_3 )
@@ -143,19 +143,19 @@ playmovingpainanim( var_0, var_1, var_2, var_3 )
 
     if ( !isdefined( self.pathgoalpos ) || self pathdisttogoal() < scripts\mp\agents\elvira\elvira_tunedata::gettunedata().min_moving_pain_dist )
     {
-        var_4 = _id_3EE4( var_0, "pain_generic", var_3 );
+        var_4 = choosepainanim_covercorner( var_0, "pain_generic", var_3 );
         self scragentsetorientmode( "face angle abs", self.angles );
-        scripts\asm\asm_mp::_id_2365( var_0, "pain_generic", var_2, var_4, 1 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, "pain_generic", var_2, var_4, 1 );
         return;
     }
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 choosereviveanim( var_0, var_1, var_2 )
 {
     if ( !isdefined( self.reviveanimindex ) )
-        self.reviveanimindex = _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+        self.reviveanimindex = scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 
     return self.reviveanimindex;
 }
@@ -179,21 +179,21 @@ playcastspellanim( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     var_4 = var_3;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     playfxontag( level._effect["vfx_spell_tornado"], self, "j_wrist_le" );
     self playsound( "elvira_fire_spell_cast" );
     thread scripts\cp\maps\cp_town\cp_town_elvira::elvira_timely_torrent();
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, var_4 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, var_4 );
 }
 
 playrevealspellanim( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     var_4 = var_3;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     playfxontag( level._effect["vfx_spell_anom"], self, "j_wrist_le" );
     self playsound( "elvira_portal_spell_cast" );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, var_4 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, var_4 );
 }
 
 playteleportfx( var_0, var_1 )
@@ -213,14 +213,14 @@ terminate_traverseexternal( var_0, var_1, var_2 )
 dotraverseteleport( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    thread scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    thread scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
     thread playteleportfx( var_1, 0.75 );
     var_4 = undefined;
 
     if ( isdefined( self.earlytraversalteleportpos ) )
         var_4 = self.earlytraversalteleportpos;
     else
-        var_4 = self _meth_8146();
+        var_4 = self getnegotiationendpos();
 
     var_5 = vectornormalize( ( var_4 - self.origin ) * ( 1, 1, 0 ) );
     var_6 = vectortoangles( var_5 );

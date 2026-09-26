@@ -79,7 +79,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_sd_bombtimer", getmatchrulesdata( "bombData", "bombTimer" ) );
     setdynamicdvar( "scr_sd_planttime", getmatchrulesdata( "bombData", "plantTime" ) );
     setdynamicdvar( "scr_sd_defusetime", getmatchrulesdata( "bombData", "defuseTime" ) );
@@ -192,7 +192,7 @@ onspawnplayer()
     if ( isdefined( self.pers["defuses"] ) )
         scripts\mp\utility::setextrascore1( self.pers["defuses"] );
 
-    _id_12E58();
+    updatealiveomnvars();
     level notify( "spawned_player" );
 }
 
@@ -210,11 +210,11 @@ onplayerdisconnected()
     for (;;)
     {
         self waittill( "disconnect" );
-        level _id_12E58();
+        level updatealiveomnvars();
     }
 }
 
-_id_12E58()
+updatealiveomnvars()
 {
     if ( isdefined( level.alive_players["allies"] ) )
         setomnvar( "ui_allies_alive", level.alive_players["allies"].size );
@@ -226,7 +226,7 @@ _id_12E58()
 onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 {
     self setclientomnvar( "ui_carrying_bomb", 0 );
-    _id_12E58();
+    updatealiveomnvars();
     thread checkallowspectating();
 }
 
@@ -307,19 +307,19 @@ onnormaldeath( var_0, var_1, var_2, var_3, var_4 )
 
     if ( var_0.isplanting )
     {
-        thread scripts\mp\matchdata::loginitialstats( var_2, "planting" );
-        var_1 scripts\mp\utility::incperstat( "defends", 1 );
+        thread scripts\mp\matchdata::logkillevent( var_2, "planting" );
+        var_1 scripts\mp\utility::incpersstat( "defends", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
         var_1 thread scripts\mp\awards::givemidmatchaward( "mode_sd_plant_save" );
         var_7 = 1;
     }
     else if ( var_0.isbombcarrier )
-        thread scripts\mp\matchdata::loginitialstats( var_2, "carrying" );
+        thread scripts\mp\matchdata::logkillevent( var_2, "carrying" );
     else if ( var_0.isdefusing )
     {
-        thread scripts\mp\matchdata::loginitialstats( var_2, "defusing" );
+        thread scripts\mp\matchdata::logkillevent( var_2, "defusing" );
         scripts\mp\utility::setmlgannouncement( 13, var_1.team, var_1 getentitynumber() );
-        var_1 scripts\mp\utility::incperstat( "defends", 1 );
+        var_1 scripts\mp\utility::incpersstat( "defends", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
         var_1 thread scripts\mp\awards::givemidmatchaward( "mode_sd_defuse_save" );
         var_7 = 1;
@@ -338,7 +338,7 @@ givelastonteamwarning()
     var_0 = scripts\mp\utility::getotherteam( self.pers["team"] );
     level thread scripts\mp\utility::teamplayercardsplash( "callout_lastteammemberalive", self, self.pers["team"] );
     level thread scripts\mp\utility::teamplayercardsplash( "callout_lastenemyalive", self, var_0 );
-    scripts\mp\music_and_dialog::_id_C54B( self );
+    scripts\mp\music_and_dialog::onlastalive( self );
     scripts\mp\utility::setmlgannouncement( 16, self.team, self getentitynumber() );
     scripts\mp\missions::lastmansd();
 }

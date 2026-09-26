@@ -64,7 +64,7 @@ _id_D54C( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     self.bdoingrangeattack = 1;
     level thread scripts\cp\zombies\zombies_vo::play_zombie_vo( self, "attack_toss", 1 );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 _id_116EB( var_0, var_1, var_2 )
@@ -78,7 +78,7 @@ _id_D48E( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     self.zombietograb = self.zombiepiecetarget;
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 _id_D48D( var_0, var_1, var_2, var_3 )
@@ -89,7 +89,7 @@ _id_D48D( var_0, var_1, var_2, var_3 )
     var_5 = vectornormalize( var_4 );
     var_6 = vectortoangles( var_5 );
     self scragentsetorientmode( "face angle abs", var_6 );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 _id_1001D( var_0, var_1, var_2, var_3 )
@@ -161,13 +161,13 @@ _id_3EFA( var_0, var_1, var_2 )
 _id_D51C( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self getanimentry( var_1, var_4 );
     var_6 = getanimlength( var_5 );
     var_7 = var_6 * 0.33;
     level thread scripts\cp\zombies\zombies_vo::play_zombie_vo( self, "attack_ground_pound", 1 );
     thread _id_895D( var_7 );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 _id_FFE2( var_0, var_1, var_2, var_3 )
@@ -242,7 +242,7 @@ _id_10063( var_0, var_1, var_2, var_3 )
     return 0;
 }
 
-shouldreloadwhilemoving( var_0, var_1, var_2, var_3 )
+_id_10069( var_0, var_1, var_2, var_3 )
 {
     if ( !isdefined( self.desiredhelmetlocation ) || !isdefined( self.helmetlocation ) )
         return 0;
@@ -253,7 +253,7 @@ shouldreloadwhilemoving( var_0, var_1, var_2, var_3 )
     return 0;
 }
 
-canseethroughfoliage( var_0, var_1, var_2, var_3 )
+_id_390C( var_0, var_1, var_2, var_3 )
 {
     return isdefined( self.enemy ) && self.helmetlocation == "head";
 }
@@ -267,7 +267,7 @@ _id_D4BB( var_0, var_1, var_2, var_3 )
 {
     self.blaserattackstarted = 1;
     thread _id_CD6C();
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 _id_CD6C()
@@ -281,10 +281,10 @@ _id_58E5( var_0, var_1, var_2, var_3 )
     self.lookposition = self.enemy.origin + ( 0, 0, 40 );
     self.looktarget = undefined;
     thread _id_8979( var_1 );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
-_id_116F8( var_0, var_1, var_2 )
+terminateidle( var_0, var_1, var_2 )
 {
     self.looktarget = undefined;
     self.lookposition = undefined;
@@ -296,7 +296,7 @@ _id_116F8( var_0, var_1, var_2 )
 terminatelaserattackprep( var_0, var_1, var_2 )
 {
     if ( !_id_1FB4( var_0, var_1, undefined, var_2 ) )
-        _id_116F8( var_0, var_1, var_2 );
+        terminateidle( var_0, var_1, var_2 );
 }
 
 _id_8979( var_0 )
@@ -436,10 +436,10 @@ _id_A869( var_0 )
 
 _id_1FB4( var_0, var_1, var_2, var_3 )
 {
-    return scripts\asm\asm::_id_232B( var_1, "end" );
+    return scripts\asm\asm::asm_eventfired( var_1, "end" );
 }
 
-_id_CC1A( var_0, var_1 )
+placeheight( var_0, var_1 )
 {
     self endon( var_1 + "_finished" );
     self endon( "death" );
@@ -458,7 +458,7 @@ _id_E12C( var_0, var_1 )
 _id_D498( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
     _id_8E15( "put_on_helmet" );
 }
 
@@ -466,7 +466,7 @@ _id_D499( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
     self setscriptablepartstate( "eyes", "yellow_eyes" );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
     _id_8E15( "remove_helmet" );
 }
 
@@ -508,7 +508,7 @@ _id_3EC2( var_0, var_1, var_2 )
 
 _id_1003B( var_0, var_1, var_2, var_3 )
 {
-    var_4 = self _meth_855B( "door", 300 );
+    var_4 = self getmodifierlocationonpath( "door", 300 );
 
     if ( isdefined( var_4 ) )
     {
@@ -522,7 +522,7 @@ _id_1003B( var_0, var_1, var_2, var_3 )
 _id_D4E7( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 _id_3EC0( var_0, var_1, var_2 )
@@ -543,7 +543,7 @@ _id_FFEB( var_0, var_1, var_2, var_3 )
     return isdefined( self.croc_chomp ) && self.croc_chomp;
 }
 
-_id_3EC9( var_0, var_1, var_2 )
+choosecrawllongdeathanims( var_0, var_1, var_2 )
 {
     var_3 = self getanimentrycount( var_1 );
 

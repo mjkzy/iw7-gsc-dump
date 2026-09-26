@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\lumberjack::_id_DEE8();
-    scripts\asm\lumberjack\mp\states::_id_2371();
+    behaviortree\lumberjack::registerbehaviortree();
+    scripts\asm\lumberjack\mp\states::asm_register();
     thread _id_FAB0();
 }
 
@@ -52,9 +52,9 @@ onzombiekilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     scripts\mp\agents\zombie\zombie_agent::onzombiekilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 );
 }
 
-_id_C4BD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
+on_zombie_agent_killed_common( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 {
-    scripts\mp\agents\zombie\zombie_agent::_id_C4BD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
+    scripts\mp\agents\zombie\zombie_agent::on_zombie_agent_killed_common( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
 }
 
 should_spawn_lumberjack()

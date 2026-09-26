@@ -582,21 +582,21 @@ _id_8456( var_0 )
 
     foreach ( var_6 in var_0 )
     {
-        if ( scripts\cp\zombies\_id_0D60::_id_800B( var_6.volume ) )
+        if ( _id_0D60::_id_800B( var_6.volume ) )
         {
             var_1[var_1.size] = var_6;
-            var_6.modifiedspawnpoints = var_2;
+            var_6.modifier = var_2;
             continue;
         }
 
-        if ( isdefined( var_6.volume._id_186E ) )
+        if ( isdefined( var_6.volume.adjacent_volumes ) )
         {
-            foreach ( var_8 in var_6.volume._id_186E )
+            foreach ( var_8 in var_6.volume.adjacent_volumes )
             {
-                if ( scripts\cp\zombies\_id_0D60::_id_800B( var_8 ) )
+                if ( _id_0D60::_id_800B( var_8 ) )
                 {
                     var_1[var_1.size] = var_6;
-                    var_6.modifiedspawnpoints = var_3;
+                    var_6.modifier = var_3;
                     break;
                 }
             }
@@ -625,7 +625,7 @@ _id_8456( var_0 )
     {
         var_21 = "";
         var_26 = 0;
-        var_27 = var_6.modifiedspawnpoints * randomintrange( var_18, var_19 );
+        var_27 = var_6.modifier * randomintrange( var_18, var_19 );
         var_28 = randomint( 100 );
 
         if ( isdefined( var_6._id_BF6C ) && var_6._id_BF6C >= var_22 )
@@ -1193,7 +1193,7 @@ _id_51A5( var_0, var_1 )
     if ( var_1 )
     {
         if ( scripts\engine\utility::is_true( self.isactive ) )
-            _id_EDF6();
+            script_killspawn();
         else
         {
 
@@ -1227,12 +1227,12 @@ _id_51A5( var_0, var_1 )
         if ( scripts\engine\utility::is_true( self.isactive ) )
         {
             self.nocorpse = 1;
-            _id_EDF6();
+            script_killspawn();
         }
     }
 }
 
-_id_EDF6()
+script_killspawn()
 {
     self dodamage( self.health + 950, self.origin, self, self, "MOD_SUICIDE" );
 }

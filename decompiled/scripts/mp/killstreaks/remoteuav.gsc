@@ -85,7 +85,7 @@ tryuseremoteuav( var_0, var_1 )
     self setplayerdata( "reconDroneState", "staticAlpha", 0 );
     self setplayerdata( "reconDroneState", "incomingMissile", 0 );
     scripts\mp\utility::incrementfauxvehiclecount();
-    var_3 = _id_8355( var_0, var_1 );
+    var_3 = givecarryremoteuav( var_0, var_1 );
 
     if ( var_3 )
     {
@@ -99,13 +99,13 @@ tryuseremoteuav( var_0, var_1 )
     return var_3;
 }
 
-_id_8355( var_0, var_1 )
+givecarryremoteuav( var_0, var_1 )
 {
-    var_2 = _id_4994( var_1, self );
+    var_2 = createcarryremoteuav( var_1, self );
     scripts\mp\utility::_takeweapon( "killstreak_uav_mp" );
     scripts\mp\utility::_giveweapon( "killstreak_remote_uav_mp" );
     scripts\mp\utility::_switchtoweaponimmediate( "killstreak_remote_uav_mp" );
-    _id_F686( var_2 );
+    setcarryingremoteuav( var_2 );
 
     if ( isalive( self ) && isdefined( var_2 ) )
     {
@@ -113,7 +113,7 @@ _id_8355( var_0, var_1 )
         var_4 = self.angles;
         var_2.soundent delete();
         var_2 delete();
-        var_5 = _id_10DEA( var_0, var_1, var_3, var_4 );
+        var_5 = startremoteuav( var_0, var_1, var_3, var_4 );
     }
     else
     {
@@ -129,7 +129,7 @@ _id_8355( var_0, var_1 )
     return var_5;
 }
 
-_id_4994( var_0, var_1 )
+createcarryremoteuav( var_0, var_1 )
 {
     var_2 = var_1.origin + anglestoforward( var_1.angles ) * 4 + anglestoup( var_1.angles ) * 50;
     var_3 = spawnturret( "misc_turret", var_2, "sentry_minigun_mp" );
@@ -143,9 +143,9 @@ _id_4994( var_0, var_1 )
     var_3 maketurretinoperable();
     var_3.owner = var_1;
     var_3 setsentryowner( var_3.owner );
-    var_3._id_EB9C = 3;
+    var_3.scale = 3;
     var_3.inheliproximity = 0;
-    var_3 thread _id_3AFE();
+    var_3 thread carryremoteuav_handleexistence();
     var_3.rangetrigger = getent( "remote_uav_range", "targetname" );
 
     if ( !isdefined( var_3.rangetrigger ) )
@@ -163,9 +163,9 @@ _id_4994( var_0, var_1 )
     return var_3;
 }
 
-_id_F686( var_0 )
+setcarryingremoteuav( var_0 )
 {
-    var_0 thread _id_3AFF( self );
+    var_0 thread carryremoteuav_setcarried( self );
     self notifyonplayercommand( "place_carryRemoteUAV", "+attack" );
     self notifyonplayercommand( "place_carryRemoteUAV", "+attack_akimbo_accessible" );
     self notifyonplayercommand( "cancel_carryRemoteUAV", "+actionslot 4" );
@@ -241,14 +241,14 @@ local_waittill_any_return_6( var_0, var_1, var_2, var_3, var_4, var_5 )
     return var_7;
 }
 
-_id_3AFF( var_0 )
+carryremoteuav_setcarried( var_0 )
 {
     self setcandamage( 0 );
     self setsentrycarrier( var_0 );
     self setcontents( 0 );
     self.carriedby = var_0;
     var_0.iscarrying = 1;
-    var_0 thread _id_12E70( self );
+    var_0 thread updatecarryremoteuavplacement( self );
     self notify( "carried" );
 }
 
@@ -279,7 +279,7 @@ isinremotenodeploy()
     return 0;
 }
 
-_id_12E70( var_0 )
+updatecarryremoteuavplacement( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -331,7 +331,7 @@ _id_12E70( var_0 )
     }
 }
 
-_id_3AFE()
+carryremoteuav_handleexistence()
 {
     level endon( "game_ended" );
     self.owner endon( "place_carryRemoteUAV" );
@@ -354,7 +354,7 @@ removeremoteweapon()
     wait 0.7;
 }
 
-_id_10DEA( var_0, var_1, var_2, var_3 )
+startremoteuav( var_0, var_1, var_2, var_3 )
 {
     lockplayerforremoteuavlaunch();
     scripts\mp\utility::setusingremote( var_1 );
@@ -385,7 +385,7 @@ _id_10DEA( var_0, var_1, var_2, var_3 )
     }
 
     self notify( "remoteuav_unlock" );
-    var_5 = _id_4A07( var_0, self, var_1, var_2, var_3 );
+    var_5 = createremoteuav( var_0, self, var_1, var_2, var_3 );
 
     if ( isdefined( var_5 ) )
     {
@@ -420,7 +420,7 @@ clearplayerlockfromremoteuavlaunch( var_0 )
     var_0 delete();
 }
 
-_id_4A07( var_0, var_1, var_2, var_3, var_4 )
+createremoteuav( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( level.console )
         var_5 = spawnhelicopter( var_1, var_3, var_4, "remote_uav_mp", "vehicle_remote_uav" );
@@ -431,7 +431,7 @@ _id_4A07( var_0, var_1, var_2, var_3, var_4 )
         return undefined;
 
     var_5 scripts\mp\killstreaks\helicopter::addtolittlebirdlist();
-    var_5 thread scripts\mp\killstreaks\helicopter::_id_E111();
+    var_5 thread scripts\mp\killstreaks\helicopter::removefromlittlebirdlistondeath();
     var_5 makevehiclesolidcapsule( 18, -9, 18 );
     var_5.lifeid = var_0;
     var_5.team = var_1.team;
@@ -443,7 +443,7 @@ _id_4A07( var_0, var_1, var_2, var_3, var_4 )
     var_5.scrambler = spawn( "script_model", var_3 );
     var_5.scrambler linkto( var_5, "tag_origin", ( 0, 0, -160 ), ( 0, 0, 0 ) );
     var_5.scrambler makescrambler( var_1 );
-    var_5._id_1037E = 0;
+    var_5.smoking = 0;
     var_5.inheliproximity = 0;
     var_5.helitype = "remote_uav";
     var_5.markedplayers = [];
@@ -453,8 +453,8 @@ _id_4A07( var_0, var_1, var_2, var_3, var_4 )
     var_5 thread remoteuav_explode_on_death();
     var_5 thread remoteuav_clear_marked_on_gameended();
     var_5 thread remoteuav_leave_on_timeout();
-    var_5 thread _id_DFAD();
-    var_5 thread _id_DFAE();
+    var_5 thread remoteuav_watch_distance();
+    var_5 thread remoteuav_watchheliproximity();
     var_5 thread remoteuav_handledamage();
     var_5.numflares = 2;
     var_5.hasincoming = 0;
@@ -477,7 +477,7 @@ remoteuav_ride( var_0, var_1, var_2 )
     self cameralinkto( var_1, "tag_origin" );
     self remotecontrolvehicle( var_1 );
     thread remoteuav_playerexit( var_1 );
-    thread _id_DFAA( var_1 );
+    thread remoteuav_track( var_1 );
     thread remoteuav_fire( var_1 );
     self.remote_uav_ridelifeid = var_0;
     self.remoteuav = var_1;
@@ -564,15 +564,15 @@ remoteuav_playerexit( var_0 )
     }
 }
 
-_id_DFAA( var_0 )
+remoteuav_track( var_0 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
     var_0 endon( "death" );
     var_0 endon( "end_remote" );
-    var_0._id_AA34 = 0;
-    self._id_AEFB = undefined;
-    self _meth_8403();
+    var_0.lasttrackingdialogtime = 0;
+    self.lockedtarget = undefined;
+    self weaponlockfree();
     wait 1;
 
     for (;;)
@@ -590,9 +590,9 @@ _id_DFAA( var_0 )
             var_4["endpos"] = var_3;
         }
 
-        var_0._id_11A7B = var_4;
-        var_6 = _id_DFAB( var_0, level.players, var_5 );
-        var_7 = _id_DFAB( var_0, level.turrets, var_5 );
+        var_0.trace = var_4;
+        var_6 = remoteuav_trackentities( var_0, level.players, var_5 );
+        var_7 = remoteuav_trackentities( var_0, level.turrets, var_5 );
         var_8 = undefined;
 
         if ( level.multiteambased )
@@ -608,12 +608,12 @@ _id_DFAA( var_0 )
                 }
             }
 
-            var_8 = _id_DFAB( var_0, var_9, var_5 );
+            var_8 = remoteuav_trackentities( var_0, var_9, var_5 );
         }
         else if ( level.teambased )
-            var_8 = _id_DFAB( var_0, level.uavmodels[level.otherteam[self.team]], var_5 );
+            var_8 = remoteuav_trackentities( var_0, level.uavmodels[level.otherteam[self.team]], var_5 );
         else
-            var_8 = _id_DFAB( var_0, level.uavmodels, var_5 );
+            var_8 = remoteuav_trackentities( var_0, level.uavmodels, var_5 );
 
         var_16 = undefined;
 
@@ -626,10 +626,10 @@ _id_DFAA( var_0 )
 
         if ( isdefined( var_16 ) )
         {
-            if ( !isdefined( self._id_AEFB ) || isdefined( self._id_AEFB ) && self._id_AEFB != var_16 )
+            if ( !isdefined( self.lockedtarget ) || isdefined( self.lockedtarget ) && self.lockedtarget != var_16 )
             {
-                self _meth_8402( var_16 );
-                self._id_AEFB = var_16;
+                self weaponlockfinalize( var_16 );
+                self.lockedtarget = var_16;
 
                 if ( isdefined( var_6 ) )
                 {
@@ -640,15 +640,15 @@ _id_DFAA( var_0 )
         }
         else
         {
-            self _meth_8403();
-            self._id_AEFB = undefined;
+            self weaponlockfree();
+            self.lockedtarget = undefined;
         }
 
         wait 0.05;
     }
 }
 
-_id_DFAB( var_0, var_1, var_2 )
+remoteuav_trackentities( var_0, var_1, var_2 )
 {
     level endon( "game_ended" );
     var_3 = undefined;
@@ -671,7 +671,7 @@ _id_DFAB( var_0, var_1, var_2 )
         else
             var_6 = var_5.birthtime;
 
-        if ( isdefined( var_5.sentrytype ) || isdefined( var_5._id_12A9A ) )
+        if ( isdefined( var_5.sentrytype ) || isdefined( var_5.turrettype ) )
         {
             var_7 = ( 0, 0, 32 );
             var_8 = "hud_fofbox_hostile_vehicle";
@@ -687,7 +687,7 @@ _id_DFAB( var_0, var_1, var_2 )
             var_8 = "veh_hud_target_unmarked";
         }
 
-        if ( isdefined( var_5._id_12AF4 ) )
+        if ( isdefined( var_5.uavremotemarkedby ) )
         {
             if ( !isdefined( var_0.markedplayers[var_6] ) )
             {
@@ -696,7 +696,7 @@ _id_DFAB( var_0, var_1, var_2 )
                 var_0.markedplayers[var_6]["icon"] = var_5 scripts\mp\entityheadicons::setheadicon( self, "veh_hud_target_marked", var_7, 10, 10, 0, 0.05, 0, 0, 0, 0 );
                 var_0.markedplayers[var_6]["icon"].shader = "veh_hud_target_marked";
 
-                if ( !isdefined( var_5.sentrytype ) || !isdefined( var_5._id_12A9A ) )
+                if ( !isdefined( var_5.sentrytype ) || !isdefined( var_5.turrettype ) )
                     var_0.markedplayers[var_6]["icon"] settargetent( var_5 );
             }
             else if ( isdefined( var_0.markedplayers[var_6] ) && isdefined( var_0.markedplayers[var_6]["icon"] ) && isdefined( var_0.markedplayers[var_6]["icon"].shader ) && var_0.markedplayers[var_6]["icon"].shader != "veh_hud_target_marked" )
@@ -731,11 +731,11 @@ _id_DFAB( var_0, var_1, var_2 )
             var_0.markedplayers[var_6]["icon"] = var_5 scripts\mp\entityheadicons::setheadicon( self, var_8, var_7, 10, 10, 0, 0.05, 0, 0, 0, 0 );
             var_0.markedplayers[var_6]["icon"].shader = var_8;
 
-            if ( !isdefined( var_5.sentrytype ) || !isdefined( var_5._id_12A9A ) )
+            if ( !isdefined( var_5.sentrytype ) || !isdefined( var_5.turrettype ) )
                 var_0.markedplayers[var_6]["icon"] settargetent( var_5 );
         }
 
-        if ( ( !isdefined( var_3 ) || var_3 != var_5 ) && ( isdefined( var_0._id_11A7B["entity"] ) && var_0._id_11A7B["entity"] == var_5 && !var_11 && !var_12 ) || distance( var_5.origin, var_2 ) < 200 * var_0._id_11A7B["fraction"] && !var_9 && !var_11 && !var_12 || !var_12 && remoteuav_cantargetuav( var_0, var_5 ) )
+        if ( ( !isdefined( var_3 ) || var_3 != var_5 ) && ( isdefined( var_0.trace["entity"] ) && var_0.trace["entity"] == var_5 && !var_11 && !var_12 ) || distance( var_5.origin, var_2 ) < 200 * var_0.trace["fraction"] && !var_9 && !var_11 && !var_12 || !var_12 && remoteuav_cantargetuav( var_0, var_5 ) )
         {
             var_13 = bullettrace( var_0.origin, var_5.origin + ( 0, 0, 32 ), 1, var_0 );
 
@@ -779,11 +779,11 @@ remoteuav_fire( var_0 )
     {
         self waittill( "remoteUAV_tag" );
 
-        if ( isdefined( self._id_AEFB ) )
+        if ( isdefined( self.lockedtarget ) )
         {
             self playlocalsound( "recondrone_tag" );
             scripts\mp\damagefeedback::updatedamagefeedback( "" );
-            thread remoteuav_markplayer( self._id_AEFB );
+            thread remoteuav_markplayer( self.lockedtarget );
             thread remoteuav_rumble( var_0, 3 );
             wait 0.25;
             continue;
@@ -812,16 +812,16 @@ remoteuav_rumble( var_0, var_1 )
 remoteuav_markplayer( var_0 )
 {
     level endon( "game_ended" );
-    var_0._id_12AF4 = self;
+    var_0.uavremotemarkedby = self;
 
     if ( isplayer( var_0 ) && !var_0 scripts\mp\utility::isusingremote() )
     {
         var_0 playlocalsound( "player_hit_while_ads_hurt" );
-        var_0 thread scripts\mp\flashgrenades::_id_20CA( 2.0, 1.0 );
+        var_0 thread scripts\mp\flashgrenades::applyflash( 2.0, 1.0 );
         var_0 thread scripts\mp\rank::scoreeventpopup( "marked_by_remote_uav" );
     }
     else if ( isdefined( var_0.uavtype ) )
-        var_0._id_2B0C = var_0.birthtime;
+        var_0.birth_time = var_0.birthtime;
     else if ( isdefined( var_0.owner ) && isalive( var_0.owner ) )
         var_0.owner thread scripts\mp\rank::scoreeventpopup( "turret_marked_by_remote_uav" );
 
@@ -855,7 +855,7 @@ remoteuav_markplayer( var_0 )
                 scripts\mp\objidpoolmanager::minimap_objective_icon( var_2, var_1 );
             }
 
-            var_0._id_DFAF = var_2;
+            var_0.remoteuavmarkedobjid01 = var_2;
         }
         else
         {
@@ -870,7 +870,7 @@ remoteuav_markplayer( var_0 )
                 scripts\mp\objidpoolmanager::minimap_objective_icon( var_2, var_1 );
             }
 
-            var_0._id_DFB0 = var_2;
+            var_0.remoteuavmarkedobjid02 = var_2;
             var_2 = scripts\mp\objidpoolmanager::requestminimapid( 1 );
 
             if ( var_2 != -1 )
@@ -882,11 +882,11 @@ remoteuav_markplayer( var_0 )
                 scripts\mp\objidpoolmanager::minimap_objective_icon( var_2, var_1 );
             }
 
-            var_0._id_DFB1 = var_2;
+            var_0.remoteuavmarkedobjid03 = var_2;
         }
     }
 
-    var_0 thread _id_DFAC( self.remoteuav );
+    var_0 thread remoteuav_unmarkremovedplayer( self.remoteuav );
 }
 
 remoteuav_processtaggedassist( var_0 )
@@ -895,7 +895,7 @@ remoteuav_processtaggedassist( var_0 )
 
     if ( level.gametype != "dm" )
     {
-        self._id_113FF = 1;
+        self.taggedassist = 1;
 
         if ( isdefined( var_0 ) )
             thread scripts\mp\gamescore::processassist( var_0 );
@@ -904,13 +904,13 @@ remoteuav_processtaggedassist( var_0 )
     }
 }
 
-_id_DFAC( var_0 )
+remoteuav_unmarkremovedplayer( var_0 )
 {
     level endon( "game_ended" );
     var_1 = scripts\engine\utility::waittill_any_return( "death", "disconnect", "carried", "leaving" );
 
     if ( var_1 == "leaving" || !isdefined( self.uavtype ) )
-        self._id_12AF4 = undefined;
+        self.uavremotemarkedby = undefined;
 
     if ( isdefined( var_0 ) )
     {
@@ -919,7 +919,7 @@ _id_DFAC( var_0 )
         else if ( isdefined( self.birthtime ) )
             var_2 = self.birthtime;
         else
-            var_2 = self._id_2B0C;
+            var_2 = self.birth_time;
 
         if ( var_1 == "carried" || var_1 == "leaving" )
         {
@@ -938,14 +938,14 @@ _id_DFAC( var_0 )
         self unsetperk( "specialty_radarblip", 1 );
     else
     {
-        if ( isdefined( self._id_DFAF ) )
-            scripts\mp\objidpoolmanager::returnminimapid( self._id_DFAF );
+        if ( isdefined( self.remoteuavmarkedobjid01 ) )
+            scripts\mp\objidpoolmanager::returnminimapid( self.remoteuavmarkedobjid01 );
 
-        if ( isdefined( self._id_DFB0 ) )
-            scripts\mp\objidpoolmanager::returnminimapid( self._id_DFB0 );
+        if ( isdefined( self.remoteuavmarkedobjid02 ) )
+            scripts\mp\objidpoolmanager::returnminimapid( self.remoteuavmarkedobjid02 );
 
-        if ( isdefined( self._id_DFB1 ) )
-            scripts\mp\objidpoolmanager::returnminimapid( self._id_DFB1 );
+        if ( isdefined( self.remoteuavmarkedobjid03 ) )
+            scripts\mp\objidpoolmanager::returnminimapid( self.remoteuavmarkedobjid03 );
     }
 }
 
@@ -977,7 +977,7 @@ remoteuav_operationrumble( var_0 )
     }
 }
 
-_id_DFAD()
+remoteuav_watch_distance()
 {
     self endon( "death" );
     self.rangetrigger = getent( "remote_uav_range", "targetname" );
@@ -991,7 +991,7 @@ _id_DFAD()
 
     self.centerref = spawn( "script_model", level.mapcenter );
     var_1 = self.origin;
-    self._id_DCCE = 0;
+    self.rangecountdownactive = 0;
 
     for (;;)
     {
@@ -1003,9 +1003,9 @@ _id_DFAD()
             {
                 self.owner remoteuav_dialog( "out_of_range" );
 
-                if ( !self._id_DCCE )
+                if ( !self.rangecountdownactive )
                 {
-                    self._id_DCCE = 1;
+                    self.rangecountdownactive = 1;
                     thread remoteuav_rangecountdown();
                 }
 
@@ -1025,7 +1025,7 @@ _id_DFAD()
             }
 
             self notify( "in_range" );
-            self._id_DCCE = 0;
+            self.rangecountdownactive = 0;
             thread remoteuav_staticfade( var_2 );
         }
 
@@ -1409,7 +1409,7 @@ missile_isincoming( var_0, var_1 )
     return vectordot( var_2, var_3 ) > 0;
 }
 
-_id_DFAE()
+remoteuav_watchheliproximity()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -1464,9 +1464,9 @@ modifydamage( var_0, var_1, var_2, var_3, var_4 )
     playfxontagforclients( level.remoteuav_fx["hit"], self, "tag_origin", self.owner );
     self playsound( "recondrone_damaged" );
 
-    if ( self._id_1037E == 0 && self.damagetaken >= self.maxhealth / 2 )
+    if ( self.smoking == 0 && self.damagetaken >= self.maxhealth / 2 )
     {
-        self._id_1037E = 1;
+        self.smoking = 1;
         playfxontag( level.remoteuav_fx["smoke"], self, "tag_origin" );
     }
 

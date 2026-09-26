@@ -188,7 +188,7 @@ notify_when_tag_picked_up_or_unavailable( var_0, var_1 )
 {
     self endon( "stop_tag_watcher" );
 
-    while ( var_0 scripts\mp\gameobjects::caninteractwith( self.team ) && !scripts\mp\bots\gametype_conf::_id_2D2E( var_0 ) )
+    while ( var_0 scripts\mp\gameobjects::caninteractwith( self.team ) && !scripts\mp\bots\gametype_conf::bot_check_tag_above_head( var_0 ) )
         wait 0.05;
 
     self notify( var_1 );

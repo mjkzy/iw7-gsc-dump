@@ -5,7 +5,7 @@ init()
 {
     var_0 = getdvarint( "scr_match_recording", 0 );
 
-    if ( !_id_B408( var_0 ) )
+    if ( !matchrecording_validaterecordingtype( var_0 ) )
         return;
     else
         level.matchrecording_type = var_0;
@@ -20,16 +20,16 @@ init()
     level.matchrecording_usereventthink = ::matchrecording_usereventthink;
 
     if ( level.matchrecording_type == 1 )
-        _id_B3F5();
+        matchrecording_glog_addheader();
     else if ( level.matchrecording_type == 3 )
         matchrecording_scriptdata_openfileaddheader( 1 );
 
     level thread matchrecording_logallplayerposthink();
     level thread matchrecording_onplayerconnect();
-    level thread _id_B3FE();
+    level thread matchrecording_loggameendstats();
 }
 
-_id_B408( var_0 )
+matchrecording_validaterecordingtype( var_0 )
 {
     var_1 = 1;
 
@@ -146,7 +146,7 @@ matchrecording_eventcharmap( var_0 )
     return var_1;
 }
 
-_id_B3F4()
+matchrecording_getfileheaderarray()
 {
     var_0 = [];
     var_0[var_0.size] = "<mrec_map> " + level.script + "\n";
@@ -281,7 +281,7 @@ matchrecording_dump()
 matchrecording_glog_dump()
 {
     if ( level.matchrecording_type == 2 )
-        _id_B3F5();
+        matchrecording_glog_addheader();
 
     foreach ( var_1 in level.matchrecevents )
         logprint( var_1 + "\n" );
@@ -289,9 +289,9 @@ matchrecording_glog_dump()
     level.matchrecevents = [];
 }
 
-_id_B3F5()
+matchrecording_glog_addheader()
 {
-    var_0 = _id_B3F4();
+    var_0 = matchrecording_getfileheaderarray();
 
     foreach ( var_2 in var_0 )
         logprint( var_2 );
@@ -354,7 +354,7 @@ matchrecording_onplayerconnect()
     }
 }
 
-_id_B3FE()
+matchrecording_loggameendstats()
 {
     level waittill( "game_ended" );
     var_0 = 0;
@@ -365,9 +365,9 @@ _id_B3FE()
 
     foreach ( var_6 in level.players )
     {
-        if ( isdefined( var_6._id_D37E ) )
+        if ( isdefined( var_6.playerdeathangles ) )
         {
-            foreach ( var_8 in var_6._id_D37E )
+            foreach ( var_8 in var_6.playerdeathangles )
             {
                 var_2 = var_2 + var_8;
                 var_1++;
@@ -396,12 +396,12 @@ _id_B3FE()
     if ( var_3 > 0 )
         matchrecording_logeventmsg( "LOG_STAT", gettime(), "Avg. Engagement Length: " + var_4 / var_3 / 1000.0 + "s" );
 
-    if ( isdefined( level._id_744D ) && isdefined( level._id_744D._id_12F92 ) && isdefined( level._id_744D._id_5AFE ) )
+    if ( isdefined( level.frontlineinfo ) && isdefined( level.frontlineinfo.uptime ) && isdefined( level.frontlineinfo.downtime ) )
     {
-        var_14 = level._id_744D._id_12F92 + level._id_744D._id_5AFE;
+        var_14 = level.frontlineinfo.uptime + level.frontlineinfo.downtime;
 
         if ( var_14 > 0.0 )
-            matchrecording_logeventmsg( "LOG_STAT", gettime(), "Frontline Uptime: " + level._id_744D._id_12F92 / var_14 * 100.0 + "%" );
+            matchrecording_logeventmsg( "LOG_STAT", gettime(), "Frontline Uptime: " + level.frontlineinfo.uptime / var_14 * 100.0 + "%" );
     }
 }
 

@@ -38,7 +38,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_grind_bankTime", getmatchrulesdata( "grindData", "bankTime" ) );
     setdynamicdvar( "scr_grind_bankRate", getmatchrulesdata( "grindData", "bankRate" ) );
     setdynamicdvar( "scr_grind_bankCaptureTime", getmatchrulesdata( "grindData", "bankCaptureTime" ) );
@@ -232,7 +232,7 @@ playercanusetags( var_0 )
     return 1;
 }
 
-_id_BA31( var_0 )
+monitortaguse( var_0 )
 {
     level endon( "game_ended" );
     var_0 endon( "deleted" );
@@ -338,20 +338,20 @@ hidehudelementongameend( var_0 )
 
 createzones()
 {
-    level._id_13FC1 = [];
+    level.zonelist = [];
     var_0 = getentarray( "grind_location", "targetname" );
 
     foreach ( var_2 in var_0 )
-        level._id_13FC1[level._id_13FC1.size] = var_2;
+        level.zonelist[level.zonelist.size] = var_2;
 
-    level.objectives = level._id_13FC1;
+    level.objectives = level.zonelist;
 
-    for ( var_4 = 0; var_4 < level._id_13FC1.size; var_4++ )
+    for ( var_4 = 0; var_4 < level.zonelist.size; var_4++ )
     {
         var_5 = scripts\mp\gametypes\obj_grindzone::setupobjective( var_4 );
         var_5 thread runzonethink();
-        level._id_13FC1[var_4].useobj = var_5;
-        var_5.levelflag = level._id_13FC1[var_4];
+        level.zonelist[var_4].useobj = var_5;
+        var_5.levelflag = level.zonelist[var_4];
     }
 }
 
@@ -417,7 +417,7 @@ processscoring( var_0, var_1 )
             var_2 = scripts\mp\rank::getscoreinfovalue( "tag_score" );
             var_2 = var_2 * level.megabanklimit;
             var_0 thread scripts\mp\utility::giveunifiedpoints( "mega_bank", var_0.weapon, var_2 + level.megabankbonus );
-            var_0 scripts\mp\missions::_id_D991( "ch_mega_bank" );
+            var_0 scripts\mp\missions::processchallengedaily( "ch_mega_bank" );
         }
         else
         {
@@ -447,7 +447,7 @@ scoreamount( var_0, var_1 )
 {
     var_0 playersettagcount( var_0.tagscarried - var_1 );
     scripts\mp\gamescore::giveteamscoreforobjective( var_0.team, var_1, 0 );
-    var_0 scripts\mp\utility::incperstat( "confirmed", var_1 );
+    var_0 scripts\mp\utility::incpersstat( "confirmed", var_1 );
     var_0 scripts\mp\persistence::statsetchild( "round", "confirmed", var_0.pers["confirmed"] );
     var_0 scripts\mp\utility::setextrascore0( var_0.pers["confirmed"] );
 }
@@ -511,7 +511,7 @@ droptags( var_0, var_1 )
         var_4.victim = var_0;
         var_4.attacker = var_1;
         level notify( "new_tag_spawned", var_4 );
-        level thread _id_BA31( var_4 );
+        level thread monitortaguse( var_4 );
     }
 
     var_5 = var_0.tagscarried - var_2;
@@ -535,7 +535,7 @@ removepoint()
         {
             var_0 = getdvar( "scr_devRemoveDomFlag", "" );
 
-            foreach ( var_2 in level._id_13FC1 )
+            foreach ( var_2 in level.zonelist )
             {
                 if ( isdefined( var_2.useobj.label ) && var_2.useobj.label == var_0 )
                 {
@@ -559,13 +559,13 @@ removepoint()
                     level.objectives = var_3;
                     var_3 = [];
 
-                    for ( var_4 = 0; var_4 < level._id_13FC1.size; var_4++ )
+                    for ( var_4 = 0; var_4 < level.zonelist.size; var_4++ )
                     {
-                        if ( level._id_13FC1[var_4].useobj.label != var_0 )
-                            var_3[var_3.size] = level._id_13FC1[var_4];
+                        if ( level.zonelist[var_4].useobj.label != var_0 )
+                            var_3[var_3.size] = level.zonelist[var_4];
                     }
 
-                    level._id_13FC1 = var_3;
+                    level.zonelist = var_3;
                     break;
                 }
             }
@@ -607,7 +607,7 @@ placepoint()
             var_9[0] = spawn( "script_model", var_1.origin );
             var_9[0].angles = var_1.angles;
             level.objectives[level.objectives.size] = var_1;
-            level._id_13FC1[level._id_13FC1.size] = var_1;
+            level.zonelist[level.zonelist.size] = var_1;
             var_10 = spawn( "trigger_radius", var_1.origin, 0, 90, 128 );
             var_10.script_label = var_1.script_label;
             var_1 = var_10;
@@ -647,7 +647,7 @@ placepoint()
                 var_11.levelflag = level.objectives[var_16];
             }
 
-            level._id_13FC1[level._id_13FC1.size].useobj = var_11;
+            level.zonelist[level.zonelist.size].useobj = var_11;
             setdynamicdvar( "scr_devPlaceDomFlag", "" );
         }
 

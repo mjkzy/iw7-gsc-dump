@@ -95,7 +95,7 @@ updateenemy()
         if ( scripts\mp\agents\zombie\zombie_util::shouldignoreent( var_3 ) )
             continue;
 
-        if ( var_1 && !var_3 _meth_85BA() )
+        if ( var_1 && !var_3 caninteractwithethereal() )
             continue;
 
         if ( !isdefined( var_0 ) )
@@ -664,7 +664,7 @@ tryramattack( var_0 )
     if ( var_6 < 0.707 )
         return 0;
 
-    if ( !_func_2AC( self.origin, var_4, self ) )
+    if ( !navisstraightlinereachable( self.origin, var_4, self ) )
     {
         self.nextramattacktesttime = gettime() + 500;
         return 0;
@@ -1016,7 +1016,7 @@ trygrenadethrow( var_0, var_1 )
 
     var_5 = var_1;
     var_6 = scripts\mp\agents\slasher\slasher_agent::getslashergrenadehandoffset();
-    var_7 = self _meth_806C( var_6, var_5, 0, "min time", "min energy" );
+    var_7 = self checkgrenadethrowpos( var_6, var_5, 0, "min time", "min energy" );
 
     if ( !isdefined( var_7 ) )
     {

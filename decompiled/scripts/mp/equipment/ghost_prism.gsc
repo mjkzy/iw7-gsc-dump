@@ -138,7 +138,7 @@ _id_1903()
 {
     self waittill( "death" );
     var_0 = self.origin;
-    var_1 = self _meth_8113();
+    var_1 = self getcorpseentity();
     var_1 hide();
 }
 

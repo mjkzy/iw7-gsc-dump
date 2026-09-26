@@ -5,9 +5,9 @@ _id_FE6A( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     _id_0F3E::_id_FE89();
-    var_4 = _id_0F3E::_id_FE64();
-    self _meth_83CE();
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = _id_0F3E::shoot_getrate();
+    self updateplayersightaccuracy();
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     self.is_shooting = 1;
     _id_0F3E::shootblankorrpg( var_1, 0.7, 2 );
     self.asm.shootparams._id_C21C--;
@@ -21,7 +21,7 @@ _id_8602()
     if ( scripts\asm\asm_bb::bb_moverequested() )
         return 0;
 
-    if ( !scripts\asm\asm_bb::_id_291C() )
+    if ( !scripts\asm\asm_bb::bb_firerequested() )
         return 0;
 
     return 1;
@@ -265,7 +265,7 @@ set_grey_clone( var_0 )
 
     var_0 notify( "stop_health_light_monitor" );
     var_0.i_am_clone = 1;
-    var_0._id_10AB7 = 1;
+    var_0.sprint = 1;
     var_0.desiredenemydistmax = 60;
     var_0.meleerangesq = 90000;
     var_0.strafeifwithindist = var_0.desiredenemydistmax + 100;
@@ -340,7 +340,7 @@ _id_CE3B( var_0, var_1 )
     var_0 endon( "death" );
     var_2 = "duplicating_attack";
     var_3 = scripts\asm\asm::asm_lookupanimfromalias( var_2, var_1 );
-    var_0 scripts\anim\notetracks_mp::_id_CED5( var_2, var_3, var_2, "end" );
+    var_0 scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_2, var_3, var_2, "end" );
     var_0 _id_CD46();
 }
 
@@ -350,7 +350,7 @@ _id_13F72( var_0, var_1, var_2, var_3 )
     self setscriptablepartstate( "backpack_dome_shield", "off" );
     self setscriptablepartstate( "regen_beam", "on" );
     self.actually_doing_regen = 1;
-    scripts\asm\asm_mp::_id_235F( var_0, var_1, var_2, 1.0, 0 );
+    scripts\asm\asm_mp::asm_loopanimstate( var_0, var_1, var_2, 1.0, 0 );
 }
 
 _id_13F70( var_0, var_1, var_2, var_3 )
@@ -362,19 +362,19 @@ _id_13F70( var_0, var_1, var_2, var_3 )
 _id_13F73( var_0, var_1, var_2, var_3 )
 {
     thread _id_CE0A( self );
-    scripts\asm\asm_mp::_id_2367( var_0, var_1, var_2, "end" );
+    scripts\asm\asm_mp::asm_playanimstateuntilnotetrack( var_0, var_1, var_2, "end" );
 }
 
 _id_13F74( var_0, var_1, var_2, var_3 )
 {
-    scripts\asm\asm_mp::_id_2367( var_0, var_1, var_2, "early_end" );
+    scripts\asm\asm_mp::asm_playanimstateuntilnotetrack( var_0, var_1, var_2, "early_end" );
     scripts\asm\asm::asm_fireevent( var_1, "early_end" );
 }
 
 _id_13F76( var_0, var_1, var_2, var_3 )
 {
     self playsound( "grey_shockwave_build" );
-    scripts\asm\asm_mp::_id_2367( var_0, var_1, var_2, "shock_wave_damage" );
+    scripts\asm\asm_mp::asm_playanimstateuntilnotetrack( var_0, var_1, var_2, "shock_wave_damage" );
     self notify( "shockwave_deploy" );
     self notify( "update_mobile_shield_visibility", 1 );
     self playsound( "grey_shockwave" );
@@ -392,9 +392,9 @@ _id_3EDC( var_0, var_1, var_2 )
 _id_13F75( var_0, var_1, var_2, var_3 )
 {
     _id_15A8( self, undefined, "prop_mp_dome_shield_scr" );
-    scripts\asm\asm_mp::_id_2367( var_0, var_1, var_2, "start_summon_zombies" );
+    scripts\asm\asm_mp::asm_playanimstateuntilnotetrack( var_0, var_1, var_2, "start_summon_zombies" );
     thread _id_111C2( self );
-    scripts\asm\asm_mp::_id_2367( var_0, var_1, var_2, "early_end" );
+    scripts\asm\asm_mp::asm_playanimstateuntilnotetrack( var_0, var_1, var_2, "early_end" );
     _id_4DB1( self );
 }
 
@@ -669,7 +669,7 @@ _id_4104( var_0, var_1 )
 _id_CECC( var_0, var_1, var_2 )
 {
     var_3 = scripts\asm\asm::asm_lookupanimfromalias( var_0, var_1 );
-    scripts\anim\notetracks_mp::_id_CED5( var_0, var_3, var_0, "end", var_2 );
+    scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_0, var_3, var_0, "end", var_2 );
 }
 
 _id_11617( var_0, var_1, var_2, var_3 )
@@ -951,13 +951,13 @@ _id_85FE( var_0, var_1, var_2, var_3 )
 {
     level._id_85EE = 1;
     self setscriptablepartstate( "spawn_beam", "on" );
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 _id_85FD( var_0, var_1, var_2, var_3 )
 {
     self setscriptablepartstate( "spawn_beam", "on" );
-    scripts\asm\asm_mp::_id_235F( var_0, var_1, var_2, 1.0, 0 );
+    scripts\asm\asm_mp::asm_loopanimstate( var_0, var_1, var_2, 1.0, 0 );
 }
 
 _id_85F7( var_0, var_1, var_2, var_3 )
@@ -1043,7 +1043,7 @@ _id_58BB( var_0, var_1 )
 
                     break;
                 default:
-                    scripts\asm\asm_mp::_id_2345( var_4, var_1 );
+                    scripts\asm\asm_mp::asm_handlenotetracks( var_4, var_1 );
             }
         }
     }

@@ -314,7 +314,7 @@ ww_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
         if ( !isdefined( var_8 ) )
             continue;
 
-        if ( var_8 issplitscreenplayer() && !var_8 isreloading() )
+        if ( var_8 issplitscreenplayer() && !var_8 issplitscreenplayerprimary() )
             continue;
 
         var_9 = scripts\cp\cp_vo::create_vo_data( var_0, var_3, var_5, var_6 );
@@ -375,7 +375,7 @@ play_announcer_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
         if ( !isdefined( var_9 ) )
             continue;
 
-        if ( var_9 issplitscreenplayer() && !var_9 isreloading() )
+        if ( var_9 issplitscreenplayer() && !var_9 issplitscreenplayerprimary() )
             continue;
         else
         {
@@ -593,7 +593,7 @@ town_starting_vo()
         {
             if ( var_3 issplitscreenplayer() )
             {
-                if ( var_3 isreloading() )
+                if ( var_3 issplitscreenplayerprimary() )
                 {
                     if ( isdefined( var_3.vo_prefix ) )
                     {

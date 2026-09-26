@@ -98,7 +98,9 @@ setplayercalloutarea( var_0, var_1 )
         }
     }
     else if ( var_0 != "none" )
-        return;
+    {
+
+    }
 }
 
 watchplayerleavingcalloutarea( var_0, var_1 )

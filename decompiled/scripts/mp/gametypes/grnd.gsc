@@ -60,7 +60,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_grnd_dropTime", getmatchrulesdata( "grndData", "dropTime" ) );
     setdynamicdvar( "scr_grnd_enableVariantDZ", getmatchrulesdata( "grndData", "enableVariantDZ" ) );
     setdynamicdvar( "scr_grnd_zoneLifetime", getmatchrulesdata( "kothData", "zoneLifetime" ) );

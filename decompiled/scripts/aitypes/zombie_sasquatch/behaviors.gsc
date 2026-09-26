@@ -199,10 +199,10 @@ melee_charge( var_0 )
 
     if ( var_5 < 5184 )
     {
-        var_8 = self _meth_84AC();
+        var_8 = self getnavposition();
         var_9 = getclosestpointonnavmesh( var_1.origin, self );
 
-        if ( _func_2AC( var_8, var_9, self ) )
+        if ( navisstraightlinereachable( var_8, var_9, self ) )
         {
             self.bt.instancedata[var_0].bsuccess = 1;
             return anim.success;
@@ -283,7 +283,7 @@ shouldrush( var_0 )
 
     if ( isdefined( self.pathgoalpos ) )
     {
-        var_4 = self _meth_84F9( 84 );
+        var_4 = self getnearbynegotiationinfo( 84 );
 
         if ( isdefined( var_4 ) )
             return anim.failure;
@@ -346,7 +346,7 @@ rush_charge( var_0 )
         return anim.failure;
     }
 
-    var_8 = self _meth_84F9( 84 );
+    var_8 = self getnearbynegotiationinfo( 84 );
 
     if ( isdefined( var_8 ) )
     {
@@ -367,7 +367,7 @@ rush_charge( var_0 )
             if ( vectordot( var_7, var_11 ) < 0.966 )
             {
                 var_12 = self.origin + var_11 * 208;
-                var_13 = self _meth_84AC();
+                var_13 = self getnavposition();
                 var_14 = navtrace( var_13, var_12, self, 1 );
 
                 if ( var_14["fraction"] < 1 )

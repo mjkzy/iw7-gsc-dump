@@ -7,10 +7,10 @@ init()
     var_0.weaponinfo = "deployable_vest_marker_mp";
     var_0.modelbase = "afr_mortar_ammo_01";
     var_0.hintstring = &"KILLSTREAKS_HINTS_DEPLOYABLE_GRENADES_PICKUP";
-    var_0._id_3A41 = &"KILLSTREAKS_DEPLOYABLE_GRENADES_TAKING";
-    var_0._id_67E5 = "deployable_grenades_taken";
+    var_0.capturingstring = &"KILLSTREAKS_DEPLOYABLE_GRENADES_TAKING";
+    var_0.event = "deployable_grenades_taken";
     var_0.streakname = "deployable_grenades";
-    var_0._id_10A38 = "used_deployable_grenades";
+    var_0.splashname = "used_deployable_grenades";
     var_0.shadername = "compass_objpoint_deploy_grenades_friendly";
     var_0.headiconoffset = 25;
     var_0.lifespan = 90.0;
@@ -20,7 +20,7 @@ init()
     var_0.deployedsfx = "mp_vest_deployed_ui";
     var_0.onusesfx = "ammo_crate_use";
     var_0.onusecallback = ::onusedeployable;
-    var_0.canusecallback = ::_id_3937;
+    var_0.canusecallback = ::canusedeployable;
     var_0.usetime = 500;
     var_0.maxhealth = 150;
     var_0.damagefeedback = "deployable_bag";
@@ -30,14 +30,14 @@ init()
     var_0.deathdamagemax = 150;
     var_0.deathdamagemin = 50;
     var_0.allowmeleedamage = 1;
-    var_0.allowhvtspawn = 1;
+    var_0.allowgrenadedamage = 1;
     var_0.maxuses = 3;
     level.boxsettings["deployable_grenades"] = var_0;
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_grenades", ::_id_128DF );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_grenades", ::tryusedeployablegrenades );
     level.deployable_box["deployable_grenades"] = [];
 }
 
-_id_128DF( var_0, var_1 )
+tryusedeployablegrenades( var_0, var_1 )
 {
     var_2 = scripts\mp\killstreaks\deployablebox::begindeployableviamarker( var_0, "deployable_grenades" );
 
@@ -50,10 +50,10 @@ _id_128DF( var_0, var_1 )
 
 onusedeployable( var_0 )
 {
-    _id_DE4E();
+    refillexplosiveweapons();
 }
 
-_id_DE4E()
+refillexplosiveweapons()
 {
     var_0 = self getweaponslistall();
 
@@ -61,13 +61,13 @@ _id_DE4E()
     {
         foreach ( var_2 in var_0 )
         {
-            if ( scripts\mp\weapons::_id_9E18( var_2 ) || scripts\mp\weapons::_id_9EC0( var_2 ) )
+            if ( scripts\mp\weapons::isgrenade( var_2 ) || scripts\mp\weapons::isoffhandweapon( var_2 ) )
                 self givestartammo( var_2 );
         }
     }
 }
 
-_id_3937( var_0 )
+canusedeployable( var_0 )
 {
     return !scripts\mp\utility::isjuggernaut();
 }

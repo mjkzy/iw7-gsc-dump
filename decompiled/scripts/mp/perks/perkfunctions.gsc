@@ -188,7 +188,7 @@ setaffinityextralauncher()
 {
     self.weaponaffinityextralauncher = 1;
     var_0 = scripts\mp\class::buildweaponname( self.loadoutprimary, self.loadoutprimaryattachments, self.loadoutprimarycamo, self.loadoutprimaryreticle, self.loadoutprimaryvariantid );
-    var_1 = scripts\mp\class::buildweaponname( self.loadoutsecondary, self.loadoutsecondaryattachments, self.loadoutsecondarycamo, self.loadoutsecondaryreticle, self._id_AEA5 );
+    var_1 = scripts\mp\class::buildweaponname( self.loadoutsecondary, self.loadoutsecondaryattachments, self.loadoutsecondarycamo, self.loadoutsecondaryreticle, self.loadoutsecondaryvariantid );
 
     if ( scripts\mp\utility::getweapongroup( var_0 ) == "weapon_projectile" )
         self setweaponammoclip( var_0, weaponclipsize( var_0 ) );
@@ -327,10 +327,10 @@ setrshieldradar_cleanup()
     scripts\engine\utility::waittill_any( "disconnect", "death" );
 
     if ( isdefined( self ) )
-        _id_12D1D();
+        unsetrshieldradar();
 }
 
-_id_12D1D()
+unsetrshieldradar()
 {
     self clearportableradar();
     self notify( "unsetRShieldRadar" );
@@ -629,11 +629,11 @@ setcombatspeed()
 
         setcombatspeedscalar();
         self.incombatspeed = 1;
-        thread _id_636C();
+        thread endofspeedwatcher();
     }
 }
 
-_id_636C()
+endofspeedwatcher()
 {
     self notify( "endOfSpeedWatcher" );
     self endon( "endOfSpeedWatcher" );
@@ -851,7 +851,7 @@ giveonemanarmyclass( var_0 )
     scripts\engine\utility::allow_weapon( 1 );
     scripts\engine\utility::allow_offhand_weapons( 1 );
     scripts\engine\utility::allow_usability( 1 );
-    self._id_C47E = 1;
+    self.omaclasschanged = 1;
     scripts\mp\class::giveloadout( self.pers["team"], var_0 );
 
     if ( isdefined( self.carryflag ) )
@@ -913,13 +913,13 @@ unsetfreefall()
 settacticalinsertion()
 {
     var_0 = "secondary";
-    var_1 = scripts\mp\powers::getcurrentequipment( var_0 );
+    var_1 = scripts\mp\powers::getpower( var_0 );
 
     if ( isdefined( var_1 ) )
         scripts\mp\powers::removepower( var_1 );
 
     scripts\mp\powers::givepower( "power_tacInsert", var_0, 0 );
-    thread _id_BA34();
+    thread monitortiuse();
 }
 
 unsettacticalinsertion()
@@ -927,7 +927,7 @@ unsettacticalinsertion()
     self notify( "end_monitorTIUse" );
 }
 
-_id_41D2()
+clearprevioustispawnpoint()
 {
     scripts\engine\utility::waittill_any( "disconnect", "joined_team", "joined_spectators" );
 
@@ -935,7 +935,7 @@ _id_41D2()
         deleteti( self.setspawnpoint );
 }
 
-_id_12F47()
+updatetispawnposition()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -944,35 +944,35 @@ _id_12F47()
 
     while ( scripts\mp\utility::isreallyalive( self ) )
     {
-        if ( _id_9FE9() )
-            self._id_11947 = self.origin;
+        if ( isvalidtispawnposition() )
+            self.tispawnposition = self.origin;
 
         wait 0.05;
     }
 }
 
-_id_9FE9()
+isvalidtispawnposition()
 {
-    if ( canspawn( self.origin ) && self isonground() && !scripts\mp\utility::_id_11A44() )
+    if ( canspawn( self.origin ) && self isonground() && !scripts\mp\utility::touchingoobtrigger() )
         return 1;
     else
         return 0;
 }
 
-_id_11899( var_0 )
+ti_overridemovingplatformdeath( var_0 )
 {
     if ( scripts\mp\utility::isreallyalive( var_0.owner ) )
         var_0.owner deleteti( self );
 }
 
-_id_BA34()
+monitortiuse()
 {
     self endon( "death" );
     self endon( "disconnect" );
     level endon( "game_ended" );
     self endon( "end_monitorTIUse" );
-    thread _id_12F47();
-    thread _id_41D2();
+    thread updatetispawnposition();
+    thread clearprevioustispawnpoint();
 
     for (;;)
     {
@@ -984,14 +984,14 @@ _id_BA34()
         if ( isdefined( self.setspawnpoint ) )
             deleteti( self.setspawnpoint );
 
-        if ( !isdefined( self._id_11947 ) )
+        if ( !isdefined( self.tispawnposition ) )
             continue;
 
         if ( scripts\mp\utility::touchingbadtrigger() )
             continue;
 
-        var_2 = self._id_11947 + ( 0, 0, 16 );
-        var_3 = self._id_11947 - ( 0, 0, 2048 );
+        var_2 = self.tispawnposition + ( 0, 0, 16 );
+        var_3 = self.tispawnposition - ( 0, 0, 2048 );
         var_4 = playerphysicstrace( var_2, var_3 ) + ( 0, 0, 1 );
         var_5 = [];
         var_5[0] = self;
@@ -1002,8 +1002,8 @@ _id_BA34()
         var_8.team = self.team;
         var_8.owner = self;
         var_8.enemytrigger = spawn( "script_origin", var_4 );
-        var_8 thread _id_83EC( self );
-        var_8.playerspawnpos = self._id_11947;
+        var_8 thread glowsticksetupandwaitfordeath( self );
+        var_8.playerspawnpos = self.tispawnposition;
         var_8 setotherent( self );
         var_8 scripts\mp\sentientpoolmanager::registersentient( "Tactical_Static", self );
         var_8 scripts\mp\weapons::explosivehandlemovers( var_7["entity"] );
@@ -1013,32 +1013,32 @@ _id_BA34()
     }
 }
 
-_id_83EC( var_0 )
+glowsticksetupandwaitfordeath( var_0 )
 {
-    self setmodel( level._id_108D3["enemy"] );
+    self setmodel( level.spawnglowmodel["enemy"] );
 
     if ( level.teambased )
         scripts\mp\entityheadicons::setteamheadicon( self.team, ( 0, 0, 20 ) );
     else
         scripts\mp\entityheadicons::setplayerheadicon( var_0, ( 0, 0, 20 ) );
 
-    thread _id_83E8( var_0 );
-    thread _id_83E9( var_0 );
-    thread _id_83EE( var_0 );
-    thread _id_83EF( var_0 );
+    thread glowstickdamagelistener( var_0 );
+    thread glowstickenemyuselistener( var_0 );
+    thread glowstickuselistener( var_0 );
+    thread glowstickwaitforownerdisconnect( var_0 );
     var_1 = spawn( "script_model", self.origin );
     var_1.angles = self.angles;
-    var_1 setmodel( level._id_108D3["friendly"] );
+    var_1 setmodel( level.spawnglowmodel["friendly"] );
     var_1 setcontents( 0 );
     var_1 linkto( self );
     var_1 playloopsound( "tactical_insert_lp" );
-    thread _id_83ED( self, var_1, var_0 );
+    thread glowstickteamupdater( self, var_1, var_0 );
     self waittill( "death" );
     var_1 stoploopsound();
     var_1 delete();
 }
 
-_id_83ED( var_0, var_1, var_2 )
+glowstickteamupdater( var_0, var_1, var_2 )
 {
     var_0 endon( "death" );
     wait 0.05;
@@ -1061,13 +1061,13 @@ _id_83ED( var_0, var_1, var_2 )
             var_5 = var_3[var_9];
             var_5 show();
             scripts\engine\utility::waitframe();
-            playfxontagforclients( level._id_108D2[var_9], var_5, "tag_fx", var_8 );
+            playfxontagforclients( level.spawnglow[var_9], var_5, "tag_fx", var_8 );
         }
 
         level waittill( "joined_team" );
 
         foreach ( var_9, var_5 in var_3 )
-            stopfxontag( level._id_108D2[var_9], var_5, "tag_fx" );
+            stopfxontag( level.spawnglow[var_9], var_5, "tag_fx" );
 
         scripts\engine\utility::waitframe();
     }
@@ -1081,17 +1081,17 @@ deleteondeath( var_0 )
         var_0 delete();
 }
 
-_id_83E8( var_0 )
+glowstickdamagelistener( var_0 )
 {
-    scripts\mp\damage::monitordamage( 100, "tactical_insertion", ::_id_83EB, ::_id_83EA, 1 );
+    scripts\mp\damage::monitordamage( 100, "tactical_insertion", ::glowstickmodifydamage, ::glowstickhandledeathdamage, 1 );
 }
 
-_id_83EB( var_0, var_1, var_2, var_3, var_4 )
+glowstickmodifydamage( var_0, var_1, var_2, var_3, var_4 )
 {
     return scripts\mp\damage::handlemeleedamage( var_1, var_2 );
 }
 
-_id_83EA( var_0, var_1, var_2, var_3, var_4 )
+glowstickhandledeathdamage( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( isdefined( self.owner ) && var_0 != self.owner )
     {
@@ -1103,14 +1103,14 @@ _id_83EA( var_0, var_1, var_2, var_3, var_4 )
     var_0 thread deleteti( self );
 }
 
-_id_83EE( var_0 )
+glowstickuselistener( var_0 )
 {
     self endon( "death" );
     level endon( "game_ended" );
     var_0 endon( "disconnect" );
     self setcursorhint( "HINT_NOICON" );
     self sethintstring( &"MP_PATCH_PICKUP_TI" );
-    thread _id_12E8B( var_0 );
+    thread updateenemyuse( var_0 );
 
     for (;;)
     {
@@ -1124,7 +1124,7 @@ _id_83EE( var_0 )
     }
 }
 
-_id_12E8B( var_0 )
+updateenemyuse( var_0 )
 {
     self endon( "death" );
 
@@ -1135,7 +1135,7 @@ _id_12E8B( var_0 )
     }
 }
 
-_id_83EF( var_0 )
+glowstickwaitforownerdisconnect( var_0 )
 {
     self endon( "death" );
     var_0 waittill( "disconnect" );
@@ -1153,24 +1153,24 @@ deleteti( var_0 )
     var_0 delete();
     var_4 = spawn( "script_model", var_1 );
     var_4.angles = var_2;
-    var_4 setmodel( level._id_108D3["friendly"] );
+    var_4 setmodel( level.spawnglowmodel["friendly"] );
     var_4 setcontents( 0 );
 
     if ( isdefined( var_3 ) )
         var_4 linkto( var_3 );
 
-    thread _id_5F2B( var_4 );
+    thread dummyglowstickdelete( var_4 );
 }
 
-_id_5F2B( var_0 )
+dummyglowstickdelete( var_0 )
 {
     wait 1;
-    stopfxontag( level._id_108D2["friendly"], var_0, "tag_fx" );
-    stopfxontag( level._id_108D2["enemy"], var_0, "tag_fx" );
+    stopfxontag( level.spawnglow["friendly"], var_0, "tag_fx" );
+    stopfxontag( level.spawnglow["enemy"], var_0, "tag_fx" );
     var_0 delete();
 }
 
-_id_83E9( var_0 )
+glowstickenemyuselistener( var_0 )
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -1271,12 +1271,12 @@ unsetrefillammo()
 
 }
 
-_id_F737()
+setgunsmith()
 {
-    thread _id_F738();
+    thread setgunsmithinternal();
 }
 
-_id_F738()
+setgunsmithinternal()
 {
     self endon( "disconnect" );
     self endon( "death" );
@@ -1398,23 +1398,23 @@ _id_F738()
     }
 }
 
-_id_12CCB()
+unsetgunsmith()
 {
     self notify( "unsetGunsmith" );
 }
 
-_id_F71F()
+setgambler()
 {
     self setclientomnvar( "ui_gambler_show", -1 );
-    _id_F720();
+    setgamblerinternal();
 }
 
-_id_F720()
+setgamblerinternal()
 {
 
 }
 
-_id_765A()
+gamblercommonchecker()
 {
     if ( !isai( self ) )
         return self getrankedplayerdata( level.loadoutsgroup, "squadMembers", "loadouts", self.class_num, "abilitiesPicked", scripts\mp\utility::_id_7D91( 6, 0 ) );
@@ -1447,38 +1447,38 @@ givefriendlyperks( var_0 )
     else if ( scripts\mp\utility::gameflag( "prematch_done" ) && self.streaktype != "specialist" )
         self waittill( "giveLoadout" );
 
-    if ( !isdefined( self._id_1519 ) )
-        self._id_1519 = 0;
+    if ( !isdefined( self.abilitychosen ) )
+        self.abilitychosen = 0;
 
-    if ( !self._id_1519 )
+    if ( !self.abilitychosen )
     {
         var_1 = getrandom_spammodel( var_0 );
-        self._id_7658 = var_1;
+        self.gamblerability = var_1;
     }
     else
-        var_1 = self._id_7658;
+        var_1 = self.gamblerability;
 
     scripts\mp\utility::giveperk( var_1.id );
 
     if ( var_1.id == "specialty_hardline" )
-        scripts\mp\killstreaks\killstreaks::_id_F866();
+        scripts\mp\killstreaks\killstreaks::setstreakcounttonext();
 
-    if ( _id_1012B() )
+    if ( showgambler() )
     {
         self playlocalsound( "mp_suitcase_pickup" );
-        self setclientomnvar( "ui_gambler_show", var_1._id_E76D );
-        thread _id_7659();
+        self setclientomnvar( "ui_gambler_show", var_1.row );
+        thread gambleranimwatcher();
     }
 
     if ( level.gametype != "infect" )
-        self._id_1519 = 1;
+        self.abilitychosen = 1;
 }
 
-_id_1012B()
+showgambler()
 {
     var_0 = 1;
 
-    if ( !level.ingraceperiod && self._id_1519 )
+    if ( !level.ingraceperiod && self.abilitychosen )
         var_0 = 0;
 
     if ( !scripts\mp\utility::allowclasschoice() && level.gametype != "infect" )
@@ -1487,7 +1487,7 @@ _id_1012B()
     return var_0;
 }
 
-_id_7659()
+gambleranimwatcher()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -1504,7 +1504,7 @@ getrandom_spammodel( var_0 )
     var_1 = [];
     var_1 = thread sortbyweight( var_0 );
     var_1 = thread setbucketval( var_1 );
-    var_2 = randomint( level._id_151A["sum"] );
+    var_2 = randomint( level.abilitymaxval["sum"] );
     var_3 = undefined;
 
     foreach ( var_5 in var_1 )
@@ -1550,21 +1550,21 @@ is_weight_a_less_than_b( var_0, var_1 )
 
 setbucketval( var_0 )
 {
-    level._id_151A["sum"] = 0;
+    level.abilitymaxval["sum"] = 0;
 
     foreach ( var_2 in var_0 )
     {
         if ( !var_2.weight )
             continue;
 
-        level._id_151A["sum"] = level._id_151A["sum"] + var_2.weight;
-        var_2.weight = level._id_151A["sum"];
+        level.abilitymaxval["sum"] = level.abilitymaxval["sum"] + var_2.weight;
+        var_2.weight = level.abilitymaxval["sum"];
     }
 
     return var_0;
 }
 
-_id_12CC5()
+unsetgambler()
 {
     self notify( "unsetGambler" );
 }
@@ -1594,7 +1594,7 @@ settaggerinternal()
     for (;;)
     {
         self waittill( "eyesOn" );
-        var_0 = self _meth_8156();
+        var_0 = self getplayerssightingme();
 
         foreach ( var_2 in var_0 )
         {
@@ -1625,7 +1625,7 @@ outlinewatcher( var_0 )
     for (;;)
     {
         var_1 = 1;
-        var_2 = var_0 _meth_8156();
+        var_2 = var_0 getplayerssightingme();
 
         foreach ( var_4 in var_2 )
         {
@@ -1677,7 +1677,7 @@ setpitcherinternal()
     }
 }
 
-_id_12D0C()
+unsetpitcher()
 {
     self setgrenadecookscale( 1 );
     self setgrenadethrowscale( 1 );
@@ -1711,7 +1711,7 @@ boomtrackplayers( var_0, var_1 )
             continue;
 
         if ( scripts\mp\utility::isenemy( var_3 ) && isalive( var_3 ) && !var_3 scripts\mp\utility::_hasperk( "specialty_gpsjammer" ) && distancesquared( var_0, var_3.origin ) <= 490000 )
-            scripts\mp\missions::_id_D991( "ch_trait_ping" );
+            scripts\mp\missions::processchallengedaily( "ch_trait_ping" );
     }
 }
 
@@ -1770,8 +1770,8 @@ unsetcustomjuiced( var_0 )
     {
         if ( scripts\mp\utility::isjuggernaut() )
         {
-            if ( isdefined( self._id_A4AA ) )
-                self.movespeedscaler = self._id_A4AA;
+            if ( isdefined( self.juggmovespeedscaler ) )
+                self.movespeedscaler = self.juggmovespeedscaler;
             else
                 self.movespeedscaler = 0.7;
         }
@@ -1966,7 +1966,7 @@ _id_10D79( var_0 )
 {
     if ( isdefined( var_0 ) && var_0 != self )
     {
-        var_1 = self getweaponslistall();
+        var_1 = self getweaponslistoffhands();
         var_2 = 1;
         var_3 = 0;
 
@@ -2294,7 +2294,7 @@ watchtoughenup()
 
             if ( var_5 == 1 )
             {
-                scripts\mp\utility::_id_F741( var_1 );
+                scripts\mp\utility::sethealthshield( var_1 );
                 thread watchtoughenuplifetime( var_4 );
             }
             else
@@ -2545,7 +2545,7 @@ unsetscoutping()
     thread scripts\mp\archetypes\archscout::_id_3886();
 }
 
-setphasespeed()
+_id_F6A1()
 {
     thread _id_139D8();
 }
@@ -2571,7 +2571,7 @@ _id_139D8()
     for (;;)
     {
         self waittill( "got_a_kill", var_0, var_1, var_2 );
-        var_3 = var_0 _meth_8113();
+        var_3 = var_0 getcorpseentity();
         var_4 = "primary";
         var_5 = "none";
         var_6 = getarraykeys( var_0.powers );
@@ -2858,7 +2858,7 @@ setsixthsense()
 unsetsixthsense()
 {
     self.trait = undefined;
-    self._id_10224 = undefined;
+    self.sixthsensesource = undefined;
     self notify( "removeSixthSense" );
     updatesixthsensevfx( 0, 0 );
 }
@@ -2915,7 +2915,7 @@ _id_10225()
                 var_10 = vectornormalize( var_7 );
                 var_8 = vectordot( var_9, var_10 );
 
-                if ( var_8 < 0.965926 )
+                if ( var_8 < 0.9659258 )
                     continue;
 
                 var_0++;
@@ -2971,7 +2971,7 @@ watchperceptionchallengeprogress()
 
     self.startperceptionchallengewatch = 1;
     wait 10.0;
-    scripts\mp\missions::_id_D991( "ch_trait_perception" );
+    scripts\mp\missions::processchallengedaily( "ch_trait_perception" );
     self notify( "perceptionChallengeCheckDone" );
 }
 
@@ -2987,13 +2987,13 @@ updatesixthsensevfx( var_0, var_1 )
 {
     var_2 = 0;
 
-    if ( isdefined( self._id_10224 ) )
-        var_2 = self._id_10224;
+    if ( isdefined( self.sixthsensesource ) )
+        var_2 = self.sixthsensesource;
 
     if ( isdefined( var_1 ) && var_1 )
     {
         if ( var_2 != var_0 )
-            self._id_10224 = var_0;
+            self.sixthsensesource = var_0;
     }
 
     self setclientomnvar( "ui_edge_glow", var_0 );
@@ -3009,13 +3009,13 @@ getsixthsensedirection( var_0 )
     var_4 = vectornormalize( var_4 );
     var_5 = vectordot( var_2, var_4 );
 
-    if ( var_5 >= 0.92388 )
+    if ( var_5 >= 0.9238795 )
         return 2;
-    else if ( var_5 >= 0.382683 )
+    else if ( var_5 >= 0.38268343 )
         return scripts\engine\utility::ter_op( scripts\mp\utility::isleft2d( self.origin, var_2, var_0.origin ), 4, 1 );
-    else if ( var_5 >= -0.382683 )
+    else if ( var_5 >= -0.38268343 )
         return scripts\engine\utility::ter_op( scripts\mp\utility::isleft2d( self.origin, var_2, var_0.origin ), 128, 64 );
-    else if ( var_5 >= -0.92388 )
+    else if ( var_5 >= -0.9238795 )
         return scripts\engine\utility::ter_op( scripts\mp\utility::isleft2d( self.origin, var_2, var_0.origin ), 32, 8 );
     else
         return 16;
@@ -3079,7 +3079,7 @@ setcamoelite()
                 var_9 = vectornormalize( var_6 );
                 var_7 = vectordot( var_8, var_9 );
 
-                if ( var_7 < 0.965926 )
+                if ( var_7 < 0.9659258 )
                     continue;
 
                 var_0++;
@@ -3150,20 +3150,20 @@ unsetuav()
 _id_F864()
 {
     scripts\mp\utility::giveperk( "specialty_bulletdamage" );
-    thread _id_13B63();
+    thread watchstoppingpowerkill();
 }
 
-_id_13B63()
+watchstoppingpowerkill()
 {
     self notify( "watchStoppingPowerKill" );
     self endon( "watchStoppingPowerKill" );
     self endon( "disconnect" );
     level endon( "game_ended" );
     self waittill( "killed_enemy" );
-    _id_12D3A();
+    unsetstoppingpower();
 }
 
-_id_12D3A()
+unsetstoppingpower()
 {
     scripts\mp\utility::removeperk( "specialty_bulletdamage" );
     self notify( "watchStoppingPowerKill" );
@@ -3174,7 +3174,7 @@ _id_F678()
     scripts\mp\utility::giveperk( "specialty_pistoldeath" );
 }
 
-_id_12C8A()
+unsetc4death()
 {
     if ( scripts\mp\utility::_hasperk( "specialty_pistoldeath" ) )
         scripts\mp\utility::removeperk( "specialty_pistoldeath" );
@@ -3218,8 +3218,8 @@ unsetjuiced( var_0 )
     {
         if ( scripts\mp\utility::isjuggernaut() )
         {
-            if ( isdefined( self._id_A4AA ) )
-                self.movespeedscaler = self._id_A4AA;
+            if ( isdefined( self.juggmovespeedscaler ) )
+                self.movespeedscaler = self.juggmovespeedscaler;
             else
                 self.movespeedscaler = 0.7;
         }
@@ -3582,7 +3582,7 @@ _id_12C74()
 
 }
 
-_id_F64D()
+setauraquickswap()
 {
     scripts\mp\archetypes\archassault::auraquickswap_run();
 }
@@ -3608,7 +3608,7 @@ _id_F790()
     scripts\mp\perks\perk_mark_targets::marktarget_init();
 }
 
-_id_12CED()
+unsetmarktargets()
 {
     self.trait = undefined;
 }
@@ -3618,7 +3618,7 @@ _id_F65A()
     scripts\mp\archetypes\archengineer::_id_F6E6( "battery" );
 }
 
-_id_12C7A()
+unsetbatterypack()
 {
 
 }
@@ -3628,7 +3628,7 @@ _id_F67A()
 
 }
 
-_id_12C8B()
+unsetcamoclone()
 {
 
 }
@@ -3887,8 +3887,8 @@ unsetoverclock()
 
 _id_F894()
 {
-    thread _id_E8A9();
-    thread _id_E8AA();
+    thread runtrackempsignatures();
+    thread runtrackkillstreakuse();
 }
 
 _id_12D4E()
@@ -3913,7 +3913,7 @@ _id_F6CA()
     thread scripts\mp\archetypes\archheavy::_id_56E7();
 }
 
-_id_12CA3()
+unsetdisruptorpunch()
 {
 
 }
@@ -3965,7 +3965,7 @@ _id_F7CB()
 
     for (;;)
     {
-        var_1 = level._id_1655;
+        var_1 = level.activekillstreaks;
 
         if ( isdefined( var_1 ) )
         {
@@ -4003,7 +4003,7 @@ setengineer()
 
     for (;;)
     {
-        var_1 = _id_7D96();
+        var_1 = getactiveequipmentarray();
 
         foreach ( var_3 in var_1 )
         {
@@ -4100,7 +4100,7 @@ engineer_watchownerdisconnect( var_0, var_1 )
     thread engineer_clearoutlinedents( var_0 );
 }
 
-_id_7D96()
+getactiveequipmentarray()
 {
     return scripts\engine\utility::array_remove_duplicates( scripts\engine\utility::array_combine_multiple( [ level.mines, level.microturrets, level._id_69D6, level.supertrophy.trophies, level._id_590F, level._id_2ABD, level.spidergrenade.activeagents, level.spidergrenade.proxies ] ) );
 }
@@ -4152,10 +4152,10 @@ unsethover()
 setmomentum()
 {
     self.trait = "specialty_momentum";
-    thread _id_E863();
+    thread runmomentum();
 }
 
-_id_E863()
+runmomentum()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -4165,7 +4165,7 @@ _id_E863()
     {
         if ( self issprinting() )
         {
-            _id_848B();
+            graduallyincreasespeed();
             self.movespeedscaler = 1;
             scripts\mp\weapons::updatemovespeedscale();
         }
@@ -4174,21 +4174,21 @@ _id_E863()
     }
 }
 
-_id_848B()
+graduallyincreasespeed()
 {
     self endon( "death" );
     self endon( "disconnect" );
     self endon( "game_ended" );
     self endon( "momentum_reset" );
     self endon( "momentum_unset" );
-    thread _id_B944();
-    thread _id_B943();
+    thread momentum_monitormovement();
+    thread momentum_monitordamage();
 
     for ( var_0 = 0; var_0 < 0.06; var_0 = var_0 + 0.01 )
     {
         self.movespeedscaler = self.movespeedscaler + 0.01;
         scripts\mp\weapons::updatemovespeedscale();
-        wait 0.208333;
+        wait 0.20833333;
     }
 
     self notify( "momentum_max_speed" );
@@ -4202,7 +4202,7 @@ momentum_endaftermax()
     self waittill( "momentum_reset" );
 }
 
-_id_B944()
+momentum_monitormovement()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -4225,7 +4225,7 @@ _id_B944()
     }
 }
 
-_id_B943()
+momentum_monitordamage()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -4290,12 +4290,12 @@ unsetftlslide()
     self.trait = undefined;
 }
 
-_id_F753()
+setimprovedprone()
 {
     thread scripts\mp\archetypes\archsniper::_id_E7FE();
 }
 
-_id_12CD6()
+unsetimprovedprone()
 {
 
 }
@@ -4329,7 +4329,7 @@ unsetsupportkillstreaks()
     self.trait = undefined;
 }
 
-_id_F7D2()
+setoverrideweaponspeed()
 {
     self.overrideweaponspeed_speedscale = 0.98;
     scripts\mp\weapons::updatemovespeedscale();
@@ -4636,7 +4636,7 @@ bulletoutlinecheck( var_0, var_1, var_2, var_3 )
     if ( !scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( var_4, var_5 ) ) )
         return;
 
-    if ( isplayer( var_0 ) && isplayer( var_1 ) && scripts\mp\utility::_id_C7A0( var_0 geteye(), var_1 geteye() ) )
+    if ( isplayer( var_0 ) && isplayer( var_1 ) && scripts\mp\utility::outlineoccluded( var_0 geteye(), var_1 geteye() ) )
         return;
 
     if ( isdefined( var_0.bulletoutline ) && !var_1 scripts\mp\utility::_hasperk( "specialty_noscopeoutline" ) )
@@ -4646,7 +4646,7 @@ bulletoutlinecheck( var_0, var_1, var_2, var_3 )
         var_1.bulletoutline bulletoutlineaddenemy( var_0, 2.0, 0 );
 }
 
-_id_E8A9()
+runtrackempsignatures()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -4673,7 +4673,7 @@ _id_E8A9()
     }
 }
 
-_id_E8AA()
+runtrackkillstreakuse()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -4773,7 +4773,7 @@ updategpsjammer()
                 {
                     var_5 = 0;
 
-                    if ( distancesquared( var_6, self.origin ) < level._id_B75E )
+                    if ( distancesquared( var_6, self.origin ) < level.mindistancesq )
                         var_2 = 1;
                     else
                         var_2 = 0;
@@ -4908,11 +4908,11 @@ groundpoundshield_raise()
     var_3 = spawn( "script_model", var_0 );
     var_3.angles = var_1;
     var_3 setmodel( "weapon_shinguard_fr_wm" );
-    var_3.outlineid = scripts\mp\utility::_id_C793( var_3, "cyan", 0, 0, "equipment" );
+    var_3.outlineid = scripts\mp\utility::outlineenableforall( var_3, "cyan", 0, 0, "equipment" );
     var_4 = spawn( "script_model", var_0 );
     var_4.angles = var_1;
     var_4 setmodel( "weapon_shinguard_en_wm" );
-    var_4.outlineid = scripts\mp\utility::_id_C793( var_4, "orange", 0, 0, "equipment" );
+    var_4.outlineid = scripts\mp\utility::outlineenableforall( var_4, "orange", 0, 0, "equipment" );
     var_2.visfr = var_3;
     var_2.visen = var_4;
     var_2.owner = self;
@@ -4965,7 +4965,7 @@ groundpoundshield_break( var_0 )
     if ( !isdefined( var_0 ) )
         return;
 
-    thread _id_865E();
+    thread groundpoundshield_breakfx();
     thread groundpoundshield_deleteshield( var_0 );
 }
 
@@ -5000,13 +5000,13 @@ groundpoundshield_monitorhealth( var_0 )
             if ( var_0.visfr.model != "weapon_shinguard_dam_wm" )
             {
                 var_0.visfr setmodel( "weapon_shinguard_dam_wm" );
-                scripts\mp\utility::_id_C7AA( var_0.visfr );
+                scripts\mp\utility::outlinerefresh( var_0.visfr );
             }
 
             if ( var_0.visen.model != "weapon_shinguard_dam_wm" )
             {
                 var_0.visen setmodel( "weapon_shinguard_dam_wm" );
-                scripts\mp\utility::_id_C7AA( var_0.visen );
+                scripts\mp\utility::outlinerefresh( var_0.visen );
             }
         }
     }
@@ -5139,7 +5139,7 @@ groundpoundshield_damagedfx( var_0, var_1, var_2 )
     var_0 scripts\mp\damagefeedback::updatedamagefeedback( "hitbulletstorm" );
 }
 
-_id_865E()
+groundpoundshield_breakfx()
 {
     self endon( "disconnect" );
     self endon( "groundPound_unset" );
@@ -5227,7 +5227,7 @@ groundpoundshock_empplayer( var_0 )
     var_0 endon( "death" );
     var_0 endon( "disconnect" );
     var_0 scripts\mp\killstreaks\emp_common::_id_20C3();
-    scripts\mp\gamescore::_id_11ACE( self, var_0, "groundpound_mp" );
+    scripts\mp\gamescore::trackdebuffassist( self, var_0, "groundpound_mp" );
     var_0 shellshock( "concussion_grenade_mp", 3 );
     wait 3;
     var_0 scripts\mp\killstreaks\emp_common::_id_E0F3();

@@ -9,10 +9,10 @@ init()
     var_0.streakname = "deployable_speed_strip";
     var_0.grenadeusefunc = scripts\mp\speedstrip::_id_109C1;
     level.boxsettings["deployable_speed_strip"] = var_0;
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_speed_strip", ::_id_128DD );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_speed_strip", ::tryusedeployable );
 }
 
-_id_128DD( var_0, var_1 )
+tryusedeployable( var_0, var_1 )
 {
     var_2 = scripts\mp\killstreaks\deployablebox::begindeployableviamarker( var_0, "deployable_speed_strip" );
 

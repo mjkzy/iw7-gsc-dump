@@ -15,12 +15,12 @@ selectbestspawnpoint( var_0, var_1 )
     return var_2;
 }
 
-_id_6CB1()
+findbuddyspawn()
 {
     if ( !level.teambased || isdefined( level._id_112BF ) && !level._id_112BF )
         return undefined;
 
-    var_0 = _id_81B4( self.team );
+    var_0 = getteammatesoutofcombat( self.team );
     var_1 = [];
 
     foreach ( var_3 in var_0 )
@@ -32,24 +32,24 @@ _id_6CB1()
 
         var_5 = spawnstruct();
         var_5.origin = var_4;
-        var_5.angles = _id_7E0F( var_3, var_5.origin );
+        var_5.angles = getbuddyspawnangles( var_3, var_5.origin );
         var_5.index = -1;
-        var_5.budgetedents = 1;
+        var_5.buddyspawn = 1;
         var_5.isdynamicspawn = 1;
-        var_5 scripts\mp\spawnlogic::_id_108FA();
+        var_5 scripts\mp\spawnlogic::spawnpointinit();
 
         if ( isdefined( var_3.analyticslog ) && isdefined( var_3.analyticslog.playerid ) )
-            var_5.buddyspawnid = var_3.analyticslog.playerid;
+            var_5.buddyplayerid = var_3.analyticslog.playerid;
 
         var_1[var_1.size] = var_5;
     }
 
     var_7 = [];
-    _id_12F1E( var_1 );
+    updatespawnpoints( var_1 );
 
     foreach ( var_5 in var_1 )
     {
-        if ( !_id_11746( var_5 ) )
+        if ( !testbuddyspawncriticalfactors( var_5 ) )
             continue;
 
         scorebuddyspawn( var_5 );
@@ -73,7 +73,7 @@ scorebuddyspawn( var_0 )
     scripts\mp\spawnfactor::calculatefactorscore( var_0, "avoidClosestEnemy", 1.0 );
 }
 
-_id_7E0F( var_0, var_1 )
+getbuddyspawnangles( var_0, var_1 )
 {
     var_2 = ( 0, var_0.angles[1], 0 );
     var_3 = findentrances( var_1 );
@@ -84,7 +84,7 @@ _id_7E0F( var_0, var_1 )
     return var_2;
 }
 
-_id_81B4( var_0 )
+getteammatesoutofcombat( var_0 )
 {
     var_1 = [];
 
@@ -166,7 +166,7 @@ findbuddypathnode( var_0, var_1, var_2 )
     return var_4;
 }
 
-_id_6CB5( var_0, var_1, var_2, var_3 )
+finddronepathnode( var_0, var_1, var_2, var_3 )
 {
     var_4 = getnodesinradiussorted( var_0.origin, var_3, 32, var_1, "Path" );
     var_5 = undefined;
@@ -193,14 +193,14 @@ _id_6CB5( var_0, var_1, var_2, var_3 )
     return var_5;
 }
 
-_id_98C8( var_0 )
+initscoredata( var_0 )
 {
     var_0.totalscore = 0;
-    var_0._id_11A3A = 0;
-    var_0._id_9D60 = 0;
-    var_0._id_A9E9 = [];
-    var_0._id_A9E9["allies"] = 0;
-    var_0._id_A9E9["axis"] = 0;
+    var_0.totalpossiblescore = 0;
+    var_0.isbadspawn = 0;
+    var_0.lastscore = [];
+    var_0.lastscore["allies"] = 0;
+    var_0.lastscore["axis"] = 0;
     var_0.lastspawnteam = "";
     var_0.lastspawntime = 0;
     var_0.analytics = spawnstruct();
@@ -214,43 +214,43 @@ _id_98C8( var_0 )
     var_0.analytics.spawntype = 0;
 }
 
-_id_12F1E( var_0 )
+updatespawnpoints( var_0 )
 {
     var_1 = scripts\mp\spawnlogic::getspawnteam( self );
-    scripts\mp\spawnlogic::_id_12F1F();
+    scripts\mp\spawnlogic::updatespawnviewers();
     var_2 = scripts\mp\spawnlogic::getactiveplayerlist();
 
     foreach ( var_4 in var_0 )
     {
-        _id_98C8( var_4 );
-        scripts\mp\spawnlogic::_id_108F9( var_4, var_2 );
-        scripts\mp\spawnlogic::_id_67D3( var_4, var_1 );
+        initscoredata( var_4 );
+        scripts\mp\spawnlogic::spawnpointdistanceupdate( var_4, var_2 );
+        scripts\mp\spawnlogic::evaluateprecomputedlos( var_4, var_1 );
     }
 
     scripts\mp\spawnfactor::updatefrontline( var_1 );
 }
 
-_id_11748( var_0 )
+testcriticalfactors( var_0 )
 {
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26B7, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidfullvisibleenemies, var_0 ) )
     {
         var_0.badspawnreason = 0;
         return "bad";
     }
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26B8, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidgrenades, var_0 ) )
     {
         var_0.badspawnreason = 1;
         return "bad";
     }
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26BC, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidmines, var_0 ) )
     {
         var_0.badspawnreason = 2;
         return "bad";
     }
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26AB, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidairstrikelocations, var_0 ) )
     {
         var_0.badspawnreason = 3;
         return "bad";
@@ -262,54 +262,54 @@ _id_11748( var_0 )
         return "bad";
     }
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26C4, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidtelefrag, var_0 ) )
     {
         var_0.badspawnreason = 5;
         return "bad";
     }
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26B6, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidenemyspawn, var_0 ) )
     {
         var_0.badspawnreason = 6;
         return "bad";
     }
 
-    if ( isdefined( var_0._id_7450 ) && level._id_744D.isactive[self.team] && var_0._id_7450 != self.team )
+    if ( isdefined( var_0.frontlineteam ) && level.frontlineinfo.isactive[self.team] && var_0.frontlineteam != self.team )
     {
         var_0.badspawnreason = 7;
         return "bad";
     }
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26B3, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidcornervisibleenemies, var_0 ) )
         return "secondary";
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26AE, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidcloseenemies, var_0 ) )
         return "secondary";
 
     return "primary";
 }
 
-_id_11746( var_0 )
+testbuddyspawncriticalfactors( var_0 )
 {
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26B7, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidfullvisibleenemies, var_0 ) )
         return 0;
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26B8, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidgrenades, var_0 ) )
         return 0;
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26BC, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidmines, var_0 ) )
         return 0;
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26AB, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidairstrikelocations, var_0 ) )
         return 0;
 
     if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidcarepackages, var_0 ) )
         return 0;
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26C4, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidtelefrag, var_0 ) )
         return 0;
 
-    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::_id_26AE, var_0 ) )
+    if ( !scripts\mp\spawnfactor::critical_factor( scripts\mp\spawnfactor::avoidcloseenemies, var_0 ) )
         return 0;
 
     return 1;
@@ -375,9 +375,9 @@ getspawnpoint( var_0, var_1, var_2, var_3 )
 {
     level.spawnglobals.spawnpointslist = var_0;
 
-    if ( level._id_72A2 )
+    if ( level.forcebuddyspawn )
     {
-        var_4 = _id_6CB1();
+        var_4 = findbuddyspawn();
 
         if ( isdefined( var_4 ) )
             return var_4;
@@ -389,7 +389,7 @@ getspawnpoint( var_0, var_1, var_2, var_3 )
 
     if ( isdefined( var_6 ) )
     {
-        if ( !scripts\mp\utility::istrue( var_6._id_9D60 ) )
+        if ( !scripts\mp\utility::istrue( var_6.isbadspawn ) )
             return var_6;
         else
             var_5 = var_6;
@@ -401,7 +401,7 @@ getspawnpoint( var_0, var_1, var_2, var_3 )
 
         if ( isdefined( var_7 ) )
         {
-            if ( scripts\mp\utility::istrue( var_7._id_9D60 ) )
+            if ( scripts\mp\utility::istrue( var_7.isbadspawn ) )
             {
                 if ( !isdefined( var_5 ) || var_7.totalscore > var_5.totalscore )
                     var_5 = var_7;
@@ -418,15 +418,15 @@ getspawnpoint( var_0, var_1, var_2, var_3 )
         return undefined;
 
     logbadspawn( "Using a LastResort spawn point.", self );
-    var_8 = _id_6CB1();
+    var_8 = findbuddyspawn();
 
     if ( isdefined( var_8 ) )
     {
         var_8.spawntype = 7;
-        level.spawnglobals.budy_death_watcher = 0;
+        level.spawnglobals._id_3166 = 0;
 
-        if ( isdefined( var_8.buddyspawnid ) )
-            level.spawnglobals.buddyspawnid = var_8.buddyspawnid;
+        if ( isdefined( var_8.buddyplayerid ) )
+            level.spawnglobals.buddyplayerid = var_8.buddyplayerid;
 
         return var_8;
     }
@@ -461,17 +461,17 @@ _id_8142( var_0, var_1, var_2 )
         if ( !isdefined( level._id_8C28 ) )
             level._id_8C28 = 1;
 
-        level._id_560C = 1;
+        level.disableprecomputedlos = 1;
         scripts\mp\spawnlogic::_id_E2B6();
     }
 
-    _id_12F1E( var_0 );
+    updatespawnpoints( var_0 );
 
     foreach ( var_5 in var_0 )
     {
-        var_6 = _id_11748( var_5 );
+        var_6 = testcriticalfactors( var_5 );
         var_3[var_6][var_3[var_6].size] = var_5;
-        var_5.lastbucket[scripts\engine\utility::ter_op( isdefined( self._id_108DF ), self._id_108DF, self.team )] = var_6;
+        var_5.lastbucket[scripts\engine\utility::ter_op( isdefined( self.spawnlogicteam ), self.spawnlogicteam, self.team )] = var_6;
 
         if ( isdefined( var_5.analytics ) && isdefined( var_5.analytics.spawntype ) )
         {
@@ -511,7 +511,7 @@ _id_8142( var_0, var_1, var_2 )
         var_6 = _id_7F01( var_3["bad"], var_1 );
 
         if ( isdefined( var_6 ) )
-            var_6._id_9D60 = 1;
+            var_6.isbadspawn = 1;
 
         return var_6;
     }
@@ -525,7 +525,7 @@ _id_7F01( var_0, var_1 )
 
     foreach ( var_4 in var_0 )
     {
-        scripts\mp\spawnlogic::_id_EC46( var_4, var_1 );
+        scripts\mp\spawnlogic::scorespawnpoint( var_4, var_1 );
 
         if ( var_4.totalscore > var_2.totalscore )
             var_2 = var_4;

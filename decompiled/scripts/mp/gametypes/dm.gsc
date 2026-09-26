@@ -72,7 +72,7 @@ alwaysgamemodeclass()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata( 1 );
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata( 1 );
     setdynamicdvar( "scr_dm_aonrules", getmatchrulesdata( "dmData", "aonRules" ) );
     setdynamicdvar( "scr_dm_winlimit", 1 );
     scripts\mp\utility::registerwinlimitdvar( "dm", 1 );
@@ -199,13 +199,13 @@ onnormaldeath( var_0, var_1, var_2, var_3, var_4 )
 
 onplayerscore( var_0, var_1, var_2 )
 {
-    var_1 scripts\mp\utility::incperstat( "gamemodeScore", var_2, 1 );
+    var_1 scripts\mp\utility::incpersstat( "gamemodeScore", var_2, 1 );
     var_3 = var_1 scripts\mp\utility::getpersstat( "gamemodeScore" );
     var_1 scripts\mp\persistence::statsetchild( "round", "gamemodeScore", var_3 );
 
     if ( var_1.pers["cur_kill_streak"] > var_1 scripts\mp\utility::getpersstat( "killChains" ) )
     {
-        var_1 scripts\mp\utility::_id_F7DF( "killChains", var_1.pers["cur_kill_streak"] );
+        var_1 scripts\mp\utility::setpersstat( "killChains", var_1.pers["cur_kill_streak"] );
         var_1 scripts\mp\utility::setextrascore1( var_1.pers["cur_kill_streak"] );
     }
 
@@ -284,12 +284,12 @@ runaonrules()
         self notify( "gesture_rockPaperScissorsThink()" );
         self notify( "gesture_coinFlipThink()" );
         self setclientomnvar( "ui_gesture_reticle", -1 );
-        self._id_55C9 = 0;
+        self.disabledgesture = 0;
         self giveweapon( "iw7_g18_mpr_aon_fixed" );
         self givestartammo( "iw7_g18_mpr_aon_fixed" );
         scripts\mp\utility::giveperk( "specialty_sprintfire" );
         var_1 = "secondary";
-        var_2 = scripts\mp\powers::getcurrentequipment( var_1 );
+        var_2 = scripts\mp\powers::getpower( var_1 );
 
         if ( isdefined( var_2 ) )
             scripts\mp\powers::removepower( var_2 );
@@ -311,13 +311,13 @@ runaonrules()
         if ( isdefined( var_0 ) )
         {
             scripts\mp\utility::_giveweapon( var_0 );
-            self _meth_8541( var_0 );
+            self assignweaponoffhandtaunt( var_0 );
             self.gestureweapon = var_0;
         }
     }
 
     var_1 = "primary";
-    var_2 = scripts\mp\powers::getcurrentequipment( var_1 );
+    var_2 = scripts\mp\powers::getpower( var_1 );
 
     if ( isdefined( var_2 ) )
         scripts\mp\powers::removepower( var_2 );
@@ -392,7 +392,7 @@ devforcegestures( var_0, var_1 )
     }
 
     scripts\mp\utility::_giveweapon( var_0 );
-    self _meth_8541( var_0 );
+    self assignweaponoffhandtaunt( var_0 );
     self.gestureweapon = var_0;
 }
 
@@ -416,7 +416,7 @@ randomizegesture()
         scripts\mp\utility::_takeweapon( self.gestureweapon );
 
     scripts\mp\utility::_giveweapon( var_0 );
-    self _meth_8541( var_0 );
+    self assignweaponoffhandtaunt( var_0 );
     self.gestureweapon = var_0;
     return var_1;
 }
@@ -598,7 +598,7 @@ use_gesture_weapon( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 {
     self endon( "disconnect" );
     self endon( "death" );
-    scripts\mp\utility::_id_1C47( 0 );
+    scripts\mp\utility::allow_gesture( 0 );
     scripts\engine\utility::allow_offhand_weapons( 0 );
     self.gesturekill = 0;
     var_8 = self.gestureindex;
@@ -868,7 +868,7 @@ powerrecharge()
     if ( level.aonrules == 3 && self.gesturekill )
     {
         var_0 = "secondary";
-        var_1 = scripts\mp\powers::getcurrentequipment( var_0 );
+        var_1 = scripts\mp\powers::getpower( var_0 );
 
         if ( isdefined( var_1 ) )
             scripts\mp\powers::removepower( var_1 );
@@ -877,14 +877,14 @@ powerrecharge()
     }
     else
     {
-        var_2 = scripts\mp\powers::getcurrentequipment( "secondary" );
+        var_2 = scripts\mp\powers::getpower( "secondary" );
         scripts\mp\powers::_id_D74C( var_2 );
     }
 
     if ( scripts\mp\utility::_hasperk( "passive_gore" ) )
         scripts\mp\utility::removeperk( "passive_gore" );
 
-    scripts\mp\utility::_id_1C47( 1 );
+    scripts\mp\utility::allow_gesture( 1 );
     scripts\engine\utility::allow_offhand_weapons( 1 );
 }
 
@@ -914,10 +914,10 @@ dogesturedamage( var_0, var_1, var_2, var_3 )
             if ( var_2 == "ges_plyr_gesture041" || var_2 == "ges_plyr_gesture001" && var_3 == 2 || var_2 == "ges_plyr_gesture001" && var_3 == 4 )
                 var_6 = var_6 * -1;
 
-            var_0 _meth_84DC( var_6 + ( 0, 0, 500 ), 750 );
+            var_0 knockback( var_6 + ( 0, 0, 500 ), 750 );
         }
         else
-            var_0 _meth_84DC( vectornormalize( var_0.origin - self.origin ) * 500 + ( 0, 0, 800 ), 750 );
+            var_0 knockback( vectornormalize( var_0.origin - self.origin ) * 500 + ( 0, 0, 800 ), 750 );
 
         wait 0.05;
 
@@ -1097,7 +1097,7 @@ _id_8114( var_0 )
 
     self setsuit( var_0 + "_classic" );
 
-    if ( scripts\mp\utility::istrue( level.supportdoublejump_MAYBE ) )
+    if ( scripts\mp\utility::istrue( level.supportdoublejump ) )
     {
         self energy_setrestorerate( 0, 200 );
         self energy_setresttimems( 0, 1800 );
@@ -1118,7 +1118,7 @@ onplayerconnect()
             if ( var_0 )
             {
                 level notify( "lethal_delay_end" );
-                level._id_ABBF = 0;
+                level.lethaldelay = 0;
                 level.allowkillstreaks = 0;
                 var_0 = 0;
             }

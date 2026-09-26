@@ -9,7 +9,7 @@ init_ghost_n_skull_5_quest()
     scripts\cp\maps\cp_final\cp_final_mpq::finalqueststepregistration( "ghostFive", 3, ::blank, ::follow_the_light, ::complete_follow_the_light, ::debug_follow_the_light, 5, "Follow the light" );
     scripts\cp\maps\cp_final\cp_final_mpq::finalqueststepregistration( "ghostFive", 4, ::blank, ::solve_eight_queen, ::complete_solve_eight_queen, ::debug_solve_eight_queen, 5, "Solve eight queen problem" );
     scripts\cp\maps\cp_final\cp_final_mpq::finalqueststepregistration( "ghostFive", 5, ::blank, ::secret_button_combo, ::complete_secret_button_combo, ::debug_secret_button_combo, 5, "Enter secret button combo" );
-    scripts\cp\maps\cp_final\cp_final_mpq::finalqueststepregistration( "ghostFive", 6, ::blank, ::wait_for_player_activation, ::complete_clean_arcade_cabinet, ::debug_wait_for_player_activation, 5, "Wait for player activation" );
+    scripts\cp\maps\cp_final\cp_final_mpq::finalqueststepregistration( "ghostFive", 6, ::blank, ::wait_for_player_activation, ::complete_wait_for_player_activation, ::debug_wait_for_player_activation, 5, "Wait for player activation" );
 }
 
 blank()
@@ -2091,7 +2091,7 @@ wait_for_player_activation()
     }
 }
 
-complete_clean_arcade_cabinet()
+complete_wait_for_player_activation()
 {
     level notify( "players_activated_gns" );
     scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::notify_activation_progress( -1, 0.5 );
@@ -2573,7 +2573,7 @@ reactivate_skullbuster_cabinet()
     if ( !scripts\cp\zombies\zombie_quest::quest_line_exist( "reactivateghost" ) )
     {
         scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 0, scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::reactivate_cabinet, ::secret_button_combo, ::complete_secret_button_combo, ::debug_secret_button_combo, 5, "Enter secret button combo" );
-        scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 1, ::blank, ::wait_for_player_activation, ::complete_clean_arcade_cabinet, ::debug_wait_for_player_activation, 5, "Wait for player activation" );
+        scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 1, ::blank, ::wait_for_player_activation, ::complete_wait_for_player_activation, ::debug_wait_for_player_activation, 5, "Wait for player activation" );
     }
 
     level thread scripts\cp\zombies\zombie_quest::start_quest_line( "reactivateghost" );

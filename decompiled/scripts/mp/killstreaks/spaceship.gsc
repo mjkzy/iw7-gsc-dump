@@ -37,16 +37,16 @@ _id_10588( var_0 )
     level._id_A407 = var_0;
     var_0._id_1051B = isdefined( var_0._id_1051B ) && var_0._id_1051B;
     thread _id_1058C();
-    var_0.allowgrenadedamage = !isdefined( var_0.allowgrenadedamage ) || var_0.allowgrenadedamage;
+    var_0._id_1C94 = !isdefined( var_0._id_1C94 ) || var_0._id_1C94;
 
-    if ( var_0.allowgrenadedamage )
+    if ( var_0._id_1C94 )
         _id_1058A( "landingExclusionZone" );
     else
         _id_1058B( "landingzone" );
 
-    var_0.allowhide = !isdefined( var_0.allowhide ) || var_0.allowhide;
+    var_0._id_1C95 = !isdefined( var_0._id_1C95 ) || var_0._id_1C95;
 
-    if ( var_0.allowhide )
+    if ( var_0._id_1C95 )
         _id_1058F( "summonExclusionZone" );
     else
         _id_10590( "spaceship_summon_trigger" );
@@ -232,7 +232,7 @@ _id_105A3( var_0, var_1 )
         var_0.outlineids[1] = scripts\mp\utility::outlineenableforteam( var_0, "orange", scripts\mp\utility::getotherteam( var_1.team ), 1, 0, "equipment" );
     }
     else
-        var_0.outlineids[0] = scripts\mp\utility::_id_C793( var_0, "orange", 1, 0, "equipment" );
+        var_0.outlineids[0] = scripts\mp\utility::outlineenableforall( var_0, "orange", 1, 0, "equipment" );
 
     var_0 hudoutlinedisableforclient( var_1 );
     _id_10575( var_0, var_1 );
@@ -486,7 +486,7 @@ _id_105DE( var_0, var_1, var_2 )
 
     if ( var_2 < var_1 )
     {
-        if ( var_2 < 495.0 && var_1 >= 495.0 )
+        if ( var_2 < 495.00003 && var_1 >= 495.00003 )
         {
             _id_105CD( var_0 );
             var_0._id_FE12 = scripts\engine\utility::getfx( "cockpit_fire" );
@@ -495,7 +495,7 @@ _id_105DE( var_0, var_1, var_2 )
             var_3["tag_thrust_rear1"] = "spaceship_dmg_trail";
             _id_105DF( var_0, var_3 );
         }
-        else if ( var_2 < 990.0 && var_1 >= 990.0 )
+        else if ( var_2 < 990.00006 && var_1 >= 990.00006 )
         {
             var_0._id_FE12 = scripts\engine\utility::getfx( "cockpit_smoke" );
             playfxontagforclients( var_0._id_FE12, var_0, "j_stickleft", var_0.owner );
@@ -503,9 +503,9 @@ _id_105DE( var_0, var_1, var_2 )
         else
             playfxontagforclients( scripts\engine\utility::getfx( "cockpit_sparks" ), var_0, "j_stickleft", var_0.owner );
     }
-    else if ( var_2 >= 990.0 && var_1 < 990.0 )
+    else if ( var_2 >= 990.00006 && var_1 < 990.00006 )
         _id_105CD( var_0 );
-    else if ( var_2 >= 495.0 && var_1 < 495.0 )
+    else if ( var_2 >= 495.00003 && var_1 < 495.00003 )
     {
         _id_105CD( var_0 );
         var_0._id_FE12 = scripts\engine\utility::getfx( "cockpit_smoke" );
@@ -578,7 +578,7 @@ _id_105A4( var_0 )
     }
 }
 
-_id_3758( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
+callback_vehicledamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
 {
     if ( var_4 != "MOD_IMPACT" )
     {
@@ -695,7 +695,7 @@ _id_105C4( var_0 )
 
 _id_10595( var_0 )
 {
-    if ( isdefined( var_0._id_11931 ) && var_0._id_11931 - gettime() < 3000 )
+    if ( isdefined( var_0.timestamp ) && var_0.timestamp - gettime() < 3000 )
         return 0;
 
     foreach ( var_2 in level._id_1676 )
@@ -721,17 +721,17 @@ _id_105CA( var_0, var_1, var_2 )
 _id_1058D( var_0, var_1 )
 {
     var_0.team = var_1;
-    var_0._id_13CC3 = [];
-    var_0._id_13CC3["hover"] = "spaceship_assault_mp";
-    var_0._id_13CC3["fly"] = "spaceship_strike_mp";
-    var_0._id_13CC3["land"] = var_0._id_13CC3["hover"];
+    var_0.weapons = [];
+    var_0.weapons["hover"] = "spaceship_assault_mp";
+    var_0.weapons["fly"] = "spaceship_strike_mp";
+    var_0.weapons["land"] = var_0.weapons["hover"];
     _id_105BF( var_0 );
     var_0 _meth_84BC( level._id_A407._id_1051B );
     var_0 _meth_84BE( "spaceship" );
     thread _id_105A1( var_0 );
     thread _id_105A0( var_0 );
     thread _id_105A4( var_0 );
-    var_0.damagecallback = ::_id_3758;
+    var_0.damagecallback = ::callback_vehicledamage;
     return var_0;
 }
 
@@ -803,7 +803,7 @@ _id_105E1( var_0, var_1 )
 
 _id_10579( var_0, var_1 )
 {
-    if ( level._id_A407.allowgrenadedamage )
+    if ( level._id_A407._id_1C94 )
     {
         if ( isdefined( var_0._id_A83C ) )
         {
@@ -937,7 +937,7 @@ _id_105A7( var_0 )
         while ( var_0 usebuttonpressed() )
         {
             scripts\engine\utility::waitframe();
-            var_1 = var_1 + 0.0666667;
+            var_1 = var_1 + 0.06666667;
 
             if ( var_1 > 1.0 )
                 var_1 = 1.0;
@@ -1125,7 +1125,7 @@ _id_1057A( var_0 )
     if ( isdefined( var_0._id_105E8 ) && gettime() - var_0._id_105E8 < 1000 )
         return 0;
 
-    if ( level._id_A407.allowhide )
+    if ( level._id_A407._id_1C95 )
     {
         foreach ( var_2 in level._id_105EC )
         {
@@ -1438,12 +1438,12 @@ _id_10592( var_0 )
 
 _id_105C1( var_0 )
 {
-    var_0 scripts\mp\powers::removepower( var_0._id_AE7B );
-    var_0 scripts\mp\powers::removepower( var_0._id_AE7D );
+    var_0 scripts\mp\powers::removepower( var_0.loadoutpowerprimary );
+    var_0 scripts\mp\powers::removepower( var_0.loadoutpowersecondary );
 }
 
 _id_105C2( var_0 )
 {
-    var_0 scripts\mp\powers::givepower( var_0._id_AE7B, "primary" );
-    var_0 scripts\mp\powers::givepower( var_0._id_AE7D, "secondary" );
+    var_0 scripts\mp\powers::givepower( var_0.loadoutpowerprimary, "primary" );
+    var_0 scripts\mp\powers::givepower( var_0.loadoutpowersecondary, "secondary" );
 }

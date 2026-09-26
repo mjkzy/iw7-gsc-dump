@@ -4,7 +4,7 @@
 pamgrierinit( var_0, var_1, var_2, var_3 )
 {
     scripts\asm\zombie\zombie::_id_13F9A( var_0, var_1, var_2, var_3 );
-    var_4 = self _meth_80FE( "teleport_out", "revive_player" );
+    var_4 = self getanimindexfromalias( "teleport_out", "revive_player" );
 }
 
 isvalidaction( var_0 )
@@ -48,22 +48,22 @@ shouldplayentranceanim( var_0, var_1, var_2, var_3 )
 playanimandlookatenemy( var_0, var_1, var_2, var_3 )
 {
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, scripts\mp\agents\pamgrier\pamgrier_agent::getenemy() );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 1 );
 }
 
 isanimdone( var_0, var_1, var_2, var_3 )
 {
-    if ( scripts\asm\asm::_id_232B( var_1, "end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "early_end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "early_end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "finish_early" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "finish_early" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "code_move" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "code_move" ) )
         return 1;
 
     return 0;
@@ -103,7 +103,7 @@ playreviveanim( var_0, var_1, var_2, var_3 )
         thread dorevive( var_1, self.reviveplayer );
     }
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 meleenotehandler( var_0, var_1, var_2, var_3 )
@@ -172,21 +172,21 @@ playanimwithplaybackrate( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     var_4 = var_3;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, var_4 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, var_4 );
 }
 
-_id_BEA0( var_0, var_1, var_2, var_3 )
+needtoturn( var_0, var_1, var_2, var_3 )
 {
-    var_4 = _id_81DE();
+    var_4 = getturndesiredyaw();
 
-    if ( abs( angleclamp180( var_4 ) ) > self._id_129AF )
+    if ( abs( angleclamp180( var_4 ) ) > self.turnthreshold )
         return 1;
 
     return 0;
 }
 
-_id_81DE( var_0 )
+getturndesiredyaw( var_0 )
 {
     var_1 = undefined;
     var_2 = undefined;
@@ -201,9 +201,9 @@ _id_81DE( var_0 )
     return var_3;
 }
 
-_id_3F0A( var_0, var_1, var_2 )
+chooseturnanim( var_0, var_1, var_2 )
 {
-    var_3 = _id_81DE();
+    var_3 = getturndesiredyaw();
 
     if ( var_3 < 0 )
         var_4 = "right";
@@ -224,37 +224,37 @@ _id_3F0A( var_0, var_1, var_2 )
 
     var_6 = var_4 + "_" + var_5;
     var_7 = scripts\asm\asm::asm_lookupanimfromalias( var_1, var_6 );
-    var_8 = self _meth_8101( var_1, var_7 );
+    var_8 = self getanimentryname( var_1, var_7 );
     return var_7;
 }
 
 _id_D56A( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self.pathgoalpos;
     self scragentsetorientmode( "face angle abs", self.angles );
-    self _meth_8281( "anim deltas" );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4 );
+    self scragentsetanimmode( "anim deltas" );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4 );
 
     if ( !isdefined( var_5 ) && isdefined( self.pathgoalpos ) )
         self clearpath();
 
-    scripts\asm\asm_mp::_id_237F( "face current" );
+    scripts\asm\asm_mp::asm_settransitionorientmode_legacy( "face current" );
     scripts\asm\asm_mp::_id_237E( "code_move" );
 }
 
 playmeleeattack( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, var_3 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, var_3 );
 }
 
 choosemeleeattack( var_0, var_1, var_2 )
 {
     var_3 = "attack_moving_";
-    var_4 = _id_81DE( scripts\mp\agents\pamgrier\pamgrier_agent::getenemy() );
+    var_4 = getturndesiredyaw( scripts\mp\agents\pamgrier\pamgrier_agent::getenemy() );
 
     if ( var_4 < 0 )
         var_5 = "right";
@@ -284,9 +284,9 @@ choosemeleeattack( var_0, var_1, var_2 )
     return var_8;
 }
 
-_id_3EE4( var_0, var_1, var_2 )
+choosepainanim_covercorner( var_0, var_1, var_2 )
 {
-    return _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+    return scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 }
 
 playmovingpainanim( var_0, var_1, var_2, var_3 )
@@ -295,13 +295,13 @@ playmovingpainanim( var_0, var_1, var_2, var_3 )
 
     if ( !isdefined( self.pathgoalpos ) || self pathdisttogoal() < scripts\mp\agents\pamgrier\pamgrier_tunedata::gettunedata().min_moving_pain_dist )
     {
-        var_4 = _id_3EE4( var_0, "pain_generic", var_3 );
+        var_4 = choosepainanim_covercorner( var_0, "pain_generic", var_3 );
         self scragentsetorientmode( "face angle abs", self.angles );
-        scripts\asm\asm_mp::_id_2365( var_0, "pain_generic", var_2, var_4, 1 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, "pain_generic", var_2, var_4, 1 );
         return;
     }
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 chooseteleportoutanim( var_0, var_1, var_2 )
@@ -325,7 +325,7 @@ needschilltransition( var_0, var_1, var_2, var_3 )
 playchillpassivetransition( var_0, var_1, var_2, var_3 )
 {
     self.bneedschilltransition = undefined;
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 choosechillinidle( var_0, var_1, var_2 )
@@ -375,13 +375,13 @@ playchillinanim( var_0, var_1, var_2, var_3 )
     if ( isdefined( self.teleportangles ) )
         self scragentsetorientmode( "face angle abs", ( 0, self.teleportangles[1], 0 ) );
 
-    scripts\asm\asm_mp::_id_235F( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_loopanimstate( var_0, var_1, var_2, var_3 );
 }
 
 choosereviveanim( var_0, var_1, var_2 )
 {
     if ( !isdefined( self.reviveanimindex ) )
-        self.reviveanimindex = _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+        self.reviveanimindex = scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 
     return self.reviveanimindex;
 }
@@ -471,7 +471,7 @@ playteleportout( var_0, var_1, var_2, var_3 )
     if ( !isdefined( var_4 ) )
         var_4 = 1;
 
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_6 = scripts\mp\agents\pamgrier\pamgrier_agent::getenemy();
     self setscriptablepartstate( "movement", "teleport" );
     self.ishidden = 1;
@@ -527,7 +527,7 @@ playteleportout( var_0, var_1, var_2, var_3 )
     self clearpath();
     thread showmelater();
     thread gibnearbyenemies( 0.1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, var_4 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, var_4 );
 
     if ( scripts\engine\utility::is_true( self.btraversalteleport ) )
     {

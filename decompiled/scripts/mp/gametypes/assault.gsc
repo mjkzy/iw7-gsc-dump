@@ -53,7 +53,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     var_0 = getmatchrulesdata( "assaultData", "roundLength" );
     setdynamicdvar( "scr_assault_timelimit", var_0 );
     scripts\mp\utility::registertimelimitdvar( "assault", var_0 );
@@ -258,16 +258,16 @@ onnormaldeath( var_0, var_1, var_2, var_3, var_4 )
 
     if ( var_0.isplanting )
     {
-        thread scripts\mp\matchdata::loginitialstats( var_2, "planting" );
-        var_1 scripts\mp\utility::incperstat( "defends", 1 );
+        thread scripts\mp\matchdata::logkillevent( var_2, "planting" );
+        var_1 scripts\mp\utility::incpersstat( "defends", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
     }
     else if ( var_0.isbombcarrier )
-        thread scripts\mp\matchdata::loginitialstats( var_2, "carrying" );
+        thread scripts\mp\matchdata::logkillevent( var_2, "carrying" );
     else if ( var_0.isdefusing )
     {
-        thread scripts\mp\matchdata::loginitialstats( var_2, "defusing" );
-        var_1 scripts\mp\utility::incperstat( "defends", 1 );
+        thread scripts\mp\matchdata::logkillevent( var_2, "defusing" );
+        var_1 scripts\mp\utility::incpersstat( "defends", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
     }
 }

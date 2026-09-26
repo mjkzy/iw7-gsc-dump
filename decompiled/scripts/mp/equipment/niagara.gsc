@@ -86,7 +86,7 @@ _id_BFBB( var_0, var_1 )
     }
 
     if ( isdefined( self._id_BFB8._id_55DB ) )
-        self _meth_80DB();
+        self enableweaponpickup();
 
     if ( isdefined( self._id_BFB8.disabledusability ) )
     {
@@ -120,7 +120,7 @@ _id_BFC7()
     self endon( "death" );
     self endon( "disconnect" );
     self endon( "niagara_end" );
-    var_0 = scripts\mp\powers::_id_D735( "power_niagara" );
+    var_0 = scripts\mp\powers::power_getinputcommand( "power_niagara" );
     self notifyonplayercommand( "niagara_button_pressed", var_0 );
     self waittill( "niagara_button_pressed" );
     thread _id_BFBB();
@@ -153,7 +153,7 @@ _id_BFBC( var_0 )
     else
         thread _id_BFC6( var_0, var_3, 0 );
 
-    self._id_BFB8._id_6D96 = gettime();
+    self._id_BFB8.firetime = gettime();
     self._id_BFB8._id_6D9A = anglestoforward( self getplayerangles() ) * 1175 + ( 0, 0, 10 );
 }
 
@@ -179,7 +179,7 @@ _id_BFC4( var_0, var_1 )
     self notifyonplayercommand( "niagara_detonateButtonPressed", "+attack_akimbo_accessible" );
     self notifyonplayercommand( "niagara_detonateButtonPressed", "+smoke" );
     self waittill( "niagara_detonateButtonPressed" );
-    var_2 = ( gettime() - self._id_BFB8._id_6D96 ) / 1000;
+    var_2 = ( gettime() - self._id_BFB8.firetime ) / 1000;
     var_3 = self._id_BFB8._id_6D9A + ( 0, 0, -800 ) * var_2 * var_2;
     var_4 = vectortoangles( var_3 );
     var_5 = ( 0, 0, 1 ) * vectordot( var_3, ( 0, 0, 1 ) );
@@ -229,7 +229,7 @@ _id_BFC4( var_0, var_1 )
     }
 
     self._id_BFB8._id_6D9A = undefined;
-    self._id_BFB8._id_6D96 = undefined;
+    self._id_BFB8.firetime = undefined;
     var_0 radiusdamage( var_0.origin, 128, 15, 65, self, "MOD_EXPLOSIVE", "iw7_niagara_mp" );
     thread _id_BFBA( var_0.origin, var_0.angles );
     thread _id_BFC2( var_1, var_7 );

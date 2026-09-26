@@ -4,280 +4,283 @@
 callback_playerdamage_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12 )
 {
     if ( isdefined( var_1 ) && scripts\mp\utility::istrue( level.jittermodcheck ) && level.jittermodcheck == 2 && scripts\mp\utility::istrue( var_1.ismodded ) )
-        var_3 = 0;
-    else
     {
-        if ( isdefined( var_1 ) && var_1.classname == "worldspawn" )
-            var_1 = undefined;
+        var_3 = 0;
+        return;
+    }
 
-        if ( isdefined( var_1 ) && isdefined( var_1.gunner ) )
-            var_1 = var_1.gunner;
+    if ( isdefined( var_1 ) && var_1.classname == "worldspawn" )
+        var_1 = undefined;
 
-        if ( !scripts\mp\utility::gameflag( "prematch_done" ) )
-            return "finished";
+    if ( isdefined( var_1 ) && isdefined( var_1.gunner ) )
+        var_1 = var_1.gunner;
 
-        var_14 = gettime();
-        var_15 = var_2.health;
+    if ( !scripts\mp\utility::gameflag( "prematch_done" ) )
+        return "finished";
 
-        if ( isplayer( var_2 ) )
+    var_14 = gettime();
+    var_15 = var_2.health;
+
+    if ( isplayer( var_2 ) )
+    {
+        var_2._id_AA47 = var_2 getcurrentweapon();
+        var_2._id_13905 = var_2 scripts\mp\utility::isplayerads();
+
+        if ( var_2._id_13905 )
+            var_2._id_A98B = gettime();
+    }
+
+    if ( !level.tactical )
+        var_4 = var_4 | level.idflags_no_knockback;
+
+    if ( _id_B4CA( var_2, var_1, var_6 ) )
+        return;
+
+    if ( var_5 == "MOD_FALLING" && isdefined( var_2._id_115FC ) && var_2._id_115FC )
+        var_1 = var_2._id_115FD;
+
+    var_16 = 0.0;
+
+    if ( var_4 & level.idflags_stun )
+    {
+        var_16 = 0.0;
+        var_3 = 0;
+    }
+
+    var_17 = filterdamage( var_0, var_1, var_2, var_3, var_5, var_6, var_9 );
+
+    if ( isdefined( var_17 ) )
+        return var_17;
+
+    var_18 = scripts\mp\utility::attackerishittingteam( var_2, var_1 );
+
+    if ( var_18 )
+    {
+        var_3 = handlefriendlyfiredamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_16, var_11, var_12 );
+
+        if ( var_3 == 0 )
+            return;
+    }
+
+    if ( scripts\mp\utility::istrue( var_2.spawnprotection ) )
+    {
+        var_19 = isdefined( var_1.classname ) && var_1.classname == "trigger_hurt";
+
+        if ( !var_19 )
         {
-            var_2._id_AA47 = var_2 getcurrentweapon();
-            var_2._id_13905 = var_2 scripts\mp\utility::_id_9EE8();
-
-            if ( var_2._id_13905 )
-                var_2._id_A98B = gettime();
+            handledamagefeedback( var_0, var_1, var_2, 0, var_5, var_6, var_9, var_4, 1, 1 );
+            return "finished";
         }
+    }
 
-        if ( !level.tactical )
-            var_4 = var_4 | level.idflags_no_knockback;
+    var_20 = scripts\mp\utility::getequipmenttype( var_6 );
 
-        if ( _id_B4CA( var_2, var_1, var_6 ) )
+    if ( isdefined( var_20 ) )
+    {
+        if ( var_20 == "lethal" )
+            var_3 = lethalequipmentdamagemod( var_0, var_1, var_2, var_3, var_4, var_5, var_6 );
+        else if ( var_20 == "equipment_other" )
+        {
+            if ( var_6 == "bouncingbetty_mp" )
+            {
+                if ( !scripts\mp\weapons::minedamageheightpassed( var_0, var_2 ) )
+                    var_3 = 0;
+                else if ( var_2 getstance() == "crouch" || var_2 getstance() == "prone" )
+                    var_3 = int( var_3 / 2 );
+            }
+
+            if ( var_6 == "portal_grenade_mp" && var_3 != 400 )
+                var_2 thread scripts\mp\equipment\portal_grenade::_id_D68E( var_0, var_1 );
+        }
+    }
+
+    var_21 = scripts\mp\utility::_id_8238( var_6 );
+
+    if ( var_21 == "killstreak" )
+    {
+        var_3 = killstreakdamagefilter( var_1, var_2, var_3, var_6, var_5 );
+
+        if ( var_3 == 0 )
             return;
 
-        if ( var_5 == "MOD_FALLING" && isdefined( var_2._id_115FC ) && var_2._id_115FC )
-            var_1 = var_2._id_115FD;
+        if ( var_6 == "killstreak_jammer_mp" )
+            return "sWeapon == killstreak_jammer_mp";
 
-        var_16 = 0.0;
+        if ( isdefined( level.ac130player ) && isdefined( var_1 ) && level.ac130player == var_1 )
+            level notify( "ai_pain", var_2 );
+    }
 
-        if ( var_4 & level.idflags_stun )
-        {
-            var_16 = 0.0;
+    var_3 = modifydamagegeneral( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 );
+    var_3 = handleriotshieldhits( var_0, var_2, var_1, var_3, var_5, var_6, var_7, var_8, var_9, var_4 );
+
+    if ( isstring( var_3 ) )
+        return var_3;
+
+    if ( scripts\mp\utility::isplayerkillstreak( var_2 ) )
+    {
+        var_3 = var_2 scripts\mp\killstreaks\utility::getmodifiedantikillstreakdamage( var_1, var_6, var_5, var_3, var_2.maxhealth, 3, 4, 6, 0 );
+
+        if ( isdefined( var_1 ) && isplayer( var_1 ) && scripts\mp\equipment\phase_shift::isentityphaseshifted( var_1 ) )
             var_3 = 0;
-        }
+    }
 
-        var_17 = filterdamage( var_0, var_1, var_2, var_3, var_5, var_6, var_9 );
+    if ( isplayer( var_1 ) )
+        var_1 scripts\mp\perks\weaponpassives::_id_3E01();
 
-        if ( isdefined( var_17 ) )
-            return var_17;
+    var_22 = cac_modified_damage( var_2, var_1, var_3, var_5, var_6, var_7, var_8, var_9, var_0, 0, var_4 );
+    var_3 = var_22[0];
+    var_23 = var_22[1];
+    var_24 = var_22[2];
+    var_25 = var_23 != 0 || var_24 != 0;
+    var_9 = var_22[3];
 
-        var_18 = scripts\mp\utility::attackerishittingteam( var_2, var_1 );
+    if ( isdefined( var_2.forcehitlocation ) )
+        var_9 = var_2.forcehitlocation;
 
-        if ( var_18 )
+    scripts\mp\perks\perkfunctions::bulletoutlinecheck( var_1, var_2, var_6, var_5 );
+
+    if ( var_3 >= var_2.health && scripts\engine\utility::string_starts_with( var_6, "iw7_penetrationrail_mp" ) && var_5 != "MOD_MELEE" || var_3 >= var_2.health && scripts\engine\utility::string_starts_with( var_6, "iw7_nunchucks_mpl" ) && var_5 == "MOD_MELEE" )
+    {
+        var_26 = scripts\mp\weapons::impale_endpoint( var_7, var_8 );
+        var_27 = scripts\mp\weapons::trace_impale( var_7, var_26 );
+
+        if ( var_27["hittype"] != "hittype_world" )
         {
-            var_3 = handlefriendlyfiredamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_16, var_11, var_12 );
+            var_28 = ( var_8[0], var_8[1], var_8[2] );
 
-            if ( var_3 == 0 )
-                return;
-        }
-
-        if ( scripts\mp\utility::istrue( var_2.spawnprotection ) )
-        {
-            var_19 = isdefined( var_1.classname ) && var_1.classname == "trigger_hurt";
-
-            if ( !var_19 )
+            if ( var_28[2] > -0.3 && var_28[2] < 0.1 )
             {
-                handledamagefeedback( var_0, var_1, var_2, 0, var_5, var_6, var_9, var_4, 1, 1 );
-                return "finished";
+                var_28 = ( var_28[0], var_28[1], 0.1 );
+                vectornormalize( var_28 );
             }
+
+            var_2 knockback( var_28, 650.0 );
         }
+    }
 
-        var_20 = scripts\mp\utility::getequipmenttype( var_6 );
+    if ( isai( self ) )
+        self [[ level.bot_funcs["on_damaged"] ]]( var_1, var_3, var_5, var_6, var_0, var_9 );
 
-        if ( isdefined( var_20 ) )
-        {
-            if ( var_20 == "lethal" )
-                var_3 = lethalequipmentdamagemod( var_0, var_1, var_2, var_3, var_4, var_5, var_6 );
-            else if ( var_20 == "equipment_other" )
-            {
-                if ( var_6 == "bouncingbetty_mp" )
-                {
-                    if ( !scripts\mp\weapons::minedamageheightpassed( var_0, var_2 ) )
-                        var_3 = 0;
-                    else if ( var_2 getstance() == "crouch" || var_2 getstance() == "prone" )
-                        var_3 = int( var_3 / 2 );
-                }
+    if ( isplayer( var_1 ) && ( var_6 == "smoke_grenade_mp" || var_6 == "throwingknife_mp" || var_6 == "throwingknifeteleport_mp" || var_6 == "throwingknifesmokewall_mp" || var_6 == "gas_grenade_mp" || var_6 == "throwingreaper_mp" ) )
+        var_1 thread scripts\mp\gamelogic::threadedsetweaponstatbyname( var_6, 1, "hits" );
 
-                if ( var_6 == "portal_grenade_mp" && var_3 != 400 )
-                    var_2 thread scripts\mp\equipment\portal_grenade::_id_D68E( var_0, var_1 );
-            }
-        }
+    if ( var_5 == "MOD_FALLING" )
+        var_2 thread emitfalldamage( var_3 );
 
-        var_21 = scripts\mp\utility::_id_8238( var_6 );
+    if ( !isdefined( var_8 ) )
+        var_4 = var_4 | level.idflags_no_knockback;
 
-        if ( var_21 == "killstreak" )
-        {
-            var_3 = killstreakdamagefilter( var_1, var_2, var_3, var_6, var_5 );
+    if ( isdefined( var_1 ) && var_1.classname == "script_origin" && isdefined( var_1.type ) && var_1.type == "soft_landing" )
+        return "soft_landing";
 
-            if ( var_3 == 0 )
-                return;
+    logattacker( var_2, var_1, var_0, var_6, var_3, var_7, var_8, var_9, var_10, var_5 );
 
-            if ( var_6 == "killstreak_jammer_mp" )
-                return "sWeapon == killstreak_jammer_mp";
+    if ( isdefined( var_0 ) && isdefined( var_0.owner ) && var_0.owner.team != var_2.team )
+        var_2.lastdamagewasfromenemy = 1;
+    else
+        var_2.lastdamagewasfromenemy = isdefined( var_1 ) && var_1 != var_2;
 
-            if ( isdefined( level.ac130player ) && isdefined( var_1 ) && level.ac130player == var_1 )
-                level notify( "ai_pain", var_2 );
-        }
+    if ( var_2.lastdamagewasfromenemy )
+    {
+        var_29 = gettime();
+        var_1.damagedplayers[var_2.guid] = var_29;
+        var_2.lastdamagedtime = var_29;
+    }
 
-        var_3 = modifydamagegeneral( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 );
-        var_3 = handleriotshieldhits( var_0, var_2, var_1, var_3, var_5, var_6, var_7, var_8, var_9, var_4 );
+    var_2 _id_12EFD( var_3, var_1, var_9, var_5 );
 
-        if ( isstring( var_3 ) )
-            return var_3;
-
-        if ( scripts\mp\utility::_id_9EF0( var_2 ) )
-        {
-            var_3 = var_2 scripts\mp\killstreaks\utility::getmodifiedantikillstreakdamage( var_1, var_6, var_5, var_3, var_2.maxhealth, 3, 4, 6, 0 );
-
-            if ( isdefined( var_1 ) && isplayer( var_1 ) && scripts\mp\equipment\phase_shift::isentityphaseshifted( var_1 ) )
-                var_3 = 0;
-        }
-
+    if ( scripts\mp\codcasterclientmatchdata::shouldlogcodcasterclientmatchdata() )
+    {
         if ( isplayer( var_1 ) )
-            var_1 scripts\mp\perks\weaponpassives::_id_3E01();
-
-        var_22 = _id_3696( var_2, var_1, var_3, var_5, var_6, var_7, var_8, var_9, var_0, 0, var_4 );
-        var_3 = var_22[0];
-        var_23 = var_22[1];
-        var_24 = var_22[2];
-        var_25 = var_23 != 0 || var_24 != 0;
-        var_9 = var_22[3];
-
-        if ( isdefined( var_2.forcehitlocation ) )
-            var_9 = var_2.forcehitlocation;
-
-        scripts\mp\perks\perkfunctions::bulletoutlinecheck( var_1, var_2, var_6, var_5 );
-
-        if ( var_3 >= var_2.health && scripts\engine\utility::string_starts_with( var_6, "iw7_penetrationrail_mp" ) && var_5 != "MOD_MELEE" || var_3 >= var_2.health && scripts\engine\utility::string_starts_with( var_6, "iw7_nunchucks_mpl" ) && var_5 == "MOD_MELEE" )
         {
-            var_26 = scripts\mp\weapons::impale_endpoint( var_7, var_8 );
-            var_27 = scripts\mp\weapons::trace_impale( var_7, var_26 );
+            var_30 = scripts\mp\codcasterclientmatchdata::getcodcasterplayervalue( var_1, "damageDone" );
+            scripts\mp\codcasterclientmatchdata::setcodcasterplayervalue( var_1, "damageDone", var_30 + var_3 );
+        }
+    }
 
-            if ( var_27["hittype"] != "hittype_world" )
+    var_2 thread scripts\mp\missions::_id_D378( var_0, var_1, var_3, var_5, var_6, var_9 );
+
+    if ( isdefined( var_1 ) && var_3 != 0 )
+    {
+        var_1 notify( "victim_damaged", var_2, var_0, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 );
+        var_1 scripts\mp\contractchallenges::contractplayerdamaged( var_3 );
+    }
+
+    var_31 = var_8;
+
+    if ( isdefined( var_4 ) && var_4 & level.idflags_ricochet && var_3 < self.health )
+        var_31 = var_2.origin - var_1.origin;
+
+    var_2 finishplayerdamagewrapper( var_0, var_1, var_3, var_4, var_5, var_6, var_7, var_31, var_9, var_10, var_16, var_11, var_12, var_25 );
+
+    if ( var_3 > 10 && isdefined( var_0 ) && !var_2 scripts\mp\utility::isusingremote() && isplayer( var_2 ) )
+    {
+        var_2 thread scripts\mp\shellshock::bloodeffect( var_0.origin );
+
+        if ( isplayer( var_0 ) && var_5 == "MOD_MELEE" )
+        {
+            if ( isalive( var_2 ) && !var_2 scripts\mp\utility::_hasperk( "specialty_stun_resistance" ) )
             {
-                var_28 = ( var_8[0], var_8[1], var_8[2] );
-
-                if ( var_28[2] > -0.3 && var_28[2] < 0.1 )
-                {
-                    var_28 = ( var_28[0], var_28[1], 0.1 );
-                    vectornormalize( var_28 );
-                }
-
-                var_2 _meth_84DC( var_28, 650.0 );
+                var_2 thread _id_B645( 0.75 );
+                var_2._id_904B = gettime();
             }
+
+            var_0 thread scripts\mp\shellshock::_id_2BC3( var_6 );
+            var_2 playrumbleonentity( "defaultweapon_melee" );
+            var_0 playrumbleonentity( "defaultweapon_melee" );
         }
+    }
 
-        if ( isai( self ) )
-            self [[ level.bot_funcs["on_damaged"] ]]( var_1, var_3, var_5, var_6, var_0, var_9 );
-
-        if ( isplayer( var_1 ) && ( var_6 == "smoke_grenade_mp" || var_6 == "throwingknife_mp" || var_6 == "throwingknifeteleport_mp" || var_6 == "throwingknifesmokewall_mp" || var_6 == "gas_grenade_mp" || var_6 == "throwingreaper_mp" ) )
-            var_1 thread scripts\mp\gamelogic::threadedsetweaponstatbyname( var_6, 1, "hits" );
-
-        if ( var_5 == "MOD_FALLING" )
-            var_2 thread _id_612A( var_3 );
-
-        if ( !isdefined( var_8 ) )
-            var_4 = var_4 | level.idflags_no_knockback;
-
-        if ( isdefined( var_1 ) && var_1.classname == "script_origin" && isdefined( var_1.type ) && var_1.type == "soft_landing" )
-            return "soft_landing";
-
-        logattacker( var_2, var_1, var_0, var_6, var_3, var_7, var_8, var_9, var_10, var_5 );
-
-        if ( isdefined( var_0 ) && isdefined( var_0.owner ) && var_0.owner.team != var_2.team )
-            var_2.lastdamagewasfromenemy = 1;
-        else
-            var_2.lastdamagewasfromenemy = isdefined( var_1 ) && var_1 != var_2;
-
-        if ( var_2.lastdamagewasfromenemy )
+    if ( isagent( self ) )
+    {
+        if ( scripts\mp\utility::isplayerkillstreak( self ) )
         {
-            var_29 = gettime();
-            var_1.damagedplayers[var_2.guid] = var_29;
-            var_2.lastdamagedtime = var_29;
-        }
-
-        var_2 _id_12EFD( var_3, var_1, var_9, var_5 );
-
-        if ( scripts\mp\codcasterclientmatchdata::shouldlogcodcasterclientmatchdata() )
-        {
-            if ( isplayer( var_1 ) )
+            if ( var_3 >= self.health )
             {
-                var_30 = scripts\mp\codcasterclientmatchdata::getcodcasterplayervalue( var_1, "damageDone" );
-                scripts\mp\codcasterclientmatchdata::setcodcasterplayervalue( var_1, "damageDone", var_30 + var_3 );
-            }
-        }
+                var_3 = self.health - 1;
 
-        var_2 thread scripts\mp\missions::_id_D378( var_0, var_1, var_3, var_5, var_6, var_9 );
-
-        if ( isdefined( var_1 ) && var_3 != 0 )
-        {
-            var_1 notify( "victim_damaged", var_2, var_0, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 );
-            var_1 scripts\mp\contractchallenges::contractplayerdamaged( var_3 );
-        }
-
-        var_31 = var_8;
-
-        if ( isdefined( var_4 ) && var_4 & level.idflags_ricochet && var_3 < self.health )
-            var_31 = var_2.origin - var_1.origin;
-
-        var_2 finishplayerdamagewrapper( var_0, var_1, var_3, var_4, var_5, var_6, var_7, var_31, var_9, var_10, var_16, var_11, var_12, var_25 );
-
-        if ( var_3 > 10 && isdefined( var_0 ) && !var_2 scripts\mp\utility::isusingremote() && isplayer( var_2 ) )
-        {
-            var_2 thread scripts\mp\shellshock::bloodeffect( var_0.origin );
-
-            if ( isplayer( var_0 ) && var_5 == "MOD_MELEE" )
-            {
-                if ( isalive( var_2 ) && !var_2 scripts\mp\utility::_hasperk( "specialty_stun_resistance" ) )
-                {
-                    var_2 thread _id_B645( 0.75 );
-                    var_2._id_904B = gettime();
-                }
-
-                var_0 thread scripts\mp\shellshock::_id_2BC3( var_6 );
-                var_2 playrumbleonentity( "defaultweapon_melee" );
-                var_0 playrumbleonentity( "defaultweapon_melee" );
-            }
-        }
-
-        if ( isagent( self ) )
-        {
-            if ( scripts\mp\utility::_id_9EF0( self ) )
-            {
-                if ( var_3 >= self.health )
-                {
-                    var_3 = self.health - 1;
-
-                    if ( isdefined( self.owner ) )
-                        self.owner notify( "player_killstreak_agent_death", self, var_0, var_1, var_3, var_4, var_5, var_6 );
-                }
-                else
-                {
-                    self [[ scripts\mp\agents\agent_utility::agentfunc( "on_damaged_finished" ) ]]( var_0, var_1, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 );
-
-                    if ( self._id_165A == "remote_c8" )
-                    {
-                        if ( isdefined( self.owner ) && isdefined( self.owner._id_4BE1 ) && self.owner._id_4BE1 == "MANUAL" )
-                            self setclientomnvar( "ui_remote_c8_health", self.health / self.maxhealth );
-                    }
-                }
+                if ( isdefined( self.owner ) )
+                    self.owner notify( "player_killstreak_agent_death", self, var_0, var_1, var_3, var_4, var_5, var_6 );
             }
             else
+            {
                 self [[ scripts\mp\agents\agent_utility::agentfunc( "on_damaged_finished" ) ]]( var_0, var_1, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 );
+
+                if ( self.activeplayerstreak == "remote_c8" )
+                {
+                    if ( isdefined( self.owner ) && isdefined( self.owner.currentcombatmode ) && self.owner.currentcombatmode == "MANUAL" )
+                        self setclientomnvar( "ui_remote_c8_health", self.health / self.maxhealth );
+                }
+            }
         }
-
-        handledamagefeedback( var_0, var_1, var_2, var_3, var_5, var_6, var_9, var_4, var_23, var_24 );
-        scripts\mp\gamelogic::sethasdonecombat( var_2, 1 );
-
-        if ( isdefined( var_1 ) && var_1 != var_2 )
-            level.usestartspawns = 0;
-
-        if ( isplayer( var_1 ) && isdefined( var_1.pers["participation"] ) )
-            var_1.pers["participation"]++;
-        else if ( isplayer( var_1 ) )
-            var_1.pers["participation"] = 1;
-
-        if ( isdefined( level.matchrecording_logeventmsg ) && isplayer( var_2 ) && isdefined( var_0 ) && isplayer( var_0 ) && scripts\engine\utility::isbulletdamage( var_5 ) )
-        {
-            if ( var_15 == var_2.maxhealth && var_2.health != self.maxhealth )
-                var_2.engagementstarttime = gettime();
-        }
-
-        if ( allowdamageflash( var_1, var_2, var_6, var_5, var_3 ) )
-            var_2 showuidamageflash();
-
-        if ( isdefined( var_1 ) && var_1 scripts\mp\utility::_hasperk( "specialty_mark_targets" ) && var_3 > 0 )
-            var_1 thread scripts\mp\perks\perk_mark_targets::marktarget_run( var_2, var_5 );
+        else
+            self [[ scripts\mp\agents\agent_utility::agentfunc( "on_damaged_finished" ) ]]( var_0, var_1, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 );
     }
+
+    handledamagefeedback( var_0, var_1, var_2, var_3, var_5, var_6, var_9, var_4, var_23, var_24 );
+    scripts\mp\gamelogic::sethasdonecombat( var_2, 1 );
+
+    if ( isdefined( var_1 ) && var_1 != var_2 )
+        level.usestartspawns = 0;
+
+    if ( isplayer( var_1 ) && isdefined( var_1.pers["participation"] ) )
+        var_1.pers["participation"]++;
+    else if ( isplayer( var_1 ) )
+        var_1.pers["participation"] = 1;
+
+    if ( isdefined( level.matchrecording_logeventmsg ) && isplayer( var_2 ) && isdefined( var_0 ) && isplayer( var_0 ) && scripts\engine\utility::isbulletdamage( var_5 ) )
+    {
+        if ( var_15 == var_2.maxhealth && var_2.health != self.maxhealth )
+            var_2.engagementstarttime = gettime();
+    }
+
+    if ( allowdamageflash( var_1, var_2, var_6, var_5, var_3 ) )
+        var_2 showuidamageflash();
+
+    if ( isdefined( var_1 ) && var_1 scripts\mp\utility::_hasperk( "specialty_mark_targets" ) && var_3 > 0 )
+        var_1 thread scripts\mp\perks\perk_mark_targets::marktarget_run( var_2, var_5 );
+
+    return "finished";
 }
 
 _id_B645( var_0 )
@@ -320,13 +323,13 @@ allowdamageflash( var_0, var_1, var_2, var_3, var_4 )
     if ( var_4 == 0 )
         return 0;
 
-    if ( suppressdamageflash( var_0, var_1, var_2, var_3, var_4 ) )
+    if ( _id_112D2( var_0, var_1, var_2, var_3, var_4 ) )
         return 0;
 
     return 1;
 }
 
-suppressdamageflash( var_0, var_1, var_2, var_3, var_4 )
+_id_112D2( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( isdefined( var_2 ) )
     {
@@ -340,7 +343,7 @@ suppressdamageflash( var_0, var_1, var_2, var_3, var_4 )
     return 0;
 }
 
-_id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 )
+cac_modified_damage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 )
 {
     if ( isplayer( var_0 ) && ( var_0 _meth_8568() || var_0 _meth_8569() ) )
         return [ 0, 0, 0, var_7 ];
@@ -410,7 +413,7 @@ _id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
         else if ( isplayer( var_1 ) && ( var_1 scripts\mp\utility::_hasperk( "specialty_bulletdamage" ) || var_1 scripts\mp\utility::_hasperk( "specialty_moredamage" ) ) )
             var_11 = var_11 + var_2 * level._id_3245;
         else if ( var_0 scripts\mp\utility::_hasperk( "specialty_armorvest" ) )
-            var_11 = var_11 - var_2 * level._id_21A3;
+            var_11 = var_11 - var_2 * level.armorvestbulletdelta;
         else if ( var_0 scripts\mp\utility::_hasperk( "specialty_headgear" ) && scripts\mp\utility::isheadshot( var_4, var_7, var_3, var_1 ) && !scripts\mp\utility::isfmjdamage( var_4, var_3 ) )
         {
             var_11 = var_11 - var_2 * level._id_8C74;
@@ -463,7 +466,7 @@ _id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
         }
 
         if ( scripts\mp\weapons::_id_A008( var_4 ) )
-            var_0 thread scripts\mp\weapons::_id_20E4();
+            var_0 thread scripts\mp\weapons::applyweaponsonicstun();
 
         if ( isdefined( var_0._id_FC99 ) )
             var_2 = 0;
@@ -494,7 +497,7 @@ _id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
                 var_0 thread scripts\mp\perks\perkfunctions::setpainted( var_1 );
         }
 
-        if ( isdefined( var_0._id_1177D ) && var_0._id_1177D )
+        if ( isdefined( var_0.thermodebuffed ) && var_0.thermodebuffed )
             var_11 = var_11 + int( var_2 * level._id_1177E );
 
         if ( isplayer( var_1 ) && weaponinheritsperks( var_4 ) && ( var_1 scripts\mp\utility::_hasperk( "specialty_explosivedamage" ) && var_0 scripts\mp\utility::_hasperk( "specialty_blastshield" ) ) )
@@ -502,15 +505,15 @@ _id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
 
         }
         else if ( isplayer( var_1 ) && weaponinheritsperks( var_4 ) && !scripts\mp\utility::iskillstreakweapon( var_4 ) && var_1 scripts\mp\utility::_hasperk( "specialty_explosivedamage" ) )
-            var_11 = var_11 + var_2 * level._id_69FE;
-        else if ( var_0 scripts\mp\utility::_hasperk( "specialty_blastshield" ) && !scripts\mp\utility::_id_13C9A( var_4, var_7 ) && !scripts\mp\utility::_id_9F7E( var_0, var_8, var_4, var_3 ) && !( var_3 == "MOD_PROJECTILE" ) )
+            var_11 = var_11 + var_2 * level.explosivedamagemod;
+        else if ( var_0 scripts\mp\utility::_hasperk( "specialty_blastshield" ) && !scripts\mp\utility::_id_13C9A( var_4, var_7 ) && !scripts\mp\utility::isstuckdamage( var_0, var_8, var_4, var_3 ) && !( var_3 == "MOD_PROJECTILE" ) )
         {
-            var_23 = scripts\mp\weapons::glprox_modifiedblastshieldconst( level._id_2B68, var_4 );
+            var_23 = scripts\mp\weapons::glprox_modifiedblastshieldconst( level.blastshieldmod, var_4 );
             var_23 = scripts\mp\equipment\ground_pound::groundpound_modifiedblastshieldconst( var_23, var_4 );
             var_24 = int( var_2 * var_23 );
 
             if ( var_1 != var_0 )
-                var_24 = clamp( var_24, 0, level._id_2B67 );
+                var_24 = clamp( var_24, 0, level.blastshieldclamp );
 
             var_11 = var_11 - ( var_2 - var_24 );
         }
@@ -523,8 +526,8 @@ _id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
                 var_2 = var_2 * var_12;
         }
 
-        if ( isdefined( level._id_ABBF ) && !scripts\mp\weapons::_id_ABC1() )
-            var_2 = var_2 * level._id_8488;
+        if ( isdefined( level.lethaldelay ) && !scripts\mp\weapons::lethaldelaypassed() )
+            var_2 = var_2 * level.graceperiodgrenademod;
 
         if ( isdefined( var_0._id_FC99 ) )
             var_2 = 0;
@@ -553,7 +556,7 @@ _id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
     }
     else if ( var_3 == "MOD_MELEE" )
     {
-        if ( isdefined( var_8 ) && scripts\mp\utility::_id_9EF0( var_8 ) && var_8._id_165A == "remote_c8" )
+        if ( isdefined( var_8 ) && scripts\mp\utility::isplayerkillstreak( var_8 ) && var_8.activeplayerstreak == "remote_c8" )
             var_2 = self.health - 1;
         else if ( var_0 scripts\mp\utility::isjuggernaut() )
         {
@@ -561,12 +564,12 @@ _id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
             var_11 = 0;
         }
         else if ( var_4 == "iw7_reaperblade_mp" )
-            var_0 thread scripts\mp\supers\super_reaper::_id_A668();
+            var_0 thread scripts\mp\supers\super_reaper::killkidnappedplayer();
         else if ( isdefined( var_0 scripts\mp\supers::getcurrentsuperref() ) && var_0 scripts\mp\supers::getcurrentsuperref() == "super_reaper" && var_0 scripts\mp\supers::issuperinuse() )
             var_2 = int( min( var_2, scripts\mp\supers\super_reaper::_id_93D9() ) );
         else if ( scripts\mp\utility::_id_9E7D( var_8, var_0, var_4, var_3 ) )
             var_2 = var_0.health;
-        else if ( isbehindmeleevictim( var_1, var_0 ) && ( isdefined( var_8 ) && !scripts\mp\utility::_id_9EF0( var_8 ) ) )
+        else if ( isbehindmeleevictim( var_1, var_0 ) && ( isdefined( var_8 ) && !scripts\mp\utility::isplayerkillstreak( var_8 ) ) )
             var_2 = int( max( var_2, 100 ) );
         else
             var_2 = 70;
@@ -607,7 +610,7 @@ _id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
             var_2 = 0;
 
         if ( isdefined( var_3 ) && var_3 == "MOD_IMPACT" && getweaponbasename( var_4 ) == "iw7_venomx_mp" )
-            var_1 scripts\mp\missions::_id_D991( "ch_iw7_venomx_direct" );
+            var_1 scripts\mp\missions::processchallengedaily( "ch_iw7_venomx_direct" );
     }
     else if ( var_3 == "MOD_UNKNOWN" || var_3 == "MOD_MELEE_DOG" )
     {
@@ -678,7 +681,7 @@ _id_3696( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
     }
 
     if ( scripts\mp\utility::hashealthshield( var_0 ) )
-        var_2 = var_0 scripts\mp\utility::_id_7EF7( var_2 );
+        var_2 = var_0 scripts\mp\utility::gethealthshielddamage( var_2 );
 
     if ( var_2 <= 1 )
         var_2 = int( ceil( clamp( var_2, 0, 1 ) ) );
@@ -812,9 +815,9 @@ friendlyfire_ignoresdamageattacker( var_0, var_1, var_2, var_3, var_4, var_5, va
 
                 if ( isdefined( var_15 ) && isdefined( var_15.owner ) )
                 {
-                    if ( !isdefined( var_15.owner._id_4BE1 ) )
+                    if ( !isdefined( var_15.owner.currentcombatmode ) )
                         var_14 = 1;
-                    else if ( var_15.owner._id_4BE1 != "MANUAL" )
+                    else if ( var_15.owner.currentcombatmode != "MANUAL" )
                         var_14 = 1;
                 }
 
@@ -892,7 +895,7 @@ handlefriendlyfiredamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7
 
         if ( var_2 scripts\mp\utility::isjuggernaut() )
         {
-            var_14 = _id_3696( var_2, var_1, var_3, var_5, var_6, var_7, var_8, var_9, var_0, 0, var_4 );
+            var_14 = cac_modified_damage( var_2, var_1, var_3, var_5, var_6, var_7, var_8, var_9, var_0, 0, var_4 );
             var_3 = var_14[0];
             var_15 = var_14[1];
             var_16 = var_14[2];
@@ -1010,7 +1013,7 @@ handleriotshieldhits( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
 
         if ( isdefined( var_10 ) )
         {
-            if ( isplayer( var_10 ) || scripts\mp\utility::_id_9EF0( var_10 ) )
+            if ( isplayer( var_10 ) || scripts\mp\utility::isplayerkillstreak( var_10 ) )
             {
                 if ( _id_9D68( var_10, var_1 ) )
                 {
@@ -1020,7 +1023,7 @@ handleriotshieldhits( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
             }
             else if ( isdefined( var_5 ) && ( var_5 == "destructible_car" || scripts\mp\utility::iskillstreakweapon( var_5 ) ) || ( isexplosivedamagemod( var_4 ) || var_4 == "MOD_PROJECTILE" ) )
             {
-                var_1._id_FC96 = var_1._id_FC96 + var_3;
+                var_1.shielddamage = var_1.shielddamage + var_3;
 
                 if ( _id_9D68( var_10, var_1 ) && !var_1 scripts\mp\utility::_hasperk( "specialty_blastshield" ) )
                     return var_3 * 3;
@@ -1030,7 +1033,7 @@ handleriotshieldhits( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
         }
     }
 
-    var_11 = scripts\mp\utility::istrue( var_1._id_9331 );
+    var_11 = scripts\mp\utility::istrue( var_1.ignoreriotshieldxp );
 
     if ( isdefined( var_1.owner ) )
     {
@@ -1044,8 +1047,8 @@ handleriotshieldhits( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
     {
         if ( isplayer( var_2 ) )
         {
-            var_2._id_A93F = var_1;
-            var_2._id_A940 = gettime();
+            var_2.lastattackedshieldplayer = var_1;
+            var_2.lastattackedshieldtime = gettime();
         }
 
         var_1 notify( "shield_blocked" );
@@ -1056,14 +1059,14 @@ handleriotshieldhits( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
             var_12 = var_3;
         else
         {
-            var_13 = _id_3696( var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_0, 0, var_9 );
+            var_13 = cac_modified_damage( var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_0, 0, var_9 );
             var_12 = var_13[0];
             var_14 = var_13[1];
             var_15 = var_13[2];
             var_8 = var_13[3];
         }
 
-        var_1._id_FC96 = var_1._id_FC96 + var_12;
+        var_1.shielddamage = var_1.shielddamage + var_12;
         var_1._id_FC97 = var_1._id_FC97 + var_12;
 
         if ( isplayer( var_2 ) && isdefined( var_1.rearguardattackers ) )
@@ -1080,9 +1083,9 @@ handleriotshieldhits( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
             return "hit shield";
 
         if ( !scripts\mp\utility::isenvironmentweapon( var_5 ) || scripts\engine\utility::cointoss() )
-            var_1._id_FC95++;
+            var_1.shieldbullethits++;
 
-        if ( var_1._id_FC95 >= level.riotshieldxpbullets )
+        if ( var_1.shieldbullethits >= level.riotshieldxpbullets )
         {
             var_17 = 1.0;
 
@@ -1094,9 +1097,9 @@ handleriotshieldhits( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
             var_1 thread scripts\mp\utility::giveunifiedpoints( "shield_damage", var_19, var_18 * var_17 );
             var_1 thread giverecentshieldxp();
             var_1 thread scripts\mp\missions::processchallenge( "shield_damage", var_1._id_FC97 );
-            var_1 thread scripts\mp\missions::processchallenge( "shield_bullet_hits", var_1._id_FC95 );
+            var_1 thread scripts\mp\missions::processchallenge( "shield_bullet_hits", var_1.shieldbullethits );
             var_1._id_FC97 = 0;
-            var_1._id_FC95 = 0;
+            var_1.shieldbullethits = 0;
         }
     }
 
@@ -1112,7 +1115,7 @@ handleriotshieldhits( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
     }
     else if ( var_9 & level.idflags_shield_explosive_splash )
     {
-        if ( scripts\mp\utility::_id_9F7F( var_1, var_0, var_5, var_4 ) )
+        if ( scripts\mp\utility::isstuckdamagekill( var_1, var_0, var_5, var_4 ) )
         {
             var_1.forcehitlocation = "none";
             var_3 = var_1.maxhealth;
@@ -1162,7 +1165,7 @@ filterdamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     if ( !isdefined( var_1 ) && var_4 != "MOD_FALLING" )
         return "invalid attacker";
 
-    var_2 = scripts\mp\utility::_id_143B( var_2 );
+    var_2 = scripts\mp\utility::_validatevictim( var_2 );
 
     if ( !isdefined( var_2 ) )
         return "invalidVictim";
@@ -1240,7 +1243,7 @@ logattacker( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_
         level.lastlegitimateattacker = var_1;
 
     if ( isdefined( var_1 ) && isplayer( var_1 ) && isdefined( var_3 ) )
-        var_1 thread scripts\mp\weapons::_id_3E1E( var_3, var_0 );
+        var_1 thread scripts\mp\weapons::checkhit( var_3, var_0 );
 
     if ( isdefined( var_1 ) && isplayer( var_1 ) && isdefined( var_3 ) && var_1 != var_0 )
     {
@@ -1346,11 +1349,11 @@ handledamagefeedback( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
             var_12 = "hitjuggernaut";
         else if ( var_7 & level.idflags_stun )
             var_12 = "stun";
-        else if ( isexplosivedamagemod( var_4 ) && ( isdefined( var_2._id_1177D ) && var_2._id_1177D ) )
+        else if ( isexplosivedamagemod( var_4 ) && ( isdefined( var_2.thermodebuffed ) && var_2.thermodebuffed ) )
             var_12 = "thermobaric_debuff";
-        else if ( scripts\mp\utility::_id_9F93( var_5, var_4 ) && var_2 scripts\mp\utility::_hasperk( "specialty_stun_resistance" ) )
+        else if ( scripts\mp\utility::istacticaldamage( var_5, var_4 ) && var_2 scripts\mp\utility::_hasperk( "specialty_stun_resistance" ) )
             var_12 = "hittacresist";
-        else if ( isexplosivedamagemod( var_4 ) && var_2 scripts\mp\utility::_hasperk( "specialty_blastshield" ) && !scripts\mp\utility::_id_13C9A( var_5, var_6 ) && !scripts\mp\utility::_id_9F7E( var_2, var_0, var_5, var_4 ) )
+        else if ( isexplosivedamagemod( var_4 ) && var_2 scripts\mp\utility::_hasperk( "specialty_blastshield" ) && !scripts\mp\utility::_id_13C9A( var_5, var_6 ) && !scripts\mp\utility::isstuckdamage( var_2, var_0, var_5, var_4 ) )
             var_12 = "hitblastshield";
         else if ( var_2 scripts\mp\utility::_hasperk( "specialty_combathigh" ) )
             var_12 = "hitendgame";
@@ -1371,7 +1374,7 @@ handledamagefeedback( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
             var_12 = "hitlowdamage";
         else if ( var_2 scripts\mp\utility::isspawnprotected() && scripts\mp\utility::iskillstreakweapon( var_5 ) )
             var_12 = "hitspawnprotection";
-        else if ( !_id_100C1( var_5 ) )
+        else if ( !shouldweaponfeedback( var_5 ) )
             var_12 = "none";
 
         var_14 = "high_damage";
@@ -1403,7 +1406,7 @@ lethalequipmentdamagemod( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     if ( isdefined( var_0 ) && isdefined( var_0.damagedby ) )
         var_1 = var_0.damagedby;
 
-    if ( scripts\mp\utility::_id_9F7F( var_2, var_0, var_6, var_5 ) )
+    if ( scripts\mp\utility::isstuckdamagekill( var_2, var_0, var_6, var_5 ) )
         var_3 = var_2.maxhealth;
 
     if ( isdefined( var_5 ) && var_5 != "MOD_IMPACT" )
@@ -1419,25 +1422,25 @@ lethalequipmentdamagemod( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     return var_3;
 }
 
-_id_1177F()
+thermodebuffwatcher()
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
     var_0 = gettime() + 5000;
     wait 0.05;
-    self._id_1177D = 1;
+    self.thermodebuffed = 1;
 
     for (;;)
     {
         if ( self.health == self.maxhealth )
         {
-            self._id_1177D = 0;
+            self.thermodebuffed = 0;
             return;
         }
 
         if ( gettime() >= var_0 )
         {
-            self._id_1177D = 0;
+            self.thermodebuffed = 0;
             return;
         }
 
@@ -1466,7 +1469,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     var_13 = 0;
     self setblurforplayer( 0, 0 );
     scripts\mp\outline::outlinedisableinternalall( self );
-    var_2._id_1519 = 0;
+    var_2.abilitychosen = 0;
     var_2.perkoutlined = 0;
     var_2.attacker = var_1;
 
@@ -1485,8 +1488,8 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
 
     if ( var_6 == "none" )
     {
-        if ( isdefined( var_0 ) && isdefined( var_0._id_28AF ) )
-            var_6 = var_0._id_28AF;
+        if ( isdefined( var_0 ) && isdefined( var_0.baseweapon ) )
+            var_6 = var_0.baseweapon;
     }
 
     if ( isdefined( var_0 ) && !isplayer( var_0 ) )
@@ -1526,7 +1529,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     }
     else
     {
-        var_2.fauxdeath = 1;
+        var_2.fauxdead = 1;
         self notify( "death" );
     }
 
@@ -1652,14 +1655,14 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         var_5 = "MOD_HEAD_SHOT";
     else if ( !isdefined( var_2.nuked ) )
     {
-        if ( isdefined( level._id_4C4A ) )
-            [[ level._id_4C4A ]]( var_2, var_5, var_0 );
+        if ( isdefined( level.custom_death_sound ) )
+            [[ level.custom_death_sound ]]( var_2, var_5, var_0 );
         else if ( var_5 != "MOD_MELEE" )
             var_2 scripts\mp\utility::playdeathsound();
     }
 
-    if ( isdefined( level._id_4C47 ) )
-        [[ level._id_4C47 ]]( var_2, var_5, var_0 );
+    if ( isdefined( level.custom_death_effect ) )
+        [[ level.custom_death_effect ]]( var_2, var_5, var_0 );
 
     if ( isdefined( var_1 ) && isdefined( var_2 ) && var_5 == "MOD_MELEE" )
     {
@@ -1732,7 +1735,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         }
     }
 
-    if ( scripts\mp\utility::_id_9EF0( var_2 ) )
+    if ( scripts\mp\utility::isplayerkillstreak( var_2 ) )
     {
         var_2.playerproxyagent scripts\mp\weapons::dropscavengerfordeath( var_1 );
         var_2.playerproxyagent [[ level.weapondropfunction ]]( var_1, var_5 );
@@ -1751,7 +1754,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
             var_2 setclientomnvar( "ui_killcam_killedby_id", var_1 getentitynumber() );
     }
 
-    var_31 = isdefined( var_2.fauxdeath ) && var_2.fauxdeath && isdefined( var_2.switching_teams ) && var_2.switching_teams;
+    var_31 = isdefined( var_2.fauxdead ) && var_2.fauxdead && isdefined( var_2.switching_teams ) && var_2.switching_teams;
 
     if ( !var_31 )
         var_2 scripts\mp\playerlogic::removefromalivecount();
@@ -1765,7 +1768,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
 
         if ( !isdefined( level.ignorescoring ) && !var_28 )
         {
-            var_32 scripts\mp\utility::incperstat( "deaths", 1, isdefined( level.ignorekdrstats ) );
+            var_32 scripts\mp\utility::incpersstat( "deaths", 1, isdefined( level.ignorekdrstats ) );
             var_32.deaths = var_32 scripts\mp\utility::getpersstat( "deaths" );
             var_32 scripts\mp\utility::updatepersratio( "kdRatio", "kills", "deaths", level.ignorekdrstats );
             var_32 scripts\mp\persistence::statsetchild( "round", "deaths", var_32.deaths, level.ignorekdrstats );
@@ -1793,7 +1796,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         if ( isdefined( var_35 ) )
         {
             var_36 = level._id_110EC.rarity[var_35];
-            var_37 = level._id_110EC._id_E76D[var_35];
+            var_37 = level._id_110EC.row[var_35];
 
             if ( var_33 != "none" )
             {
@@ -1831,7 +1834,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     var_2.deathspectatepos = undefined;
 
     if ( var_2 isswitchingteams() )
-        _id_89F1();
+        handleteamchangedeath();
     else if ( !isplayer( var_1 ) || isplayer( var_1 ) && var_5 == "MOD_FALLING" && ( !isdefined( var_2._id_115FC ) && !var_2._id_115FC ) )
     {
         var_2.deathspectatepos = var_2.origin;
@@ -1885,7 +1888,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
                     var_1 scripts\mp\missions::processchallenge( "ch_thisisaknife" );
             }
             else if ( isdefined( var_2.isjuggernautlevelcustom ) && var_2.isjuggernautlevelcustom )
-                var_1 thread scripts\mp\utility::teamplayercardsplash( level._id_B332, var_1 );
+                var_1 thread scripts\mp\utility::teamplayercardsplash( level.mapcustomjuggkilledsplash, var_1 );
             else
                 var_1 thread scripts\mp\utility::teamplayercardsplash( "callout_killed_juggernaut", var_1 );
         }
@@ -1894,11 +1897,11 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     var_41 = 0;
     var_42 = undefined;
 
-    if ( isdefined( self._id_D8B0 ) )
+    if ( isdefined( self.previousprimary ) )
     {
         var_41 = 1;
-        var_42 = self._id_D8B0;
-        self._id_D8B0 = undefined;
+        var_42 = self.previousprimary;
+        self.previousprimary = undefined;
     }
 
     if ( isplayer( var_1 ) && var_1 != self && ( !level.teambased || level.teambased && self.team != var_1.team ) )
@@ -1908,9 +1911,9 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         else
             var_43 = self.lastdroppableweaponobj;
 
-        var_43 = scripts\mp\utility::_id_13CA1( var_43, var_0 );
-        thread scripts\mp\gamelogic::_id_11AF7( var_43, var_5 );
-        var_1 thread scripts\mp\gamelogic::_id_11AC8( var_6, var_5 );
+        var_43 = scripts\mp\utility::weaponmap( var_43, var_0 );
+        thread scripts\mp\gamelogic::trackleaderboarddeathstats( var_43, var_5 );
+        var_1 thread scripts\mp\gamelogic::trackattackerleaderboarddeathstats( var_6, var_5 );
     }
 
     var_2 resetplayervariables();
@@ -1920,13 +1923,13 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     var_2.deathtime = gettime();
     var_2.wantsafespawn = 0;
     var_2.revived = 0;
-    var_2._id_EB14 = 0;
+    var_2.sameshotdamage = 0;
     var_2.streaktype = scripts\mp\class::loadout_getplayerstreaktype( var_2.streaktype );
 
     if ( scripts\mp\killstreaks\killstreaks::streaktyperesetsondeath( var_2.streaktype ) )
     {
-        if ( !level._id_3B1E && !var_2 scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) )
-            var_2 scripts\mp\killstreaks\killstreaks::_id_E275();
+        if ( !level.casualscorestreaks && !var_2 scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) )
+            var_2 scripts\mp\killstreaks\killstreaks::resetstreakpoints();
     }
 
     var_44 = undefined;
@@ -1940,7 +1943,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     if ( var_11 )
     {
         var_38 = 0;
-        var_10 = var_2 _meth_8231( var_0, var_5, var_6, var_8, var_7 );
+        var_10 = var_2 playerforcedeathanim( var_0, var_5, var_6, var_8, var_7 );
     }
 
     if ( isdefined( var_1 ) && isplayer( var_1 ) && isdefined( var_5 ) && isdefined( var_6 ) && isdefined( var_8 ) && isdefined( var_7 ) )
@@ -1950,7 +1953,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
 
         if ( isdefined( var_45 ) && var_45 == "iw7_rvn" && scripts\mp\utility::istrue( var_46 ) && var_5 == "MOD_MELEE" )
         {
-            var_10 = var_2 _meth_8231( var_1, "MOD_EXPLOSIVE", var_6, var_8, var_7 );
+            var_10 = var_2 playerforcedeathanim( var_1, "MOD_EXPLOSIVE", var_6, var_8, var_7 );
             var_47 = getweaponvariantindex( var_6 );
 
             if ( !isdefined( var_47 ) || var_47 != 3 && var_47 != 35 )
@@ -1960,12 +1963,12 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
 
     if ( !isdefined( self.nocorpse ) )
     {
-        var_2.body = var_2 _meth_8086( var_10 );
+        var_2.body = var_2 cloneplayer( var_10 );
 
         if ( var_2 _meth_84CA() )
             var_2.body setscriptablepartstate( "chargeModeShieldDrop", "active", 0 );
 
-        if ( scripts\mp\utility::istrue( level._id_DC24 ) )
+        if ( scripts\mp\utility::istrue( level.ragdollzerog ) )
         {
             thread scripts\mp\weapons::throwingknife_detachknivesfromcorpse( var_2.body );
             thread scripts\mp\weapons::axedetachfromcorpse( var_2.body );
@@ -2016,14 +2019,14 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         if ( !isdefined( var_2.switching_teams ) )
         {
             if ( isdefined( var_1 ) && isplayer( var_1 ) && !var_1 scripts\mp\utility::_hasperk( "specialty_silentkill" ) )
-                thread scripts\mp\deathicons::_id_17C1( var_2.body, var_2, var_2.team, 5.0 );
+                thread scripts\mp\deathicons::adddeathicon( var_2.body, var_2, var_2.team, 5.0 );
         }
 
         thread delaystartragdoll( var_2.body, var_8, var_7, var_6, var_0, var_5 );
     }
     else if ( isdefined( self.nocorpse ) )
     {
-        var_2.body = var_2 _meth_8086( var_10 );
+        var_2.body = var_2 cloneplayer( var_10 );
         var_2.body hide( 1 );
 
         if ( level.mapname == "mp_neon" )
@@ -2046,7 +2049,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         var_50 = -1;
 
     if ( !isdefined( var_44 ) )
-        var_44 = var_2 scripts\mp\killcam::_id_7F32( var_1, var_0, var_6 );
+        var_44 = var_2 scripts\mp\killcam::getkillcamentity( var_1, var_0, var_6 );
 
     if ( isdefined( level.matchrecording_logeventmsg ) && isdefined( var_0 ) && isplayer( var_0 ) && scripts\engine\utility::isbulletdamage( var_5 ) )
     {
@@ -2057,10 +2060,10 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         var_55 = clamp( var_54[0] * var_52[0] + var_54[1] * var_52[1], -1.0, 1.0 );
         var_56 = acos( var_55 );
 
-        if ( !isdefined( self._id_D37E ) )
-            self._id_D37E = [];
+        if ( !isdefined( self.playerdeathangles ) )
+            self.playerdeathangles = [];
 
-        self._id_D37E[self._id_D37E.size] = var_56;
+        self.playerdeathangles[self.playerdeathangles.size] = var_56;
         var_57 = 0.0;
 
         if ( isdefined( self.engagementstarttime ) )
@@ -2085,10 +2088,10 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
             var_59 = 0;
     }
 
-    var_60 = var_5 == "MOD_IMPACT" || var_5 == "MOD_HEADSHOT" && isdefined( var_0 ) || var_5 == "MOD_GRENADE" || isdefined( var_2 ) && isdefined( var_2._id_1117F ) && isdefined( var_0 ) && var_2._id_1117F == var_0 || var_6 == "throwingknifec4_mp";
+    var_60 = var_5 == "MOD_IMPACT" || var_5 == "MOD_HEADSHOT" && isdefined( var_0 ) || var_5 == "MOD_GRENADE" || isdefined( var_2 ) && isdefined( var_2.stuckbygrenade ) && isdefined( var_0 ) && var_2.stuckbygrenade == var_0 || var_6 == "throwingknifec4_mp";
 
     if ( !scripts\mp\utility::iskillstreakweapon( var_6 ) )
-        scripts\mp\killcam::_id_F770( var_6, var_5, var_0 );
+        scripts\mp\killcam::setkillcamnormalweaponomnvars( var_6, var_5, var_0 );
 
     if ( level.recordfinalkillcam && var_39 )
     {
@@ -2111,7 +2114,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
 
     if ( var_38 )
     {
-        var_2 scripts\mp\killcam::_id_D83E( var_0, var_1 );
+        var_2 scripts\mp\killcam::prekillcamnotify( var_0, var_1 );
 
         if ( isdefined( var_0 ) && isagent( var_0 ) )
         {
@@ -2133,14 +2136,14 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         wait 1.75;
 
         if ( var_38 )
-            var_38 = !scripts\mp\finalkillcam::_id_10266( 0.5 );
+            var_38 = !scripts\mp\finalkillcam::skipkillcamduringdeathtimer( 0.5 );
 
         var_2 notify( "death_delay_finished" );
     }
 
     var_63 = ( gettime() - var_2.deathtime ) / 1000;
     self.respawntimerstarttime = gettime();
-    var_38 = var_38 && !var_2 scripts\mp\battlebuddy::_id_3876();
+    var_38 = var_38 && !var_2 scripts\mp\battlebuddy::canbuddyspawn();
 
     if ( !( isdefined( var_2.cancelkillcam ) && var_2.cancelkillcam ) && var_38 && level.killcam && game["state"] == "playing" && !var_2 scripts\mp\utility::isusingremote() && !level.showingfinalkillcam )
     {
@@ -2164,7 +2167,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         if ( isdefined( var_2.killsteakvariantattackerinfo ) )
             var_67 = var_2.killsteakvariantattackerinfo;
 
-        var_2 scripts\mp\killcam::killcam( var_0, var_61, var_50, var_58, var_59, undefined, var_60, var_6, var_63 + var_14, var_9, var_62, scripts\mp\gamelogic::_id_11939(), var_1, var_2, var_5, var_66, var_67 );
+        var_2 scripts\mp\killcam::killcam( var_0, var_61, var_50, var_58, var_59, undefined, var_60, var_6, var_63 + var_14, var_9, var_62, scripts\mp\gamelogic::timeuntilroundend(), var_1, var_2, var_5, var_66, var_67 );
     }
 
     if ( game["state"] != "playing" )
@@ -2182,7 +2185,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     var_69 = self.pers["lives"];
 
     if ( self == var_2 && isdefined( var_2.battlebuddy ) && scripts\mp\utility::isreallyalive( var_2.battlebuddy ) && ( !scripts\mp\utility::getgametypenumlives() || self.pers["lives"] ) && !var_2 scripts\mp\utility::isusingremote() )
-        scripts\mp\battlebuddy::_id_136D6();
+        scripts\mp\battlebuddy::waitforplayerrespawnchoice();
 
     if ( scripts\mp\utility::isvalidclass( var_2.class ) )
     {
@@ -2242,7 +2245,7 @@ killedself( var_0 )
     return 1;
 }
 
-_id_89F1()
+handleteamchangedeath()
 {
     if ( !level.teambased )
         return;
@@ -2250,12 +2253,12 @@ _id_89F1()
     if ( self.joining_team == "spectator" || !isteamswitchbalanced() )
     {
         thread scripts\mp\utility::giveunifiedpoints( "suicide", undefined, undefined, 1, 1 );
-        scripts\mp\utility::incperstat( "suicides", 1 );
+        scripts\mp\utility::incpersstat( "suicides", 1 );
         self.suicides = scripts\mp\utility::getpersstat( "suicides" );
     }
 
-    if ( isdefined( level.onteamscore ) )
-        [[ level.onteamscore ]]( self );
+    if ( isdefined( level.onteamchangedeath ) )
+        [[ level.onteamchangedeath ]]( self );
 }
 
 handleworlddeath( var_0, var_1, var_2, var_3 )
@@ -2282,12 +2285,12 @@ handleworlddeath( var_0, var_1, var_2, var_3 )
 handlesuicidedeath( var_0, var_1 )
 {
     thread scripts\mp\utility::giveunifiedpoints( "suicide" );
-    scripts\mp\utility::incperstat( "suicides", 1 );
+    scripts\mp\utility::incpersstat( "suicides", 1 );
     self.suicides = scripts\mp\utility::getpersstat( "suicides" );
     var_2 = scripts\mp\tweakables::gettweakablevalue( "game", "suicidepointloss" );
     scripts\mp\gamescore::_setplayerscore( self, scripts\mp\gamescore::_getplayerscore( self ) - var_2 );
 
-    if ( scripts\mp\weapons::_id_85BE() && var_0 == "MOD_SUICIDE" && var_1 == "none" )
+    if ( scripts\mp\weapons::grenadeheldatdeath() && var_0 == "MOD_SUICIDE" && var_1 == "none" )
         self.lastgrenadesuicidetime = gettime();
 
     if ( isdefined( level.onsuicidedeath ) )
@@ -2317,7 +2320,7 @@ handlefriendlyfiredeath( var_0 )
         var_2 = 1;
         var_0.pers["teamkills"] = var_0.pers["teamkills"] + level.maxallowedteamkills;
     }
-    else if ( var_0.pers["teamkills"] > 1 && scripts\mp\utility::gettimepassed() < level._id_8487 * 1000 + 8000 + var_0.pers["teamkills"] * 1000 )
+    else if ( var_0.pers["teamkills"] > 1 && scripts\mp\utility::gettimepassed() < level.graceperiod * 1000 + 8000 + var_0.pers["teamkills"] * 1000 )
     {
         var_2 = 1;
         var_0.pers["teamkills"] = var_0.pers["teamkills"] + level.maxallowedteamkills;
@@ -2334,11 +2337,11 @@ handlefriendlyfiredeath( var_0 )
 
 handlenormaldeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 {
-    var_1 thread scripts\mp\events::_id_A651( var_0, self, var_3, var_4, var_6, var_2 );
+    var_1 thread scripts\mp\events::killedplayer( var_0, self, var_3, var_4, var_6, var_2 );
 
     if ( var_4 == "MOD_HEAD_SHOT" )
     {
-        var_1 scripts\mp\utility::incperstat( "headshots", 1 );
+        var_1 scripts\mp\utility::incpersstat( "headshots", 1 );
         var_1.headshots = var_1 scripts\mp\utility::getpersstat( "headshots" );
 
         if ( isdefined( var_1.laststand ) )
@@ -2361,7 +2364,7 @@ handlenormaldeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 
     if ( !scripts\mp\utility::istrue( level.ignorescoring ) && !isfriendlyfire( var_5, var_1 ) )
     {
-        var_8 scripts\mp\utility::incperstat( "kills", 1, isdefined( level.ignorekdrstats ) );
+        var_8 scripts\mp\utility::incpersstat( "kills", 1, isdefined( level.ignorekdrstats ) );
         var_8.kills = var_8 scripts\mp\utility::getpersstat( "kills" );
         var_8 scripts\mp\utility::updatepersratio( "kdRatio", "kills", "deaths", level.ignorekdrstats );
         var_8 scripts\mp\persistence::statsetchild( "round", "kills", var_8.kills, level.ignorekdrstats );
@@ -2373,11 +2376,11 @@ handlenormaldeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 
     if ( !scripts\mp\utility::istrue( level.ignorescoring ) && ( isalive( var_1 ) || var_1.streaktype == "support" ) )
     {
-        if ( var_4 == "MOD_MELEE" && !var_1 scripts\mp\utility::isjuggernaut() || var_1 scripts\mp\utility::_id_A679( var_3 ) )
+        if ( var_4 == "MOD_MELEE" && !var_1 scripts\mp\utility::isjuggernaut() || var_1 scripts\mp\utility::killshouldaddtokillstreak( var_3 ) )
             var_1 registerkill( var_3, var_4, 1 );
 
         if ( var_1.pers["cur_kill_streak"] > var_1 scripts\mp\utility::getpersstat( "longestStreak" ) )
-            var_1 scripts\mp\utility::_id_F7DF( "longestStreak", var_1.pers["cur_kill_streak"] );
+            var_1 scripts\mp\utility::setpersstat( "longestStreak", var_1.pers["cur_kill_streak"] );
     }
 
     var_1.pers["cur_death_streak"] = 0;
@@ -2389,7 +2392,7 @@ handlenormaldeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     {
         if ( var_1.pers["cur_kill_streak"] > var_1.kill_streak )
         {
-            var_1 scripts\mp\persistence::_id_10E54( "killStreak", var_1.pers["cur_kill_streak"] );
+            var_1 scripts\mp\persistence::statset( "killStreak", var_1.pers["cur_kill_streak"] );
             var_1.kill_streak = var_1.pers["cur_kill_streak"];
         }
     }
@@ -2446,17 +2449,17 @@ handlenormaldeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     if ( isdefined( var_11 ) )
         level thread scripts\mp\battlechatter_mp::saytoself( var_1, var_11, "plr_killfirm_generic", 0.75 );
 
-    if ( isdefined( self._id_A93F ) && isdefined( self._id_A940 ) && self._id_A93F != var_1 )
+    if ( isdefined( self.lastattackedshieldplayer ) && isdefined( self.lastattackedshieldtime ) && self.lastattackedshieldplayer != var_1 )
     {
-        if ( gettime() - self._id_A940 < 2500 )
-            self._id_A93F thread scripts\mp\gamescore::processshieldassist( self );
-        else if ( isalive( self._id_A93F ) && gettime() - self._id_A940 < 5000 )
+        if ( gettime() - self.lastattackedshieldtime < 2500 )
+            self.lastattackedshieldplayer thread scripts\mp\gamescore::processshieldassist( self );
+        else if ( isalive( self.lastattackedshieldplayer ) && gettime() - self.lastattackedshieldtime < 5000 )
         {
             var_12 = vectornormalize( anglestoforward( self.angles ) );
-            var_13 = vectornormalize( self._id_A93F.origin - self.origin );
+            var_13 = vectornormalize( self.lastattackedshieldplayer.origin - self.origin );
 
             if ( vectordot( var_13, var_12 ) > 0.925 )
-                self._id_A93F thread scripts\mp\gamescore::processshieldassist( self );
+                self.lastattackedshieldplayer thread scripts\mp\gamescore::processshieldassist( self );
         }
     }
 
@@ -2510,7 +2513,7 @@ handlenormaldeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
             if ( scripts\engine\utility::array_contains( self.attackers, var_15 ) )
                 continue;
 
-            if ( scripts\mp\utility::_id_2287( self.markedbyboomperk, var_15 scripts\mp\utility::getuniqueid() ) )
+            if ( scripts\mp\utility::array_contains_key( self.markedbyboomperk, var_15 scripts\mp\utility::getuniqueid() ) )
                 var_15 thread scripts\mp\gamescore::processassist( self, var_3 );
         }
     }
@@ -2523,7 +2526,7 @@ handlenormaldeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 
             foreach ( var_24 in level.uavmodels[var_1.team] )
             {
-                if ( isdefined( var_24 ) && isdefined( var_24.owner ) && var_24.owner != var_1 && !scripts\engine\utility::exist_in_array_MAYBE( var_22, var_24.uavtype ) )
+                if ( isdefined( var_24 ) && isdefined( var_24.owner ) && var_24.owner != var_1 && !scripts\engine\utility::_id_693B( var_22, var_24.uavtype ) )
                 {
                     var_25 = undefined;
 
@@ -2532,7 +2535,7 @@ handlenormaldeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 
                     var_24.owner thread scripts\mp\utility::giveunifiedpoints( var_24.uavtype + "_assist", undefined, var_25 );
                     var_22[var_22.size] = var_24.uavtype;
-                    scripts\mp\missions::_id_D9BC( var_24.owner, var_24.uavtype );
+                    scripts\mp\missions::processuavassist( var_24.owner, var_24.uavtype );
                     var_24.owner scripts\mp\utility::bufferednotify( "update_uav_assist_buffered" );
                     var_24.owner combatrecordkillstreakstat( var_24.uavtype );
                 }
@@ -2544,7 +2547,7 @@ handlenormaldeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
         self._id_12AF8 = [];
 }
 
-_id_9EFE( var_0 )
+isplayerweapon( var_0 )
 {
     if ( weaponclass( var_0 ) == "non-player" )
         return 0;
@@ -2563,25 +2566,25 @@ callback_playerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     playerkilled_internal( var_0, var_1, self, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 0 );
 }
 
-_id_DB98( var_0 )
+queueshieldforremoval( var_0 )
 {
     var_1 = 5;
 
-    if ( !isdefined( level._id_FCA4 ) )
-        level._id_FCA4 = [];
+    if ( !isdefined( level.shieldtrasharray ) )
+        level.shieldtrasharray = [];
 
-    if ( level._id_FCA4.size >= var_1 )
+    if ( level.shieldtrasharray.size >= var_1 )
     {
-        var_2 = level._id_FCA4.size - 1;
-        level._id_FCA4[0] delete();
+        var_2 = level.shieldtrasharray.size - 1;
+        level.shieldtrasharray[0] delete();
 
         for ( var_3 = 0; var_3 < var_2; var_3++ )
-            level._id_FCA4[var_3] = level._id_FCA4[var_3 + 1];
+            level.shieldtrasharray[var_3] = level.shieldtrasharray[var_3 + 1];
 
-        level._id_FCA4[var_2] = undefined;
+        level.shieldtrasharray[var_2] = undefined;
     }
 
-    level._id_FCA4[level._id_FCA4.size] = var_0;
+    level.shieldtrasharray[level.shieldtrasharray.size] = var_0;
 }
 
 launchshield( var_0, var_1 )
@@ -2595,7 +2598,7 @@ launchshield( var_0, var_1 )
     }
 }
 
-_id_3E0D()
+checkforcebleedout()
 {
     if ( level.diehardmode != 1 )
         return 0;
@@ -2630,7 +2633,7 @@ _id_3E0D()
             continue;
 
         if ( var_1.inlaststand && var_1 != self )
-            var_1 _id_AA07( 0 );
+            var_1 laststandbleedout( 0 );
     }
 
     return 1;
@@ -2787,7 +2790,7 @@ updateinflictorstat( var_0, var_1, var_2 )
         var_0.alreadyhit = 1;
 }
 
-_id_100C1( var_0 )
+shouldweaponfeedback( var_0 )
 {
     switch ( var_0 )
     {
@@ -2811,13 +2814,13 @@ addattacker( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_
         var_0.attackerdata[var_1.guid].damage = 0;
         var_0.attackerdata[var_1.guid].attackerent = var_1;
         var_0.attackerdata[var_1.guid].firsttimedamaged = gettime();
-        var_0.attackerdata[var_1.guid].hits = 1;
+        var_0.attackerdata[var_1.guid].hitcount = 1;
     }
     else
-        var_0.attackerdata[var_1.guid].hits++;
+        var_0.attackerdata[var_1.guid].hitcount++;
 
     if ( scripts\mp\utility::iscacprimaryweapon( var_3 ) && !scripts\mp\utility::iscacsecondaryweapon( var_3 ) )
-        var_0.attackerdata[var_1.guid]._id_54B4 = 1;
+        var_0.attackerdata[var_1.guid].diddamagewithprimary = 1;
 
     if ( isdefined( var_9 ) && var_9 != "MOD_MELEE" )
         var_0.attackerdata[var_1.guid].didnonmeleedamage = 1;
@@ -2869,7 +2872,7 @@ addattackerkillstreak( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         var_0.attackerdata[var_2.guid].damage = 0;
         var_0.attackerdata[var_2.guid].attackerent = var_2;
         var_0.attackerdata[var_2.guid].firsttimedamaged = gettime();
-        var_0.attackerdata[var_2.guid].hits = 1;
+        var_0.attackerdata[var_2.guid].hitcount = 1;
     }
 
     var_0.attackerdata[var_2.guid].damage = var_0.attackerdata[var_2.guid].damage + var_1;
@@ -3020,7 +3023,7 @@ callback_playerlaststand( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7
         else if ( scripts\mp\utility::isteaminlaststand() )
         {
             var_10 = 0;
-            scripts\mp\utility::_id_A6C7( self.team );
+            scripts\mp\utility::killteaminlaststand( self.team );
         }
     }
 
@@ -3037,23 +3040,23 @@ callback_playerlaststand( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7
 
         if ( scripts\mp\utility::_hasperk( "specialty_finalstand" ) )
         {
-            var_11._id_119A8 = game["strings"]["final_stand"];
-            var_11._id_92AE = "specialty_finalstand";
+            var_11.titletext = game["strings"]["final_stand"];
+            var_11.iconname = "specialty_finalstand";
         }
         else if ( scripts\mp\utility::_hasperk( "specialty_c4death" ) )
         {
-            var_11._id_119A8 = game["strings"]["c4_death"];
-            var_11._id_92AE = "specialty_c4death";
+            var_11.titletext = game["strings"]["c4_death"];
+            var_11.iconname = "specialty_c4death";
         }
         else
         {
-            var_11._id_119A8 = game["strings"]["last_stand"];
-            var_11._id_92AE = "specialty_finalstand";
+            var_11.titletext = game["strings"]["last_stand"];
+            var_11.iconname = "specialty_finalstand";
         }
 
         var_11.glowcolor = ( 1, 0, 0 );
         var_11.sound = "mp_last_stand";
-        var_11._id_5F36 = 2.0;
+        var_11.duration = 2.0;
         self.health = 1;
         var_12 = "frag_grenade_mp";
 
@@ -3070,12 +3073,12 @@ callback_playerlaststand( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7
                 scripts\mp\utility::_takeweapon( var_15 );
 
             scripts\engine\utility::allow_usability( 0 );
-            thread _id_626F();
+            thread enablelaststandweapons();
             thread _id_AA11( 20, 1 );
         }
         else if ( scripts\mp\utility::_hasperk( "specialty_c4death" ) )
         {
-            self._id_D8B0 = self.lastdroppableweaponobj;
+            self.previousprimary = self.lastdroppableweaponobj;
             self.laststandparams = var_9;
             self takeallweapons();
             self giveweapon( "c4death_mp", 0, 0 );
@@ -3083,8 +3086,8 @@ callback_playerlaststand( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7
             scripts\engine\utility::allow_usability( 0 );
             self.inc4death = 1;
             thread _id_AA11( 20, 0 );
-            thread _id_53D3();
-            thread _id_53D2();
+            thread detonateonuse();
+            thread detonateondeath();
         }
         else
         {
@@ -3104,7 +3107,7 @@ callback_playerlaststand( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7
 
             foreach ( var_15 in var_18 )
             {
-                if ( scripts\mp\weapons::_id_9F54( var_15 ) )
+                if ( scripts\mp\weapons::issidearm( var_15 ) )
                     var_17 = var_15;
             }
 
@@ -3127,7 +3130,7 @@ callback_playerlaststand( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7
     }
 }
 
-_id_54C8( var_0 )
+dieaftertime( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -3138,7 +3141,7 @@ _id_54C8( var_0 )
     scripts\mp\utility::_suicide();
 }
 
-_id_53D3()
+detonateonuse()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -3146,20 +3149,20 @@ _id_53D3()
     level endon( "game_ended" );
     self waittill( "detonate" );
     self.uselaststandparams = 1;
-    _id_3345();
+    c4deathdetonate();
 }
 
-_id_53D2()
+detonateondeath()
 {
     self endon( "detonate" );
     self endon( "disconnect" );
     self endon( "joined_team" );
     level endon( "game_ended" );
     self waittill( "death" );
-    _id_3345();
+    c4deathdetonate();
 }
 
-_id_3345()
+c4deathdetonate()
 {
     self playsound( "detpack_explo_default" );
     radiusdamage( self.origin, 312, 100, 100, self );
@@ -3168,7 +3171,7 @@ _id_3345()
         scripts\mp\utility::_suicide();
 }
 
-_id_626F()
+enablelaststandweapons()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -3185,14 +3188,14 @@ _id_AA11( var_0, var_1 )
     self endon( "revive" );
     level endon( "game_ended" );
     level notify( "player_last_stand" );
-    thread _id_AA16();
+    thread laststandwaittilldeath();
     self.laststand = 1;
 
     if ( !var_1 && ( !isdefined( self.inc4death ) || !self.inc4death ) )
     {
-        thread _id_AA05();
+        thread laststandallowsuicide();
         scripts\mp\utility::setlowermessage( "last_stand", &"PLATFORM_COWARDS_WAY_OUT", undefined, undefined, undefined, undefined, undefined, undefined, 1 );
-        thread _id_AA09();
+        thread laststandkeepoverlay();
     }
 
     if ( level.diehardmode == 1 && level.diehardmode != 2 )
@@ -3207,7 +3210,7 @@ _id_AA11( var_0, var_1 )
         var_3 setshader( "waypoint_revive", 8, 8 );
         var_3 setwaypoint( 1, 1 );
         var_3 settargetent( self );
-        var_3 thread _id_5321( var_2 );
+        var_3 thread destroyonreviveentdeath( var_2 );
         var_3.color = ( 0.33, 0.75, 0.24 );
         scripts\mp\utility::playdeathsound();
 
@@ -3216,14 +3219,14 @@ _id_AA11( var_0, var_1 )
             wait( var_0 );
 
             if ( self.infinalstand )
-                thread _id_AA07( var_1, var_2 );
+                thread laststandbleedout( var_1, var_2 );
         }
 
         return;
     }
     else if ( level.diehardmode == 2 )
     {
-        thread _id_AA09();
+        thread laststandkeepoverlay();
         var_2 = spawn( "script_model", self.origin );
         var_2 setmodel( "tag_origin" );
         var_2 setcursorhint( "HINT_NOICON" );
@@ -3234,7 +3237,7 @@ _id_AA11( var_0, var_1 )
         var_3 setshader( "waypoint_revive", 8, 8 );
         var_3 setwaypoint( 1, 1 );
         var_3 settargetent( self );
-        var_3 thread _id_5321( var_2 );
+        var_3 thread destroyonreviveentdeath( var_2 );
         var_3.color = ( 0.33, 0.75, 0.24 );
         scripts\mp\utility::playdeathsound();
 
@@ -3243,7 +3246,7 @@ _id_AA11( var_0, var_1 )
             wait( var_0 );
 
             if ( self.infinalstand )
-                thread _id_AA07( var_1, var_2 );
+                thread laststandbleedout( var_1, var_2 );
         }
 
         wait( var_0 / 3 );
@@ -3266,16 +3269,16 @@ _id_AA11( var_0, var_1 )
             wait 0.05;
 
         wait 0.05;
-        thread _id_AA07( var_1 );
+        thread laststandbleedout( var_1 );
         return;
     }
 
-    thread _id_AA09();
+    thread laststandkeepoverlay();
     wait( var_0 );
-    thread _id_AA07( var_1 );
+    thread laststandbleedout( var_1 );
 }
 
-_id_B4A2( var_0, var_1 )
+maxhealthoverlay( var_0, var_1 )
 {
     self endon( "stop_maxHealthOverlay" );
     self endon( "revive" );
@@ -3292,7 +3295,7 @@ _id_B4A2( var_0, var_1 )
     }
 }
 
-_id_AA07( var_0, var_1 )
+laststandbleedout( var_0, var_1 )
 {
     if ( var_0 )
     {
@@ -3308,12 +3311,12 @@ _id_AA07( var_0, var_1 )
     else
     {
         self.uselaststandparams = 1;
-        self._id_2A8A = 0;
+        self.beingrevived = 0;
         scripts\mp\utility::_suicide();
     }
 }
 
-_id_AA05()
+laststandallowsuicide()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -3341,10 +3344,10 @@ _id_AA05()
         wait 0.05;
     }
 
-    thread _id_AA07( 0 );
+    thread laststandbleedout( 0 );
 }
 
-_id_AA09()
+laststandkeepoverlay()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -3362,7 +3365,7 @@ _id_AA09()
     self.health = self.maxhealth;
 }
 
-_id_AA16()
+laststandwaittilldeath()
 {
     self endon( "disconnect" );
     self endon( "revive" );
@@ -3380,7 +3383,7 @@ maydolaststand( var_0, var_1, var_2 )
     if ( var_1 != "MOD_PISTOL_BULLET" && var_1 != "MOD_RIFLE_BULLET" && var_1 != "MOD_FALLING" && var_1 != "MOD_EXPLOSIVE_BULLET" )
         return 0;
 
-    if ( var_1 == "MOD_IMPACT" && scripts\mp\weapons::_id_9FA9( var_0 ) )
+    if ( var_1 == "MOD_IMPACT" && scripts\mp\weapons::isthrowingknife( var_0 ) )
         return 0;
 
     if ( var_1 == "MOD_IMPACT" && ( var_0 == "m79_mp" || issubstr( var_0, "gl_" ) ) )
@@ -3438,7 +3441,7 @@ delaystartragdoll( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     if ( isdefined( var_0 ) )
     {
-        var_6 = var_0 _meth_8112();
+        var_6 = var_0 getcorpseanim();
 
         if ( animhasnotetrack( var_6, "ignore_ragdoll" ) )
             return;
@@ -3461,7 +3464,7 @@ delaystartragdoll( var_0, var_1, var_2, var_3, var_4, var_5 )
     if ( var_0 isragdoll() )
         return;
 
-    var_6 = var_0 _meth_8112();
+    var_6 = var_0 getcorpseanim();
     var_10 = 0.35;
 
     if ( animhasnotetrack( var_6, "start_ragdoll" ) )
@@ -3503,16 +3506,16 @@ _id_7FC9()
 {
     var_0 = "";
     var_1 = 0;
-    var_2 = getarraykeys( self._id_A653 );
+    var_2 = getarraykeys( self.killedplayers );
 
     for ( var_3 = 0; var_3 < var_2.size; var_3++ )
     {
         var_4 = var_2[var_3];
 
-        if ( self._id_A653[var_4] <= var_1 )
+        if ( self.killedplayers[var_4] <= var_1 )
             continue;
 
-        var_1 = self._id_A653[var_4];
+        var_1 = self.killedplayers[var_4];
         var_0 = var_4;
     }
 
@@ -3537,10 +3540,10 @@ revivesetup( var_0 )
     updateusablebyteam( var_1 );
     thread trackteamchanges( var_1 );
     thread revivetriggerthink( var_1 );
-    thread deleteotpreview();
+    thread _id_51C9();
 }
 
-deleteotpreview()
+_id_51C9()
 {
     self endon( "death" );
     self.owner scripts\engine\utility::waittill_any( "death", "disconnect" );
@@ -3572,7 +3575,7 @@ trackteamchanges( var_0 )
     }
 }
 
-_id_11AF5( var_0 )
+tracklaststandchanges( var_0 )
 {
     self endon( "death" );
 
@@ -3591,18 +3594,18 @@ revivetriggerthink( var_0 )
     for (;;)
     {
         self waittill( "trigger", var_1 );
-        self.owner._id_2A8A = 1;
+        self.owner.beingrevived = 1;
 
-        if ( isdefined( var_1._id_2A8A ) && var_1._id_2A8A )
+        if ( isdefined( var_1.beingrevived ) && var_1.beingrevived )
         {
-            self.owner._id_2A8A = 0;
+            self.owner.beingrevived = 0;
             continue;
         }
 
         self makeunusable();
         self.owner scripts\mp\utility::freezecontrolswrapper( 1 );
         var_2 = useholdthink( var_1 );
-        self.owner._id_2A8A = 0;
+        self.owner.beingrevived = 0;
 
         if ( !isalive( self.owner ) )
         {
@@ -3628,7 +3631,7 @@ revivetriggerthink( var_0 )
             self.owner scripts\mp\weapons::updatemovespeedscale();
             self.owner scripts\mp\playerlogic::laststandrespawnplayer();
             self.owner scripts\mp\utility::giveperk( "specialty_pistoldeath" );
-            self.owner._id_2A8A = 0;
+            self.owner.beingrevived = 0;
             self delete();
             return;
         }
@@ -3715,7 +3718,7 @@ callback_killingblow( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, va
     return 1;
 }
 
-_id_612A( var_0 )
+emitfalldamage( var_0 )
 {
     physicsexplosionsphere( self.origin, 64, 64, 1 );
     var_1 = [];
@@ -3735,14 +3738,14 @@ _id_612A( var_0 )
         var_6 = spawn( "script_origin", self.origin );
         var_6 hide();
         var_6.type = "soft_landing";
-        var_6._id_5379 = var_1;
+        var_6.destructibles = var_1;
         radiusdamage( self.origin, 64, 100, 100, var_6 );
         wait 0.1;
         var_6 delete();
     }
 }
 
-_id_9DF9( var_0, var_1 )
+isflankkill( var_0, var_1 )
 {
     var_2 = anglestoforward( var_0.angles );
     var_2 = ( var_2[0], var_2[1], 0 );
@@ -3758,7 +3761,7 @@ _id_9DF9( var_0, var_1 )
         return 0;
 }
 
-_id_5321( var_0 )
+destroyonreviveentdeath( var_0 )
 {
     var_0 waittill( "death" );
     self destroy();
@@ -3837,11 +3840,11 @@ registerkill( var_0, var_1, var_2 )
     if ( !var_3 && self.pers["cur_kill_streak_for_nuke"] == var_4 && !scripts\mp\utility::isanymlgmatch() )
     {
         if ( !isdefined( level.supportnuke ) || level.supportnuke )
-            _id_83B3( var_4 );
+            giveultimatekillstreak( var_4 );
     }
 }
 
-_id_83B3( var_0 )
+giveultimatekillstreak( var_0 )
 {
 
 }
@@ -3869,7 +3872,7 @@ monitordamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     while ( var_7 )
     {
         self waittill( "damage", var_8, var_9, var_10, var_11, var_12, var_13, var_14, var_15, var_16, var_17, var_18, var_19, var_20, var_21 );
-        var_17 = scripts\mp\utility::_id_13CA1( var_17, var_21 );
+        var_17 = scripts\mp\utility::weaponmap( var_17, var_21 );
 
         if ( scripts\mp\equipment\phase_shift::isentityphaseshifted( var_9 ) )
             continue;
@@ -4194,7 +4197,7 @@ updatedeathdetails( var_0, var_1 )
 
             var_5 = var_4 getentitynumber();
             self setclientomnvar( "ui_death_details_attacker_" + var_2, var_5 );
-            self setclientomnvar( "ui_death_details_hits_" + var_2, int( min( var_1[var_6].hits, 10 ) ) );
+            self setclientomnvar( "ui_death_details_hits_" + var_2, int( min( var_1[var_6].hitcount, 10 ) ) );
             var_2++;
 
             if ( var_2 >= 4 )
@@ -4278,7 +4281,7 @@ updatecombatrecordkillstats( var_0, var_1, var_2, var_3 )
             }
             else
             {
-                var_6 = scripts\mp\missions::_id_7F48( var_3 );
+                var_6 = scripts\mp\missions::getkillstreaknamefromweapon( var_3 );
 
                 if ( isdefined( var_6 ) )
                 {

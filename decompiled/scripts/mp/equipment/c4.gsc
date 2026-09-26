@@ -52,7 +52,7 @@ c4_explode( var_0 )
     scripts\mp\utility::printgameaction( "c4 triggered", self.owner );
     thread c4_delete( 0.1 );
     self setentityowner( var_0 );
-    self _meth_8593();
+    self clearscriptabledamageowner();
     self setscriptablepartstate( "plant", "neutral", 0 );
     self setscriptablepartstate( "explode", "active", 0 );
 }
@@ -106,13 +106,13 @@ c4_destroyonemp()
     if ( isdefined( var_3 ) && var_3 == "emp_grenade_mp" )
     {
         if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
-            var_0 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+            var_0 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
     }
 
     if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
     {
         var_0 notify( "destroyed_equipment" );
-        var_0 scripts\mp\killstreaks\killstreaks::_id_83A0();
+        var_0 scripts\mp\killstreaks\killstreaks::givescoreforequipment();
     }
 
     var_5 = "";
@@ -239,7 +239,7 @@ c4_detonateall()
 
 c4_resetaltdetonpickup()
 {
-    if ( scripts\mp\powers::hasequipment( "power_c4" ) )
+    if ( scripts\mp\powers::haspower( "power_c4" ) )
         thread c4_watchforaltdetonation();
 }
 

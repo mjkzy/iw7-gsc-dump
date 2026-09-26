@@ -4,9 +4,9 @@
 init()
 {
     var_0 = spawnstruct();
-    var_0._id_B923 = [];
-    var_0._id_B923["allies"] = "vehicle_mig29_desert";
-    var_0._id_B923["axis"] = "vehicle_mig29_desert";
+    var_0.modelnames = [];
+    var_0.modelnames["allies"] = "vehicle_mig29_desert";
+    var_0.modelnames["axis"] = "vehicle_mig29_desert";
     var_0.inboundsfx = "veh_mig29_dist_loop";
     var_0.compassiconfriendly = "compass_objpoint_airstrike_friendly";
     var_0.compassiconenemy = "compass_objpoint_airstrike_busy";
@@ -19,18 +19,18 @@ init()
     var_0.choosedirection = 1;
     var_0.selectlocationvo = "KS_hqr_airstrike";
     var_0.inboundvo = "KS_ast_inbound";
-    var_0._id_2C5A = "projectile_cbu97_clusterbomb";
-    var_0._id_C21A = 3;
-    var_0._id_5703 = 350;
-    var_0._id_5FEF = 200;
-    var_0._id_5FEA = 120;
-    var_0._id_5FF4 = loadfx( "vfx/core/smktrail/poisonous_gas_linger_medium_thick_killer_instant" );
-    var_0._id_5FEE = 0.25;
-    var_0._id_5FED = 0.5;
-    var_0._id_5FEC = 13;
-    var_0._id_5FE7 = 1.0;
-    var_0._id_5FE8 = 10;
-    var_0._id_C263 = "gas_strike_mp";
+    var_0.bombmodel = "projectile_cbu97_clusterbomb";
+    var_0.numbombs = 3;
+    var_0.distancebetweenbombs = 350;
+    var_0.effectradius = 200;
+    var_0.effectheight = 120;
+    var_0.effectvfx = loadfx( "vfx/core/smktrail/poisonous_gas_linger_medium_thick_killer_instant" );
+    var_0.effectmindelay = 0.25;
+    var_0.effectmaxdelay = 0.5;
+    var_0.effectlifespan = 13;
+    var_0.effectcheckfrequency = 1.0;
+    var_0.effectdamage = 10;
+    var_0.obitweapon = "gas_strike_mp";
     var_0.killcamoffset = ( 0, 0, 60 );
     level.planeconfigs["gas_airstrike"] = var_0;
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "gas_airstrike", ::onuse );
@@ -40,7 +40,7 @@ onuse( var_0, var_1 )
 {
     var_2 = scripts\mp\utility::getotherteam( self.team );
 
-    if ( isdefined( level._id_C22F ) )
+    if ( isdefined( level.numgasstrikeactive ) )
     {
         self iprintlnbold( &"KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
         return 0;
@@ -54,9 +54,9 @@ onuse( var_0, var_1 )
 
 dostrike( var_0, var_1, var_2, var_3 )
 {
-    level._id_C22F = 0;
+    level.numgasstrikeactive = 0;
     wait 1;
-    var_4 = scripts\mp\killstreaks\plane::_id_806A();
+    var_4 = scripts\mp\killstreaks\plane::getplaneflyheight();
     var_5 = anglestoforward( ( 0, var_2, 0 ) );
     dooneflyby( var_3, var_0, var_1, var_5, var_4 );
     self waittill( "gas_airstrike_flyby_complete" );
@@ -79,24 +79,24 @@ dropbombs( var_0, var_1, var_2, var_3, var_4 )
     self endon( "death" );
     wait( var_2 );
     var_5 = level.planeconfigs[var_4];
-    var_6 = var_5._id_C21A;
-    var_7 = var_5._id_5703 / var_5.speed;
+    var_6 = var_5.numbombs;
+    var_7 = var_5.distancebetweenbombs / var_5.speed;
 
     while ( var_6 > 0 )
     {
-        thread _id_5D35( var_3, var_4 );
+        thread droponebomb( var_3, var_4 );
         var_6--;
         wait( var_7 );
     }
 }
 
-_id_5D35( var_0, var_1 )
+droponebomb( var_0, var_1 )
 {
-    level._id_C22F++;
+    level.numgasstrikeactive++;
     var_2 = self;
     var_3 = level.planeconfigs[var_1];
     var_4 = anglestoforward( var_2.angles );
-    var_5 = spawnbomb( var_3._id_2C5A, var_2.origin, var_2.angles );
+    var_5 = spawnbomb( var_3.bombmodel, var_2.origin, var_2.angles );
     var_5 movegravity( var_4 * ( var_3.speed / 1.5 ), 3.0 );
     var_6 = spawn( "script_model", var_5.origin );
     var_6 setmodel( "tag_origin" );
@@ -115,13 +115,13 @@ _id_5D35( var_0, var_1 )
     wait 1.0;
     var_9 = bullettrace( var_6.origin, var_6.origin + ( 0, 0, -1000000.0 ), 0, undefined );
     var_10 = var_9["position"];
-    var_5 _id_C4CD( var_0, var_10, var_1 );
+    var_5 onbombimpact( var_0, var_10, var_1 );
     var_6 delete();
     var_5 delete();
-    level._id_C22F--;
+    level.numgasstrikeactive--;
 
-    if ( level._id_C22F == 0 )
-        level._id_C22F = undefined;
+    if ( level.numgasstrikeactive == 0 )
+        level.numgasstrikeactive = undefined;
 }
 
 spawnbomb( var_0, var_1, var_2 )
@@ -132,25 +132,25 @@ spawnbomb( var_0, var_1, var_2 )
     return var_3;
 }
 
-_id_C4CD( var_0, var_1, var_2 )
+onbombimpact( var_0, var_1, var_2 )
 {
     var_3 = level.planeconfigs[var_2];
-    var_4 = spawn( "trigger_radius", var_1, 0, var_3._id_5FEF, var_3._id_5FEA );
+    var_4 = spawn( "trigger_radius", var_1, 0, var_3.effectradius, var_3.effectheight );
     var_4.owner = var_0;
-    var_5 = var_3._id_5FEF;
-    var_6 = spawnfx( var_3._id_5FF4, var_1 );
+    var_5 = var_3.effectradius;
+    var_6 = spawnfx( var_3.effectvfx, var_1 );
     triggerfx( var_6 );
-    wait( randomfloatrange( var_3._id_5FEE, var_3._id_5FED ) );
-    var_7 = var_3._id_5FEC;
+    wait( randomfloatrange( var_3.effectmindelay, var_3.effectmaxdelay ) );
+    var_7 = var_3.effectlifespan;
     var_8 = spawn( "script_model", var_1 + var_3.killcamoffset );
     var_8 linkto( var_4 );
 
-    for ( self.killcament = var_8; var_7 > 0.0; var_7 = var_7 - var_3._id_5FE7 )
+    for ( self.killcament = var_8; var_7 > 0.0; var_7 = var_7 - var_3.effectcheckfrequency )
     {
         foreach ( var_10 in level.characters )
-            var_10 applygaseffect( var_0, var_1, var_4, self, var_3._id_5FE8 );
+            var_10 applygaseffect( var_0, var_1, var_4, self, var_3.effectdamage );
 
-        wait( var_3._id_5FE7 );
+        wait( var_3.effectcheckfrequency );
     }
 
     self.killcament delete();

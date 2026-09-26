@@ -101,7 +101,7 @@ _id_44F0( var_0, var_1, var_2, var_3 )
 {
     var_0 endon( "disconnect" );
     var_0 notify( "flashbang", var_1, var_2, var_3, self, self.team, 1.33 );
-    scripts\mp\gamescore::_id_11ACE( self, var_0, "power_coneFlash" );
+    scripts\mp\gamescore::trackdebuffassist( self, var_0, "power_coneFlash" );
     var_0 scripts\engine\utility::waittill_any_timeout( 1.33, "death" );
 
     if ( isdefined( self ) )

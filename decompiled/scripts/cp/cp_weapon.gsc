@@ -1096,10 +1096,10 @@ onplayerspawned()
         self.concussionendtime = 0;
         self.hits = 0;
 
-        if ( !isdefined( self.trackingweapon ) )
+        if ( !isdefined( self.trackingweaponname ) )
         {
-            self.trackingweapon = "";
-            self.trackingweapon = "none";
+            self.trackingweaponname = "";
+            self.trackingweaponname = "none";
             self.trackingweaponshots = 0;
             self.trackingweaponkills = 0;
             self.trackingweaponhits = 0;
@@ -1302,7 +1302,7 @@ setrecoilscale( var_0, var_1 )
 
     if ( var_2 == 100 )
     {
-        self _meth_822C();
+        self player_recoilscaleoff();
         return;
     }
 
@@ -1469,7 +1469,7 @@ watchgrenadeusage()
     for (;;)
     {
         self waittill( "grenade_pullback", var_0 );
-        var_1 = self _meth_8556();
+        var_1 = self getthrowbackweapon();
 
         if ( var_1 != "none" )
             continue;
@@ -1945,7 +1945,7 @@ heart_used()
     self notify( "beginHeartTracking" );
     self endon( "beginHeartTracking" );
     self endon( "death" );
-    var_0 = self _meth_8513( "ges_heart_pull", "explode" );
+    var_0 = self getgesturenotetracktimes( "ges_heart_pull", "explode" );
     var_1 = self getgestureanimlength( "ges_heart_pull" );
     self.changingweapon = undefined;
     var_2 = self.origin;
@@ -2203,7 +2203,7 @@ throwingknifeteleport( var_0, var_1, var_2, var_3 )
     var_2 playsoundonmovingent( "blinkknife_teleport_npc" );
     playsoundatpos( var_0.origin, "blinkknife_impact" );
     thread throwingknifeteleport_fxstartburst( var_2, var_1 );
-    var_4 = var_1 _meth_8113();
+    var_4 = var_1 getcorpseentity();
 
     if ( isdefined( var_4 ) )
         var_4 setcontents( 0 );

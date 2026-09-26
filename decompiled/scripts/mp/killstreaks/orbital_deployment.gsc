@@ -4,7 +4,7 @@
 init()
 {
     level.rockets = [];
-    level.remotekillstreaks["explode"] = loadfx( "vfx/core/expl/aerial_explosion" );
+    level.remotemissile_fx["explode"] = loadfx( "vfx/core/expl/aerial_explosion" );
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "orbital_deployment", ::_id_128F2 );
     level._effect["odin_clouds"] = loadfx( "vfx/core/mp/killstreaks/odin/odin_parallax_clouds" );
     level._effect["odin_fisheye"] = loadfx( "vfx/code/screen/vfx_scrnfx_odin_fisheye.vfx" );
@@ -22,13 +22,13 @@ init()
     level._id_C6D7["orbital_deployment"].modelbase = "vehicle_odin_mp";
     level._id_C6D7["orbital_deployment"].teamsplash = "used_orbital_deployment";
     level._id_C6D7["orbital_deployment"].votimedout = "odin_gone";
-    level._id_C6D7["orbital_deployment"]._id_1352D = "odin_target_killed";
-    level._id_C6D7["orbital_deployment"]._id_1352C = "odin_targets_killed";
-    level._id_C6D7["orbital_deployment"]._id_12B20 = 3;
-    level._id_C6D7["orbital_deployment"]._id_12B80 = &"KILLSTREAKS_ODIN_UNAVAILABLE";
+    level._id_C6D7["orbital_deployment"].vokillsingle = "odin_target_killed";
+    level._id_C6D7["orbital_deployment"].vokillmulti = "odin_targets_killed";
+    level._id_C6D7["orbital_deployment"].ui_num = 3;
+    level._id_C6D7["orbital_deployment"].unavailable_string = &"KILLSTREAKS_ODIN_UNAVAILABLE";
     level._id_C6D7["orbital_deployment"].weapon["juggernaut"] = spawnstruct();
-    level._id_C6D7["orbital_deployment"].weapon["juggernaut"]._id_D5E4 = "null";
-    level._id_C6D7["orbital_deployment"].weapon["juggernaut"]._id_D5DD = "odin_jugg_launch";
+    level._id_C6D7["orbital_deployment"].weapon["juggernaut"].plr_ready_sound = "null";
+    level._id_C6D7["orbital_deployment"].weapon["juggernaut"].plr_fire_sound = "odin_jugg_launch";
 
     if ( !isdefined( level.heli_pilot_mesh ) )
     {
@@ -154,12 +154,12 @@ _id_C6D4()
             var_0 setclientomnvar( "ui_odin", -1 );
             var_0 _id_10DD4( self.targeting_marker.origin, self.origin, self.streakname );
             var_0 remotecontrolvehicleoff( self );
-            _id_4074();
+            cleanup_ents();
             self notify( "death" );
             break;
         }
         else
-            var_0 scripts\mp\utility::_id_13A7( "odin_negative_action" );
+            var_0 scripts\mp\utility::_playlocalsound( "odin_negative_action" );
 
         wait 1.1;
     }
@@ -217,12 +217,12 @@ _id_C6D2()
     var_4.origin = var_5["position"] + ( 0, 0, 50 );
     var_4 hide();
     var_4 showtoplayer( var_0 );
-    var_4 childthread _id_B9F2( var_0 );
-    thread _id_10129();
+    var_4 childthread monitormarkervisibility( var_0 );
+    thread showfx();
     self setotherent( var_4 );
 }
 
-_id_B9F2( var_0 )
+monitormarkervisibility( var_0 )
 {
     var_0 endon( "disconnect" );
     self endon( "death" );
@@ -278,7 +278,7 @@ _id_B9F2( var_0 )
     }
 }
 
-_id_10129()
+showfx()
 {
     self endon( "death" );
     wait 1.0;
@@ -301,14 +301,14 @@ _id_C6C7( var_0 )
         self.owner _id_C6C5( self, var_0 );
 
     self notify( "gone" );
-    _id_4074();
+    cleanup_ents();
     _id_C6CC( 3.0 );
     scripts\mp\utility::decrementfauxvehiclecount();
     level._id_163A["orbital_deployment"] = undefined;
     self delete();
 }
 
-_id_4074()
+cleanup_ents()
 {
     if ( isdefined( self.targeting_marker ) )
         self.targeting_marker delete();
@@ -319,7 +319,7 @@ _id_4074()
 
 _id_C6CC( var_0 )
 {
-    while ( isdefined( self._id_9BE2 ) && var_0 > 0 )
+    while ( isdefined( self.is_firing ) && var_0 > 0 )
     {
         wait 0.05;
         var_0 = var_0 - 0.05;
@@ -355,15 +355,15 @@ _id_C6C5( var_0, var_1 )
 
         foreach ( var_3 in level._id_C6D7["orbital_deployment"].weapon )
         {
-            if ( isdefined( var_3._id_D5E4 ) )
-                self stoplocalsound( var_3._id_D5E4 );
+            if ( isdefined( var_3.plr_ready_sound ) )
+                self stoplocalsound( var_3.plr_ready_sound );
 
-            if ( isdefined( var_3._id_D5DD ) )
-                self stoplocalsound( var_3._id_D5DD );
+            if ( isdefined( var_3.plr_fire_sound ) )
+                self stoplocalsound( var_3.plr_fire_sound );
         }
 
-        if ( isdefined( var_0._id_A4A3 ) )
-            var_0._id_A4A3 scripts\mp\bots\bots_strategy::bot_guard_player( self, 350 );
+        if ( isdefined( var_0.juggernaut ) )
+            var_0.juggernaut scripts\mp\bots\bots_strategy::bot_guard_player( self, 350 );
 
         self notify( "stop_odin" );
     }
@@ -434,7 +434,7 @@ _id_10DD4( var_0, var_1, var_2 )
     _id_10D70();
     self waittill( "blackout_done" );
     scripts\mp\utility::freezecontrolswrapper( 1 );
-    level thread _id_B9CB( self );
+    level thread monitordisownkillstreaks( self );
     level thread monitorgameend( self );
     level thread monitorobjectivecamera( self );
     var_3 = scripts\mp\killstreaks\killstreaks::initridekillstreak( var_2 );
@@ -468,12 +468,12 @@ _id_1285( var_0, var_1, var_2, var_3 )
     var_9 setotherent( var_8 );
     var_9.team = var_2.team;
     var_9.owner = var_2;
-    var_9 scripts\mp\killstreaks\utility::_id_1843( var_3, "Killstreak_Air", var_9.owner, 1 );
+    var_9 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_3, "Killstreak_Air", var_9.owner, 1 );
 
     if ( scripts\mp\utility::isreallyalive( var_2 ) )
         var_2 _id_10DD8();
 
-    if ( isdefined( var_2.fauxdeath ) && var_2.fauxdeath )
+    if ( isdefined( var_2.fauxdead ) && var_2.fauxdead )
     {
         var_2.faux_spawn_stance = var_2 getstance();
         var_2 thread scripts\mp\playerlogic::spawnplayer( 0 );
@@ -481,7 +481,7 @@ _id_1285( var_0, var_1, var_2, var_3 )
     }
 
     var_2 setorigin( var_8.origin + ( 0, 0, 10 ), 1 );
-    var_8 thread _id_13A22( "large_rod" );
+    var_8 thread watchexplosion( "large_rod" );
     var_8.team = var_2.team;
     var_8.type = "remote";
     var_8.owner = var_2;
@@ -494,8 +494,8 @@ _id_1285( var_0, var_1, var_2, var_3 )
     var_2 setclientomnvar( "ui_predator_missiles_left", 0 );
     playfx( level._effect["drop_pod_atmo"], var_8.origin );
     var_8 thread _id_5821();
-    var_8 thread _id_13AA4( var_2 );
-    var_8 thread _id_13AA3( var_2 );
+    var_8 thread watchhostmigrationstartedinit( var_2 );
+    var_8 thread watchhostmigrationlifetime( var_2 );
 
     for (;;)
     {
@@ -517,7 +517,7 @@ _id_1285( var_0, var_1, var_2, var_3 )
             var_2 scripts\mp\matchdata::logkillstreakevent( var_3, var_8.origin );
     }
 
-    level thread _id_E474( var_2, undefined, var_0, var_9, var_4 );
+    level thread returnplayer( var_2, undefined, var_0, var_9, var_4 );
 }
 
 monitorboost( var_0 )
@@ -551,7 +551,7 @@ delayedfofoverlay()
     self thermalvisionfofoverlayon();
 }
 
-_id_13A22( var_0 )
+watchexplosion( var_0 )
 {
     self waittill( "explode", var_1 );
 
@@ -567,7 +567,7 @@ _id_13A22( var_0 )
     }
 }
 
-_id_13AA4( var_0 )
+watchhostmigrationstartedinit( var_0 )
 {
     var_0 endon( "killstreak_disowned" );
     var_0 endon( "disconnect" );
@@ -590,7 +590,7 @@ _id_13AA4( var_0 )
     }
 }
 
-_id_13AA3( var_0 )
+watchhostmigrationlifetime( var_0 )
 {
     var_0 endon( "killstreak_disowned" );
     var_0 endon( "disconnect" );
@@ -611,12 +611,12 @@ _id_13AA3( var_0 )
     }
 }
 
-_id_B9CB( var_0 )
+monitordisownkillstreaks( var_0 )
 {
     var_0 endon( "disconnect" );
     var_0 endon( "end_kill_streak" );
     var_0 waittill( "killstreak_disowned" );
-    level thread _id_E474( var_0 );
+    level thread returnplayer( var_0 );
 }
 
 monitorgameend( var_0 )
@@ -624,7 +624,7 @@ monitorgameend( var_0 )
     var_0 endon( "disconnect" );
     var_0 endon( "end_kill_streak" );
     level waittill( "game_ended" );
-    level thread _id_E474( var_0 );
+    level thread returnplayer( var_0 );
 }
 
 monitorobjectivecamera( var_0 )
@@ -632,7 +632,7 @@ monitorobjectivecamera( var_0 )
     var_0 endon( "end_kill_streak" );
     var_0 endon( "disconnect" );
     level waittill( "objective_cam" );
-    level thread _id_E474( var_0, 1 );
+    level thread returnplayer( var_0, 1 );
 }
 
 monitordeath( var_0, var_1 )
@@ -640,8 +640,8 @@ monitordeath( var_0, var_1 )
     var_0 waittill( "death" );
     scripts\mp\hostmigration::waittillhostmigrationdone();
 
-    if ( isdefined( var_0._id_114F1 ) )
-        var_0._id_114F1 delete();
+    if ( isdefined( var_0.targeffect ) )
+        var_0.targeffect delete();
 
     if ( isdefined( var_0.entitynumber ) )
         level.rockets[var_0.entitynumber] = undefined;
@@ -650,7 +650,7 @@ monitordeath( var_0, var_1 )
         level.remotemissileinprogress = undefined;
 }
 
-_id_E474( var_0, var_1, var_2, var_3, var_4 )
+returnplayer( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( !isdefined( var_0 ) )
     {
@@ -767,7 +767,7 @@ _id_D39C( var_0 )
     {
         var_3 = var_1[var_2];
 
-        if ( isdefined( var_3 ) && var_3.streakname == var_0 && var_3._id_269A )
+        if ( isdefined( var_3 ) && var_3.streakname == var_0 && var_3.available )
             return 1;
     }
 

@@ -6,8 +6,8 @@ init()
     level.outlineids = 0;
     level.outlineents = [];
     level.outlineidspending = [];
-    level thread _id_C788();
-    level thread _id_C7A4();
+    level thread outlinecatchplayerdisconnect();
+    level thread outlineonplayerjoinedteam();
     level thread outlineidswatchpending();
 }
 
@@ -22,7 +22,7 @@ outlineenableinternal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
     var_8.colorindex = var_1;
     var_8.playersvisibleto = var_2;
     var_8.playersvisibletopending = [];
-    var_8._id_525C = var_3;
+    var_8.depthenable = var_3;
     var_8._id_6C10 = var_4;
     var_8.type = var_6;
 
@@ -50,7 +50,7 @@ outlineenableinternal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
     }
 
     if ( var_10.size > 0 )
-        var_0 _hudoutlineenableforclients( var_10, var_8.colorindex, var_8._id_525C, var_8._id_6C10 );
+        var_0 _hudoutlineenableforclients( var_10, var_8.colorindex, var_8.depthenable, var_8._id_6C10 );
 
     return var_9;
 }
@@ -92,7 +92,7 @@ outlinedisableinternal( var_0, var_1 )
         if ( isdefined( var_5 ) )
         {
             if ( var_5.priority <= var_2.priority )
-                var_1 _hudoutlineenableforclient( var_4, var_5.colorindex, var_5._id_525C, var_5._id_6C10 );
+                var_1 _hudoutlineenableforclient( var_4, var_5.colorindex, var_5.depthenable, var_5._id_6C10 );
 
             continue;
         }
@@ -109,7 +109,7 @@ outlinedisableinternal( var_0, var_1 )
     }
 }
 
-_id_C7AB( var_0 )
+outlinerefreshinternal( var_0 )
 {
     if ( !isdefined( var_0.outlines ) || var_0.outlines.size == 0 )
         return;
@@ -127,21 +127,21 @@ _id_C7AB( var_0 )
             var_5 = outlinegethighestinfoforplayer( var_0, var_4 );
 
             if ( isdefined( var_5 ) )
-                var_0 _hudoutlineenableforclient( var_4, var_5.colorindex, var_5._id_525C, var_5._id_6C10 );
+                var_0 _hudoutlineenableforclient( var_4, var_5.colorindex, var_5.depthenable, var_5._id_6C10 );
         }
     }
 }
 
-_id_C788()
+outlinecatchplayerdisconnect()
 {
     for (;;)
     {
         level waittill( "connected", var_0 );
-        level thread _id_C7A3( var_0 );
+        level thread outlineonplayerdisconnect( var_0 );
     }
 }
 
-_id_C7A3( var_0 )
+outlineonplayerdisconnect( var_0 )
 {
     level endon( "game_ended" );
     var_0 waittill( "disconnect" );
@@ -149,7 +149,7 @@ _id_C7A3( var_0 )
     outlinedisableinternalall( var_0 );
 }
 
-_id_C7A4()
+outlineonplayerjoinedteam()
 {
     for (;;)
     {
@@ -223,7 +223,7 @@ outlineaddplayertoexistingallandteamoutlines( var_0 )
         }
 
         if ( isdefined( var_3 ) )
-            var_2 _hudoutlineenableforclient( var_0, var_3.colorindex, var_3._id_525C, var_3._id_6C10 );
+            var_2 _hudoutlineenableforclient( var_0, var_3.colorindex, var_3.depthenable, var_3._id_6C10 );
     }
 }
 
@@ -296,7 +296,7 @@ outlinegenerateuniqueid()
     return level.outlineids;
 }
 
-_id_C7A9( var_0 )
+outlineprioritygroupmap( var_0 )
 {
     var_0 = tolower( var_0 );
     var_1 = undefined;
@@ -332,7 +332,7 @@ _id_C7A9( var_0 )
     return var_1;
 }
 
-_id_C78A( var_0 )
+outlinecolorindexmap( var_0 )
 {
     var_0 = tolower( var_0 );
     var_1 = undefined;
@@ -415,7 +415,7 @@ outlinerefreshpending( var_0, var_1 )
             var_5 = outlinegethighestinfoforplayer( var_0, var_4 );
 
             if ( isdefined( var_5 ) )
-                var_0 hudoutlineenableforclient( var_4, var_5.colorindex, var_5._id_525C, var_5._id_6C10 );
+                var_0 hudoutlineenableforclient( var_4, var_5.colorindex, var_5.depthenable, var_5._id_6C10 );
             else
                 var_0 hudoutlinedisableforclient( var_4 );
 

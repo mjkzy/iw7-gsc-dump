@@ -6,7 +6,7 @@ init()
 
 }
 
-_id_1768( var_0, var_1, var_2, var_3, var_4, var_5 )
+add_to_lightbar_stack( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     if ( !isdefined( var_2 ) )
         var_2 = 0;
@@ -33,7 +33,7 @@ _id_1768( var_0, var_1, var_2, var_3, var_4, var_5 )
     self.lightbarstructs[self.lightbarstructs.size - 1].endondeath = var_3;
     self.lightbarstructs[self.lightbarstructs.size - 1].timeplacedinstack = gettime();
     self.lightbarstructs[self.lightbarstructs.size - 1].executing = 0;
-    self.lightbarstructs[self.lightbarstructs.size - 1]._id_636F = var_5;
+    self.lightbarstructs[self.lightbarstructs.size - 1].endonnotification = var_5;
 
     if ( isdefined( var_4 ) )
         self.lightbarstructs[self.lightbarstructs.size - 1].time = var_4 * 1000;

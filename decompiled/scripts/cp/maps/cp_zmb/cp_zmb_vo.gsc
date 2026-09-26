@@ -225,7 +225,7 @@ ww_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
         if ( !isdefined( var_8 ) )
             continue;
 
-        if ( var_8 issplitscreenplayer() && !var_8 isreloading() )
+        if ( var_8 issplitscreenplayer() && !var_8 issplitscreenplayerprimary() )
             continue;
 
         var_9 = scripts\cp\cp_vo::create_vo_data( var_0, var_3, var_5, var_6 );
@@ -329,7 +329,7 @@ play_announcer_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
         if ( !isdefined( var_9 ) )
             continue;
 
-        if ( var_9 issplitscreenplayer() && !var_9 isreloading() )
+        if ( var_9 issplitscreenplayer() && !var_9 issplitscreenplayerprimary() )
             continue;
         else
         {
@@ -503,7 +503,7 @@ play_willard_dj_exchange( var_0 )
 {
     self endon( "disconnect" );
     clear_up_all_vo( var_0 );
-    scripts\cp\cp_vo::_id_C9CB( [ var_0 ] );
+    scripts\cp\cp_vo::pause_vo_system( [ var_0 ] );
     level.dj scripts\cp\maps\cp_zmb\cp_zmb_dj::set_dj_state( "approach_mic" );
 
     if ( var_0.vo_prefix == "p6_" )
@@ -538,7 +538,7 @@ play_willard_dj_exchange( var_0 )
     wait( scripts\cp\cp_vo::get_sound_length( "p6_spawn_dj_first_5" ) );
     var_0 playlocalsound( "dj_spawn_dj_first_6" );
     wait( scripts\cp\cp_vo::get_sound_length( "dj_spawn_dj_first_6" ) );
-    scripts\cp\cp_vo::_id_12BE3( [ var_0 ] );
+    scripts\cp\cp_vo::unpause_vo_system( [ var_0 ] );
     level.dj scripts\cp\maps\cp_zmb\cp_zmb_dj::set_dj_state( "open_window" );
 }
 
@@ -771,7 +771,7 @@ starting_vo()
         {
             if ( var_2 issplitscreenplayer() )
             {
-                if ( var_2 isreloading() )
+                if ( var_2 issplitscreenplayerprimary() )
                 {
                     if ( isdefined( var_2.vo_prefix ) )
                     {

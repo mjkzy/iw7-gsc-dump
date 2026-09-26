@@ -4,20 +4,20 @@
 init()
 {
     var_0 = spawnstruct();
-    var_0._id_B923 = [];
-    var_0._id_B923["allies"] = "veh_mil_air_ca_jackal_drone_atmos_periph_mp";
-    var_0._id_B923["axis"] = "veh_mil_air_ca_jackal_drone_atmos_periph_mp";
+    var_0.modelnames = [];
+    var_0.modelnames["allies"] = "veh_mil_air_ca_jackal_drone_atmos_periph_mp";
+    var_0.modelnames["axis"] = "veh_mil_air_ca_jackal_drone_atmos_periph_mp";
     var_0.inboundsfx = "veh_mig29_dist_loop";
     var_0.compassiconfriendly = "compass_objpoint_airstrike_friendly";
     var_0.compassiconenemy = "compass_objpoint_airstrike_busy";
     var_0.speed = 4000;
     var_0.halfdistance = 20000;
-    var_0._id_5715 = 4000;
+    var_0.distfromplayer = 4000;
     var_0.heightrange = 250;
-    var_0._id_C23A = 3;
+    var_0.nummissilevolleys = 3;
     var_0.outboundflightanim = "airstrike_mp_roll";
     var_0.sonicboomsfx = "veh_mig29_sonic_boom";
-    var_0.onattackdelegate = ::_id_24D8;
+    var_0.onattackdelegate = ::attackenemyaircraft;
     var_0.onflybycompletedelegate = ::cleanupgamemodes;
     var_0.scorepopup = "destroyed_air_superiority";
     var_0.callout = "callout_destroyed_air_superiority";
@@ -50,19 +50,19 @@ onuse( var_0 )
 dostrike( var_0, var_1 )
 {
     var_2 = level.planeconfigs[var_1];
-    var_3 = scripts\mp\killstreaks\plane::_id_8069( var_2._id_5715 );
+    var_3 = scripts\mp\killstreaks\plane::getplaneflightplan( var_2.distfromplayer );
     wait 1;
     var_4 = scripts\mp\utility::getotherteam( self.team );
     level.teamairdenied[var_4] = 1;
     level.airdeniedplayer = self;
-    dooneflyby( var_1, var_0, var_3.targetpos, var_3._id_6F25, var_3.height );
+    dooneflyby( var_1, var_0, var_3.targetpos, var_3.flightdir, var_3.height );
     self waittill( "aa_flyby_complete" );
     wait 2;
     scripts\mp\hostmigration::waittillhostmigrationdone();
 
     if ( isdefined( self ) )
     {
-        dooneflyby( var_1, var_0, var_3.targetpos, -1 * var_3._id_6F25, var_3.height );
+        dooneflyby( var_1, var_0, var_3.targetpos, -1 * var_3.flightdir, var_3.height );
         self waittill( "aa_flyby_complete" );
     }
 
@@ -77,15 +77,15 @@ dooneflyby( var_0, var_1, var_2, var_3, var_4 )
     level thread scripts\mp\killstreaks\plane::doflyby( var_1, self, var_1, var_6["startPoint"] + ( 0, 0, randomint( var_5.heightrange ) ), var_6["endPoint"] + ( 0, 0, randomint( var_5.heightrange ) ), var_6["attackTime"], var_6["flyTime"], var_3, var_0 );
 }
 
-_id_24D8( var_0, var_1, var_2, var_3, var_4 )
+attackenemyaircraft( var_0, var_1, var_2, var_3, var_4 )
 {
     self endon( "death" );
     self.owner endon( "killstreak_disowned" );
     level endon( "game_ended" );
     wait( var_2 );
-    var_5 = _id_6CAA( self.owner, self.team );
+    var_5 = findalltargets( self.owner, self.team );
     var_6 = level.planeconfigs[var_4];
-    var_7 = var_6._id_C23A;
+    var_7 = var_6.nummissilevolleys;
 
     for ( var_8 = var_5.size - 1; var_8 >= 0 && var_7 > 0; var_8-- )
     {
@@ -105,7 +105,7 @@ cleanupgamemodes( var_0, var_1, var_2 )
     var_0 notify( "aa_flyby_complete" );
 }
 
-_id_6CC8( var_0, var_1, var_2, var_3, var_4 )
+findtargetsoftype( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( isdefined( var_3 ) )
     {
@@ -119,23 +119,23 @@ _id_6CC8( var_0, var_1, var_2, var_3, var_4 )
     return var_4;
 }
 
-_id_6CAA( var_0, var_1 )
+findalltargets( var_0, var_1 )
 {
     var_2 = spawnstruct();
     var_2.targets = [];
     var_3 = undefined;
 
     if ( level.teambased )
-        var_3 = scripts\mp\utility::_id_9FE7;
+        var_3 = scripts\mp\utility::isvalidteamtarget;
     else
-        var_3 = scripts\mp\utility::_id_9FD8;
+        var_3 = scripts\mp\utility::isvalidffatarget;
 
     var_4 = undefined;
 
     if ( isdefined( var_1 ) )
         var_4 = scripts\mp\utility::getotherteam( var_1 );
 
-    _id_6CC8( var_0, var_4, var_3, level.heli_pilot, var_2 );
+    findtargetsoftype( var_0, var_4, var_3, level.heli_pilot, var_2 );
 
     if ( isdefined( level.lbsniper ) )
     {
@@ -143,9 +143,9 @@ _id_6CAA( var_0, var_1 )
             var_2.targets[var_2.targets.size] = level.lbsniper;
     }
 
-    _id_6CC8( var_0, var_4, var_3, level.planes, var_2 );
-    _id_6CC8( var_0, var_4, var_3, level.littlebirds, var_2 );
-    _id_6CC8( var_0, var_4, var_3, level.helis, var_2 );
+    findtargetsoftype( var_0, var_4, var_3, level.planes, var_2 );
+    findtargetsoftype( var_0, var_4, var_3, level.littlebirds, var_2 );
+    findtargetsoftype( var_0, var_4, var_3, level.helis, var_2 );
     return var_2.targets;
 }
 
@@ -168,10 +168,10 @@ fireattarget( var_0 )
     var_5.vehicle_fired_from = self;
     var_6 = [ var_4, var_5 ];
     var_0 notify( "targeted_by_incoming_missile", var_6 );
-    thread _id_10DC4( var_0, 0.25, var_6 );
+    thread startmissileguidance( var_0, 0.25, var_6 );
 }
 
-_id_10DC4( var_0, var_1, var_2 )
+startmissileguidance( var_0, var_1, var_2 )
 {
     wait( var_1 );
 
@@ -198,19 +198,19 @@ _id_10DC4( var_0, var_1, var_2 )
     }
 }
 
-_id_52CA( var_0, var_1 )
+destroyactivevehicles( var_0, var_1 )
 {
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, "aamissile_projectile_mp", level.helis );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, "aamissile_projectile_mp", level.littlebirds );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, "aamissile_projectile_mp", level.heli_pilot );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, "aamissile_projectile_mp", level.helis );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, "aamissile_projectile_mp", level.littlebirds );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, "aamissile_projectile_mp", level.heli_pilot );
 
     if ( isdefined( level.lbsniper ) )
     {
         var_2 = [];
         var_2[0] = level.lbsniper;
-        scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, "aamissile_projectile_mp", var_2 );
+        scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, "aamissile_projectile_mp", var_2 );
     }
 
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, "aamissile_projectile_mp", level.remote_uav );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, "aamissile_projectile_mp", level.planes );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, "aamissile_projectile_mp", level.remote_uav );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, "aamissile_projectile_mp", level.planes );
 }

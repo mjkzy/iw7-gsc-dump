@@ -25,7 +25,9 @@ script_print_fx()
     }
 
     if ( self.script_fxcommand == "loopsound" )
-        return;
+    {
+
+    }
 }
 
 grenadeexplosionfx( var_0 )

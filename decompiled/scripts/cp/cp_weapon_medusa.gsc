@@ -17,7 +17,7 @@ init()
     var_0.cannotplacestring = &"COOP_CRAFTABLES_CANNOT_PLACE";
     var_0.placecancelablestring = &"COOP_CRAFTABLES_PLACE_CANCELABLE";
     var_0._id_74BF = &"ZOMBIE_CRAFTING_SOUVENIRS_DETONATE";
-    var_0._id_9F43 = 0;
+    var_0.issentient = 0;
     var_0.placementheighttolerance = 30.0;
     var_0.placementradius = 16.0;
     var_0.carriedtrapoffset = ( 0, 0, 25 );
@@ -128,14 +128,14 @@ watch_dpad()
             break;
     }
 
-    thread _id_837E( 1 );
+    thread give_rad_extractor( 1 );
 }
 
-_id_837E( var_0, var_1, var_2 )
+give_rad_extractor( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     scripts\cp\utility::clearlowermessage( "msg_power_hint" );
-    var_3 = _id_49E8( self );
+    var_3 = create_lavalamp_trap_for_player( self );
     scripts\cp\utility::remove_player_perks();
     self.carriedsentry = var_3;
     var_4 = setcarryingims( var_3, var_0, var_1, var_2 );
@@ -206,7 +206,7 @@ setcarryingims( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_49E8( var_0 )
+create_lavalamp_trap_for_player( var_0 )
 {
     var_1 = spawnturret( "misc_turret", var_0.origin + ( 0, 0, 25 ), "sentry_minigun_mp" );
     var_1.angles = var_0.angles;
@@ -243,7 +243,7 @@ _id_B53C( var_0 )
     if ( isdefined( self.charge_fx ) )
         self.charge_fx delete();
 
-    _id_E11F();
+    removefromturretlist();
 
     if ( isdefined( self ) )
     {
@@ -278,14 +278,14 @@ _id_B53D()
         }
         else
         {
-            var_0 thread _id_837E( 0, self.lifespan, self._id_3CC3 );
+            var_0 thread give_rad_extractor( 0, self.lifespan, self._id_3CC3 );
             self playsound( "trap_medusa_pickup" );
         }
 
         if ( isdefined( self.charge_fx ) )
             self.charge_fx delete();
 
-        _id_E11F();
+        removefromturretlist();
         self delete();
     }
 }
@@ -390,7 +390,7 @@ _id_B541( var_0, var_1 )
     self setcursorhint( "HINT_NOICON" );
     self sethintstring( level._id_B549["crafted_medusa"].hintstring );
     self makeusable();
-    self _meth_84A7( "tag_fx" );
+    self sethinttag( "tag_fx" );
     self setusefov( 120 );
     self setuserange( 96 );
     thread _id_B53C( self.owner );
@@ -410,7 +410,7 @@ _id_B541( var_0, var_1 )
         self sethintstring( level._id_B549["crafted_medusa"]._id_74BF );
     }
 
-    _id_1862();
+    addtoturretlist();
 
     if ( !self.fully_charged )
         self setscriptablepartstate( "base", "charge_level_1" );
@@ -454,7 +454,7 @@ _id_B547()
             }
 
             self makeusable();
-            self _meth_84A7( "tag_fx" );
+            self sethinttag( "tag_fx" );
             self setusefov( 120 );
             self setuserange( 96 );
         }
@@ -464,16 +464,16 @@ _id_B547()
 _id_B544()
 {
     self makeunusable();
-    _id_E11F();
+    removefromturretlist();
 }
 
-_id_1862( var_0 )
+addtoturretlist( var_0 )
 {
     level._id_B548 = scripts\engine\utility::add_to_array( level._id_B548, self );
     scripts\cp\utility::addtotraplist();
 }
 
-_id_E11F( var_0 )
+removefromturretlist( var_0 )
 {
     level._id_B548 = scripts\engine\utility::array_remove( level._id_B548, self );
     scripts\cp\utility::removefromtraplist();

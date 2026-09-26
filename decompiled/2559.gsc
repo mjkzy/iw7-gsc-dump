@@ -6,7 +6,7 @@ _id_006E( var_0, var_1, var_2, var_3 )
     var_4 = anim.invalid;
     var_5 = undefined;
     var_6 = level._id_119E[var_0];
-    var_7 = var_6._id_1581[var_1];
+    var_7 = var_6.actionfn[var_1];
     var_4 = [[ var_7 ]]( var_2 );
 
     if ( !isdefined( var_4 ) )

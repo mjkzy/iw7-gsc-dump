@@ -11,45 +11,45 @@ _id_DEE0()
     if ( !isdefined( level.perks ) )
         level.perks = [ "perk_machine_tough", "perk_machine_revive", "perk_machine_flash", "perk_machine_more", "perk_machine_rat_a_tat", "perk_machine_run", "perk_machine_fwoosh", "perk_machine_smack", "perk_machine_zap", "perk_machine_boom" ];
 
-    level._id_C54A = [];
-    level._id_C54A["passive_nuke"] = ::_id_11AF4;
-    level._id_C54A["passive_random_perks"] = ::trackkillsforrandomperks;
-    level._id_C54A["passive_railgun_overload"] = ::dolocalrailgundamage;
-    level._id_C54A["passive_overkill"] = ::dolocaloverkilldamage;
-    level._id_C54A["passive_headshot_ammo"] = ::_id_89AE;
-    level._id_C54A["passive_headshot_super"] = ::_id_1869;
-    level._id_C54A["passive_refresh"] = ::_id_89D1;
-    level._id_C54A["passive_double_kill_reload"] = ::_id_5AE4;
-    level._id_C54A["passive_gore"] = ::_id_89AB;
-    level._id_C54A["passive_health_regen_on_kill"] = ::_id_89B1;
-    level._id_C54A["passive_move_speed_on_kill"] = ::_id_89C8;
-    level._id_C54A["passive_hitman"] = ::_id_89B3;
-    level._id_C54A["passive_meleekill"] = ::handlemeleekillpassive;
-    level._id_C54A["passive_health_on_kill"] = ::handlehealthonkillpassive;
-    level._id_C54A["passive_last_shots_ammo"] = ::handleammoonlastshotskill;
-    level._id_C54A["passive_visor_detonation"] = ::handlevisordetonation;
-    level._id_C54A["passive_melee_super"] = ::handlemeleesuper;
-    level._id_C54A["passive_jump_super"] = ::handleairbornesuper;
-    level._id_C54A["passive_double_kill_super"] = ::handledoublekillssuper;
-    level._id_C54A["passive_melee_cone_expl"] = ::handlemeleeconeexplode;
-    level._id_C54A["passive_berserk"] = ::handleberserk;
-    level._id_C54A["passive_ninja"] = ::handleammoonlastshotskill;
+    level.onkillweaponpassives = [];
+    level.onkillweaponpassives["passive_nuke"] = ::_id_11AF4;
+    level.onkillweaponpassives["passive_random_perks"] = ::trackkillsforrandomperks;
+    level.onkillweaponpassives["passive_railgun_overload"] = ::dolocalrailgundamage;
+    level.onkillweaponpassives["passive_overkill"] = ::dolocaloverkilldamage;
+    level.onkillweaponpassives["passive_headshot_ammo"] = ::handleheadshotammopassive;
+    level.onkillweaponpassives["passive_headshot_super"] = ::addvaluetocardmeter;
+    level.onkillweaponpassives["passive_refresh"] = ::handlepassiverefresh;
+    level.onkillweaponpassives["passive_double_kill_reload"] = ::doublekillreloadwatcher;
+    level.onkillweaponpassives["passive_gore"] = ::handlegorepassive;
+    level.onkillweaponpassives["passive_health_regen_on_kill"] = ::handlehealthregenonkillpassive;
+    level.onkillweaponpassives["passive_move_speed_on_kill"] = ::handlemovespeedonkillpassive;
+    level.onkillweaponpassives["passive_hitman"] = ::handlehitmanpassive;
+    level.onkillweaponpassives["passive_meleekill"] = ::handlemeleekillpassive;
+    level.onkillweaponpassives["passive_health_on_kill"] = ::handlehealthonkillpassive;
+    level.onkillweaponpassives["passive_last_shots_ammo"] = ::handleammoonlastshotskill;
+    level.onkillweaponpassives["passive_visor_detonation"] = ::handlevisordetonation;
+    level.onkillweaponpassives["passive_melee_super"] = ::handlemeleesuper;
+    level.onkillweaponpassives["passive_jump_super"] = ::handleairbornesuper;
+    level.onkillweaponpassives["passive_double_kill_super"] = ::handledoublekillssuper;
+    level.onkillweaponpassives["passive_melee_cone_expl"] = ::handlemeleeconeexplode;
+    level.onkillweaponpassives["passive_berserk"] = ::handleberserk;
+    level.onkillweaponpassives["passive_ninja"] = ::handleammoonlastshotskill;
     _id_DEDF( "passive_railgun_overload", ::init_passive_railgun_overload, ::set_passive_railgun_overload, ::unset_passive_railgun_overload );
     _id_DEDF( "passive_overkill", ::init_passive_overkill, ::set_passive_overkill, ::unset_passive_overkill );
     _id_DEDF( "passive_last_shots_ammo", ::init_passive_last_shots_ammo, ::set_passive_last_shots_ammo, ::unset_passive_last_shots_ammo );
-    _id_DEDF( "passive_nuke", ::_id_96BA, ::_id_F4C0, ::_id_12C0D );
-    _id_DEDF( "passive_headshot_ammo", ::_id_961A, ::_id_F3FB, ::_id_12BFF );
-    _id_DEDF( "passive_headshot_super", ::_id_961B, ::_id_F3FC, ::_id_12C00 );
-    _id_DEDF( "passive_refresh", ::_id_96BB, ::_id_F4C1, ::_id_12C0E );
-    _id_DEDF( "passive_double_kill_reload", ::_id_96B1, ::_id_F4B7, ::_id_12C04 );
-    _id_DEDF( "passive_gore", ::_id_96B2, ::_id_F4B8, ::_id_12C05 );
+    _id_DEDF( "passive_nuke", ::init_passive_nuke, ::set_passive_nuke, ::unset_passive_nuke );
+    _id_DEDF( "passive_headshot_ammo", ::_id_961A, ::set_headshot_ammo, ::unset_headshot_ammo );
+    _id_DEDF( "passive_headshot_super", ::init_headshot_super, ::set_headshot_super, ::unset_headshot_super );
+    _id_DEDF( "passive_refresh", ::init_passive_refresh, ::set_passive_refresh, ::unset_passive_refresh );
+    _id_DEDF( "passive_double_kill_reload", ::_id_96B1, ::_id_F4B7, ::unset_passive_double_kill_reload );
+    _id_DEDF( "passive_gore", ::_id_96B2, ::set_passive_gore, ::unset_passive_gore );
     _id_DEDF( "passive_meleekill", ::init_passive_melee_kill, ::set_passive_melee_kill, ::unset_passive_melee_kill );
     _id_DEDF( "passive_health_on_kill", ::init_passive_health_on_kill, ::set_passive_health_on_kill, ::unset_passive_health_on_kill );
-    _id_DEDF( "passive_health_regen_on_kill", ::_id_96B3, ::_id_F4B9, ::_id_12C06 );
-    _id_DEDF( "passive_move_speed_on_kill", ::_id_96B9, ::_id_F4BF, ::_id_12C0C );
-    _id_DEDF( "passive_hitman", ::_id_96B4, ::_id_F4BA, ::_id_12C07 );
-    _id_DEDF( "passive_score_bonus_kills", ::_id_96BC, ::_id_F4C2, ::_id_12C0F );
-    _id_DEDF( "passive_scorestreak_pack", ::_id_96BC, ::_id_F4C2, ::_id_12C0F );
+    _id_DEDF( "passive_health_regen_on_kill", ::init_passive_health_regen_on_kill, ::set_passive_health_regen_on_kill, ::unset_passive_health_regen_on_kill );
+    _id_DEDF( "passive_move_speed_on_kill", ::init_passive_move_speed_on_kill, ::set_passive_move_speed_on_kill, ::unset_passive_move_speed_on_kill );
+    _id_DEDF( "passive_hitman", ::init_passive_hitman, ::set_passive_hitman, ::unset_passive_hitman );
+    _id_DEDF( "passive_score_bonus_kills", ::_id_96BC, ::set_passive_score_bonus_kills, ::unset_passive_score_bonus_kills );
+    _id_DEDF( "passive_scorestreak_pack", ::_id_96BC, ::set_passive_score_bonus_kills, ::unset_passive_score_bonus_kills );
     _id_DEDF( "passive_random_perks", ::init_passive_random_perks, ::set_passive_random_perks, ::unset_passive_random_perks );
     _id_DEDF( "passive_visor_detonation", ::init_passive_visor_detonation, ::set_passive_visor_detonation, ::unset_passive_visor_detonation );
     _id_DEDF( "passive_melee_super", ::init_passive_melee_super, ::set_passive_melee_super, ::unset_passive_melee_super );
@@ -58,33 +58,33 @@ _id_DEE0()
     _id_DEDF( "passive_mode_switch_score", ::init_passive_mode_switch_score, ::set_passive_mode_switch_score, ::unset_passive_mode_switch_score );
     _id_DEDF( "passive_melee_cone_expl", ::init_passive_melee_cone_expl, ::set_passive_melee_cone_expl, ::unset_passive_melee_cone_expl );
     _id_DEDF( "passive_berserk", ::init_passive_berserk, ::set_passive_berserk, ::unset_passive_berserk );
-    level._id_C5C9 = [];
-    level._id_C5C9["passive_infinite_ammo"] = ::_id_89B8;
-    level._id_C5C9["passive_ninja"] = ::handleninjaonlastshot;
-    level._id_C5C9["passive_fortified"] = ::handlefortified;
-    _id_DEDF( "passive_infinite_ammo", ::_id_96B6, ::_id_F4BC, ::_id_12C09 );
+    level.onuseweaponpassives = [];
+    level.onuseweaponpassives["passive_infinite_ammo"] = ::handleinfiniteammopassive;
+    level.onuseweaponpassives["passive_ninja"] = ::handleninjaonlastshot;
+    level.onuseweaponpassives["passive_fortified"] = ::handlefortified;
+    _id_DEDF( "passive_infinite_ammo", ::_id_96B6, ::set_passive_infinite_ammo, ::unset_passive_infinite_ammo );
     _id_DEDF( "passive_crouch_move_speed", ::init_passive_crouch_move_speed, ::set_passive_crouch_move_speed, ::unset_passive_crouch_move_speed );
-    level._id_C4E6 = [];
-    level._id_C4E6["passive_sonic"] = ::handlepassivesonic;
-    level._id_C4E6["passive_minimap_damage"] = ::updatepassiveminimapdamage;
-    level._id_C4E6["passive_cold_damage"] = ::updatepassivecolddamage;
-    level._id_C4E6["passive_fire_damage"] = ::updatepassivefiredamage;
+    level.ondamagerelics = [];
+    level.ondamagerelics["passive_sonic"] = ::handlepassivesonic;
+    level.ondamagerelics["passive_minimap_damage"] = ::updatepassiveminimapdamage;
+    level.ondamagerelics["passive_cold_damage"] = ::updatepassivecolddamage;
+    level.ondamagerelics["passive_fire_damage"] = ::updatepassivefiredamage;
     _id_DEDF( "passive_wallrun_quieter", ::init_passive_ninja, ::set_passive_ninja, ::unset_passive_ninja );
     _id_DEDF( "passive_slide_blastshield", ::init_passive_fortified, ::set_passive_fortified, ::unset_passive_fortified );
     _id_DEDF( "passive_cold_damage", ::init_passive_cold_damage, ::set_passive_cold_damage, ::unset_passive_cold_damage );
     _id_DEDF( "passive_fire_damage", ::init_passive_fire_damage, ::set_passive_fire_damage, ::unset_passive_fire_damage );
     _id_DEDF( "passive_sonic", ::init_passive_sonic, ::set_passive_sonic, ::unset_passive_sonic );
-    _id_DEDF( "passive_below_the_belt", ::_id_96B0, ::_id_F4B5, ::_id_12C03 );
+    _id_DEDF( "passive_below_the_belt", ::_id_96B0, ::set_passive_below_the_belt, ::_id_12C03 );
     _id_DEDF( "passive_minimap_damage", ::init_passive_minimap_damage, ::set_passive_minimap_damage, ::unset_passive_minimap_damage );
-    _id_DEDF( "passive_extra_xp", ::_id_95D6, ::_id_F39A, ::_id_12BF8 );
+    _id_DEDF( "passive_extra_xp", ::_id_95D6, ::set_extra_xp, ::_id_12BF8 );
     _id_DEDF( "passive_fast_melee", ::init_passive_fast_melee, ::set_passive_fast_melee, ::unset_passive_fast_melee );
     _id_DEDF( "coop_passive_snap_to_head", ::_id_974D, ::_id_F5A3, ::_id_12C62 );
     _id_DEDF( "passive_empty_reload_speed", ::init_passive_empty_reload_speed, ::set_passive_empty_reload_speed, ::unset_passive_empty_reload_speed );
     _id_DEDF( "passive_increased_scope_breath", ::init_passive_increased_scope_breath, ::set_passive_increased_scope_breath, ::unset_passive_increased_scope_breath );
-    _id_DEDF( "passive_hunter_killer", ::_id_96B5, ::_id_F4BB, ::_id_12C08 );
-    _id_DEDF( "passive_move_speed", ::_id_96B8, ::_id_F4BE, ::_id_12C0B );
-    _id_DEDF( "passive_miss_refund", ::_id_96B7, ::_id_F4BD, ::_id_12C0A );
-    _id_DEDF( "passive_scoutping", ::_id_96BD, ::_id_F4C3, ::_id_12C10 );
+    _id_DEDF( "passive_hunter_killer", ::init_passive_hunter_killer, ::set_passive_hunter_killer, ::unset_passive_hunter_killer );
+    _id_DEDF( "passive_move_speed", ::init_passive_move_speed, ::_id_F4BE, ::_id_12C0B );
+    _id_DEDF( "passive_miss_refund", ::_id_96B7, ::set_passive_miss_refund, ::unset_passive_miss_refund );
+    _id_DEDF( "passive_scoutping", ::_id_96BD, ::set_passive_scoutping, ::unset_passive_scoutping );
     _id_DEDF( "passive_scrambler", ::init_passive_scrambler, ::set_passive_scrambler, ::unset_passive_scrambler );
     _id_DEDF( "passive_random_attachment", ::init_passive_random_attachment, ::set_passive_random_attachment, ::unset_passive_random_attachment );
     _id_DEDF( "passive_scope_radar", ::init_passive_scope_radar, ::set_passive_scope_radar, ::unset_passive_scope_radar );
@@ -122,13 +122,13 @@ unset_passive_random_attachment( var_0 )
 getweaponswithpassive( var_0, var_1 )
 {
     var_2 = [];
-    var_3 = getarraykeys( var_0._id_13C38 );
+    var_3 = getarraykeys( var_0.weapon_passives );
 
     foreach ( var_5 in var_3 )
     {
-        for ( var_6 = 0; var_6 < var_0._id_13C38[var_5].size; var_6++ )
+        for ( var_6 = 0; var_6 < var_0.weapon_passives[var_5].size; var_6++ )
         {
-            if ( var_0._id_13C38[var_5][var_6] == var_1 )
+            if ( var_0.weapon_passives[var_5][var_6] == var_1 )
                 var_2[var_2.size] = var_5;
         }
     }
@@ -158,7 +158,7 @@ _id_95D6( var_0 )
     var_0.kill_with_extra_xp_passive = 0;
 }
 
-_id_F39A( var_0 )
+set_extra_xp( var_0 )
 {
     var_0.weapon_passive_xp_multiplier = 1.25;
 }
@@ -171,20 +171,20 @@ _id_12BF8( var_0 )
 
 _id_96B0( var_0 )
 {
-    var_0._id_4A9A = undefined;
+    var_0.crotch_damage_multiplier = undefined;
 }
 
-_id_F4B5( var_0 )
+set_passive_below_the_belt( var_0 )
 {
-    var_0._id_4A9A = 3.75;
+    var_0.crotch_damage_multiplier = 3.75;
 }
 
 _id_12C03( var_0 )
 {
-    var_0._id_4A9A = undefined;
+    var_0.crotch_damage_multiplier = undefined;
 }
 
-_id_96B8( var_0 )
+init_passive_move_speed( var_0 )
 {
     var_0.weapon_passive_xp_multiplier = 1;
 }
@@ -246,64 +246,64 @@ _id_12C62( var_0 )
     var_0 scripts\cp\utility::_unsetperk( "specialty_autoaimhead" );
 }
 
-_id_96B5( var_0 )
+init_passive_hunter_killer( var_0 )
 {
-    self._id_91EE = 0;
+    self.hunterkilleroutlines = 0;
 }
 
-_id_F4BB( var_0 )
+set_passive_hunter_killer( var_0 )
 {
     self endon( "passive_hunter_killer_cancel" );
     var_1 = scripts\cp\cp_agent_utils::getaliveagentsofteam( "axis" );
-    thread _id_12EAE( var_1 );
-    thread _id_91EA();
+    thread updatehunterkillerplayers( var_1 );
+    thread hunterkillerlistenforconnect();
 
     foreach ( var_0 in var_1 )
     {
-        thread _id_91EC( var_0 );
-        thread _id_91EB( var_0 );
+        thread hunterkillerlistenfordisconnect( var_0 );
+        thread hunterkillerlistenfordamage( var_0 );
     }
 }
 
-_id_12C08( var_0 )
+unset_passive_hunter_killer( var_0 )
 {
     self notify( "passive_hunter_killer_cancel" );
 
-    foreach ( var_2 in self._id_91E9 )
+    foreach ( var_2 in self.hunterkillerids )
     {
-        var_0 = self._id_91E8[var_2];
+        var_0 = self.hunterkillerents[var_2];
         scripts\cp\cp_outline::disable_outline_for_players( var_0, level.players );
     }
 
-    self._id_91E9 = undefined;
-    self._id_91E8 = undefined;
+    self.hunterkillerids = undefined;
+    self.hunterkillerents = undefined;
 }
 
-_id_12EAE( var_0 )
+updatehunterkillerplayers( var_0 )
 {
-    if ( !isdefined( self._id_91E9 ) )
-        self._id_91E9 = [];
+    if ( !isdefined( self.hunterkillerids ) )
+        self.hunterkillerids = [];
 
-    if ( !isdefined( self._id_91E8 ) )
-        self._id_91E8 = [];
+    if ( !isdefined( self.hunterkillerents ) )
+        self.hunterkillerents = [];
 
     foreach ( var_2 in var_0 )
     {
         if ( var_2 == self || !isdefined( self ) || !isdefined( self.team ) || !isdefined( var_2 ) || !isdefined( var_2.team ) )
             continue;
 
-        var_3 = _id_7F09( var_2 );
+        var_3 = gethunterkillerid( var_2 );
 
         if ( level.teambased && self.team != var_2.team && var_2.health / var_2.maxhealth <= 0.5 && var_2.health > 0 )
         {
             if ( var_3 < 0 )
             {
-                self._id_91EE++;
+                self.hunterkilleroutlines++;
                 scripts\cp\cp_outline::enable_outline_for_player( var_2, self, 1, 0, 1, "high" );
-                var_4 = self._id_91EE;
-                self._id_91E9[self._id_91E9.size] = var_4;
-                self._id_91E8[var_4] = var_2;
-                thread _id_91ED( var_2 );
+                var_4 = self.hunterkilleroutlines;
+                self.hunterkillerids[self.hunterkillerids.size] = var_4;
+                self.hunterkillerents[var_4] = var_2;
+                thread hunterkillerlistenforhealth( var_2 );
             }
 
             continue;
@@ -315,9 +315,9 @@ _id_12EAE( var_0 )
             var_6 = [];
             scripts\cp\cp_outline::disable_outline_for_player( var_2, self );
 
-            foreach ( var_4 in self._id_91E9 )
+            foreach ( var_4 in self.hunterkillerids )
             {
-                var_8 = self._id_91E8[var_4];
+                var_8 = self.hunterkillerents[var_4];
 
                 if ( var_8 == var_2 )
                     continue;
@@ -326,14 +326,14 @@ _id_12EAE( var_0 )
                 var_6[var_4] = var_8;
             }
 
-            self._id_91E9 = var_5;
-            self._id_91E8 = var_6;
+            self.hunterkillerids = var_5;
+            self.hunterkillerents = var_6;
             var_2 notify( "passive_hunter_killer_listen_cancel" );
         }
     }
 }
 
-_id_91ED( var_0 )
+hunterkillerlistenforhealth( var_0 )
 {
     self endon( "passive_hunter_killer_cancel" );
     var_0 endon( "passive_hunter_killer_listen_cancel" );
@@ -341,18 +341,18 @@ _id_91ED( var_0 )
     for (;;)
     {
         wait 1.0;
-        thread _id_12EAD( var_0 );
+        thread updatehunterkillerplayer( var_0 );
     }
 }
 
-_id_7F09( var_0 )
+gethunterkillerid( var_0 )
 {
-    if ( !isdefined( self._id_91E9 ) || !isdefined( self._id_91E8 ) )
+    if ( !isdefined( self.hunterkillerids ) || !isdefined( self.hunterkillerents ) )
         return -1;
 
-    foreach ( var_2 in self._id_91E9 )
+    foreach ( var_2 in self.hunterkillerids )
     {
-        var_3 = self._id_91E8[var_2];
+        var_3 = self.hunterkillerents[var_2];
 
         if ( !isdefined( var_3 ) )
             continue;
@@ -364,66 +364,66 @@ _id_7F09( var_0 )
     return -1;
 }
 
-_id_91EA()
+hunterkillerlistenforconnect()
 {
     self endon( "passive_hunter_killer_cancel" );
 
     for (;;)
     {
         level waittill( "agent_spawned", var_0 );
-        thread _id_12EAD( var_0 );
-        thread _id_91EB( var_0 );
+        thread updatehunterkillerplayer( var_0 );
+        thread hunterkillerlistenfordamage( var_0 );
     }
 }
 
-_id_91EC( var_0 )
+hunterkillerlistenfordisconnect( var_0 )
 {
     self endon( "passive_hunter_killer_cancel" );
     var_0 waittill( "disconnect" );
-    thread _id_12EAD( var_0 );
+    thread updatehunterkillerplayer( var_0 );
 }
 
-_id_91EB( var_0 )
+hunterkillerlistenfordamage( var_0 )
 {
     self endon( "passive_hunter_killer_cancel" );
 
     for (;;)
     {
         var_0 waittill( "damage", var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 );
-        thread _id_12EAD( var_0 );
+        thread updatehunterkillerplayer( var_0 );
     }
 }
 
-_id_12EAD( var_0 )
+updatehunterkillerplayer( var_0 )
 {
     var_1 = [];
     var_1[var_1.size] = var_0;
-    thread _id_12EAE( var_1 );
+    thread updatehunterkillerplayers( var_1 );
 }
 
-_id_96BB( var_0 )
+init_passive_refresh( var_0 )
 {
-    var_0._id_BFA0 = 0;
+    var_0.nextpassiverefreshkills = 0;
 }
 
-_id_F4C1( var_0 )
+set_passive_refresh( var_0 )
 {
-    var_0._id_C54A["passive_refresh"] = 1;
+    var_0.onkillweaponpassives["passive_refresh"] = 1;
 }
 
-_id_12C0E( var_0 )
+unset_passive_refresh( var_0 )
 {
-    var_0._id_C54A["passive_refresh"] = 0;
+    var_0.onkillweaponpassives["passive_refresh"] = 0;
 }
 
-_id_89D1( var_0, var_1, var_2, var_3, var_4, var_5 )
+handlepassiverefresh( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
-    var_1._id_BFA0++;
+    var_1.nextpassiverefreshkills++;
 
-    if ( var_1._id_BFA0 >= 50 )
+    if ( var_1.nextpassiverefreshkills >= 50 )
     {
         var_1 scripts\cp\powers\coop_powers::power_adjustcharges( undefined, "primary", 1 );
-        var_1._id_BFA0 = 0;
+        var_1.nextpassiverefreshkills = 0;
     }
 }
 
@@ -435,23 +435,23 @@ _id_96B1( var_0 )
 
 _id_F4B7( var_0 )
 {
-    var_0._id_C54A["passive_double_kill_reload"] = 1;
+    var_0.onkillweaponpassives["passive_double_kill_reload"] = 1;
 
     if ( !isdefined( var_0._id_5AD5[getweaponbasename( var_0 getcurrentweapon() )] ) )
         var_0._id_5AD5[getweaponbasename( var_0 getcurrentweapon() )] = getweaponbasename( var_0 getcurrentweapon() );
 }
 
-_id_12C04( var_0 )
+unset_passive_double_kill_reload( var_0 )
 {
-    var_0._id_C54A["passive_double_kill_reload"] = 0;
+    var_0.onkillweaponpassives["passive_double_kill_reload"] = 0;
 }
 
-_id_5AE4( var_0, var_1, var_2, var_3, var_4, var_5 )
+doublekillreloadwatcher( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     if ( !scripts\engine\utility::array_contains( var_1._id_5AD5, getweaponbasename( var_0 ) ) )
         return;
 
-    if ( var_1._id_DDC2 == 4 )
+    if ( var_1.recentkillcount == 4 )
     {
         var_6 = weaponclipsize( var_0 );
         var_7 = var_1 getweaponammostock( var_0 );
@@ -482,14 +482,14 @@ set_passive_melee_kill( var_0 )
 {
     var_0.skip_weapon_check = 1;
     var_0.passive_melee_kill_damage = 1000;
-    var_0._id_C54A["passive_meleekill"] = 1;
+    var_0.onkillweaponpassives["passive_meleekill"] = 1;
 }
 
 unset_passive_melee_kill( var_0 )
 {
     var_0.skip_weapon_check = undefined;
     var_0.passive_melee_kill_damage = 0;
-    var_0._id_C54A["passive_meleekill"] = 0;
+    var_0.onkillweaponpassives["passive_meleekill"] = 0;
 }
 
 handlemeleekillpassive( var_0, var_1, var_2, var_3, var_4, var_5 )
@@ -502,12 +502,12 @@ handlemeleekillpassive( var_0, var_1, var_2, var_3, var_4, var_5 )
 
     level thread handlegoreeffect( var_2 );
     wait 0.05;
-    var_6 = var_2 _meth_8113();
+    var_6 = var_2 getcorpseentity();
 
     if ( isdefined( var_6 ) )
     {
         var_6 hide();
-        var_6.permanentcustommovetransition = 1;
+        var_6.permhidden = 1;
     }
 }
 
@@ -526,23 +526,23 @@ _id_96B2( var_0 )
 
 }
 
-_id_F4B8( var_0 )
+set_passive_gore( var_0 )
 {
-    var_0._id_C54A["passive_gore"] = 1;
+    var_0.onkillweaponpassives["passive_gore"] = 1;
 }
 
-_id_12C05( var_0 )
+unset_passive_gore( var_0 )
 {
-    var_0._id_C54A["passive_gore"] = 0;
+    var_0.onkillweaponpassives["passive_gore"] = 0;
 }
 
-_id_89AB( var_0, var_1, var_2, var_3, var_4, var_5 )
+handlegorepassive( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
     var_2 endon( "diconnect" );
     wait 0.05;
-    var_6 = var_2 _meth_8113();
+    var_6 = var_2 getcorpseentity();
 
     if ( !isdefined( var_6 ) )
         return;
@@ -554,78 +554,78 @@ _id_89AB( var_0, var_1, var_2, var_3, var_4, var_5 )
     if ( isdefined( var_6 ) )
     {
         var_6 hide();
-        var_6.permanentcustommovetransition = 1;
+        var_6.permhidden = 1;
     }
 }
 
 init_passive_health_on_kill( var_0 )
 {
-    var_0._id_C93F = 0;
+    var_0.passive_regen_on_kill_count = 0;
 }
 
 set_passive_health_on_kill( var_0 )
 {
-    var_0._id_C54A["passive_health_on_kill"] = 1;
+    var_0.onkillweaponpassives["passive_health_on_kill"] = 1;
 }
 
 unset_passive_health_on_kill( var_0 )
 {
-    var_0._id_C54A["passive_health_on_kill"] = 0;
+    var_0.onkillweaponpassives["passive_health_on_kill"] = 0;
 }
 
 handlehealthonkillpassive( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
-    var_1._id_C93F++;
+    var_1.passive_regen_on_kill_count++;
 
-    if ( var_1._id_C93F >= 2 )
+    if ( var_1.passive_regen_on_kill_count >= 2 )
     {
         var_1 notify( "force_regeneration" );
-        var_1._id_C93F = 0;
+        var_1.passive_regen_on_kill_count = 0;
     }
 }
 
-_id_96B3( var_0 )
+init_passive_health_regen_on_kill( var_0 )
 {
-    var_0._id_C93F = 0;
+    var_0.passive_regen_on_kill_count = 0;
 }
 
-_id_F4B9( var_0 )
+set_passive_health_regen_on_kill( var_0 )
 {
-    var_0._id_C54A["passive_health_regen_on_kill"] = 1;
+    var_0.onkillweaponpassives["passive_health_regen_on_kill"] = 1;
 }
 
-_id_12C06( var_0 )
+unset_passive_health_regen_on_kill( var_0 )
 {
-    var_0._id_C54A["passive_health_regen_on_kill"] = 0;
+    var_0.onkillweaponpassives["passive_health_regen_on_kill"] = 0;
 }
 
-_id_89B1( var_0, var_1, var_2, var_3, var_4, var_5 )
+handlehealthregenonkillpassive( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
-    if ( var_1._id_C93F >= 2 )
+    if ( var_1.passive_regen_on_kill_count >= 2 )
     {
         var_1 notify( "force_regeneration" );
-        var_1._id_C93F = 0;
+        var_1.passive_regen_on_kill_count = 0;
     }
     else
-        var_1._id_C93F++;
+        var_1.passive_regen_on_kill_count++;
 }
 
-_id_96B9( var_0 )
+init_passive_move_speed_on_kill( var_0 )
 {
     var_0.weaponpassivespeedonkillmod = 0;
 }
 
-_id_F4BF( var_0 )
+set_passive_move_speed_on_kill( var_0 )
 {
-    var_0._id_C54A["passive_move_speed_on_kill"] = 1;
+    var_0.onkillweaponpassives["passive_move_speed_on_kill"] = 1;
 }
 
-_id_12C0C( var_0 )
+unset_passive_move_speed_on_kill( var_0 )
 {
-    var_0._id_C54A["passive_move_speed_on_kill"] = 0;
+    var_0.onkillweaponpassives["passive_move_speed_on_kill"] = 0;
 }
 
-_id_89C8( var_0, var_1, var_2, var_3, var_4, var_5 )
+handlemovespeedonkillpassive( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     var_6 = "passive_move_speed_on_kill";
     var_1 notify( var_6 );
@@ -651,69 +651,69 @@ _id_96BC( var_0 )
 
 }
 
-_id_F4C2( var_0 )
+set_passive_score_bonus_kills( var_0 )
 {
     var_0.cash_scalar = var_0.cash_scalar + 0.1;
     var_0.cash_scalar_weapon = scripts\cp\utility::getrawbaseweaponname( var_0 getcurrentweapon() );
 }
 
-_id_12C0F( var_0 )
+unset_passive_score_bonus_kills( var_0 )
 {
     var_0.cash_scalar = var_0.cash_scalar - 0.1;
     var_0.cash_scalar_weapon = undefined;
 }
 
-_id_96B4( var_0 )
+init_passive_hitman( var_0 )
 {
 
 }
 
-_id_F4BA( var_0 )
+set_passive_hitman( var_0 )
 {
-    var_0._id_C54A["passive_hitman"] = 1;
+    var_0.onkillweaponpassives["passive_hitman"] = 1;
 }
 
-_id_12C07( var_0 )
+unset_passive_hitman( var_0 )
 {
-    var_0._id_C54A["passive_hitman"] = 0;
+    var_0.onkillweaponpassives["passive_hitman"] = 0;
 }
 
-_id_89B3( var_0, var_1, var_2, var_3, var_4, var_5 )
+handlehitmanpassive( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     if ( !isdefined( var_1 ) || !scripts\cp\utility::isreallyalive( var_1 ) || !isdefined( var_2 ) )
         return;
 
-    if ( !isdefined( var_1._id_903C ) )
-        var_1._id_903C = [];
-    else if ( _id_903B( var_1, var_2.birthtime ) )
+    if ( !isdefined( var_1.hitmankills ) )
+        var_1.hitmankills = [];
+    else if ( hitmankeyexists( var_1, var_2.birthtime ) )
         return;
 
-    var_1 thread _id_E252();
-    var_1._id_903C[var_1._id_903C.size] = var_2.birthtime;
+    var_1 thread resethitmanaftertimeout();
+    var_1.hitmankills[var_1.hitmankills.size] = var_2.birthtime;
 
-    if ( var_1._id_903C.size >= 10 )
+    if ( var_1.hitmankills.size >= 10 )
     {
         var_1 notify( "consumable_charge", 200 );
-        var_1._id_903C = [];
+        var_1.hitmankills = [];
     }
 }
 
-_id_E252()
+resethitmanaftertimeout()
 {
     self notify( "hitman_timeout" );
     self endon( "hitman_timeout" );
     self endon( "death" );
     level endon( "game_ended" );
     wait 10;
-    self._id_903C = [];
+    self.hitmankills = [];
 }
 
-_id_903B( var_0, var_1 )
+hitmankeyexists( var_0, var_1 )
 {
-    if ( !isdefined( var_0._id_903C ) )
+    if ( !isdefined( var_0.hitmankills ) )
         return 0;
 
-    foreach ( var_3 in var_0._id_903C )
+    foreach ( var_3 in var_0.hitmankills )
     {
         if ( var_3 == var_1 )
             return 1;
@@ -722,42 +722,42 @@ _id_903B( var_0, var_1 )
     return 0;
 }
 
-_id_903D()
+hitmanpassivedeathwatcher()
 {
     self endon( "disconnect" );
     self waittill( "death" );
-    self._id_903C = undefined;
+    self.hitmankills = undefined;
 }
 
-_id_96BA( var_0 )
+init_passive_nuke( var_0 )
 {
-    var_0._id_C944 = 0;
-    var_0._id_A9CA = 0;
-    var_0 thread _id_11AF6( var_0 );
+    var_0.passivenukekillcount = 0;
+    var_0.lastpassivenukeactivation = 0;
+    var_0 thread tracklaststandforpassivenuke( var_0 );
 }
 
-_id_F4C0( var_0 )
+set_passive_nuke( var_0 )
 {
-    var_0._id_C54A["passive_nuke"] = 1;
+    var_0.onkillweaponpassives["passive_nuke"] = 1;
 }
 
-_id_12C0D( var_0 )
+unset_passive_nuke( var_0 )
 {
-    var_0._id_C54A["passive_nuke"] = 0;
+    var_0.onkillweaponpassives["passive_nuke"] = 0;
 }
 
 _id_11AF4( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
-    var_1._id_C944++;
+    var_1.passivenukekillcount++;
 
-    if ( var_1._id_C944 >= 150 && var_1._id_A9CA + 3 <= level.wave_num )
+    if ( var_1.passivenukekillcount >= 150 && var_1.lastpassivenukeactivation + 3 <= level.wave_num )
     {
-        var_1._id_C944 = 0;
+        var_1.passivenukekillcount = 0;
         level scripts\cp\loot::drop_loot( var_1.origin, var_1, "kill_50", 1, undefined, 1 );
     }
 }
 
-_id_11AF6( var_0 )
+tracklaststandforpassivenuke( var_0 )
 {
     level endon( "game_ended" );
     var_0 endon( "disconnect" );
@@ -765,7 +765,7 @@ _id_11AF6( var_0 )
     for (;;)
     {
         var_0 waittill( "last_stand" );
-        var_0._id_C944 = 0;
+        var_0.passivenukekillcount = 0;
     }
 }
 
@@ -774,17 +774,17 @@ _id_961A( var_0 )
 
 }
 
-_id_F3FB( var_0 )
+set_headshot_ammo( var_0 )
 {
-    var_0._id_C54A["passive_headshot_ammo"] = 1;
+    var_0.onkillweaponpassives["passive_headshot_ammo"] = 1;
 }
 
-_id_12BFF( var_0 )
+unset_headshot_ammo( var_0 )
 {
-    var_0._id_C54A["passive_headshot_ammo"] = 0;
+    var_0.onkillweaponpassives["passive_headshot_ammo"] = 0;
 }
 
-_id_89AE( var_0, var_1, var_2, var_3, var_4, var_5 )
+handleheadshotammopassive( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     if ( !isdefined( var_1 ) || !isdefined( var_0 ) )
         return;
@@ -828,13 +828,13 @@ init_passive_fortified( var_0 )
 
 set_passive_fortified( var_0 )
 {
-    var_0._id_C5C9["passive_fortified"] = 1;
+    var_0.onuseweaponpassives["passive_fortified"] = 1;
     var_0.has_fortified_passive = 1;
 }
 
 unset_passive_fortified( var_0 )
 {
-    var_0._id_C5C9["passive_fortified"] = 0;
+    var_0.onuseweaponpassives["passive_fortified"] = 0;
     var_0.has_fortified_passive = 0;
 }
 
@@ -851,12 +851,12 @@ init_passive_ninja( var_0 )
 set_passive_ninja( var_0 )
 {
     var_0.stealth_used = [];
-    var_0._id_C5C9["passive_ninja"] = 1;
+    var_0.onuseweaponpassives["passive_ninja"] = 1;
 }
 
 unset_passive_ninja( var_0 )
 {
-    var_0._id_C5C9["passive_ninja"] = 0;
+    var_0.onuseweaponpassives["passive_ninja"] = 0;
     var_0 notify( "reset_stealth" );
 
     if ( var_0 scripts\cp\utility::isignoremeenabled() )
@@ -918,12 +918,12 @@ init_passive_last_shots_ammo( var_0 )
 
 set_passive_last_shots_ammo( var_0 )
 {
-    var_0._id_C54A["passive_ninja"] = 1;
+    var_0.onkillweaponpassives["passive_ninja"] = 1;
 }
 
 unset_passive_last_shots_ammo( var_0 )
 {
-    var_0._id_C54A["passive_ninja"] = 0;
+    var_0.onkillweaponpassives["passive_ninja"] = 0;
 }
 
 handleammoonlastshotskill( var_0, var_1, var_2, var_3, var_4, var_5 )
@@ -953,12 +953,12 @@ init_passive_overkill( var_0 )
 
 set_passive_overkill( var_0 )
 {
-    var_0._id_C54A["passive_overkill"] = 1;
+    var_0.onkillweaponpassives["passive_overkill"] = 1;
 }
 
 unset_passive_overkill( var_0 )
 {
-    var_0._id_C54A["passive_overkill"] = 0;
+    var_0.onkillweaponpassives["passive_overkill"] = 0;
 }
 
 dolocaloverkilldamage( var_0, var_1, var_2, var_3, var_4, var_5 )
@@ -1000,12 +1000,12 @@ init_passive_railgun_overload( var_0 )
 
 set_passive_railgun_overload( var_0 )
 {
-    var_0._id_C54A["passive_railgun_overload"] = 1;
+    var_0.onkillweaponpassives["passive_railgun_overload"] = 1;
 }
 
 unset_passive_railgun_overload( var_0 )
 {
-    var_0._id_C54A["passive_railgun_overload"] = 0;
+    var_0.onkillweaponpassives["passive_railgun_overload"] = 0;
 }
 
 dolocalrailgundamage( var_0, var_1, var_2, var_3, var_4, var_5 )
@@ -1045,22 +1045,22 @@ dolocalrailgundamage( var_0, var_1, var_2, var_3, var_4, var_5 )
         var_12 dodamage( var_2.maxhealth, var_2.origin, var_1, var_1, "MOD_EXPLOSIVE", "iw7_walkietalkie_zm" );
 }
 
-_id_961B( var_0 )
+init_headshot_super( var_0 )
 {
     var_0.delayedsuperbonus = 0;
 }
 
-_id_F3FC( var_0 )
+set_headshot_super( var_0 )
 {
-    var_0._id_C54A["passive_headshot_super"] = 1;
+    var_0.onkillweaponpassives["passive_headshot_super"] = 1;
 }
 
-_id_12C00( var_0 )
+unset_headshot_super( var_0 )
 {
-    var_0._id_C54A["passive_headshot_super"] = 0;
+    var_0.onkillweaponpassives["passive_headshot_super"] = 0;
 }
 
-_id_1869( var_0, var_1, var_2, var_3, var_4, var_5 )
+addvaluetocardmeter( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     var_1.delayedsuperbonus++;
     wait( 0.05 * var_1.delayedsuperbonus );
@@ -1079,12 +1079,12 @@ init_passive_sonic( var_0 )
 
 set_passive_sonic( var_0 )
 {
-    var_0._id_C4E6["passive_sonic"] = 1;
+    var_0.ondamagerelics["passive_sonic"] = 1;
 }
 
 unset_passive_sonic( var_0 )
 {
-    var_0._id_C4E6["passive_sonic"] = 0;
+    var_0.ondamagerelics["passive_sonic"] = 0;
 }
 
 handlepassivesonic( var_0, var_1, var_2 )
@@ -1178,21 +1178,21 @@ _id_96B6( var_0 )
 
 }
 
-_id_F4BC( var_0 )
+set_passive_infinite_ammo( var_0 )
 {
     var_0 scripts\cp\utility::enable_infinite_ammo( 1 );
-    var_0._id_C5C9["passive_infinite_ammo"] = 1;
+    var_0.onuseweaponpassives["passive_infinite_ammo"] = 1;
 }
 
-_id_12C09( var_0 )
+unset_passive_infinite_ammo( var_0 )
 {
     var_0 scripts\cp\utility::enable_infinite_ammo( 0 );
-    var_0._id_C5C9["passive_infinite_ammo"] = 0;
+    var_0.onuseweaponpassives["passive_infinite_ammo"] = 0;
 }
 
-_id_89B8( var_0, var_1 )
+handleinfiniteammopassive( var_0, var_1 )
 {
-    var_0 thread _id_AD6F( var_1 );
+    var_0 thread listenforfirecomplete( var_1 );
     var_2 = 4;
     var_3 = self.health;
 
@@ -1202,10 +1202,10 @@ _id_89B8( var_0, var_1 )
     if ( var_2 > 0 )
         var_0 dodamage( var_2, var_0 gettagorigin( "j_wrist_ri" ), var_0, undefined, "MOD_RIFLE_BULLET", "iw7_pickup_zm" );
 
-    var_0 _id_12EB2( var_1 );
+    var_0 updateinfiniteammopassive( var_1 );
 }
 
-_id_AD6F( var_0 )
+listenforfirecomplete( var_0 )
 {
     self endon( "disconnect" );
     self notify( "infinite_ammo_fire" );
@@ -1215,7 +1215,7 @@ _id_AD6F( var_0 )
     self.selfdamaging = 0;
 }
 
-_id_12EB2( var_0 )
+updateinfiniteammopassive( var_0 )
 {
     var_1 = self.health;
     var_2 = weaponclipsize( var_0 );
@@ -1230,18 +1230,18 @@ _id_96B7( var_0 )
 
 }
 
-_id_F4BD( var_0 )
+set_passive_miss_refund( var_0 )
 {
     var_1 = var_0 getcurrentweapon();
-    var_0 thread _id_B8D5( var_1 );
+    var_0 thread missrefundwatcher( var_1 );
 }
 
-_id_12C0A( var_0 )
+unset_passive_miss_refund( var_0 )
 {
     var_0 notify( "removeMissRefundPassive" );
 }
 
-_id_B8D5( var_0 )
+missrefundwatcher( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -1410,7 +1410,7 @@ tracklaststandforpassiverandomperks( var_0 )
 
 set_passive_random_perks( var_0 )
 {
-    var_0._id_C54A["passive_random_perks"] = 1;
+    var_0.onkillweaponpassives["passive_random_perks"] = 1;
 }
 
 trackkillsforrandomperks( var_0, var_1, var_2, var_3, var_4, var_5 )
@@ -1447,7 +1447,7 @@ trackkillsforrandomperks( var_0, var_1, var_2, var_3, var_4, var_5 )
 
 unset_passive_random_perks( var_0 )
 {
-    var_0._id_C54A["passive_random_perks"] = 0;
+    var_0.onkillweaponpassives["passive_random_perks"] = 0;
 }
 
 init_passive_melee_super( var_0 )
@@ -1458,13 +1458,13 @@ init_passive_melee_super( var_0 )
 set_passive_melee_super( var_0 )
 {
     var_0.skip_weapon_check = 1;
-    var_0._id_C54A["passive_melee_super"] = 1;
+    var_0.onkillweaponpassives["passive_melee_super"] = 1;
 }
 
 unset_passive_melee_super( var_0 )
 {
     var_0.skip_weapon_check = undefined;
-    var_0._id_C54A["passive_melee_super"] = 0;
+    var_0.onkillweaponpassives["passive_melee_super"] = 0;
 }
 
 handlemeleesuper( var_0, var_1, var_2, var_3, var_4, var_5 )
@@ -1483,13 +1483,13 @@ init_passive_jump_super( var_0 )
 
 set_passive_jump_super( var_0 )
 {
-    var_0._id_C54A["passive_jump_super"] = 1;
+    var_0.onkillweaponpassives["passive_jump_super"] = 1;
     var_0.current_weapon_jump_super = scripts\cp\utility::getrawbaseweaponname( var_0 getcurrentweapon() );
 }
 
 unset_passive_jump_super( var_0 )
 {
-    var_0._id_C54A["passive_jump_super"] = 0;
+    var_0.onkillweaponpassives["passive_jump_super"] = 0;
     var_0.current_weapon_jump_super = undefined;
 }
 
@@ -1509,13 +1509,13 @@ init_passive_double_kill_super( var_0 )
 
 set_passive_double_kill_super( var_0 )
 {
-    var_0._id_C54A["passive_double_kill_super"] = 1;
+    var_0.onkillweaponpassives["passive_double_kill_super"] = 1;
     var_0.current_weapon_double_super = scripts\cp\utility::getrawbaseweaponname( var_0 getcurrentweapon() );
 }
 
 unset_passive_double_kill_super( var_0 )
 {
-    var_0._id_C54A["passive_double_kill_super"] = 0;
+    var_0.onkillweaponpassives["passive_double_kill_super"] = 0;
     var_0.current_weapon_double_super = undefined;
 }
 
@@ -1524,9 +1524,9 @@ handledoublekillssuper( var_0, var_1, var_2, var_3, var_4, var_5 )
     level endon( "game_ended" );
     var_1 endon( "disconnect" );
 
-    if ( isdefined( var_1._id_DDC2 ) && ( isdefined( var_1.current_weapon_double_super ) && scripts\cp\utility::getrawbaseweaponname( var_0 ) == var_1.current_weapon_double_super ) )
+    if ( isdefined( var_1.recentkillcount ) && ( isdefined( var_1.current_weapon_double_super ) && scripts\cp\utility::getrawbaseweaponname( var_0 ) == var_1.current_weapon_double_super ) )
     {
-        if ( var_1._id_DDC2 == 2 )
+        if ( var_1.recentkillcount == 2 )
             var_1 notify( "consumable_charge", 125 );
     }
 }
@@ -1557,12 +1557,12 @@ init_passive_visor_detonation( var_0 )
 
 set_passive_visor_detonation( var_0 )
 {
-    var_0._id_C54A["passive_visor_detonation"] = 1;
+    var_0.onkillweaponpassives["passive_visor_detonation"] = 1;
 }
 
 unset_passive_visor_detonation( var_0 )
 {
-    var_0._id_C54A["passive_visor_detonation"] = 0;
+    var_0.onkillweaponpassives["passive_visor_detonation"] = 0;
 }
 
 handlevisordetonation( var_0, var_1, var_2, var_3, var_4, var_5 )
@@ -1615,12 +1615,12 @@ init_passive_berserk( var_0 )
 
 set_passive_berserk( var_0 )
 {
-    var_0._id_C54A["passive_berserk"] = 1;
+    var_0.onkillweaponpassives["passive_berserk"] = 1;
 }
 
 unset_passive_berserk( var_0 )
 {
-    var_0._id_C54A["passive_berserk"] = 0;
+    var_0.onkillweaponpassives["passive_berserk"] = 0;
 }
 
 handleberserk( var_0, var_1, var_2, var_3, var_4, var_5 )
@@ -1628,8 +1628,8 @@ handleberserk( var_0, var_1, var_2, var_3, var_4, var_5 )
     if ( !scripts\engine\utility::is_true( var_1.berserk ) )
     {
         var_1.berserk = 1;
-        var_1 _meth_85C1( 65 );
-        var_6 = var_1 _meth_85C0();
+        var_1 setfiretimescaleon( 65 );
+        var_6 = var_1 player_getrecoilscale();
 
         if ( var_6 < 0 )
             var_6 = 100;
@@ -1667,8 +1667,8 @@ unset_berserk()
     if ( scripts\engine\utility::is_true( self.berserk ) )
     {
         self.berserk = 0;
-        self _meth_85C2();
-        var_0 = self _meth_85C0();
+        self setfiretimescaleoff();
+        var_0 = self player_getrecoilscale();
         var_0 = min( var_0 + 20, 100 );
         self player_recoilscaleon( int( var_0 ) );
         self notify( "end_berserk" );
@@ -1689,13 +1689,13 @@ init_passive_melee_cone_expl( var_0 )
 
 set_passive_melee_cone_expl( var_0 )
 {
-    var_0._id_C54A["passive_melee_cone_expl"] = 1;
+    var_0.onkillweaponpassives["passive_melee_cone_expl"] = 1;
     var_0.skip_weapon_check = 1;
 }
 
 unset_passive_melee_cone_expl( var_0 )
 {
-    var_0._id_C54A["passive_melee_cone_expl"] = 0;
+    var_0.onkillweaponpassives["passive_melee_cone_expl"] = 0;
     var_0.skip_weapon_check = undefined;
 }
 
@@ -1740,12 +1740,12 @@ init_passive_minimap_damage( var_0 )
 
 set_passive_minimap_damage( var_0 )
 {
-    var_0._id_C4E6["passive_minimap_damage"] = 1;
+    var_0.ondamagerelics["passive_minimap_damage"] = 1;
 }
 
 unset_passive_minimap_damage( var_0 )
 {
-    var_0._id_C4E6["passive_minimap_damage"] = 0;
+    var_0.ondamagerelics["passive_minimap_damage"] = 0;
 }
 
 updatepassiveminimapdamage( var_0, var_1, var_2 )
@@ -1868,14 +1868,14 @@ init_passive_fire_damage( var_0 )
 
 set_passive_fire_damage( var_0 )
 {
-    var_0._id_C4E6["passive_fire_damage"] = 1;
-    var_0._id_6D53 = var_0 getcurrentweapon();
+    var_0.ondamagerelics["passive_fire_damage"] = 1;
+    var_0.fire_weapon = var_0 getcurrentweapon();
 }
 
 unset_passive_fire_damage( var_0 )
 {
-    var_0._id_C4E6["passive_fire_damage"] = 0;
-    var_0._id_6D53 = undefined;
+    var_0.ondamagerelics["passive_fire_damage"] = 0;
+    var_0.fire_weapon = undefined;
 }
 
 updatepassivefiredamage( var_0, var_1, var_2 )
@@ -1888,9 +1888,9 @@ updatepassivefiredamage( var_0, var_1, var_2 )
     if ( var_3 || var_4 || var_5 )
         return;
 
-    if ( isdefined( var_0._id_6D53 ) )
+    if ( isdefined( var_0.fire_weapon ) )
     {
-        if ( scripts\cp\utility::getrawbaseweaponname( var_0._id_6D53 ) == scripts\cp\utility::getrawbaseweaponname( var_1 ) )
+        if ( scripts\cp\utility::getrawbaseweaponname( var_0.fire_weapon ) == scripts\cp\utility::getrawbaseweaponname( var_1 ) )
             var_2 thread scripts\cp\utility::damage_over_time( var_2, var_0, 5, var_6, "MOD_HEAD_SHOT", "incendiary_ammo_mp", undefined, "burning" );
     }
 }
@@ -1902,13 +1902,13 @@ init_passive_cold_damage( var_0 )
 
 set_passive_cold_damage( var_0 )
 {
-    var_0._id_C4E6["passive_cold_damage"] = 1;
+    var_0.ondamagerelics["passive_cold_damage"] = 1;
     var_0.cold_weapon = var_0 getcurrentweapon();
 }
 
 unset_passive_cold_damage( var_0 )
 {
-    var_0._id_C4E6["passive_cold_damage"] = 0;
+    var_0.ondamagerelics["passive_cold_damage"] = 0;
     var_0.cold_weapon = undefined;
 }
 
@@ -2055,7 +2055,7 @@ scoperadar_executeping( var_0, var_1, var_2 )
             if ( length2dsquared( var_9 ) > var_10 )
                 continue;
 
-            var_0 thread _id_C7A7( var_8, var_0, distance2d( var_0.origin, var_8.origin ) / var_2, var_1 );
+            var_0 thread outlineplayerbydistance( var_8, var_0, distance2d( var_0.origin, var_8.origin ) / var_2, var_1 );
             var_3 = 1;
         }
     }
@@ -2066,7 +2066,7 @@ enable_outline_for_player( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_0 hudoutlineenableforclient( var_1, var_2, var_3, var_4 );
 }
 
-_id_C7A7( var_0, var_1, var_2, var_3 )
+outlineplayerbydistance( var_0, var_1, var_2, var_3 )
 {
     level endon( "game_ended" );
     var_1 endon( "scope_radar_ads_out" );
@@ -2080,7 +2080,7 @@ _id_C7A7( var_0, var_1, var_2, var_3 )
     enable_outline_for_player( var_0, var_1, var_4, 1, 1, "high" );
 }
 
-_id_13AA0( var_0, var_1, var_2 )
+watchhighlightfadetime( var_0, var_1, var_2 )
 {
     var_0 endon( "disconnect" );
     level endon( "game_ended" );
@@ -2188,12 +2188,12 @@ _id_96BD( var_0 )
 
 }
 
-_id_F4C3( var_0 )
+set_passive_scoutping( var_0 )
 {
     var_0 thread updatescoutping( var_0 );
 }
 
-_id_12C10( var_0 )
+unset_passive_scoutping( var_0 )
 {
     var_0 notify( "unsetScoutPing" );
 }
@@ -2233,39 +2233,39 @@ updatescoutping( var_0 )
 _id_12EDF( var_0, var_1, var_2, var_3, var_4 )
 {
     var_5 = gettime();
-    var_6 = getarraykeys( var_1._id_C54A );
+    var_6 = getarraykeys( var_1.onkillweaponpassives );
 
     if ( !scripts\engine\utility::is_true( var_1.skip_weapon_check ) && isdefined( var_1.current_passive_weapon ) && var_0 != var_1.current_passive_weapon )
         return;
 
     foreach ( var_8 in var_6 )
     {
-        if ( scripts\engine\utility::is_true( var_1._id_C54A[var_8] ) )
-            thread [[ level._id_C54A[var_8] ]]( var_0, var_1, var_2, var_3, var_4, var_5 );
+        if ( scripts\engine\utility::is_true( var_1.onkillweaponpassives[var_8] ) )
+            thread [[ level.onkillweaponpassives[var_8] ]]( var_0, var_1, var_2, var_3, var_4, var_5 );
     }
 }
 
 _id_12EE1( var_0, var_1 )
 {
     var_2 = gettime();
-    var_3 = getarraykeys( var_0._id_C5C9 );
+    var_3 = getarraykeys( var_0.onuseweaponpassives );
 
     foreach ( var_5 in var_3 )
     {
-        if ( scripts\engine\utility::is_true( var_0._id_C5C9[var_5] ) )
-            thread [[ level._id_C5C9[var_5] ]]( var_0, var_1 );
+        if ( scripts\engine\utility::is_true( var_0.onuseweaponpassives[var_5] ) )
+            thread [[ level.onuseweaponpassives[var_5] ]]( var_0, var_1 );
     }
 }
 
 _id_12EDD( var_0, var_1, var_2 )
 {
     var_3 = gettime();
-    var_4 = getarraykeys( var_0._id_C4E6 );
+    var_4 = getarraykeys( var_0.ondamagerelics );
 
     foreach ( var_6 in var_4 )
     {
-        if ( scripts\engine\utility::is_true( var_0._id_C4E6[var_6] ) )
-            thread [[ level._id_C4E6[var_6] ]]( var_0, var_1, var_2 );
+        if ( scripts\engine\utility::is_true( var_0.ondamagerelics[var_6] ) )
+            thread [[ level.ondamagerelics[var_6] ]]( var_0, var_1, var_2 );
     }
 }
 
@@ -2292,7 +2292,7 @@ _id_13C36( var_0 )
     var_0 endon( "disconnect" );
     var_1 = undefined;
     var_0._id_D8A7 = undefined;
-    var_0._id_1607 = [];
+    var_0.activated_relics = [];
 
     while ( !isdefined( var_0.weaponkitinitialized ) )
         wait 0.1;
@@ -2333,7 +2333,7 @@ _id_94F1( var_0 )
 {
     var_1 = [];
 
-    foreach ( var_3 in var_0._id_13C38 )
+    foreach ( var_3 in var_0.weapon_passives )
     {
         foreach ( var_5 in var_3 )
         {
@@ -2357,10 +2357,10 @@ _id_12C64( var_0, var_1 )
 {
     var_1 = scripts\cp\utility::getweaponrootname( var_1 );
 
-    if ( !isdefined( var_0._id_13C38[var_1] ) )
+    if ( !isdefined( var_0.weapon_passives[var_1] ) )
         return;
 
-    var_2 = var_0._id_13C38[var_1];
+    var_2 = var_0.weapon_passives[var_1];
 
     foreach ( var_4 in var_2 )
     {
@@ -2368,11 +2368,11 @@ _id_12C64( var_0, var_1 )
         {
             var_5 = level._id_462E[var_4];
 
-            if ( isdefined( var_5 ) && isdefined( var_5._id_12BFB ) )
-                [[ var_5._id_12BFB ]]( var_0 );
+            if ( isdefined( var_5 ) && isdefined( var_5.unset_func ) )
+                [[ var_5.unset_func ]]( var_0 );
         }
 
-        var_0._id_1607 = scripts\engine\utility::array_remove( var_0._id_1607, var_4 );
+        var_0.activated_relics = scripts\engine\utility::array_remove( var_0.activated_relics, var_4 );
     }
 }
 
@@ -2380,22 +2380,22 @@ _id_F616( var_0, var_1 )
 {
     var_1 = scripts\cp\utility::getweaponrootname( var_1 );
 
-    if ( !isdefined( var_0._id_13C38[var_1] ) )
+    if ( !isdefined( var_0.weapon_passives[var_1] ) )
         return;
 
-    var_2 = var_0._id_13C38[var_1];
+    var_2 = var_0.weapon_passives[var_1];
 
     foreach ( var_4 in var_2 )
     {
-        if ( scripts\engine\utility::array_contains( var_0._id_1607, var_4 ) )
+        if ( scripts\engine\utility::array_contains( var_0.activated_relics, var_4 ) )
             continue;
 
         var_5 = level._id_462E[var_4];
 
-        if ( isdefined( var_5 ) && isdefined( var_5._id_F3C3 ) )
-            [[ var_5._id_F3C3 ]]( var_0 );
+        if ( isdefined( var_5 ) && isdefined( var_5.set_func ) )
+            [[ var_5.set_func ]]( var_0 );
 
-        var_0._id_1607 = scripts\engine\utility::array_add( var_0._id_1607, var_4 );
+        var_0.activated_relics = scripts\engine\utility::array_add( var_0.activated_relics, var_4 );
     }
 }
 
@@ -2403,8 +2403,8 @@ _id_DEDF( var_0, var_1, var_2, var_3 )
 {
     var_4 = spawnstruct();
     var_4.init_func = var_1;
-    var_4._id_F3C3 = var_2;
-    var_4._id_12BFB = var_3;
+    var_4.set_func = var_2;
+    var_4.unset_func = var_3;
     level._id_462E[var_0] = var_4;
 }
 
@@ -2437,19 +2437,19 @@ _id_1772( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 
     var_8 = spawnstruct();
     var_8.name = var_0;
-    var_8._id_13CDE = scripts\engine\utility::ter_op( isdefined( var_4 ), 0, 1 );
+    var_8.weapontype = scripts\engine\utility::ter_op( isdefined( var_4 ), 0, 1 );
     var_8.killstreaktype = scripts\engine\utility::ter_op( isdefined( var_5 ), 0, 1 );
-    var_8._id_ABCA = scripts\engine\utility::ter_op( isdefined( var_6 ), 0, 1 );
-    var_8._id_113D1 = scripts\engine\utility::ter_op( isdefined( var_7 ), 0, 1 );
+    var_8.lethaltype = scripts\engine\utility::ter_op( isdefined( var_6 ), 0, 1 );
+    var_8.tacticaltype = scripts\engine\utility::ter_op( isdefined( var_7 ), 0, 1 );
 
     if ( isdefined( var_1 ) )
-        var_8.attachmentroll = var_1;
+        var_8.attachmentref = var_1;
 
     if ( isdefined( var_2 ) )
-        var_8._id_CA59 = var_2;
+        var_8.perkref = var_2;
 
     if ( isdefined( var_3 ) )
-        var_8._id_B689 = var_3;
+        var_8.messageref = var_3;
 
     if ( !isdefined( level.passivemap[var_0] ) )
         level.passivemap[var_0] = var_8;

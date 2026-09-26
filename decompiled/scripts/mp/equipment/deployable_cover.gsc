@@ -58,7 +58,7 @@ createcovernavobstacle()
     self endon( "entitydeleted" );
     self endon( "despawnCover" );
     self waittill( "coverwall_expand_finish" );
-    self._id_BE64 = _func_314( self );
+    self._id_BE64 = createnavbadplacebyent( self );
 }
 
 _id_5285( var_0 )
@@ -77,7 +77,7 @@ _id_5285( var_0 )
         self._id_BE64 = undefined;
     }
 
-    self _meth_8514( var_0 );
+    self despawncoverwall( var_0 );
     scripts\mp\utility::printgameaction( "deployable cover removed", self.owner );
 }
 

@@ -16,7 +16,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     thread _id_FAE6( "roomba", 32, 1 );
     thread _id_FAE6( "roomba2", 16, 0.15 );
     thread fix_collision();
@@ -142,7 +142,7 @@ _id_FAE6( var_0, var_1, var_2 )
 {
     var_3 = getent( var_0, "targetname" );
     var_3.destination = scripts\engine\utility::getstruct( var_3.target, "targetname" );
-    var_3._id_BCEF = 1.0 / var_1;
+    var_3.movespeed = 1.0 / var_1;
 
     for (;;)
         var_3.destination = _id_E6E1( var_3, var_2 );
@@ -152,7 +152,7 @@ _id_E6E1( var_0, var_1 )
 {
     var_0 endon( "death" );
     var_2 = scripts\engine\utility::getstruct( var_0.destination.target, "targetname" );
-    var_3 = abs( distance( var_0.origin, var_2.origin ) * var_0._id_BCEF );
+    var_3 = abs( distance( var_0.origin, var_2.origin ) * var_0.movespeed );
     var_0 playloopsound( "rolling_bot_move_lp" );
     var_0 moveto( var_2.origin, var_3, var_3 * 0.25, var_3 * 0.25 );
     wait( var_3 );
@@ -175,18 +175,18 @@ runmodespecifictriggers()
         var_0 = spawn( "trigger_radius", ( -240, -608, 496 ), 0, 160, 150 );
         var_0.targetname = "OutOfBounds";
         var_0 hide();
-        level._id_C7B3 = scripts\engine\utility::array_add( level._id_C7B3, var_0 );
+        level.outofboundstriggers = scripts\engine\utility::array_add( level.outofboundstriggers, var_0 );
         var_0 = spawn( "trigger_radius", ( -1088, -1584, 416 ), 0, 230, 80 );
         var_0.targetname = "OutOfBounds";
         var_0 hide();
-        level._id_C7B3 = scripts\engine\utility::array_add( level._id_C7B3, var_0 );
+        level.outofboundstriggers = scripts\engine\utility::array_add( level.outofboundstriggers, var_0 );
         var_0 = spawn( "trigger_radius", ( -1952, -96, 272 ), 0, 100, 100 );
         var_0.targetname = "OutOfBounds";
         var_0 hide();
-        level._id_C7B3 = scripts\engine\utility::array_add( level._id_C7B3, var_0 );
+        level.outofboundstriggers = scripts\engine\utility::array_add( level.outofboundstriggers, var_0 );
         var_0 = spawn( "trigger_radius", ( 580, -580, 730 ), 0, 100, 90 );
         var_0.targetname = "OutOfBounds";
         var_0 hide();
-        level._id_C7B3 = scripts\engine\utility::array_add( level._id_C7B3, var_0 );
+        level.outofboundstriggers = scripts\engine\utility::array_add( level.outofboundstriggers, var_0 );
     }
 }

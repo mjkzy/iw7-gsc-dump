@@ -550,11 +550,11 @@ _id_B947()
         self waittill( "got_a_kill", var_0, var_1, var_2 );
 
         if ( scripts\engine\utility::isbulletdamage( var_2 ) || var_2 == "MOD_MELEE" )
-            thread _id_B942();
+            thread momentum_endaftermax();
     }
 }
 
-_id_B942()
+momentum_endaftermax()
 {
     self endon( "disconnect" );
     self endon( "giveLoadout_start" );

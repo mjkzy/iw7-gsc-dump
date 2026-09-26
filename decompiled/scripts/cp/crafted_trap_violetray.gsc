@@ -149,7 +149,7 @@ create_violetray_trap( var_0, var_1 )
     var_3 = var_0.violetray_trap_type;
     var_4 = spawn( "script_model", var_0.origin + ( 0, 0, 2 ) );
     var_4 setmodel( level.violetray_trap_settings[var_3].modelbase );
-    var_4._id_EB9C = 3;
+    var_4.scale = 3;
     var_4.angles = ( 0, var_0.carried_violetray_trap.angles[1], 0 );
     var_4.violetray_trap_type = var_3;
     var_4.owner = var_2;
@@ -158,8 +158,8 @@ create_violetray_trap( var_0, var_1 )
     var_4.name = "crafted_violetray";
     var_4.shouldsplash = 0;
     var_4.hidden = 0;
-    var_4._id_252E = 1;
-    var_4._id_8BF0 = [];
+    var_4.attacks = 1;
+    var_4.hasexplosivefired = [];
     var_4.config = level.violetray_trap_settings[var_3];
     var_4 thread violetray_trap_handleuse();
 
@@ -171,13 +171,13 @@ create_violetray_trap( var_0, var_1 )
     return var_4;
 }
 
-_id_936D( var_0 )
+ims_moving_platform_death( var_0 )
 {
-    self._id_933C = 1;
+    self.immediatedeath = 1;
     self notify( "death" );
 }
 
-_id_9367( var_0 )
+ims_handledeath( var_0 )
 {
     self endon( "carried" );
     self waittill( "death" );
@@ -194,11 +194,11 @@ _id_9367( var_0 )
         wait 1.0;
     }
 
-    _id_66A7();
+    equipmentdeletefx();
     self delete();
 }
 
-_id_66A7()
+equipmentdeletefx()
 {
     self playsound( "town_xray_explode_away" );
     self playsound( "town_xray_deactivate" );
@@ -255,7 +255,7 @@ violetray_trap_setplaced( var_0 )
     self.firstplacement = undefined;
     var_1 = create_violetray_trap( self, var_0 );
     var_1.isplaced = 1;
-    var_1 thread _id_9367( self.owner );
+    var_1 thread ims_handledeath( self.owner );
     self playsound( "trap_boom_box_drop" );
     self playsound( "town_xray_activate" );
     self notify( "placed" );
@@ -266,7 +266,7 @@ violetray_trap_setplaced( var_0 )
         var_2.linkparent = self.moving_platform;
 
     var_2.endonstring = "carried";
-    var_2.deathoverridecallback = ::_id_936D;
+    var_2.deathoverridecallback = ::ims_moving_platform_death;
     var_1 thread scripts\cp\cp_movers::handle_moving_platforms( var_2 );
     self.carried_violetray_trap delete();
     self delete();
@@ -284,7 +284,7 @@ violetray_trap_setcancelled( var_0 )
     }
 
     if ( isdefined( var_0 ) && var_0 )
-        _id_66A7();
+        equipmentdeletefx();
 
     self.carried_violetray_trap delete();
     self delete();
@@ -299,8 +299,8 @@ violetray_trap_setcarried( var_0 )
     var_0.iscarrying = 1;
     var_0 thread scripts\cp\utility::update_trap_placement_internal( self, self.carried_violetray_trap, level.violetray_trap_settings["crafted_violetray"] );
     thread scripts\cp\utility::item_oncarrierdeath( var_0 );
-    thread _id_936F( var_0 );
-    thread _id_9371( var_0 );
+    thread ims_oncarrierdisconnect( var_0 );
+    thread ims_ongameended( var_0 );
 
     if ( isdefined( level._id_5CF2 ) )
         self thread [[ level._id_5CF2 ]]( var_0 );
@@ -308,7 +308,7 @@ violetray_trap_setcarried( var_0 )
     self notify( "carried" );
 }
 
-_id_936F( var_0 )
+ims_oncarrierdisconnect( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -317,7 +317,7 @@ _id_936F( var_0 )
     violetray_trap_setcancelled();
 }
 
-_id_9371( var_0 )
+ims_ongameended( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -348,13 +348,13 @@ violetray_trap_setinactive()
     self stoploopsound();
     self setscriptablepartstate( "violetray", "off" );
 
-    if ( isdefined( self._id_2536 ) )
-        self._id_2536 delete();
+    if ( isdefined( self.attacktrigger ) )
+        self.attacktrigger delete();
 
-    if ( isdefined( self._id_69F6 ) )
+    if ( isdefined( self.explosive1 ) )
     {
-        self._id_69F6 delete();
-        self._id_69F6 = undefined;
+        self.explosive1 delete();
+        self.explosive1 = undefined;
     }
 
     scripts\cp\utility::removefromtraplist();
@@ -391,9 +391,9 @@ violetray_trap_attack_zombies()
                 var_2.desired_death_angles = ( 0, var_4[1], 0 );
 
                 if ( isdefined( self.owner ) )
-                    var_2._id_CF80 = self.owner;
+                    var_2.player_attacker = self.owner;
                 else
-                    var_2._id_CF80 = undefined;
+                    var_2.player_attacker = undefined;
 
                 var_2 scripts\asm\asm::asm_setstate( "violetraydeath" );
                 thread scripts\engine\utility::play_sound_in_space( "town_xray_burn_zombie", var_2.origin );

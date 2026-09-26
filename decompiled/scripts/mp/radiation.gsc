@@ -54,40 +54,40 @@ radiationeffect()
         switch ( self.poison )
         {
             case 1:
-                self._id_DBEA = "item_geigercouner_level2";
-                self playloopsound( self._id_DBEA );
+                self.radiationsound = "item_geigercouner_level2";
+                self playloopsound( self.radiationsound );
                 self viewkick( 1, self.origin );
                 break;
             case 3:
                 self shellshock( "mp_radiation_low", 4 );
-                self._id_DBEA = "item_geigercouner_level3";
+                self.radiationsound = "item_geigercouner_level3";
                 self stoploopsound();
-                self playloopsound( self._id_DBEA );
+                self playloopsound( self.radiationsound );
                 self viewkick( 3, self.origin );
                 doradiationdamage( 15 );
                 break;
             case 4:
                 self shellshock( "mp_radiation_med", 5 );
-                self._id_DBEA = "item_geigercouner_level3";
+                self.radiationsound = "item_geigercouner_level3";
                 self stoploopsound();
-                self playloopsound( self._id_DBEA );
+                self playloopsound( self.radiationsound );
                 self viewkick( 15, self.origin );
-                thread _id_2B48();
+                thread blackout();
                 doradiationdamage( 25 );
                 break;
             case 6:
                 self shellshock( "mp_radiation_high", 5 );
-                self._id_DBEA = "item_geigercouner_level4";
+                self.radiationsound = "item_geigercouner_level4";
                 self stoploopsound();
-                self playloopsound( self._id_DBEA );
+                self playloopsound( self.radiationsound );
                 self viewkick( 75, self.origin );
                 doradiationdamage( 45 );
                 break;
             case 8:
                 self shellshock( "mp_radiation_high", 5 );
-                self._id_DBEA = "item_geigercouner_level4";
+                self.radiationsound = "item_geigercouner_level4";
                 self stoploopsound();
-                self playloopsound( self._id_DBEA );
+                self playloopsound( self.radiationsound );
                 self viewkick( 127, self.origin );
                 doradiationdamage( 175 );
                 break;
@@ -99,7 +99,7 @@ radiationeffect()
     wait 5;
 }
 
-_id_2B48()
+blackout()
 {
     self endon( "disconnect" );
     self endon( "game_ended" );
@@ -149,7 +149,7 @@ _id_2B48()
                 break;
 
             var_13 = var_9 / 2;
-            self.radiationoverlay _id_6AB7( var_13, var_11 );
+            self.radiationoverlay fadeinblackout( var_13, var_11 );
             self.radiationoverlay fadeoutblackout( var_13, var_12 );
             wait( var_6 * 0.5 );
         }
@@ -163,7 +163,7 @@ _id_2B48()
         wait 0.05;
     }
 
-    self.radiationoverlay _id_6AB7( 2, 0 );
+    self.radiationoverlay fadeinblackout( 2, 0 );
 }
 
 doradiationdamage( var_0 )
@@ -171,7 +171,7 @@ doradiationdamage( var_0 )
     self thread [[ level.callbackplayerdamage ]]( self, self, var_0, 0, "MOD_SUICIDE", "claymore_mp", self.origin, ( 0, 0, 0 ) - self.origin, "none", 0 );
 }
 
-_id_6AB7( var_0, var_1 )
+fadeinblackout( var_0, var_1 )
 {
     self fadeovertime( var_0 );
     self.alpha = var_1;

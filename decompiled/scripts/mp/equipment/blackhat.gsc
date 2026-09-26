@@ -30,24 +30,24 @@ _id_2B2D()
     self endon( "disconnect" );
     self endon( "blackhat_used" );
     self iprintlnbold( "Blackhat" );
-    var_0 = scripts\mp\powers::_id_D735( "power_blackhat" );
+    var_0 = scripts\mp\powers::power_getinputcommand( "power_blackhat" );
     var_1 = 0;
     self playgestureviewmodel( "ges_hack_lock_in", undefined, var_1, 0.5 );
 
     for (;;)
     {
-        if ( !scripts\mp\powers::_id_9F09( var_0 ) )
+        if ( !scripts\mp\powers::ispowersbuttonpressed( var_0 ) )
             break;
 
-        if ( scripts\mp\powers::_id_9F09( var_0 ) )
+        if ( scripts\mp\powers::ispowersbuttonpressed( var_0 ) )
         {
             thread _id_2B2B( var_0 );
 
-            while ( scripts\mp\powers::_id_9F09( var_0 ) )
+            while ( scripts\mp\powers::ispowersbuttonpressed( var_0 ) )
             {
                 wait 0.05;
 
-                if ( !scripts\mp\powers::_id_9F09( var_0 ) )
+                if ( !scripts\mp\powers::ispowersbuttonpressed( var_0 ) )
                     break;
             }
         }
@@ -79,7 +79,7 @@ _id_2B2B( var_0 )
 
     for (;;)
     {
-        if ( scripts\mp\powers::_id_9F09( var_0 ) )
+        if ( scripts\mp\powers::ispowersbuttonpressed( var_0 ) )
         {
             var_4 = [];
             var_1 = _id_7E94( self );
@@ -95,18 +95,18 @@ _id_2B2B( var_0 )
             if ( var_4.size )
             {
                 var_2 = sortbydistance( var_4, self.origin );
-                self._id_AA25 = var_2[0];
+                self.lasttargetlocked = var_2[0];
                 scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 0.25 );
 
-                if ( isdefined( self._id_AA25 ) && isdefined( self._id_AA26 ) && self._id_AA26 )
+                if ( isdefined( self.lasttargetlocked ) && isdefined( self._id_AA26 ) && self._id_AA26 )
                 {
-                    _id_11375( self._id_AA25 );
+                    _id_11375( self.lasttargetlocked );
                     self notify( "blackhat_fired" );
                     _id_2B2E();
                 }
-                else if ( isdefined( self._id_AA25 ) )
+                else if ( isdefined( self.lasttargetlocked ) )
                 {
-                    self._id_AA25 dodamage( 1000, self._id_AA25.origin, self, self, "MOD_IMPACT", "power_blackhat_mp" );
+                    self.lasttargetlocked dodamage( 1000, self.lasttargetlocked.origin, self, self, "MOD_IMPACT", "power_blackhat_mp" );
                     self notify( "blackhat_fired" );
                     _id_2B2E();
                     scripts\mp\killstreaks\killstreaks::givescoreforblackhat();
@@ -233,9 +233,9 @@ _id_2B28( var_0 )
             }
         }
 
-        if ( isdefined( level._id_8B5F ) )
+        if ( isdefined( level.harriers ) )
         {
-            foreach ( var_19 in level._id_8B5F )
+            foreach ( var_19 in level.harriers )
             {
                 if ( isdefined( var_19 ) && ( var_19.team != self.team || isdefined( var_19.owner ) && var_19.owner != self ) )
                     var_1[var_1.size] = var_19;
@@ -300,9 +300,9 @@ _id_2B28( var_0 )
             }
         }
 
-        if ( isdefined( level._id_8B5F ) )
+        if ( isdefined( level.harriers ) )
         {
-            foreach ( var_19 in level._id_8B5F )
+            foreach ( var_19 in level.harriers )
             {
                 if ( !isdefined( var_19 ) )
                     continue;

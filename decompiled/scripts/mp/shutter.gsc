@@ -4,7 +4,7 @@
 main()
 {
     level._id_93BC = 0;
-    scripts\engine\utility::array_levelthread( getentarray( "wire", "targetname" ), ::_id_13D8E );
+    scripts\engine\utility::array_levelthread( getentarray( "wire", "targetname" ), ::wirewander );
     var_0 = getentarray( "shutter_left", "targetname" );
     var_1 = getentarray( "shutter_right_open", "targetname" );
 
@@ -25,7 +25,7 @@ main()
     wait 0.2;
 
     for ( var_2 = 0; var_2 < var_0.size; var_2++ )
-        var_0[var_2]._id_10E0E = var_0[var_2].angles[1];
+        var_0[var_2].startyaw = var_0[var_2].angles[1];
 
     var_4 = getentarray( "shutter_right", "targetname" );
     var_1 = getentarray( "shutter_left_open", "targetname" );
@@ -39,20 +39,20 @@ main()
         var_4[var_4.size] = var_1[var_2];
 
     for ( var_2 = 0; var_2 < var_4.size; var_2++ )
-        var_4[var_2]._id_10E0E = var_4[var_2].angles[1];
+        var_4[var_2].startyaw = var_4[var_2].angles[1];
 
     var_1 = undefined;
     var_5 = "left";
 
     for (;;)
     {
-        scripts\engine\utility::array_levelthread( var_0, ::_id_101A1, var_5 );
-        scripts\engine\utility::array_levelthread( var_4, ::_id_101A2, var_5 );
+        scripts\engine\utility::array_levelthread( var_0, ::shutterwanderleft, var_5 );
+        scripts\engine\utility::array_levelthread( var_4, ::shutterwanderright, var_5 );
         level waittill( "wind blows", var_5 );
     }
 }
 
-_id_13D32()
+windcontroller()
 {
     for (;;)
     {
@@ -66,11 +66,11 @@ _id_13D32()
     }
 }
 
-_id_101A1( var_0, var_1 )
+shutterwanderleft( var_0, var_1 )
 {
     level._id_93BC++;
     level endon( "wind blows" );
-    var_2 = var_0._id_10E0E;
+    var_2 = var_0.startyaw;
 
     if ( var_1 == "left" )
         var_2 = var_2 + 179.9;
@@ -89,7 +89,7 @@ _id_101A1( var_0, var_1 )
         var_2 = var_0.angles[1] + var_4;
         var_5 = var_0.angles[1] + var_4 * -1;
 
-        if ( var_2 < var_0._id_10E0E || var_2 > var_0._id_10E0E + 179 )
+        if ( var_2 < var_0.startyaw || var_2 > var_0.startyaw + 179 )
             var_2 = var_5;
 
         var_6 = abs( var_0.angles[1] - var_2 );
@@ -103,11 +103,11 @@ _id_101A1( var_0, var_1 )
     }
 }
 
-_id_101A2( var_0, var_1 )
+shutterwanderright( var_0, var_1 )
 {
     level._id_93BC++;
     level endon( "wind blows" );
-    var_2 = var_0._id_10E0E;
+    var_2 = var_0.startyaw;
 
     if ( var_1 == "left" )
         var_2 = var_2 + 179.9;
@@ -126,7 +126,7 @@ _id_101A2( var_0, var_1 )
         var_2 = var_0.angles[1] + var_4;
         var_5 = var_0.angles[1] + var_4 * -1;
 
-        if ( var_2 < var_0._id_10E0E || var_2 > var_0._id_10E0E + 179 )
+        if ( var_2 < var_0.startyaw || var_2 > var_0.startyaw + 179 )
             var_2 = var_5;
 
         var_6 = abs( var_0.angles[1] - var_2 );
@@ -140,7 +140,7 @@ _id_101A2( var_0, var_1 )
     }
 }
 
-_id_13D8E( var_0 )
+wirewander( var_0 )
 {
     var_1 = getentarray( var_0.target, "targetname" );
     var_2 = var_1[0].origin;

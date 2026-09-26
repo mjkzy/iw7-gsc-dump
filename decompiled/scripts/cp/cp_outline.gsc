@@ -32,7 +32,7 @@ item_outline_weapon_monitor()
             continue;
 
         var_2 = 1;
-        var_3 = _id_7D69( var_1 );
+        var_3 = get_weapon_outline_color( var_1 );
 
         if ( var_3 == 3 )
             enable_outline_for_player( var_1, self, get_hudoutline_item( var_1, var_2 ), 1, 0, "high" );
@@ -71,7 +71,7 @@ get_hudoutline_item( var_0, var_1 )
         return 1;
 }
 
-_id_7D69( var_0 )
+get_weapon_outline_color( var_0 )
 {
     var_1 = distancesquared( self.origin, var_0.origin ) < 1000000;
 

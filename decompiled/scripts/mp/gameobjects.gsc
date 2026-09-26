@@ -36,7 +36,7 @@ main( var_0 )
 
 init()
 {
-    level._id_C22E = 0;
+    level.numgametypereservedobjectives = 0;
     level thread onplayerconnect();
     level thread getleveltriggers();
 }
@@ -78,16 +78,16 @@ onplayerspawned()
 
 init_player_gameobjects()
 {
-    thread ondeath_clearscriptedanim();
+    thread ondeath();
     self.touchtriggers = [];
     self.carryobject = undefined;
-    self._id_3FFA = undefined;
-    self._id_38ED = 1;
-    self._id_A64F = undefined;
-    self._id_987A = 1;
+    self.claimtrigger = undefined;
+    self.canpickupobject = 1;
+    self.killedinuse = undefined;
+    self.initialized_gameobject_vars = 1;
 }
 
-ondeath_clearscriptedanim()
+ondeath()
 {
     level endon( "game_ended" );
     self waittill( "death" );
@@ -115,10 +115,10 @@ _id_4A29( var_0, var_1 )
     var_3.curorigin = var_0.origin;
     var_3.entnum = var_2 getentitynumber();
     var_3.ownerteam = var_0.team;
-    var_3._id_4465 = [];
-    var_3.objidpingenemy = 0;
+    var_3.compassicons = [];
     var_3.objidpingfriendly = 0;
-    var_3._id_13DCA = [];
+    var_3.objidpingenemy = 0;
+    var_3.worldicons = [];
     var_3.carriervisible = 0;
     var_3.visibleteam = "none";
 
@@ -132,23 +132,23 @@ _id_4A29( var_0, var_1 )
             scripts\mp\objidpoolmanager::minimap_objective_team( var_3.teamobjids[var_5], var_5 );
         }
 
-        var_3.objpoints[var_5] = scripts\mp\objpoints::_id_4A23( "objpoint_" + var_5 + "_" + var_3.entnum, var_3.curorigin + var_1, var_5, undefined );
+        var_3.objpoints[var_5] = scripts\mp\objpoints::createteamobjpoint( "objpoint_" + var_5 + "_" + var_3.entnum, var_3.curorigin + var_1, var_5, undefined );
         var_3.objpoints[var_5].alpha = 0;
 
         if ( getdvarint( "com_codcasterEnabled", 0 ) == 1 )
         {
             var_6 = "mlg_" + var_5;
-            var_3.objpoints[var_6] = scripts\mp\objpoints::_id_4A23( "objpoint_" + var_6 + "_" + var_3.entnum, var_3.curorigin + var_1, var_5, undefined );
+            var_3.objpoints[var_6] = scripts\mp\objpoints::createteamobjpoint( "objpoint_" + var_6 + "_" + var_3.entnum, var_3.curorigin + var_1, var_5, undefined );
             var_3.objpoints[var_6].alpha = 0;
         }
     }
 
-    var_3 thread _id_12E6F();
-    var_3 thread _id_51D8();
+    var_3 thread updatecarryobjectorigin();
+    var_3 thread deletetrackedobject();
     return var_3;
 }
 
-_id_51D8()
+deletetrackedobject()
 {
     self.carrier waittill( "disconnect" );
 
@@ -161,10 +161,10 @@ _id_51D8()
     var_0.curorigin = undefined;
     var_0.entnum = undefined;
     var_0.ownerteam = undefined;
-    var_0._id_4465 = undefined;
-    var_0.objidpingenemy = undefined;
+    var_0.compassicons = undefined;
     var_0.objidpingfriendly = undefined;
-    var_0._id_13DCA = undefined;
+    var_0.objidpingenemy = undefined;
+    var_0.worldicons = undefined;
     var_0.carriervisible = undefined;
     var_0.visibleteam = undefined;
 
@@ -213,13 +213,13 @@ createcarryobject( var_0, var_1, var_2, var_3 )
     for ( var_5 = 0; var_5 < var_2.size; var_5++ )
     {
         var_2[var_5].baseorigin = var_2[var_5].origin;
-        var_2[var_5].baseangle = var_2[var_5].angles;
+        var_2[var_5].baseangles = var_2[var_5].angles;
     }
 
     var_4.visuals = var_2;
-    var_4._id_4465 = [];
-    var_4.objidpingenemy = 0;
+    var_4.compassicons = [];
     var_4.objidpingfriendly = 0;
+    var_4.objidpingenemy = 0;
 
     foreach ( var_7 in level.teamnamelist )
     {
@@ -231,13 +231,13 @@ createcarryobject( var_0, var_1, var_2, var_3 )
             scripts\mp\objidpoolmanager::minimap_objective_team( var_4.teamobjids[var_7], var_7 );
         }
 
-        var_4.objpoints[var_7] = scripts\mp\objpoints::_id_4A23( "objpoint_" + var_7 + "_" + var_4.entnum, var_4.curorigin + var_3, var_7, undefined );
+        var_4.objpoints[var_7] = scripts\mp\objpoints::createteamobjpoint( "objpoint_" + var_7 + "_" + var_4.entnum, var_4.curorigin + var_3, var_7, undefined );
         var_4.objpoints[var_7].alpha = 0;
 
         if ( getdvarint( "com_codcasterEnabled", 0 ) == 1 )
         {
             var_8 = "mlg_" + var_7;
-            var_4.objpoints[var_8] = scripts\mp\objpoints::_id_4A23( "objpoint_" + var_8 + "_" + var_4.entnum, var_4.curorigin + var_3, var_7, undefined );
+            var_4.objpoints[var_8] = scripts\mp\objpoints::createteamobjpoint( "objpoint_" + var_8 + "_" + var_4.entnum, var_4.curorigin + var_3, var_7, undefined );
             var_4.objpoints[var_8].alpha = 0;
         }
     }
@@ -246,7 +246,7 @@ createcarryobject( var_0, var_1, var_2, var_3 )
     var_4.isresetting = 0;
     var_4.interactteam = "none";
     var_4.allowweapons = 0;
-    var_4._id_13DCA = [];
+    var_4.worldicons = [];
     var_4.carriervisible = 0;
     var_4.visibleteam = "none";
     var_4.carryicon = undefined;
@@ -259,39 +259,39 @@ createcarryobject( var_0, var_1, var_2, var_3 )
     else
     {
         var_4.curprogress = 0;
-        var_4._id_115DF = [];
-        var_4._id_115DF["none"] = 0;
-        var_4._id_115DF["allies"] = 0;
-        var_4._id_115DF["axis"] = 0;
+        var_4.teamprogress = [];
+        var_4.teamprogress["none"] = 0;
+        var_4.teamprogress["allies"] = 0;
+        var_4.teamprogress["axis"] = 0;
         var_4.usetime = 0;
         var_4.userate = 0;
         var_4.mustmaintainclaim = 0;
         var_4.cancontestclaim = 0;
         var_4.teamusetimes = [];
         var_4.teamusetexts = [];
-        var_4._id_C248["neutral"] = 0;
+        var_4.numtouching["neutral"] = 0;
         var_4.touchlist["neutral"] = [];
-        var_4._id_C248["none"] = 0;
+        var_4.numtouching["none"] = 0;
         var_4.touchlist["none"] = [];
 
         foreach ( var_11 in level.teamnamelist )
         {
-            var_4._id_C248[var_11] = 0;
+            var_4.numtouching[var_11] = 0;
             var_4.touchlist[var_11] = [];
         }
 
         var_4.claimteam = "none";
-        var_4._id_3FF8 = undefined;
-        var_4._id_A95A = "none";
-        var_4._id_A95B = 0;
-        var_4 thread carryobjectasset();
+        var_4.claimplayer = undefined;
+        var_4.lastclaimteam = "none";
+        var_4.lastclaimtime = 0;
+        var_4 thread carryobjectproxthink();
     }
 
-    var_4 thread _id_12E6F();
+    var_4 thread updatecarryobjectorigin();
     return var_4;
 }
 
-_id_51A9()
+deletecarryobject()
 {
     if ( self.type != "carryObject" )
         return;
@@ -311,9 +311,9 @@ _id_51A9()
         var_2 delete();
 
     var_0.visuals = undefined;
-    var_0._id_4465 = undefined;
-    var_0.objidpingenemy = undefined;
+    var_0.compassicons = undefined;
     var_0.objidpingfriendly = undefined;
+    var_0.objidpingenemy = undefined;
     var_0.objpingdelay = undefined;
     scripts\mp\objpoints::deleteobjpoint( var_0.objpoints["allies"] );
     scripts\mp\objpoints::deleteobjpoint( var_0.objpoints["axis"] );
@@ -335,8 +335,8 @@ _id_51A9()
     var_0.isresetting = undefined;
     var_0.interactteam = undefined;
     var_0.allowweapons = undefined;
-    var_0._id_A57D = undefined;
-    var_0._id_13DCA = undefined;
+    var_0.keepprogress = undefined;
+    var_0.worldicons = undefined;
     var_0.carriervisible = undefined;
     var_0.visibleteam = undefined;
     var_0.carryicon = undefined;
@@ -350,12 +350,12 @@ _id_51A9()
     var_0.cancontestclaim = undefined;
     var_0.teamusetimes = undefined;
     var_0.teamusetexts = undefined;
-    var_0._id_C248 = undefined;
+    var_0.numtouching = undefined;
     var_0.touchlist = undefined;
     var_0.claimteam = undefined;
-    var_0._id_3FF8 = undefined;
-    var_0._id_A95A = undefined;
-    var_0._id_A95B = undefined;
+    var_0.claimplayer = undefined;
+    var_0.lastclaimteam = undefined;
+    var_0.lastclaimtime = undefined;
     var_0 notify( "death" );
     var_0 notify( "deleted" );
 }
@@ -394,7 +394,7 @@ carryobjectusethink()
         if ( scripts\mp\utility::istrue( var_0.using_remote_turret ) )
             continue;
 
-        if ( !_id_DAD1( var_0 ) )
+        if ( !proxtriggerlos( var_0 ) )
             continue;
 
         if ( self.isresetting )
@@ -406,18 +406,18 @@ carryobjectusethink()
         if ( !caninteractwith( var_0.pers["team"] ) )
             continue;
 
-        if ( !var_0._id_38ED )
+        if ( !var_0.canpickupobject )
             continue;
 
         if ( isdefined( var_0.nopickuptime ) && var_0.nopickuptime > gettime() )
             continue;
 
-        if ( !isdefined( var_0._id_987A ) )
+        if ( !isdefined( var_0.initialized_gameobject_vars ) )
             continue;
 
-        if ( var_0 scripts\mp\utility::_id_85C7() )
+        if ( var_0 scripts\mp\utility::grenadeinpullback() )
         {
-            var_2 = var_0 _meth_854D();
+            var_2 = var_0 getheldoffhand();
 
             if ( !scripts\mp\utility::isgesture( var_2 ) )
                 continue;
@@ -433,72 +433,72 @@ carryobjectusethink()
     }
 }
 
-carryobjectasset()
+carryobjectproxthink()
 {
     if ( level.gametype == "ball" || level.gametype == "tdef" )
         thread carryobjectusethink();
     else
-        thread carryobjectproxthink();
+        thread carryobjectproxthinkdelayed();
 }
 
-carryobjectproxthink()
+carryobjectproxthinkdelayed()
 {
     level endon( "game_ended" );
 
     if ( isdefined( self.trigger ) )
         self.trigger endon( "move_gameobject" );
 
-    thread _id_DAD2();
+    thread proxtriggerthink();
 
     for (;;)
     {
-        if ( self.usetime && self._id_115DF[self.claimteam] >= self.usetime )
+        if ( self.usetime && self.teamprogress[self.claimteam] >= self.usetime )
         {
             self.curprogress = 0.0;
-            self._id_115DF[self.claimteam] = self.curprogress;
+            self.teamprogress[self.claimteam] = self.curprogress;
             var_0 = getearliestclaimplayer();
 
             if ( isdefined( self.onenduse ) )
-                self [[ self.onenduse ]]( _id_7E29(), var_0, isdefined( var_0 ) );
+                self [[ self.onenduse ]]( getclaimteam(), var_0, isdefined( var_0 ) );
 
             if ( isdefined( var_0 ) )
                 setpickedup( var_0 );
 
             setclaimteam( "none" );
-            self._id_3FF8 = undefined;
+            self.claimplayer = undefined;
         }
 
         if ( self.claimteam != "none" )
         {
             if ( self.usetime )
             {
-                if ( !self._id_C248[self.claimteam] )
+                if ( !self.numtouching[self.claimteam] )
                 {
                     if ( isdefined( self.onenduse ) )
-                        self [[ self.onenduse ]]( _id_7E29(), self._id_3FF8, 0 );
+                        self [[ self.onenduse ]]( getclaimteam(), self.claimplayer, 0 );
 
                     setclaimteam( "none" );
-                    self._id_3FF8 = undefined;
+                    self.claimplayer = undefined;
                 }
                 else
                 {
                     self.curprogress = self.curprogress + 50 * self.userate;
-                    self._id_115DF[self.claimteam] = self.curprogress;
+                    self.teamprogress[self.claimteam] = self.curprogress;
 
                     if ( self.ownerteam != level.otherteam[self.claimteam] )
-                        self._id_115DF[level.otherteam[self.claimteam]] = 0;
+                        self.teamprogress[level.otherteam[self.claimteam]] = 0;
 
                     if ( isdefined( self.onuseupdate ) )
-                        self [[ self.onuseupdate ]]( _id_7E29(), self.curprogress / self.usetime, 50 * self.userate / self.usetime, self._id_3FF8 );
+                        self [[ self.onuseupdate ]]( getclaimteam(), self.curprogress / self.usetime, 50 * self.userate / self.usetime, self.claimplayer );
                 }
             }
             else
             {
-                if ( scripts\mp\utility::isreallyalive( self._id_3FF8 ) )
-                    setpickedup( self._id_3FF8 );
+                if ( scripts\mp\utility::isreallyalive( self.claimplayer ) )
+                    setpickedup( self.claimplayer );
 
                 setclaimteam( "none" );
-                self._id_3FF8 = undefined;
+                self.claimplayer = undefined;
             }
         }
 
@@ -507,12 +507,12 @@ carryobjectproxthink()
     }
 }
 
-_id_CB44( var_0 )
+pickupobjectdelay( var_0 )
 {
     level endon( "game_ended" );
     self endon( "death" );
     self endon( "disconnect" );
-    self._id_38ED = 0;
+    self.canpickupobject = 0;
 
     if ( isdefined( var_0.ballindex ) )
         var_1 = 1024;
@@ -528,7 +528,7 @@ _id_CB44( var_0 )
     }
 
     if ( !scripts\mp\equipment\phase_shift::isentityphaseshifted( self ) )
-        self._id_38ED = 1;
+        self.canpickupobject = 1;
 }
 
 setpickedup( var_0 )
@@ -566,10 +566,10 @@ setpickedup( var_0 )
         self [[ self.onpickup ]]( var_0 );
 
     updatecompassicons();
-    _id_12F68();
+    updateworldicons();
 }
 
-updatecurrentoutput()
+updatecurorigin()
 {
     level endon( "game_ended" );
 
@@ -590,7 +590,7 @@ updatecurrentoutput()
     }
 }
 
-_id_12E6F()
+updatecarryobjectorigin()
 {
     level endon( "game_ended" );
 
@@ -600,7 +600,7 @@ _id_12E6F()
     if ( level.gametype == "front" )
         self.carrier endon( "disconnect" );
 
-    thread updatecurrentoutput();
+    thread updatecurorigin();
 
     if ( !isdefined( self.objpingdelay ) )
         self.objpingdelay = 4.0;
@@ -623,9 +623,9 @@ _id_12E6F()
 
             foreach ( var_1 in level.teamnamelist )
             {
-                if ( ( self.visibleteam == "friendly" || self.visibleteam == "any" ) && isfriendlyteam( var_1 ) && self.objidpingenemy )
+                if ( ( self.visibleteam == "friendly" || self.visibleteam == "any" ) && isfriendlyteam( var_1 ) && self.objidpingfriendly )
                 {
-                    if ( self.objpoints[var_1]._id_9F51 )
+                    if ( self.objpoints[var_1].isshown )
                     {
                         self.objpoints[var_1].alpha = self.objpoints[var_1].basealpha;
                         self.objpoints[var_1] fadeovertime( self.objpingdelay );
@@ -639,9 +639,9 @@ _id_12E6F()
 
             foreach ( var_1 in level.teamnamelist )
             {
-                if ( ( self.visibleteam == "enemy" || self.visibleteam == "any" ) && !isfriendlyteam( var_1 ) && self.objidpingfriendly )
+                if ( ( self.visibleteam == "enemy" || self.visibleteam == "any" ) && !isfriendlyteam( var_1 ) && self.objidpingenemy )
                 {
-                    if ( self.objpoints[var_1]._id_9F51 )
+                    if ( self.objpoints[var_1].isshown )
                     {
                         self.objpoints[var_1].alpha = self.objpoints[var_1].basealpha;
                         self.objpoints[var_1] fadeovertime( self.objpingdelay );
@@ -653,7 +653,7 @@ _id_12E6F()
                 }
             }
 
-            scripts\mp\utility::_id_1359E( self.objpingdelay, "dropped", "reset" );
+            scripts\mp\utility::wait_endon( self.objpingdelay, "dropped", "reset" );
             continue;
         }
 
@@ -747,7 +747,7 @@ giveobject( var_0 )
     }
 }
 
-returnobjectiveid()
+returnhome()
 {
     self.isresetting = 1;
     self notify( "reset" );
@@ -767,7 +767,7 @@ returnobjectiveid()
         else
         {
             self.visuals[var_0].origin = self.visuals[var_0].baseorigin;
-            self.visuals[var_0].angles = self.visuals[var_0].baseangle;
+            self.visuals[var_0].angles = self.visuals[var_0].baseangles;
         }
 
         self.visuals[var_0] show();
@@ -785,7 +785,7 @@ returnobjectiveid()
         self [[ self.onreset ]]();
 
     clearcarrier();
-    _id_12F68();
+    updateworldicons();
     updatecompassicons();
     self.isresetting = 0;
     self notify( "reset_done" );
@@ -820,7 +820,7 @@ setposition( var_0, var_1 )
 
     self.curorigin = self.trigger.origin;
     clearcarrier();
-    _id_12F68();
+    updateworldicons();
     updatecompassicons();
     self.isresetting = 0;
 }
@@ -849,11 +849,11 @@ setdropped( var_0 )
     }
 
     self.isresetting = 1;
-    self._id_E25D = undefined;
+    self.resetnow = undefined;
     self notify( "dropped" );
 
     foreach ( var_2 in self.visuals )
-        var_2._id_D887 = var_2 setcontents( 0 );
+        var_2.prev_contents = var_2 setcontents( 0 );
 
     if ( isdefined( self.carrier ) )
         var_4 = self.carrier.origin;
@@ -907,7 +907,7 @@ setdropped( var_0 )
     }
 
     foreach ( var_2 in self.visuals )
-        var_2 setcontents( var_2._id_D887 );
+        var_2 setcontents( var_2.prev_contents );
 
     var_16 = self.carrier;
     var_17 = 0;
@@ -969,8 +969,8 @@ setdropped( var_0 )
 
         if ( isdefined( var_24 ) )
         {
-            if ( isdefined( var_24._id_9B09 ) && var_24._id_9B09 == 1 )
-                self._id_E25D = 1;
+            if ( isdefined( var_24.invalid_gameobject_mover ) && var_24.invalid_gameobject_mover == 1 )
+                self.resetnow = 1;
             else
             {
                 for ( var_23 = 0; var_23 < self.visuals.size; var_23++ )
@@ -985,14 +985,14 @@ setdropped( var_0 )
         }
 
         if ( !isdefined( var_0 ) )
-            thread _id_CB49();
+            thread pickuptimeout();
     }
     else
     {
         for ( var_23 = 0; var_23 < self.visuals.size; var_23++ )
         {
             self.visuals[var_23].origin = self.visuals[var_23].baseorigin;
-            self.visuals[var_23].angles = self.visuals[var_23].baseangle;
+            self.visuals[var_23].angles = self.visuals[var_23].baseangles;
             self.visuals[var_23] show();
         }
 
@@ -1005,7 +1005,7 @@ setdropped( var_0 )
 
     clearcarrier();
     updatecompassicons();
-    _id_12F68();
+    updateworldicons();
     self.isresetting = 0;
 }
 
@@ -1025,16 +1025,16 @@ clearcarrier()
     self notify( "carrier_cleared" );
 }
 
-_id_CB49()
+pickuptimeout()
 {
     self endon( "pickup_object" );
     self endon( "reset_done" );
     wait 0.05;
 
-    if ( isdefined( self._id_E25D ) )
+    if ( isdefined( self.resetnow ) )
     {
-        self._id_E25D = undefined;
-        returnobjectiveid();
+        self.resetnow = undefined;
+        returnhome();
         return;
     }
 
@@ -1043,7 +1043,7 @@ _id_CB49()
         if ( !self.visuals[0] istouching( level.radtriggers[var_0] ) )
             continue;
 
-        returnobjectiveid();
+        returnhome();
         return;
     }
 
@@ -1052,7 +1052,7 @@ _id_CB49()
         if ( !self.visuals[0] istouching( level.minetriggers[var_0] ) )
             continue;
 
-        returnobjectiveid();
+        returnhome();
         return;
     }
 
@@ -1061,7 +1061,7 @@ _id_CB49()
         if ( !self.visuals[0] istouching( level.hurttriggers[var_0] ) )
             continue;
 
-        returnobjectiveid();
+        returnhome();
         return;
     }
 
@@ -1079,7 +1079,7 @@ _id_CB49()
         }
     }
 
-    foreach ( var_2 in level._id_C7B3 )
+    foreach ( var_2 in level.outofboundstriggers )
     {
         if ( scripts\mp\utility::istrue( self.allowedintrigger ) )
             break;
@@ -1087,16 +1087,16 @@ _id_CB49()
         if ( !self.visuals[0] istouching( var_2 ) )
             continue;
 
-        returnobjectiveid();
+        returnhome();
         return;
     }
 
-    if ( isdefined( self._id_2667 ) )
+    if ( isdefined( self.autoresettime ) )
     {
-        wait( self._id_2667 );
+        wait( self.autoresettime );
 
         if ( !isdefined( self.carrier ) )
-            returnobjectiveid();
+            returnhome();
     }
 }
 
@@ -1111,7 +1111,7 @@ takeobject( var_0 )
     self notify( "drop_object" );
 
     if ( var_0.triggertype == "proximity" )
-        thread _id_CB44( var_0 );
+        thread pickupobjectdelay( var_0 );
 
     if ( scripts\mp\utility::isreallyalive( self ) && !var_0.allowweapons )
     {
@@ -1127,19 +1127,19 @@ takeobject( var_0 )
                 self notify( "clear_carrier" );
 
                 if ( scripts\mp\utility::isreliablyswitchingtoweapon( var_0.carryweapon ) )
-                    scripts\mp\utility::_id_1529( var_0.carryweapon );
+                    scripts\mp\utility::abortmonitoredweaponswitch( var_0.carryweapon );
                 else
                     scripts\mp\utility::_takeweapon( var_0.carryweapon );
 
                 var_2 = var_0.lastdroppableweaponobj;
-                thread scripts\mp\utility::_id_72ED( var_2 );
+                thread scripts\mp\utility::forcevalidweapon( var_2 );
             }
             else
             {
 
             }
 
-            self _meth_80DB();
+            self enableweaponpickup();
             scripts\engine\utility::allow_weapon_switch( 1 );
         }
         else if ( !var_0.allowweapons )
@@ -1226,7 +1226,7 @@ createuseobject( var_0, var_1, var_2, var_3 )
     for ( var_5 = 0; var_5 < var_2.size; var_5++ )
     {
         var_2[var_5].baseorigin = var_2[var_5].origin;
-        var_2[var_5].baseangle = var_2[var_5].angles;
+        var_2[var_5].baseangles = var_2[var_5].angles;
     }
 
     var_4.visuals = var_2;
@@ -1235,7 +1235,7 @@ createuseobject( var_0, var_1, var_2, var_3 )
         var_3 = ( 0, 0, 0 );
 
     var_4.offset3d = var_3;
-    var_4._id_4465 = [];
+    var_4.compassicons = [];
 
     foreach ( var_7 in level.teamnamelist )
     {
@@ -1247,60 +1247,60 @@ createuseobject( var_0, var_1, var_2, var_3 )
             scripts\mp\objidpoolmanager::minimap_objective_team( var_4.teamobjids[var_7], var_7 );
         }
 
-        var_4.objpoints[var_7] = scripts\mp\objpoints::_id_4A23( "objpoint_" + var_7 + "_" + var_4.entnum, var_4.curorigin + var_3, var_7, undefined );
+        var_4.objpoints[var_7] = scripts\mp\objpoints::createteamobjpoint( "objpoint_" + var_7 + "_" + var_4.entnum, var_4.curorigin + var_3, var_7, undefined );
         var_4.objpoints[var_7].alpha = 0;
 
         if ( getdvarint( "com_codcasterEnabled", 0 ) == 1 )
         {
             var_8 = "mlg_" + var_7;
-            var_4.objpoints[var_8] = scripts\mp\objpoints::_id_4A23( "objpoint_" + var_8 + "_" + var_4.entnum, var_4.curorigin + var_3, var_7, undefined );
+            var_4.objpoints[var_8] = scripts\mp\objpoints::createteamobjpoint( "objpoint_" + var_8 + "_" + var_4.entnum, var_4.curorigin + var_3, var_7, undefined );
             var_4.objpoints[var_8].alpha = 0;
         }
     }
 
     var_4.interactteam = "none";
-    var_4._id_13DCA = [];
+    var_4.worldicons = [];
     var_4.visibleteam = "none";
     var_4.onuse = undefined;
     var_4.oncantuse = undefined;
-    var_4._id_130EB = "default";
+    var_4.usetext = "default";
     var_4.usetime = 10000;
     var_4.curprogress = 0;
     var_4.stalemate = 0;
     var_4.wasstalemate = 0;
-    var_4._id_115DF = [];
-    var_4._id_115DF["none"] = 0;
-    var_4._id_115DF["allies"] = 0;
-    var_4._id_115DF["axis"] = 0;
+    var_4.teamprogress = [];
+    var_4.teamprogress["none"] = 0;
+    var_4.teamprogress["allies"] = 0;
+    var_4.teamprogress["axis"] = 0;
 
     if ( var_4.triggertype == "proximity" )
     {
         var_4.teamusetimes = [];
         var_4.teamusetexts = [];
-        var_4._id_C248["neutral"] = 0;
+        var_4.numtouching["neutral"] = 0;
         var_4.touchlist["neutral"] = [];
-        var_4._id_C248["none"] = 0;
+        var_4.numtouching["none"] = 0;
         var_4.touchlist["none"] = [];
 
         foreach ( var_11 in level.teamnamelist )
         {
-            var_4._id_C248[var_11] = 0;
+            var_4.numtouching[var_11] = 0;
             var_4.touchlist[var_11] = [];
         }
 
         var_4.userate = 0;
         var_4.claimteam = "none";
-        var_4._id_3FF8 = undefined;
-        var_4._id_A95A = "none";
-        var_4._id_A95B = 0;
+        var_4.claimplayer = undefined;
+        var_4.lastclaimteam = "none";
+        var_4.lastclaimtime = 0;
         var_4.mustmaintainclaim = 0;
         var_4.cancontestclaim = 0;
-        var_4 thread _id_130B0();
+        var_4 thread useobjectproxthink();
     }
     else
     {
         var_4.userate = 1;
-        var_4 thread _id_130B1();
+        var_4 thread useobjectusethink();
     }
 
     return var_4;
@@ -1311,7 +1311,7 @@ setkeyobject( var_0 )
     self.keyobject = var_0;
 }
 
-_id_130B1()
+useobjectusethink()
 {
     level endon( "game_ended" );
     self endon( "deleted" );
@@ -1332,9 +1332,9 @@ _id_130B1()
         if ( !var_0 scripts\mp\utility::isjuggernaut() && scripts\mp\utility::iskillstreakweapon( var_0 getcurrentweapon() ) )
             continue;
 
-        if ( isdefined( self._id_13056 ) )
+        if ( isdefined( self.usecondition ) )
         {
-            if ( !self [[ self._id_13056 ]]( var_0 ) )
+            if ( !self [[ self.usecondition ]]( var_0 ) )
                 continue;
         }
 
@@ -1363,7 +1363,7 @@ _id_130B1()
             }
 
             if ( !isdefined( self.keyobject ) )
-                thread _id_3930();
+                thread cantusehintthink();
 
             var_2 = var_0.pers["team"];
             var_1 = useholdthink( var_0 );
@@ -1381,7 +1381,7 @@ _id_130B1()
     }
 }
 
-_id_3E22( var_0 )
+checkkeyobject( var_0 )
 {
     if ( !isdefined( self.keyobject ) )
         return 1;
@@ -1403,7 +1403,7 @@ _id_3E22( var_0 )
     return 0;
 }
 
-_id_3930()
+cantusehintthink()
 {
     level endon( "game_ended" );
     self endon( "deleted" );
@@ -1428,8 +1428,8 @@ getearliestclaimplayer()
 {
     var_0 = self.claimteam;
 
-    if ( scripts\mp\utility::isreallyalive( self._id_3FF8 ) )
-        var_1 = self._id_3FF8;
+    if ( scripts\mp\utility::isreallyalive( self.claimplayer ) )
+        var_1 = self.claimplayer;
     else
         var_1 = undefined;
 
@@ -1453,11 +1453,11 @@ getearliestclaimplayer()
     return var_1;
 }
 
-_id_130B0()
+useobjectproxthink()
 {
     level endon( "game_ended" );
     self endon( "deleted" );
-    thread _id_DAD2();
+    thread proxtriggerthink();
 
     for (;;)
     {
@@ -1472,9 +1472,9 @@ _id_130B0()
             {
                 var_0 = "none";
 
-                if ( self._id_C248["allies"] )
+                if ( self.numtouching["allies"] )
                     var_0 = "allies";
-                else if ( self._id_C248["axis"] )
+                else if ( self.numtouching["axis"] )
                     var_0 = "axis";
 
                 if ( var_0 == "none" && self.ownerteam != "neutral" )
@@ -1484,18 +1484,18 @@ _id_130B0()
                     self [[ self.onuncontested ]]( var_0 );
 
                 setclaimteam( "none" );
-                self._id_3FF8 = undefined;
+                self.claimplayer = undefined;
             }
 
             self.wasstalemate = self.stalemate;
         }
-        else if ( self.mustmaintainclaim && self.ownerteam != "neutral" && !self._id_C248[self.ownerteam] )
+        else if ( self.mustmaintainclaim && self.ownerteam != "neutral" && !self.numtouching[self.ownerteam] )
         {
             if ( isdefined( self.onunoccupied ) )
                 self [[ self.onunoccupied ]]();
 
             setclaimteam( "none" );
-            self._id_3FF8 = undefined;
+            self.claimplayer = undefined;
         }
 
         if ( self.claimteam != "none" )
@@ -1507,16 +1507,16 @@ _id_130B0()
                     var_1 = getearliestclaimplayer();
 
                     if ( isdefined( self.onuse ) )
-                        self [[ self.onuse ]]( self._id_3FF8 );
+                        self [[ self.onuse ]]( self.claimplayer );
 
                     setclaimteam( "none" );
-                    self._id_3FF8 = undefined;
+                    self.claimplayer = undefined;
                 }
             }
-            else if ( self.usetime && self._id_115DF[self.claimteam] >= self.usetime )
+            else if ( self.usetime && self.teamprogress[self.claimteam] >= self.usetime )
             {
                 self.curprogress = 0.0;
-                self._id_115DF[self.claimteam] = self.curprogress;
+                self.teamprogress[self.claimteam] = self.curprogress;
                 var_1 = getearliestclaimplayer();
 
                 if ( isdefined( self.onenduse ) )
@@ -1526,28 +1526,28 @@ _id_130B0()
                     self [[ self.onuse ]]( var_1 );
 
                 setclaimteam( "none" );
-                self._id_3FF8 = undefined;
+                self.claimplayer = undefined;
             }
             else if ( !self.stalemate && self.usetime && self.ownerteam != self.claimteam )
             {
-                if ( !self._id_C248[self.claimteam] )
+                if ( !self.numtouching[self.claimteam] )
                 {
                     if ( isdefined( self.onenduse ) )
-                        self [[ self.onenduse ]]( self.claimteam, self._id_3FF8, 0 );
+                        self [[ self.onenduse ]]( self.claimteam, self.claimplayer, 0 );
 
                     setclaimteam( "none" );
-                    self._id_3FF8 = undefined;
+                    self.claimplayer = undefined;
                 }
                 else
                 {
                     self.curprogress = self.curprogress + 50 * self.userate;
-                    self._id_115DF[self.claimteam] = self.curprogress;
+                    self.teamprogress[self.claimteam] = self.curprogress;
 
                     if ( self.ownerteam != level.otherteam[self.claimteam] )
-                        self._id_115DF[level.otherteam[self.claimteam]] = 0;
+                        self.teamprogress[level.otherteam[self.claimteam]] = 0;
 
                     if ( isdefined( self.onuseupdate ) )
-                        self [[ self.onuseupdate ]]( self.claimteam, self._id_115DF[self.claimteam] / self.usetime, 50 * self.userate / self.usetime, self._id_3FF8 );
+                        self [[ self.onuseupdate ]]( self.claimteam, self.teamprogress[self.claimteam] / self.usetime, 50 * self.userate / self.usetime, self.claimplayer );
                 }
             }
         }
@@ -1568,10 +1568,10 @@ useobjectdecay( var_0 )
 
         if ( self.ownerteam != "neutral" )
         {
-            if ( self._id_C248[self.ownerteam] >= 1 && !self.stalemate )
+            if ( self.numtouching[self.ownerteam] >= 1 && !self.stalemate )
             {
                 self.curprogress = 0;
-                self._id_115DF[self.claimteam] = self.curprogress;
+                self.teamprogress[self.claimteam] = self.curprogress;
                 break;
             }
         }
@@ -1585,13 +1585,13 @@ useobjectdecay( var_0 )
                 if ( self.claimteam == "none" && !self.stalemate )
                     self.curprogress = self.curprogress - 50;
 
-                self._id_115DF[self._id_A95A] = self.curprogress;
+                self.teamprogress[self.lastclaimteam] = self.curprogress;
             }
 
-            if ( self._id_115DF[self._id_A95A] <= 0 )
+            if ( self.teamprogress[self.lastclaimteam] <= 0 )
             {
                 self.curprogress = 0;
-                self._id_115DF[self._id_A95A] = self.curprogress;
+                self.teamprogress[self.lastclaimteam] = self.curprogress;
                 break;
             }
         }
@@ -1600,26 +1600,26 @@ useobjectdecay( var_0 )
     }
 }
 
-_id_3895( var_0 )
+canclaim( var_0 )
 {
     if ( isdefined( self.carrier ) )
         return 0;
 
     if ( self.cancontestclaim )
     {
-        var_1 = _id_8019( var_0.pers["team"] );
+        var_1 = getnumtouchingforteam( var_0.pers["team"] );
 
         if ( var_1 != 0 )
             return 0;
     }
 
-    if ( _id_3E22( var_0 ) )
+    if ( checkkeyobject( var_0 ) )
         return 1;
 
     return 0;
 }
 
-_id_DAD2()
+proxtriggerthink()
 {
     level endon( "game_ended" );
     self endon( "deleted" );
@@ -1650,7 +1650,7 @@ _id_DAD2()
         if ( isdefined( var_1.classname ) && var_1.classname == "script_vehicle" )
             continue;
 
-        if ( !isdefined( var_1._id_987A ) )
+        if ( !isdefined( var_1.initialized_gameobject_vars ) )
             continue;
 
         var_2 = getrelativeteam( var_1.pers["team"] );
@@ -1663,30 +1663,30 @@ _id_DAD2()
 
         if ( self.claimteam == "none" && caninteractwith( var_1.pers["team"], var_1 ) )
         {
-            if ( _id_3895( var_1 ) )
+            if ( canclaim( var_1 ) )
             {
-                if ( !_id_DAD1( var_1 ) )
+                if ( !proxtriggerlos( var_1 ) )
                     continue;
 
                 setclaimteam( var_1.pers["team"] );
-                self._id_3FF8 = var_1;
+                self.claimplayer = var_1;
 
                 if ( isdefined( self.teamusetimes[var_2] ) )
                     self.usetime = self.teamusetimes[var_2];
 
                 if ( self.usetime && isdefined( self.onbeginuse ) )
-                    self [[ self.onbeginuse ]]( self._id_3FF8 );
+                    self [[ self.onbeginuse ]]( self.claimplayer );
             }
             else if ( isdefined( self.oncantuse ) )
                 self [[ self.oncantuse ]]( var_1 );
         }
 
         if ( scripts\mp\utility::isreallyalive( var_1 ) && !isdefined( var_1.touchtriggers[var_0] ) )
-            var_1 thread _id_127CA( self );
+            var_1 thread triggertouchthink( self );
     }
 }
 
-_id_DAD1( var_0 )
+proxtriggerlos( var_0 )
 {
     if ( !isdefined( self.requireslos ) )
         return 1;
@@ -1737,32 +1737,32 @@ setclaimteam( var_0 )
     if ( !isdefined( self.claimgracetime ) )
         self.claimgracetime = 1000;
 
-    if ( self.claimteam == "none" && gettime() - self._id_A95B > self.claimgracetime )
+    if ( self.claimteam == "none" && gettime() - self.lastclaimtime > self.claimgracetime )
     {
         self.curprogress = 0;
-        self._id_115DF[var_0] = self.curprogress;
+        self.teamprogress[var_0] = self.curprogress;
     }
-    else if ( var_0 != "none" && var_0 != self._id_A95A )
+    else if ( var_0 != "none" && var_0 != self.lastclaimteam )
     {
         self.curprogress = 0;
-        self._id_115DF[var_0] = self.curprogress;
+        self.teamprogress[var_0] = self.curprogress;
     }
 
-    self._id_A95A = self.claimteam;
-    self._id_A95B = gettime();
+    self.lastclaimteam = self.claimteam;
+    self.lastclaimtime = gettime();
     self.claimteam = var_0;
-    _id_12F57();
+    updateuserate();
 }
 
-_id_7E29()
+getclaimteam()
 {
     return self.claimteam;
 }
 
-_id_127CA( var_0 )
+triggertouchthink( var_0 )
 {
     var_1 = self.pers["team"];
-    var_0._id_C248[var_1]++;
+    var_0.numtouching[var_1]++;
     var_2 = self.guid;
     var_3 = spawnstruct();
     var_3.player = self;
@@ -1773,7 +1773,7 @@ _id_127CA( var_0 )
         var_0.nousebar = 0;
 
     self.touchtriggers[var_0.entnum] = var_0.trigger;
-    var_0 _id_12F57();
+    var_0 updateuserate();
 
     while ( scripts\mp\utility::isreallyalive( self ) && isdefined( var_0.trigger ) && self istouching( var_0.trigger ) && !level.gameended )
     {
@@ -1802,10 +1802,10 @@ _id_127CA( var_0 )
     if ( level.gameended )
         return;
 
-    var_0._id_C405 = var_0.touchlist;
+    var_0.oldtouchlist = var_0.touchlist;
     var_0.touchlist[var_1][var_2] = undefined;
-    var_0._id_C248[var_1]--;
-    var_0 _id_12F57();
+    var_0.numtouching[var_1]--;
+    var_0 updateuserate();
 }
 
 migrationcapturereset( var_0 )
@@ -1821,9 +1821,9 @@ migrationcapturereset( var_0 )
     self.migrationcapturereset = undefined;
 }
 
-_id_8019( var_0 )
+getnumtouchingforteam( var_0 )
 {
-    return self._id_C248[scripts\mp\utility::getotherteam( var_0 )];
+    return self.numtouching[scripts\mp\utility::getotherteam( var_0 )];
 }
 
 updateuiprogress( var_0, var_1 )
@@ -1832,12 +1832,12 @@ updateuiprogress( var_0, var_1 )
     {
         var_2 = 0;
 
-        if ( isdefined( var_0._id_115DF ) && isdefined( var_0.claimteam ) )
+        if ( isdefined( var_0.teamprogress ) && isdefined( var_0.claimteam ) )
         {
-            if ( var_0._id_115DF[var_0.claimteam] > var_0.usetime )
-                var_0._id_115DF[var_0.claimteam] = var_0.usetime;
+            if ( var_0.teamprogress[var_0.claimteam] > var_0.usetime )
+                var_0.teamprogress[var_0.claimteam] = var_0.usetime;
 
-            var_2 = var_0._id_115DF[var_0.claimteam] / var_0.usetime;
+            var_2 = var_0.teamprogress[var_0.claimteam] / var_0.usetime;
         }
         else
         {
@@ -1851,77 +1851,77 @@ updateuiprogress( var_0, var_1 )
         {
             if ( var_1 && scripts\mp\utility::istrue( var_0.stalemate ) )
             {
-                if ( !isdefined( self._id_12B1C ) )
+                if ( !isdefined( self.ui_ctf_stalemate ) )
                 {
-                    if ( !isdefined( self._id_12B1B ) )
-                        self._id_12B1B = 1;
+                    if ( !isdefined( self.ui_ctf_securing ) )
+                        self.ui_ctf_securing = 1;
 
                     self setclientomnvar( "ui_objective_state", -1 );
-                    self._id_12B1C = 1;
+                    self.ui_ctf_stalemate = 1;
                 }
 
                 var_2 = 0.01;
             }
-            else if ( var_1 && isdefined( self._id_12B1B ) && isdefined( var_0.stalemate ) && !var_0.stalemate && var_0.ownerteam != self.team )
+            else if ( var_1 && isdefined( self.ui_ctf_securing ) && isdefined( var_0.stalemate ) && !var_0.stalemate && var_0.ownerteam != self.team )
             {
                 self setclientomnvar( "ui_objective_state", 1 );
-                self._id_12B1B = 1;
-                self._id_12B1C = undefined;
+                self.ui_ctf_securing = 1;
+                self.ui_ctf_stalemate = undefined;
             }
-            else if ( var_1 && isdefined( self._id_12B1B ) && isdefined( var_0.stalemate ) && !var_0.stalemate && var_0.ownerteam == self.team )
+            else if ( var_1 && isdefined( self.ui_ctf_securing ) && isdefined( var_0.stalemate ) && !var_0.stalemate && var_0.ownerteam == self.team )
             {
                 self setclientomnvar( "ui_objective_state", 2 );
-                self._id_12B1B = 1;
-                self._id_12B1C = undefined;
+                self.ui_ctf_securing = 1;
+                self.ui_ctf_stalemate = undefined;
             }
             else
             {
-                if ( !var_1 && isdefined( self._id_12B1C ) )
+                if ( !var_1 && isdefined( self.ui_ctf_stalemate ) )
                 {
                     self setclientomnvar( "ui_objective_state", 0 );
-                    self._id_12B1B = undefined;
+                    self.ui_ctf_securing = undefined;
                 }
 
-                if ( var_1 && !isdefined( self._id_12B1C ) && var_0.ownerteam == self.team )
+                if ( var_1 && !isdefined( self.ui_ctf_stalemate ) && var_0.ownerteam == self.team )
                 {
                     self setclientomnvar( "ui_objective_state", 0 );
-                    self._id_12B1B = undefined;
+                    self.ui_ctf_securing = undefined;
                 }
 
-                if ( var_1 && !isdefined( self._id_12B1B ) )
+                if ( var_1 && !isdefined( self.ui_ctf_securing ) )
                 {
                     if ( var_0.ownerteam != self.team )
                     {
                         self setclientomnvar( "ui_objective_state", 1 );
-                        self._id_12B1B = 1;
+                        self.ui_ctf_securing = 1;
                     }
                     else if ( var_0.interactteam == "any" )
                     {
                         self setclientomnvar( "ui_objective_state", 2 );
-                        self._id_12B1B = 1;
+                        self.ui_ctf_securing = 1;
                     }
                 }
 
-                self._id_12B1C = undefined;
+                self.ui_ctf_stalemate = undefined;
             }
 
             if ( !var_1 )
             {
                 var_2 = 0.01;
                 self setclientomnvar( "ui_objective_state", 0 );
-                self._id_12B1B = undefined;
+                self.ui_ctf_securing = undefined;
             }
 
             if ( var_2 != 0 )
             {
-                if ( isdefined( var_0._id_115DF ) && isdefined( var_0.claimteam ) && var_1 )
-                    self setclientomnvar( "ui_objective_progress", var_0._id_115DF[self.team] / var_0.usetime );
+                if ( isdefined( var_0.teamprogress ) && isdefined( var_0.claimteam ) && var_1 )
+                    self setclientomnvar( "ui_objective_progress", var_0.teamprogress[self.team] / var_0.usetime );
                 else
                     self setclientomnvar( "ui_objective_progress", var_2 );
             }
         }
 
-        if ( _id_8BE7() && isdefined( var_0.id ) && ( var_0.id == "domFlag" || var_0.id == "hardpoint" ) )
+        if ( hasdomflags() && isdefined( var_0.id ) && ( var_0.id == "domFlag" || var_0.id == "hardpoint" ) )
         {
             var_3 = 0;
 
@@ -1996,9 +1996,9 @@ updateuiprogress( var_0, var_1 )
 
             if ( var_2 != 0 )
             {
-                if ( isdefined( var_0._id_115DF ) && isdefined( var_0.claimteam ) && var_1 )
+                if ( isdefined( var_0.teamprogress ) && isdefined( var_0.claimteam ) && var_1 )
                 {
-                    self setclientomnvar( "ui_objective_progress", var_0._id_115DF[self.team] / var_0.usetime );
+                    self setclientomnvar( "ui_objective_progress", var_0.teamprogress[self.team] / var_0.usetime );
                     return;
                 }
 
@@ -2035,8 +2035,8 @@ updateuiprogress( var_0, var_1 )
 
                 if ( var_2 != 0 )
                 {
-                    if ( isdefined( var_0._id_115DF ) && isdefined( var_0.claimteam ) && var_1 )
-                        self setclientomnvar( "ui_objective_progress", var_0._id_115DF[self.team] / var_0.usetime );
+                    if ( isdefined( var_0.teamprogress ) && isdefined( var_0.claimteam ) && var_1 )
+                        self setclientomnvar( "ui_objective_progress", var_0.teamprogress[self.team] / var_0.usetime );
                     else
                         self setclientomnvar( "ui_objective_progress", var_2 );
                 }
@@ -2075,12 +2075,12 @@ updateuiprogress( var_0, var_1 )
                     break;
             }
 
-            _id_12F55( var_2, var_1, var_4, var_0, var_0.usetime );
+            updateuisecuring( var_2, var_1, var_4, var_0, var_0.usetime );
         }
     }
 }
 
-_id_8BE7()
+hasdomflags()
 {
     if ( level.gametype == "dom" || level.gametype == "grind" || level.gametype == "koth" || level.gametype == "grnd" || level.gametype == "siege" )
         return 1;
@@ -2088,7 +2088,7 @@ _id_8BE7()
     return 0;
 }
 
-_id_12F55( var_0, var_1, var_2, var_3, var_4 )
+updateuisecuring( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( var_1 )
     {
@@ -2138,14 +2138,14 @@ existinarray( var_0, var_1 )
     return 0;
 }
 
-_id_12F57()
+updateuserate()
 {
     if ( self.claimteam == "none" && self.ownerteam != "neutral" && self.ownerteam != "any" )
         var_0 = self.ownerteam;
     else
         var_0 = self.claimteam;
 
-    var_1 = self._id_C248[var_0];
+    var_1 = self.numtouching[var_0];
     var_2 = 0;
     var_3 = 0;
 
@@ -2154,16 +2154,16 @@ _id_12F57()
         foreach ( var_5 in level.teamnamelist )
         {
             if ( var_0 != var_5 )
-                var_2 = var_2 + self._id_C248[var_5];
+                var_2 = var_2 + self.numtouching[var_5];
         }
     }
     else
     {
         if ( var_0 != "axis" )
-            var_2 = var_2 + self._id_C248["axis"];
+            var_2 = var_2 + self.numtouching["axis"];
 
         if ( var_0 != "allies" )
-            var_2 = var_2 + self._id_C248["allies"];
+            var_2 = var_2 + self.numtouching["allies"];
     }
 
     foreach ( var_8 in self.touchlist[var_0] )
@@ -2187,9 +2187,9 @@ _id_12F57()
     if ( var_1 && !var_2 )
         self.userate = min( var_1, 4 );
 
-    if ( isdefined( self._id_9D49 ) && self._id_9D49 && var_3 != 0 )
+    if ( isdefined( self.isarena ) && self.isarena && var_3 != 0 )
         self.userate = 1 * var_3;
-    else if ( isdefined( self._id_9D49 ) && self._id_9D49 )
+    else if ( isdefined( self.isarena ) && self.isarena )
         self.userate = 1;
 }
 
@@ -2204,7 +2204,7 @@ useholdthink( var_0 )
 
     var_0 playerlinkedoffsetenable();
     var_0 clientclaimtrigger( self.trigger );
-    var_0._id_3FFA = self.trigger;
+    var_0.claimtrigger = self.trigger;
     var_0 allowmovement( 0 );
     var_0 unlink();
 
@@ -2222,13 +2222,13 @@ useholdthink( var_0 )
     if ( isdefined( var_1 ) )
     {
         if ( var_2 == var_1 )
-            var_2 = var_0._id_A9C6;
+            var_2 = var_0.lastnonuseweapon;
 
-        var_0._id_A9C6 = var_2;
+        var_0.lastnonuseweapon = var_2;
         var_0 scripts\mp\utility::_giveweapon( var_1 );
         var_0 setweaponammostock( var_1, 0 );
         var_0 setweaponammoclip( var_1, 0 );
-        var_0 thread _id_11382( var_1 );
+        var_0 thread switchtouseweapon( var_1 );
     }
     else
         var_0 scripts\engine\utility::allow_weapon( 0 );
@@ -2249,9 +2249,9 @@ useholdthink( var_0 )
         var_0 scripts\mp\supers::unstowsuperweapon();
 
         if ( var_0 scripts\mp\utility::isreliablyswitchingtoweapon( var_1 ) )
-            var_0 scripts\mp\utility::_id_1529( var_1 );
+            var_0 scripts\mp\utility::abortmonitoredweaponswitch( var_1 );
         else
-            var_0 thread scripts\mp\utility::_id_80F2( var_1 );
+            var_0 thread scripts\mp\utility::getridofweapon( var_1 );
     }
 
     if ( isdefined( var_3 ) && var_3 )
@@ -2262,19 +2262,19 @@ useholdthink( var_0 )
 
     if ( isdefined( var_0 ) )
     {
-        var_0._id_3FFA = undefined;
+        var_0.claimtrigger = undefined;
 
         if ( !isdefined( var_1 ) )
             var_0 scripts\engine\utility::allow_weapon( 1 );
 
         if ( !scripts\mp\utility::isreallyalive( var_0 ) )
-            var_0._id_A64F = 1;
+            var_0.killedinuse = 1;
 
         var_0 allowmovement( 1 );
     }
 
     self.inuse = 0;
-    self.trigger _meth_8257();
+    self.trigger releaseclaimedtrigger();
     return 0;
 }
 
@@ -2287,7 +2287,7 @@ detachusemodels()
     }
 }
 
-_id_11382( var_0 )
+switchtouseweapon( var_0 )
 {
     scripts\mp\supers::allowsuperweaponstow();
     var_1 = scripts\mp\utility::_id_11383( var_0, 1 );
@@ -2297,13 +2297,13 @@ _id_11382( var_0 )
         scripts\mp\supers::unstowsuperweapon();
 
         if ( scripts\mp\utility::isreliablyswitchingtoweapon( var_0 ) )
-            scripts\mp\utility::_id_1529( var_0 );
+            scripts\mp\utility::abortmonitoredweaponswitch( var_0 );
         else
             scripts\mp\utility::_takeweapon( var_0 );
     }
 }
 
-_id_130E9( var_0, var_1, var_2, var_3 )
+usetest( var_0, var_1, var_2, var_3 )
 {
     if ( !scripts\mp\utility::isreallyalive( var_0 ) )
         return 0;
@@ -2314,7 +2314,7 @@ _id_130E9( var_0, var_1, var_2, var_3 )
     if ( !var_0 usebuttonpressed() )
         return 0;
 
-    if ( var_0 scripts\mp\utility::_id_85C7() )
+    if ( var_0 scripts\mp\utility::grenadeinpullback() )
         return 0;
 
     if ( var_0 meleebuttonpressed() )
@@ -2345,8 +2345,8 @@ useholdthinkloop( var_0, var_1 )
     var_2 = self.useweapon;
     var_3 = 1;
 
-    if ( isdefined( self._id_136F6 ) )
-        var_3 = self._id_136F6;
+    if ( isdefined( self.waitforweapononuse ) )
+        var_3 = self.waitforweapononuse;
 
     if ( !var_3 )
         self.userate = 1 * var_0.objectivescaler;
@@ -2354,7 +2354,7 @@ useholdthinkloop( var_0, var_1 )
     var_4 = 0;
     var_5 = 1.5;
 
-    while ( _id_130E9( var_0, var_3, var_4, var_5 ) )
+    while ( usetest( var_0, var_3, var_4, var_5 ) )
     {
         var_4 = var_4 + 0.05;
 
@@ -2373,7 +2373,7 @@ useholdthinkloop( var_0, var_1 )
         {
             self.inuse = 0;
             var_0 clientreleasetrigger( self.trigger );
-            var_0._id_3FFA = undefined;
+            var_0.claimtrigger = undefined;
 
             if ( !isdefined( var_2 ) )
                 var_0 scripts\engine\utility::allow_weapon( 1 );
@@ -2426,27 +2426,27 @@ updatetrigger()
     }
 }
 
-_id_12F68()
+updateworldicons()
 {
     if ( self.visibleteam == "any" )
     {
-        _id_12F67( "friendly", 1 );
-        _id_12F67( "enemy", 1 );
+        updateworldicon( "friendly", 1 );
+        updateworldicon( "enemy", 1 );
     }
     else if ( self.visibleteam == "friendly" )
     {
-        _id_12F67( "friendly", 1 );
-        _id_12F67( "enemy", 0 );
+        updateworldicon( "friendly", 1 );
+        updateworldicon( "enemy", 0 );
     }
     else if ( self.visibleteam == "enemy" )
     {
-        _id_12F67( "friendly", 0 );
-        _id_12F67( "enemy", 1 );
+        updateworldicon( "friendly", 0 );
+        updateworldicon( "enemy", 1 );
     }
     else
     {
-        _id_12F67( "friendly", 0 );
-        _id_12F67( "enemy", 0 );
+        updateworldicon( "friendly", 0 );
+        updateworldicon( "enemy", 0 );
     }
 }
 
@@ -2511,12 +2511,12 @@ setobjpointteamcolor( var_0, var_1, var_2 )
     }
 }
 
-_id_12F67( var_0, var_1 )
+updateworldicon( var_0, var_1 )
 {
-    if ( !isdefined( self._id_13DCA[var_0] ) )
+    if ( !isdefined( self.worldicons[var_0] ) )
         var_1 = 0;
 
-    var_2 = _id_81F2( var_0 );
+    var_2 = getupdateteams( var_0 );
 
     if ( getdvarint( "com_codcasterEnabled", 0 ) == 1 )
     {
@@ -2548,20 +2548,20 @@ _id_12F67( var_0, var_1 )
 
         if ( var_1 )
         {
-            var_6 setshader( self._id_13DCA[var_0], level.objpointsize, level.objpointsize );
+            var_6 setshader( self.worldicons[var_0], level.objpointsize, level.objpointsize );
             var_6 fadeovertime( 0.05 );
             var_6.alpha = var_6.basealpha;
-            var_6._id_9F51 = 1;
+            var_6.isshown = 1;
 
             if ( level.gametype == "dom" )
                 var_6 setwaypoint( 0, 1 );
-            else if ( isdefined( self._id_4465[var_0] ) )
+            else if ( isdefined( self.compassicons[var_0] ) )
                 var_6 setwaypoint( 1, 1 );
             else
                 var_6 setwaypoint( 1, 0 );
 
             setobjpointteamcolor( var_6, var_2[var_4], var_0 );
-            var_6 setwaypointbackground( getwaypointbackgroundtype( self._id_13DCA[var_0] ) );
+            var_6 setwaypointbackground( getwaypointbackgroundtype( self.worldicons[var_0] ) );
 
             if ( self.type == "carryObject" )
             {
@@ -2574,14 +2574,14 @@ _id_12F67( var_0, var_1 )
                 else
                     var_6 cleartargetent();
             }
-            else if ( isdefined( self._id_C2B4 ) )
-                var_6 settargetent( self._id_C2B4 );
+            else if ( isdefined( self.objiconent ) )
+                var_6 settargetent( self.objiconent );
         }
         else
         {
             var_6 fadeovertime( 0.05 );
             var_6.alpha = 0;
-            var_6._id_9F51 = 0;
+            var_6.isshown = 0;
             var_6 cleartargetent();
         }
 
@@ -2600,7 +2600,7 @@ hideworldiconongameend()
         self.alpha = 0;
 }
 
-_id_12F43( var_0, var_1 )
+updatetimer( var_0, var_1 )
 {
 
 }
@@ -2609,23 +2609,23 @@ updatecompassicons()
 {
     if ( self.visibleteam == "any" )
     {
-        _id_12E7A( "friendly", 1 );
-        _id_12E7A( "enemy", 1 );
+        updatecompassicon( "friendly", 1 );
+        updatecompassicon( "enemy", 1 );
     }
     else if ( self.visibleteam == "friendly" )
     {
-        _id_12E7A( "friendly", 1 );
-        _id_12E7A( "enemy", 0 );
+        updatecompassicon( "friendly", 1 );
+        updatecompassicon( "enemy", 0 );
     }
     else if ( self.visibleteam == "enemy" )
     {
-        _id_12E7A( "friendly", 0 );
-        _id_12E7A( "enemy", 1 );
+        updatecompassicon( "friendly", 0 );
+        updatecompassicon( "enemy", 1 );
     }
     else
     {
-        _id_12E7A( "friendly", 0 );
-        _id_12E7A( "enemy", 0 );
+        updatecompassicon( "friendly", 0 );
+        updatecompassicon( "enemy", 0 );
     }
 }
 
@@ -2651,9 +2651,9 @@ updateobjectiveiconcolortype( var_0, var_1 )
     }
 }
 
-_id_12E7A( var_0, var_1 )
+updatecompassicon( var_0, var_1 )
 {
-    var_2 = _id_81F2( var_0 );
+    var_2 = getupdateteams( var_0 );
 
     for ( var_3 = 0; var_3 < var_2.size; var_3++ )
     {
@@ -2667,15 +2667,15 @@ _id_12E7A( var_0, var_1 )
 
         if ( var_6 != -1 )
         {
-            if ( !isdefined( self._id_4465[var_0] ) || !var_5 )
+            if ( !isdefined( self.compassicons[var_0] ) || !var_5 )
             {
                 scripts\mp\objidpoolmanager::minimap_objective_state( var_6, "invisible" );
                 continue;
             }
 
-            scripts\mp\objidpoolmanager::minimap_objective_icon( var_6, self._id_4465[var_0] );
+            scripts\mp\objidpoolmanager::minimap_objective_icon( var_6, self.compassicons[var_0] );
             scripts\mp\objidpoolmanager::minimap_objective_state( var_6, "active" );
-            scripts\mp\objidpoolmanager::minimap_objective_icon_backgroundtype( var_6, getwaypointbackgroundtype( self._id_4465[var_0] ) );
+            scripts\mp\objidpoolmanager::minimap_objective_icon_backgroundtype( var_6, getwaypointbackgroundtype( self.compassicons[var_0] ) );
             updateobjectiveiconcolortype( var_6, var_0 );
 
             if ( self.type == "carryObject" )
@@ -2692,23 +2692,23 @@ _id_12E7A( var_0, var_1 )
                 continue;
             }
 
-            if ( isdefined( self._id_C2B4 ) )
-                scripts\mp\objidpoolmanager::minimap_objective_onentity( var_6, self._id_C2B4 );
+            if ( isdefined( self.objiconent ) )
+                scripts\mp\objidpoolmanager::minimap_objective_onentity( var_6, self.objiconent );
         }
     }
 }
 
 shouldpingobject( var_0 )
 {
-    if ( var_0 == "friendly" && self.objidpingenemy )
+    if ( var_0 == "friendly" && self.objidpingfriendly )
         return 1;
-    else if ( var_0 == "enemy" && self.objidpingfriendly )
+    else if ( var_0 == "enemy" && self.objidpingenemy )
         return 1;
 
     return 0;
 }
 
-_id_81F2( var_0 )
+getupdateteams( var_0 )
 {
     var_1 = [];
 
@@ -2760,7 +2760,7 @@ setownerteam( var_0 )
     self.ownerteam = var_0;
     updatetrigger();
     updatecompassicons();
-    _id_12F68();
+    updateworldicons();
 
     if ( var_0 != "neutral" )
         self.prevownerteam = var_0;
@@ -2778,12 +2778,12 @@ setusetime( var_0 )
 
 setwaitweaponchangeonuse( var_0 )
 {
-    self._id_136F6 = var_0;
+    self.waitforweapononuse = var_0;
 }
 
 setusetext( var_0 )
 {
-    self._id_130EB = var_0;
+    self.usetext = var_0;
 }
 
 setteamusetime( var_0, var_1 )
@@ -2816,7 +2816,7 @@ setvisibleteam( var_0 )
 {
     self.visibleteam = var_0;
     updatecompassicons();
-    _id_12F68();
+    updateworldicons();
 }
 
 setmodelvisibility( var_0 )
@@ -2878,19 +2878,19 @@ makesolid()
     }
 }
 
-_id_F680( var_0 )
+setcarriervisible( var_0 )
 {
     self.carriervisible = var_0;
 }
 
-_id_F67D( var_0 )
+setcanuse( var_0 )
 {
-    self._id_130E5 = var_0;
+    self.useteam = var_0;
 }
 
 set2dicon( var_0, var_1 )
 {
-    self._id_4465[var_0] = var_1;
+    self.compassicons[var_0] = var_1;
 
     if ( !isdefined( var_1 ) )
         self.worldiconscolor[var_0] = "neutral";
@@ -2928,22 +2928,22 @@ getwaypointbackgroundcolor( var_0 )
 
 set3dicon( var_0, var_1 )
 {
-    self._id_13DCA[var_0] = var_1;
+    self.worldicons[var_0] = var_1;
 
     if ( !isdefined( var_1 ) )
         self.worldiconscolor[var_0] = "neutral";
     else
         self.worldiconscolor[var_0] = getwaypointbackgroundcolor( var_1 );
 
-    _id_12F68();
+    updateworldicons();
 }
 
 _id_F285( var_0, var_1 )
 {
-    self._id_13DCD[var_0] = var_1;
+    self.worlduseicons[var_0] = var_1;
 }
 
-_id_F681( var_0 )
+setcarryicon( var_0 )
 {
     self.carryicon = var_0;
 }
@@ -3065,7 +3065,7 @@ isrelativeteam( var_0 )
     return 0;
 }
 
-_id_7E93( var_0 )
+getenemyteam( var_0 )
 {
     if ( level.multiteambased )
     {
@@ -3085,7 +3085,7 @@ _id_7E93( var_0 )
         return "allies";
 }
 
-getlaserangles()
+getlabel()
 {
     var_0 = self.trigger.script_label;
 

@@ -6,17 +6,17 @@ _id_11090()
 
 }
 
-_id_4E36()
+deathcleanup()
 {
     self notify( "terminate_ai_threads" );
     self notify( "killanimscript" );
 }
 
-_id_CF0E( var_0, var_1, var_2, var_3 )
+playdeathanim( var_0, var_1, var_2, var_3 )
 {
     self scragentsetphysicsmode( "gravity" );
-    self _meth_8281( "anim deltas" );
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2 );
+    self scragentsetanimmode( "anim deltas" );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2 );
 }
 
 _id_3EE2( var_0, var_1, var_2 )
@@ -24,32 +24,32 @@ _id_3EE2( var_0, var_1, var_2 )
     return 0;
 }
 
-_id_3ECA( var_0, var_1, var_2 )
+choosecrouchingdeathanim( var_0, var_1, var_2 )
 {
     return 0;
 }
 
-_id_3EC6( var_0, var_1, var_2 )
+choosecoverdeathanim( var_0, var_1, var_2 )
 {
     return 0;
 }
 
-_id_3F00( var_0, var_1, var_2 )
+choosestandingdeathanim( var_0, var_1, var_2 )
 {
     return 0;
 }
 
-_id_3F02( var_0, var_1, var_2 )
+choosestandingpistoldeathanim( var_0, var_1, var_2 )
 {
     return 0;
 }
 
-_id_3F01( var_0, var_1, var_2 )
+choosestandingmeleedeathanim( var_0, var_1, var_2 )
 {
     return 0;
 }
 
-_id_6DB2()
+firingdeathallowed()
 {
     return 1;
 }
@@ -64,7 +64,7 @@ play_blood_pool( var_0, var_1 )
 
 }
 
-_id_C703()
+orientmeleevictim()
 {
 
 }
@@ -74,22 +74,22 @@ playdeathsound()
 
 }
 
-_id_E166( var_0 )
+removeselffrom_squadlastseenenemypos( var_0 )
 {
 
 }
 
-_id_41DC( var_0 )
+clearsightposnear( var_0 )
 {
 
 }
 
-_id_FFFA( var_0, var_1, var_2, var_3 )
+shoulddostrongbulletdamage( var_0, var_1, var_2, var_3 )
 {
     return 0;
 }
 
-isdepot( var_0 )
+isdeserteagle( var_0 )
 {
     if ( var_0 == "deserteagle" )
         return 1;
@@ -97,7 +97,7 @@ isdepot( var_0 )
     return 0;
 }
 
-_id_9D59( var_0, var_1 )
+isattackerwithindist( var_0, var_1 )
 {
     if ( !isdefined( var_0 ) )
         return 0;

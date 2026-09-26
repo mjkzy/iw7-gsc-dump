@@ -42,14 +42,14 @@ _id_2374( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
     var_22.states[var_0]._id_7048 = var_1;
     var_22.states[var_0]._id_E88A = var_2;
     var_22.states[var_0]._id_71C5 = var_3;
-    var_22.states[var_0]._id_71D2 = var_4;
+    var_22.states[var_0].fnterminate = var_4;
     var_22.states[var_0]._id_116FB = var_5;
     var_22.states[var_0]._id_71A5 = var_6;
     var_22.states[var_0]._id_7DC8 = var_7;
     var_22.states[var_0].transitions = [];
     var_22.states[var_0].flags = var_8;
-    var_22.states[var_0]._id_10B53 = var_9;
-    var_22.states[var_0]._id_6A8B = var_11;
+    var_22.states[var_0].stance = var_9;
+    var_22.states[var_0].facialstate = var_11;
     var_22.states[var_0]._id_C87F = var_12;
     var_22.states[var_0]._id_C87C = var_13;
     var_22.states[var_0]._id_4E6D = var_14;
@@ -70,7 +70,7 @@ _id_2375( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_7 = spawnstruct();
     var_7._id_2B93 = var_1;
     var_7._id_71D1 = var_2;
-    var_7._id_100B1 = var_3;
+    var_7.shouldtransitionparams = var_3;
     var_7._id_11A1A = var_0;
     var_6.states[anim._id_DEF7].transitions[var_6.states[anim._id_DEF7].transitions.size] = var_7;
 }
@@ -78,7 +78,7 @@ _id_2375( var_0, var_1, var_2, var_3, var_4, var_5 )
 asm_fireephemeralevent( var_0, var_1, var_2 )
 {
     var_3 = spawnstruct();
-    var_3._id_7686 = gettime();
+    var_3.gametime = gettime();
     var_3.name = var_1;
     var_3.params = var_2;
 
@@ -89,12 +89,12 @@ asm_fireephemeralevent( var_0, var_1, var_2 )
 
     if ( isdefined( self._blackboard.asm_ephemeral_event_watchlist[var_0] ) && self._blackboard.asm_ephemeral_event_watchlist[var_0] == var_1 )
     {
-        self.bt._id_72EB = 1;
+        self.bt.forceupdate = 1;
         self._blackboard.asm_ephemeral_event_watchlist[var_0] = undefined;
     }
 }
 
-_id_2351( var_0, var_1 )
+asmregistergenerichandler( var_0, var_1 )
 {
     var_2 = anim.asm[var_0];
     self._id_164D[var_0] = spawnstruct();
@@ -109,10 +109,10 @@ _id_2351( var_0, var_1 )
     _id_238A( var_0, var_2._id_9881, 0.0 );
 }
 
-_id_234E()
+asm_init_blackboard()
 {
     self._blackboard = spawnstruct();
-    self._blackboard._id_527D = "stand";
+    self._blackboard.desiredstance = "stand";
     self._blackboard.asm_events = [];
     self._blackboard._id_2329 = [];
     self._blackboard.asm_ephemeral_event_watchlist = [];
@@ -135,8 +135,8 @@ _id_2388( var_0, var_1, var_2, var_3 )
     self notify( var_1 + "_finished" );
     asm_fireevent( var_1, "ASM_Finished" );
 
-    if ( isdefined( var_2._id_71D2 ) )
-        self [[ var_2._id_71D2 ]]( var_0, var_1, var_3 );
+    if ( isdefined( var_2.fnterminate ) )
+        self [[ var_2.fnterminate ]]( var_0, var_1, var_3 );
 
     if ( isdefined( var_2._id_116FA ) )
         asm_fireephemeralevent( var_2._id_116FA, "end" );
@@ -158,7 +158,7 @@ _id_238A( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_8._id_10E23 = var_8._id_4BC0;
     var_8._id_4BC0 = var_1;
     asm_clearevents( var_1 );
-    self.asm._id_4E6E = undefined;
+    self.asm.deathstateoverride = undefined;
     var_9 = var_7._id_111AC;
     var_10 = undefined;
 
@@ -179,7 +179,7 @@ _id_238A( var_0, var_1, var_2, var_3, var_4, var_5 )
     if ( isdefined( self._id_7195 ) )
         self [[ self._id_7195 ]]( var_7 );
 
-    self [[ self._id_718F ]]( var_7 );
+    self [[ self.fnasm_playfacialanim ]]( var_7 );
 
     if ( isdefined( var_8._id_2F3C ) && var_8._id_2F3C )
         self.allowpain_internal = isdefined( var_7._id_C87F );
@@ -193,8 +193,8 @@ _id_238A( var_0, var_1, var_2, var_3, var_4, var_5 )
 
     self thread [[ var_7._id_7048 ]]( var_0, var_1, var_2, var_14 );
 
-    if ( isdefined( self._id_718D ) )
-        self [[ self._id_718D ]]( var_0, var_8._id_10E23, var_1, var_2 );
+    if ( isdefined( self.fnasm_playadditiveanimloopstate ) )
+        self [[ self.fnasm_playadditiveanimloopstate ]]( var_0, var_8._id_10E23, var_1, var_2 );
 
     if ( isdefined( self._id_718E ) )
         self [[ self._id_718E ]]( var_0, var_1 );
@@ -204,12 +204,12 @@ _id_238A( var_0, var_1, var_2, var_3, var_4, var_5 )
         foreach ( var_12 in var_7._id_111AC )
         {
             if ( !isdefined( var_10 ) || !scripts\engine\utility::array_contains( var_10, var_12 ) )
-                _id_2351( var_12, 0 );
+                asmregistergenerichandler( var_12, 0 );
         }
     }
 }
 
-_id_2341( var_0, var_1 )
+asm_getnotehandler( var_0, var_1 )
 {
     if ( isdefined( anim.asm[var_0].states[var_1]._id_71C5 ) )
         return anim.asm[var_0].states[var_1]._id_71C5;
@@ -219,10 +219,10 @@ _id_2341( var_0, var_1 )
 
 _id_231E( var_0, var_1, var_2 )
 {
-    if ( isdefined( self.asm._id_4E6E ) )
+    if ( isdefined( self.asm.deathstateoverride ) )
     {
-        var_3 = self.asm._id_4E6E._id_10E2C;
-        var_4 = self.asm._id_4E6E.params;
+        var_3 = self.asm.deathstateoverride.statename;
+        var_4 = self.asm.deathstateoverride.params;
     }
     else
     {
@@ -240,7 +240,7 @@ _id_231E( var_0, var_1, var_2 )
     _id_238A( var_0, var_6, 0.2, undefined, undefined, var_4 );
 }
 
-_id_231B( var_0, var_1 )
+asm_currentstatehasflag( var_0, var_1 )
 {
     var_2 = self._id_164D[var_0];
 
@@ -276,7 +276,7 @@ asm_fireevent_internal( var_0, var_1, var_2 )
     if ( !isdefined( var_3 ) )
         var_3 = spawnstruct();
 
-    var_3._id_7686 = gettime();
+    var_3.gametime = gettime();
     var_3.params = var_2;
     self._blackboard.asm_events[var_0][var_1] = var_3;
     asm_fireephemeralevent( var_0, var_1, var_2 );
@@ -315,13 +315,13 @@ asm_ephemeraleventfired( var_0, var_1, var_2 )
     return 0;
 }
 
-_id_232C( var_0, var_1 )
+asm_eventfiredrecently( var_0, var_1 )
 {
     var_2 = _id_233F( var_0, var_1 );
 
     if ( isdefined( var_2 ) )
     {
-        if ( var_2._id_7686 >= gettime() - 50 )
+        if ( var_2.gametime >= gettime() - 50 )
             return 1;
     }
 
@@ -342,7 +342,7 @@ _id_233F( var_0, var_1 )
     return undefined;
 }
 
-_id_233E( var_0, var_1 )
+asm_getephemeraleventdata( var_0, var_1 )
 {
     if ( !isdefined( self._blackboard._id_2329[var_0] ) || self._blackboard._id_2329[var_0].size == 0 )
         return undefined;
@@ -407,7 +407,7 @@ asm_isinstate( var_0 )
     return 0;
 }
 
-_id_232B( var_0, var_1 )
+asm_eventfired( var_0, var_1 )
 {
     if ( !isdefined( self._blackboard.asm_events[var_0] ) || self._blackboard.asm_events[var_0].size == 0 )
         return 0;
@@ -423,7 +423,7 @@ _id_232B( var_0, var_1 )
 
 _id_68B0( var_0, var_1, var_2, var_3 )
 {
-    return _id_232B( var_1, var_3 );
+    return asm_eventfired( var_1, var_3 );
 }
 
 _id_666F( var_0, var_1, var_2, var_3 )
@@ -439,7 +439,7 @@ _id_2310( var_0, var_1, var_2 )
     foreach ( var_6 in var_4.transitions )
     {
         var_7 = var_6._id_11A1A;
-        var_8 = self [[ var_6._id_71D1 ]]( var_0, var_1, var_7, var_6._id_100B1 );
+        var_8 = self [[ var_6._id_71D1 ]]( var_0, var_1, var_7, var_6.shouldtransitionparams );
 
         if ( var_8 )
         {
@@ -588,7 +588,7 @@ _id_9E41( var_0, var_1, var_2, var_3 )
 
 asm_getdemeanor()
 {
-    if ( asm_getdemeanor() )
+    if ( asm_isfrantic() )
         return "frantic";
     else if ( scripts\asm\asm_bb::bb_isfrantic() )
         return "combat";
@@ -601,12 +601,12 @@ asm_getdemeanor()
 asm_updatefrantic()
 {
     if ( !isdefined( self.pathgoalpos ) || distancesquared( self.origin, self.pathgoalpos ) > 4096.0 )
-        self.asm._id_7360 = scripts\asm\asm_bb::bb_isfrantic();
+        self.asm.frantic = scripts\asm\asm_bb::bb_isfrantic();
 }
 
-asm_getdemeanor()
+asm_isfrantic()
 {
-    return self.asm._id_7360;
+    return self.asm.frantic;
 }
 
 asm_iscrawlmelee()
@@ -661,7 +661,7 @@ asm_getallanimindicesforalias( var_0, var_1, var_2 )
     return self [[ self._id_7190 ]]( var_0, var_1, var_2 );
 }
 
-_id_235C( var_0, var_1, var_2, var_3 )
+asm_lookupdirectionalfootanim( var_0, var_1, var_2, var_3 )
 {
     var_4 = "";
 
@@ -670,9 +670,9 @@ _id_235C( var_0, var_1, var_2, var_3 )
 
     if ( var_2 )
     {
-        if ( _id_232C( var_1, "pass_left" ) )
+        if ( asm_eventfiredrecently( var_1, "pass_left" ) )
             var_5 = var_4 + "left";
-        else if ( _id_232C( var_1, "pass_right" ) )
+        else if ( asm_eventfiredrecently( var_1, "pass_right" ) )
             var_5 = var_4 + "right";
         else if ( self.asm.footsteps.foot == "right" )
             var_5 = var_4 + "right";
@@ -691,7 +691,7 @@ _id_235C( var_0, var_1, var_2, var_3 )
     return undefined;
 }
 
-_id_237B( var_0 )
+asm_setmoveplaybackrate( var_0 )
 {
     if ( getdvarint( "ai_iw7", 0 ) == 1 )
     {
@@ -715,7 +715,7 @@ _id_231D( var_0, var_1, var_2, var_3 )
 
     for ( var_6 = 0; var_6 < var_4.transitions.size; var_6++ )
     {
-        var_7 = var_4.transitions[var_6]._id_100B1;
+        var_7 = var_4.transitions[var_6].shouldtransitionparams;
         var_8 = var_7[1];
 
         for ( var_9 = var_6 - 1; var_9 >= 0; var_9-- )
@@ -737,7 +737,7 @@ _id_231D( var_0, var_1, var_2, var_3 )
     for ( var_6 = 0; var_6 < var_4.transitions.size; var_6++ )
     {
         var_13 = var_4.transitions[var_6];
-        var_7 = var_13._id_100B1;
+        var_7 = var_13.shouldtransitionparams;
         var_12 = var_7[1];
         var_10 = 1;
 

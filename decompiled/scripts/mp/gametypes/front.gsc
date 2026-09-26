@@ -55,7 +55,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_front_enemyBaseKillReveal", getmatchrulesdata( "frontData", "enemyBaseKillReveal" ) );
     setdynamicdvar( "scr_front_friendlyBaseScore", getmatchrulesdata( "frontData", "friendlyBaseScore" ) );
     setdynamicdvar( "scr_front_midfieldScore", getmatchrulesdata( "frontData", "midfieldScore" ) );
@@ -108,7 +108,7 @@ onstartgametype()
 updategametypedvars()
 {
     scripts\mp\gametypes\common::updategametypedvars();
-    level._id_654C = scripts\mp\utility::dvarfloatvalue( "enemyBaseKillReveal", 5, 0, 60 );
+    level.enemybasekillreveal = scripts\mp\utility::dvarfloatvalue( "enemyBaseKillReveal", 5, 0, 60 );
     level.friendlybasescore = scripts\mp\utility::dvarfloatvalue( "friendlyBaseScore", 1, 0, 25 );
     level.midfieldscore = scripts\mp\utility::dvarfloatvalue( "midfieldScore", 2, 0, 25 );
     level.enemybasescore = scripts\mp\utility::dvarfloatvalue( "enemyBaseScore", 1, 0, 25 );
@@ -141,7 +141,7 @@ onspawnplayer()
         self.useoutline = 0;
         self.outlineid = undefined;
         thread friendlybasewatcher();
-        thread _id_654F();
+        thread enemybasewatcher();
 
         foreach ( var_1 in level.zones )
             var_1 showbaseeffecttoplayer( self );
@@ -204,26 +204,26 @@ onnormaldeath( var_0, var_1, var_2, var_3, var_4 )
     }
 }
 
-_id_654C()
+enemybasekillreveal()
 {
     level endon( "game_ended" );
     self endon( "death" );
     self notify( "EnemyBaseKillReveal" );
     self endon( "EnemyBaseKillReveal" );
 
-    if ( isdefined( self._id_28A5 ) )
-        scripts\mp\utility::outlinedisable( self._id_28A5, self );
+    if ( isdefined( self.basekilloutlineid ) )
+        scripts\mp\utility::outlinedisable( self.basekilloutlineid, self );
 
-    self._id_28A5 = scripts\mp\utility::outlineenableforteam( self, "orange", scripts\mp\utility::getotherteam( self.team ), 0, 0, "perk" );
+    self.basekilloutlineid = scripts\mp\utility::outlineenableforteam( self, "orange", scripts\mp\utility::getotherteam( self.team ), 0, 0, "perk" );
 
     if ( !isbot( self ) )
         scripts\mp\utility::_hudoutlineviewmodelenable( 5, 0, 0 );
 
-    self _meth_8496( &"MP_FRONT_REVEALED" );
-    wait( level._id_654C );
-    scripts\mp\utility::outlinedisable( self._id_28A5, self );
+    self sethudtutorialmessage( &"MP_FRONT_REVEALED" );
+    wait( level.enemybasekillreveal );
+    scripts\mp\utility::outlinedisable( self.basekilloutlineid, self );
     scripts\mp\utility::_hudoutlineviewmodeldisable();
-    self _meth_8497( 0 );
+    self clearhudtutorialmessage( 0 );
 }
 
 setupbases()
@@ -238,7 +238,7 @@ setupbases()
         {
             var_1.team = "axis";
             var_1 thread friendlybasewatcher();
-            var_1 thread _id_654F();
+            var_1 thread enemybasewatcher();
             var_1 thread enemybasekillstreakwatcher();
         }
 
@@ -256,7 +256,7 @@ setupbases()
         {
             var_1.team = "allies";
             var_1 thread friendlybasewatcher();
-            var_1 thread _id_654F();
+            var_1 thread enemybasewatcher();
             var_1 thread enemybasekillstreakwatcher();
         }
 
@@ -271,7 +271,7 @@ setupbases()
         {
             var_1.team = "allies";
             var_1 thread friendlybasewatcher();
-            var_1 thread _id_654F();
+            var_1 thread enemybasewatcher();
             var_1 thread enemybasekillstreakwatcher();
         }
 
@@ -289,7 +289,7 @@ setupbases()
         {
             var_1.team = "axis";
             var_1 thread friendlybasewatcher();
-            var_1 thread _id_654F();
+            var_1 thread enemybasewatcher();
             var_1 thread enemybasekillstreakwatcher();
         }
 
@@ -399,7 +399,7 @@ friendlybasetriggerwatcher( var_0 )
     }
 }
 
-_id_654F()
+enemybasewatcher()
 {
     level endon( "game_ended" );
 
@@ -413,12 +413,12 @@ _id_654F()
         if ( isalive( var_0 ) && isdefined( var_0.sessionstate ) && var_0.sessionstate != "spectator" || playercontrolledstreak( var_0 ) )
         {
             var_0.inenemybase = 1;
-            var_0 thread _id_654E( self );
+            var_0 thread enemybasetriggerwatcher( self );
         }
     }
 }
 
-_id_654E( var_0 )
+enemybasetriggerwatcher( var_0 )
 {
     self endon( "death" );
     level endon( "game_ended" );

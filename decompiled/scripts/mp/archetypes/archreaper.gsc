@@ -14,22 +14,22 @@ applyarchetype()
     self disableweaponpickup();
     self.isreaping = 0;
     self._id_C4DA = 0;
-    self._id_B62A = spawn( "script_model", self.origin );
-    self._id_B62A setmodel( "tag_origin" );
+    self.meleeorigin = spawn( "script_model", self.origin );
+    self.meleeorigin setmodel( "tag_origin" );
     self._id_FC9F = spawn( "script_model", self.origin );
     self._id_FC9F setmodel( level._id_DDA0 );
     self._id_FC9F setcandamage( 0 );
     self._id_FC9F hide();
     thread _id_13ACC();
-    self _meth_845E( 1 );
+    self setcamerathirdperson( 1 );
 }
 
 removearchetype()
 {
     self notify( "removeReaper" );
-    self _meth_80DB();
+    self enableweaponpickup();
     self._id_FC9F delete();
-    self._id_B62A delete();
+    self.meleeorigin delete();
 }
 
 equipextras()
@@ -127,7 +127,7 @@ _id_FCA5( var_0, var_1 )
     self._id_FCA5 = 1;
     self notify( "shield_up" );
     self._id_FC9F.angles = self.angles + ( 0, 90, 0 );
-    self._id_FC9F.origin = _id_36DB( 32 );
+    self._id_FC9F.origin = calcfrontposbasedonvelocity( 32 );
     self playlocalsound( "reaper_shield_up" );
     self._id_FC9F playsound( "reaper_shield_up_npc" );
     self._id_FC9F show();
@@ -218,12 +218,12 @@ _id_BCEE( var_0 )
     for (;;)
     {
         self._id_FC9F.angles = self.angles + ( 0, 90, 0 );
-        self._id_FC9F.origin = _id_36DB( var_1 );
+        self._id_FC9F.origin = calcfrontposbasedonvelocity( var_1 );
         wait 0.05;
     }
 }
 
-_id_36DB( var_0 )
+calcfrontposbasedonvelocity( var_0 )
 {
     var_1 = ( 0, 0, 0 );
     var_2 = self.origin + var_1;
@@ -274,7 +274,7 @@ _id_13ACC( var_0 )
         scripts\mp\utility::_magicbullet( "iw7_erad_mp", self.origin + ( 0, 0, 4500 ), self.origin + ( 0, 0, 5500 ), self );
         self playrumbleonentity( "damage_light" );
         earthquake( 0.2, 0.1, self.origin, 32 );
-        var_5 = _id_36DB( var_0 );
+        var_5 = calcfrontposbasedonvelocity( var_0 );
         var_5 = var_5 + var_1;
         var_6 = var_2 + var_4 * 64;
         var_7 = var_2 - var_4 * 32;
@@ -283,24 +283,24 @@ _id_13ACC( var_0 )
         var_10 = rotatevector( var_4, ( 0, 135, 0 ) );
         var_11 = var_2 + var_10 * 32;
         var_12 = gettime();
-        self._id_B62A.origin = var_6;
+        self.meleeorigin.origin = var_6;
         wait 0.05;
-        playfxontag( level._effect["swipe_trail"], self._id_B62A, "tag_origin" );
+        playfxontag( level._effect["swipe_trail"], self.meleeorigin, "tag_origin" );
         wait 0.05;
-        self._id_B62A.origin = var_9;
+        self.meleeorigin.origin = var_9;
         wait 0.05;
-        self._id_B62A.origin = var_5;
-        thread _id_20D9( var_5 );
+        self.meleeorigin.origin = var_5;
+        thread applyradiusdamageasmelee( var_5 );
         wait 0.05;
-        self._id_B62A.origin = var_11;
+        self.meleeorigin.origin = var_11;
         wait 0.05;
-        self._id_B62A.origin = var_7;
+        self.meleeorigin.origin = var_7;
         wait 0.05;
-        stopfxontag( level._effect["swipe_trail"], self._id_B62A, "tag_origin" );
+        stopfxontag( level._effect["swipe_trail"], self.meleeorigin, "tag_origin" );
     }
 }
 
-_id_20D9( var_0 )
+applyradiusdamageasmelee( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );

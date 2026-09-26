@@ -7,7 +7,7 @@ main()
     scripts\mp\maps\mp_depot\gen\mp_depot_art::main();
     scripts\mp\maps\mp_depot\mp_depot_fx::main();
     scripts\mp\load::main();
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     scripts\mp\compass::setupminimap( "compass_map_mp_depot" );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.33 );
@@ -104,9 +104,9 @@ setuptrain()
             var_1.fx_loc = var_3;
     }
 
-    var_1._id_A6C9 = spawn( "trigger_radius", ( 2984, -640, 180 ), 0, 48, 230 );
-    var_1._id_A6C9 enablelinkto();
-    var_1._id_A6C9 linkto( var_1 );
+    var_1.killtrigger = spawn( "trigger_radius", ( 2984, -640, 180 ), 0, 48, 230 );
+    var_1.killtrigger enablelinkto();
+    var_1.killtrigger linkto( var_1 );
     var_1._id_9EAC = 0;
     var_1.initialstruct = scripts\engine\utility::getstruct( "trainStartPos_01", "targetname" );
     var_1 moveto( var_1.initialstruct.origin, 1, 0, 0 );
@@ -154,9 +154,9 @@ setuptrain()
             var_9.fx_loc = var_3;
     }
 
-    var_9._id_A6C9 = spawn( "trigger_radius", ( 3560, -640, 180 ), 0, 48, 230 );
-    var_9._id_A6C9 enablelinkto();
-    var_9._id_A6C9 linkto( var_9 );
+    var_9.killtrigger = spawn( "trigger_radius", ( 3560, -640, 180 ), 0, 48, 230 );
+    var_9.killtrigger enablelinkto();
+    var_9.killtrigger linkto( var_9 );
     var_9._id_9EAC = 0;
     var_9.initialstruct = scripts\engine\utility::getstruct( "trainStartPos_01", "targetname" );
     var_9 moveto( var_9.initialstruct.origin, 1, 0, 0 );
@@ -207,7 +207,7 @@ trainkilltrigger( var_0 )
 
     while ( var_0._id_9EAC )
     {
-        var_0._id_A6C9 waittill( "trigger", var_1 );
+        var_0.killtrigger waittill( "trigger", var_1 );
 
         if ( isdefined( var_1 ) && var_0._id_9EAC )
         {

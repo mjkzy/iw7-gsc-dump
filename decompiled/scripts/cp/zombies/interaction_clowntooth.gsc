@@ -303,13 +303,13 @@ _id_6946( var_0, var_1, var_2 )
         if ( var_1.arcade_game_award_type == "soul_power" )
         {
             var_1 scripts\cp\zombies\zombie_afterlife_arcade::give_soul_power( var_1, var_3 );
-            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "clown_tooth_game_afterlife", 1, var_3, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["clown_tooth_game_afterlife"] );
+            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "clown_tooth_game_afterlife", 1, var_3, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["clown_tooth_game_afterlife"] );
         }
         else
         {
             level notify( "update_arcade_game_performance", "cryptid_attack", var_3 );
             var_1 scripts\cp\zombies\arcade_game_utility::give_player_tickets( var_1, var_3 );
-            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "clown_tooth_game", 0, var_3, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["clown_tooth_game"] );
+            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "clown_tooth_game", 0, var_3, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["clown_tooth_game"] );
         }
 
         if ( !var_1 scripts\cp\utility::areinteractionsenabled() )

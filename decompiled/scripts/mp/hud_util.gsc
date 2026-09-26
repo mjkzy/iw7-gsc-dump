@@ -263,7 +263,7 @@ createfontstring( var_0, var_1 )
     return var_2;
 }
 
-_id_4A15( var_0, var_1, var_2 )
+createserverfontstring( var_0, var_1, var_2 )
 {
     if ( isdefined( var_2 ) )
         var_3 = newteamhudelem( var_2 );
@@ -353,7 +353,7 @@ createicon( var_0, var_1, var_2 )
     return var_3;
 }
 
-_id_4A16( var_0, var_1, var_2, var_3 )
+createservericon( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( var_3 ) )
         var_4 = newteamhudelem( var_3 );
@@ -382,7 +382,7 @@ _id_4A16( var_0, var_1, var_2, var_3 )
     return var_4;
 }
 
-_id_4A14( var_0, var_1, var_2, var_3, var_4, var_5 )
+createserverbar( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     if ( isdefined( var_4 ) )
         var_6 = newteamhudelem( var_4 );
@@ -522,17 +522,17 @@ createprimaryprogressbartext( var_0, var_1, var_2, var_3 )
     return var_6;
 }
 
-_id_4A24( var_0 )
+createteamprogressbar( var_0 )
 {
-    var_1 = _id_4A14( ( 1, 0, 0 ), level._id_115E3, level._id_115E1, undefined, var_0 );
-    var_1 setpoint( "TOP", undefined, 0, level._id_115E4 );
+    var_1 = createserverbar( ( 1, 0, 0 ), level.teamprogressbarwidth, level.teamprogressbarheight, undefined, var_0 );
+    var_1 setpoint( "TOP", undefined, 0, level.teamprogressbary );
     return var_1;
 }
 
-_id_4A25( var_0 )
+createteamprogressbartext( var_0 )
 {
-    var_1 = _id_4A15( "default", level._id_115E0, var_0 );
-    var_1 setpoint( "TOP", undefined, 0, level._id_115E2 );
+    var_1 = createserverfontstring( "default", level.teamprogressbarfontsize, var_0 );
+    var_1 setpoint( "TOP", undefined, 0, level.teamprogressbartexty );
     return var_1;
 }
 
@@ -637,7 +637,7 @@ seticonshader( var_0 )
     self.shader = var_0;
 }
 
-_id_7F0B( var_0 )
+geticonshader( var_0 )
 {
     return self.shader;
 }
@@ -647,12 +647,12 @@ seticonsize( var_0, var_1 )
     self setshader( self.shader, var_0, var_1 );
 }
 
-_id_FB1F( var_0 )
+setwidth( var_0 )
 {
     self.width = var_0;
 }
 
-_id_F743( var_0 )
+setheight( var_0 )
 {
     self.height = var_0;
 }

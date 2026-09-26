@@ -3,7 +3,7 @@
 
 init()
 {
-    _id_DEB3();
+    register_end_game_string_index();
 }
 
 endgame( var_0, var_1 )
@@ -13,9 +13,9 @@ endgame( var_0, var_1 )
 
     setnojiptime( 1 );
     level thread kill_all_zombies();
-    _id_B37C();
+    markgameended();
     level notify( "game_ended", var_0 );
-    _id_7384( 1.0, "cg_fovScale", 1 );
+    freezeallplayers( 1.0, "cg_fovScale", 1 );
 
     if ( var_1 == 4 )
         wait 4.9;
@@ -28,7 +28,7 @@ endgame( var_0, var_1 )
 
         if ( var_4 issplitscreenplayer() )
         {
-            if ( var_4 isreloading() )
+            if ( var_4 issplitscreenplayerprimary() )
             {
                 if ( soundexists( "mus_zombies_gameover" ) )
                     var_4 playlocalsound( "mus_zombies_gameover" );
@@ -56,9 +56,9 @@ endgame( var_0, var_1 )
     scripts\cp\cp_challenge::deactivate_current_challenge();
 
     foreach ( var_4 in level.players )
-        _id_40A5( var_4 );
+        cleanup_player_on_game_end( var_4 );
 
-    level._id_2AAD = 1;
+    level.bgameover = 1;
 
     foreach ( var_9 in level.agentarray )
     {
@@ -70,14 +70,14 @@ endgame( var_0, var_1 )
     }
 
     setomnvarforallclients( "post_game_state", 0 );
-    var_11 = _id_FF5E( var_1 );
+    var_11 = should_load_new_map( var_1 );
 
     if ( isdefined( var_11 ) )
     {
-        if ( isdefined( level._id_ADDF ) )
-            [[ level._id_ADDF ]]( var_1 );
+        if ( isdefined( level.load_new_map_func ) )
+            [[ level.load_new_map_func ]]( var_1 );
 
-        _id_ADDE( var_11 );
+        load_new_map( var_11 );
         return;
     }
     else
@@ -87,8 +87,8 @@ endgame( var_0, var_1 )
 
     scripts\cp\cp_gamescore::calculate_players_total_end_game_score( 1 );
 
-    if ( isdefined( level._id_D7BB ) )
-        [[ level._id_D7BB ]]();
+    if ( isdefined( level.pre_end_game_display_func ) )
+        [[ level.pre_end_game_display_func ]]();
 
     if ( !scripts\cp\utility::is_codxp() )
     {
@@ -97,12 +97,12 @@ endgame( var_0, var_1 )
     }
 
     setomnvarforallclients( "post_game_state", 2 );
-    _id_56DA( var_0, var_1 );
+    displaygameend( var_0, var_1 );
     setomnvarforallclients( "post_game_state", 1 );
     var_14 = scripts\cp\cp_globallogic::spawnintermission;
 
-    if ( isdefined( level._id_4C58 ) )
-        var_14 = level._id_4C58;
+    if ( isdefined( level.custom_intermission_func ) )
+        var_14 = level.custom_intermission_func;
 
     if ( !scripts\cp\utility::is_codxp() )
     {
@@ -110,8 +110,8 @@ endgame( var_0, var_1 )
             var_4 thread [[ var_14 ]]( var_1 );
     }
 
-    var_17 = _id_7978( var_1 );
-    var_18 = _id_7B85();
+    var_17 = get_end_condition( var_1 );
+    var_18 = get_play_time();
     scripts\cp\zombies\direct_boss_fight::adjust_wave_num( var_17 );
     scripts\cp\cp_analytics::endgame( var_17, var_18 );
 
@@ -177,12 +177,12 @@ kill_all_zombies()
     }
 }
 
-_id_72BF()
+forceendgame()
 {
-    level thread endgame( "axis", _id_7979( "host_end" ) );
+    level thread endgame( "axis", get_end_game_string_index( "host_end" ) );
 }
 
-_id_B37C()
+markgameended()
 {
     game["state"] = "postgame";
     level.gameended = 1;
@@ -193,7 +193,7 @@ gamealreadyended()
     return game["state"] == "postgame" || level.gameended;
 }
 
-_id_7384( var_0, var_1, var_2 )
+freezeallplayers( var_0, var_1, var_2 )
 {
     if ( !isdefined( var_0 ) )
         var_0 = 0;
@@ -201,7 +201,7 @@ _id_7384( var_0, var_1, var_2 )
     foreach ( var_4 in level.players )
     {
         var_4 thread freezeplayerforroundend( var_0 );
-        var_4 thread _id_E760( 4.0 );
+        var_4 thread roundenddof( 4.0 );
         var_4 freegameplayhudelems();
         var_4 setclientdvars( "cg_everyoneHearsEveryone", 1, "cg_drawSpectatorMessages", 0 );
 
@@ -225,12 +225,12 @@ freezeplayerforroundend( var_0 )
     scripts\cp\utility::freezecontrolswrapper( 1 );
 }
 
-_id_E760( var_0 )
+roundenddof( var_0 )
 {
     self setdepthoffield( 0, 128, 512, 4000, 6, 1.8 );
 }
 
-_id_7B85()
+get_play_time()
 {
     var_0 = 0;
 
@@ -274,11 +274,11 @@ freegameplayhudelems()
         self.proxbartext scripts\cp\utility::destroyelem();
 }
 
-_id_40A5( var_0 )
+cleanup_player_on_game_end( var_0 )
 {
     var_0 notify( "select_mode" );
     var_0 notify( "reset_outcome" );
-    var_0.pers["stats"] = var_0._id_10E53;
+    var_0.pers["stats"] = var_0.stats;
     var_0 scripts\cp\utility::allow_player_ignore_me( 1 );
     var_0 setclientomnvar( "ui_intel_progress_current", -1 );
     var_0 setclientomnvar( "ui_intel_progress_max", -1 );
@@ -297,16 +297,16 @@ _id_40A5( var_0 )
     if ( isdefined( var_0.powerupicons ) )
         var_0.powerupicons = [];
 
-    if ( isdefined( var_0._id_456D ) )
-        var_0._id_456D = [];
+    if ( isdefined( var_0.consumables_equipped ) )
+        var_0.consumables_equipped = [];
 
     if ( isdefined( var_0.powers ) )
         var_0.powers = [];
 
-    var_0 _id_4172();
+    var_0 clear_powers_hud();
 }
 
-_id_FF5E( var_0 )
+should_load_new_map( var_0 )
 {
     if ( ( var_0 == 1 || var_0 == 2 ) && getdvar( "ui_mapname" ) == "cp_jackal_ass" )
         return "cp_titan";
@@ -314,9 +314,9 @@ _id_FF5E( var_0 )
     return undefined;
 }
 
-_id_ADDE( var_0 )
+load_new_map( var_0 )
 {
-    _id_A5D7();
+    kill_em_all();
     level scripts\engine\utility::waittill_any_timeout( 15, "intermission_over" );
     setdvar( "ui_mapname", var_0 );
     setdvar( "g_gametype", "aliens" );
@@ -325,7 +325,7 @@ _id_ADDE( var_0 )
 
 _id_E2AE()
 {
-    _id_A5D7();
+    kill_em_all();
     setomnvar( "allow_server_pause", 1 );
     setomnvarforallclients( "post_game_state", 0 );
 
@@ -338,7 +338,7 @@ _id_E2AE()
     map_restart( 1 );
 }
 
-_id_A5D7()
+kill_em_all()
 {
     foreach ( var_1 in level.characters )
         var_1 dodamage( 100000, var_1.origin );
@@ -391,7 +391,7 @@ _id_56C4()
         level._id_E40C = level._id_E40C + 1;
 }
 
-_id_4172()
+clear_powers_hud()
 {
     if ( isdefined( self.powers ) )
     {
@@ -402,11 +402,11 @@ _id_4172()
         }
     }
 
-    scripts\cp\powers\coop_powers::_id_13F00( "secondary" );
-    scripts\cp\powers\coop_powers::_id_13F00( "primary" );
+    scripts\cp\powers\coop_powers::zm_powershud_clearpower( "secondary" );
+    scripts\cp\powers\coop_powers::zm_powershud_clearpower( "primary" );
 }
 
-_id_7978( var_0 )
+get_end_condition( var_0 )
 {
     switch ( var_0 )
     {
@@ -428,7 +428,7 @@ _id_7978( var_0 )
     }
 }
 
-_id_56C5()
+display_retry_loadout()
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
@@ -439,7 +439,7 @@ _id_56C5()
 
         if ( var_0 == "close_menu" )
         {
-            level._id_AE3F = level._id_AE3F + 1;
+            level.loadout_retry_completed = level.loadout_retry_completed + 1;
             continue;
         }
         else
@@ -556,21 +556,21 @@ _id_56C5()
     }
 }
 
-_id_56DA( var_0, var_1 )
+displaygameend( var_0, var_1 )
 {
     foreach ( var_3 in level.players )
     {
         if ( isdefined( var_3.connectedpostgame ) || var_3.pers["team"] == "spectator" )
             continue;
 
-        var_3 thread _id_C752( var_0, var_1 );
+        var_3 thread outcomenotify( var_0, var_1 );
         var_3 thread scripts\cp\utility::freezecontrolswrapper( 1 );
     }
 
     level notify( "game_win", var_0 );
 }
 
-_id_C752( var_0, var_1 )
+outcomenotify( var_0, var_1 )
 {
     self endon( "disconnect" );
     self notify( "reset_outcome" );
@@ -586,9 +586,9 @@ _id_C752( var_0, var_1 )
     self endon( "reset_outcome" );
 
     if ( isdefined( self.pers["team"] ) && var_0 == var_2 )
-        var_3 = _id_7979( "win" );
+        var_3 = get_end_game_string_index( "win" );
     else
-        var_3 = _id_7979( "fail" );
+        var_3 = get_end_game_string_index( "fail" );
 
     self setclientomnvar( "ui_round_end_title", var_3 );
 
@@ -598,15 +598,15 @@ _id_C752( var_0, var_1 )
     self setclientomnvar( "zm_ui_show_eog_score", 1 );
 }
 
-_id_DEB3()
+register_end_game_string_index()
 {
-    if ( isdefined( level._id_62D2 ) )
-        [[ level._id_62D2 ]]();
+    if ( isdefined( level.end_game_string_override ) )
+        [[ level.end_game_string_override ]]();
     else
-        _id_DEAC();
+        register_default_end_game_string_index();
 }
 
-_id_DEAC()
+register_default_end_game_string_index()
 {
     level.end_game_string_index = [];
     level.end_game_string_index["win"] = 1;
@@ -618,12 +618,12 @@ _id_DEAC()
     level.end_game_string_index["host_end"] = 5;
 }
 
-_id_7979( var_0 )
+get_end_game_string_index( var_0 )
 {
     return level.end_game_string_index[var_0];
 }
 
-_id_E761( var_0, var_1 )
+roundendwait( var_0, var_1 )
 {
     var_2 = 0;
 
@@ -634,7 +634,7 @@ _id_E761( var_0, var_1 )
 
         foreach ( var_5 in var_3 )
         {
-            if ( !isdefined( var_5._id_58DD ) )
+            if ( !isdefined( var_5.doingsplash ) )
                 continue;
 
             if ( !var_5 scripts\cp\cp_hud_message::isdoingsplash() )
@@ -665,7 +665,7 @@ _id_E761( var_0, var_1 )
 
         foreach ( var_5 in var_3 )
         {
-            if ( !isdefined( var_5._id_58DD ) )
+            if ( !isdefined( var_5.doingsplash ) )
                 continue;
 
             if ( !var_5 scripts\cp\cp_hud_message::isdoingsplash() )

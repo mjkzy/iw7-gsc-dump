@@ -76,7 +76,7 @@ wristrocket_delete()
 
 wristrocket_createrocket( var_0 )
 {
-    var_1 = scripts\mp\utility::_magicbullet( "wristrocket_proj_mp", var_0.origin, var_0.origin + anglestoforward( self _meth_857C() ), self );
+    var_1 = scripts\mp\utility::_magicbullet( "wristrocket_proj_mp", var_0.origin, var_0.origin + anglestoforward( self getgunangles() ), self );
     var_1.owner = self;
     var_1.team = self.team;
     var_1.weapon_name = "wristrocket_proj_mp";
@@ -206,7 +206,7 @@ wristrocket_watcheffectsraceheldoffhandbreak( var_0 )
     self endon( "wristRocket_watchEffectsRaceEnd" );
     scripts\engine\utility::waitframe();
 
-    while ( self _meth_854D() == "wristrocket_mp" )
+    while ( self getheldoffhand() == "wristrocket_mp" )
         scripts\engine\utility::waitframe();
 
     var_0.heldoffhandbreak = 1;

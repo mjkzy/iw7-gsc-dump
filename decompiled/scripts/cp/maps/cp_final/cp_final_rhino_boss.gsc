@@ -2052,7 +2052,7 @@ rhino_fight_over()
             var_5 thread scripts\cp\zombies\directors_cut::mark_talisman_possession( var_5 );
 
         scripts\cp\maps\cp_final\cp_final_vo::clear_up_all_vo( var_5 );
-        scripts\cp\cp_vo::_id_C9CB( [ var_5 ] );
+        scripts\cp\cp_vo::pause_vo_system( [ var_5 ] );
         var_5 setclienttriggeraudiozone( "bink_fadeout_amb", 0.66 );
         var_5 notify( "force_cancel_placement" );
     }
@@ -2100,7 +2100,7 @@ rhino_fight_over()
 
     foreach ( var_5 in level.players )
     {
-        scripts\cp\cp_vo::_id_12BE3( [ var_5 ] );
+        scripts\cp\cp_vo::unpause_vo_system( [ var_5 ] );
         var_5 scripts\cp\zombies\achievement::update_achievement( "THE_END", 1 );
     }
 

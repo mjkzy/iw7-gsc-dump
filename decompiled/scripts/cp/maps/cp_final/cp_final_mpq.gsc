@@ -278,22 +278,22 @@ debugcompleteenterbossfight()
 
 finalqueststepregistration( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 {
-    if ( !isdefined( level._id_13F4D[var_0] ) )
-        level._id_13F4D[var_0] = [];
+    if ( !isdefined( level.zombie_quests[var_0] ) )
+        level.zombie_quests[var_0] = [];
 
     if ( !isdefined( var_1 ) )
-        var_1 = level._id_13F4D[var_0].size;
+        var_1 = level.zombie_quests[var_0].size;
 
-    if ( !isdefined( level._id_13F4C[var_0] ) )
-        level._id_13F4C[var_0] = -1;
+    if ( !isdefined( level.zombie_quest_complete_up_to_quest_step_index[var_0] ) )
+        level.zombie_quest_complete_up_to_quest_step_index[var_0] = -1;
 
     var_8 = spawnstruct();
     var_8.init_func = var_2;
-    var_8._id_DB5D = var_3;
-    var_8._id_446D = var_4;
-    var_8._id_4EB1 = var_5;
+    var_8.quest_step_func = var_3;
+    var_8.complete_func = var_4;
+    var_8.debug_beat_func = var_5;
     var_8.step_description = var_7;
-    level._id_13F4D[var_0][var_1] = var_8;
+    level.zombie_quests[var_0][var_1] = var_8;
 }
 
 registermpqinteractions()
@@ -321,8 +321,8 @@ initneilfinalpos()
 
 neilheadfinalusefunc( var_0, var_1 )
 {
-    if ( !isdefined( var_0._id_127C9 ) )
-        var_0._id_127C9 = [];
+    if ( !isdefined( var_0.triggers ) )
+        var_0.triggers = [];
 
     scripts\cp\utility::playsoundatpos_safe( var_0.origin, "item_placed" );
     var_1 thread playeractivatedbossfight( var_0, var_1 );
@@ -335,12 +335,12 @@ playeractivatedbossfight( var_0, var_1 )
     var_1 endon( "playerActivatedBossFight" );
     var_1 endon( "disconnect" );
 
-    if ( !scripts\engine\utility::array_contains( var_0._id_127C9, var_1 ) )
-        var_0._id_127C9 = scripts\engine\utility::array_add( var_0._id_127C9, var_1 );
+    if ( !scripts\engine\utility::array_contains( var_0.triggers, var_1 ) )
+        var_0.triggers = scripts\engine\utility::array_add( var_0.triggers, var_1 );
 
-    var_0._id_127C9 = scripts\engine\utility::array_remove_duplicates( var_0._id_127C9 );
+    var_0.triggers = scripts\engine\utility::array_remove_duplicates( var_0.triggers );
 
-    if ( var_0._id_127C9.size >= level.players.size )
+    if ( var_0.triggers.size >= level.players.size )
     {
         deactivateinteractionsbynoteworthy( var_0.script_noteworthy );
 
@@ -358,11 +358,11 @@ playeractivatedbossfight( var_0, var_1 )
     {
         var_1 scripts\engine\utility::waittill_any_timeout( 2, "left_hidden_room_early", "kicked_out", "last_stand" );
 
-        if ( scripts\engine\utility::array_contains( var_0._id_127C9, var_1 ) )
-            var_0._id_127C9 = scripts\engine\utility::array_remove( var_0._id_127C9, var_1 );
+        if ( scripts\engine\utility::array_contains( var_0.triggers, var_1 ) )
+            var_0.triggers = scripts\engine\utility::array_remove( var_0.triggers, var_1 );
 
-        if ( var_0._id_127C9.size <= 0 )
-            var_0._id_127C9 = [];
+        if ( var_0.triggers.size <= 0 )
+            var_0.triggers = [];
     }
 }
 
@@ -910,9 +910,9 @@ runtogglepuzzlevalidation( var_0, var_1 )
 
 validatepuzzle( var_0 )
 {
-    var_1 = var_0._id_32F7[0].color;
+    var_1 = var_0.buttons[0].color;
 
-    foreach ( var_4, var_3 in var_0._id_32F7 )
+    foreach ( var_4, var_3 in var_0.buttons )
     {
         if ( var_4 < 1 )
             continue;
@@ -947,7 +947,7 @@ initentanglerbutton()
     var_0.dontdelaytrigger = 1;
     var_1 = scripts\engine\utility::getstructarray( var_0.target, "targetname" );
     assignbuttonindex( var_1, var_0 );
-    var_0._id_32F7 = [];
+    var_0.buttons = [];
     var_1 = scripts\engine\utility::array_randomize_objects( var_1 );
     var_0.currentcolorstate = undefined;
 
@@ -980,7 +980,7 @@ initentanglerbutton()
 
         var_4 setmodel( var_5 );
         var_3._id_32D9 = var_4;
-        var_0._id_32F7[var_0._id_32F7.size] = var_4;
+        var_0.buttons[var_0.buttons.size] = var_4;
         var_4.rulegroup = var_3.rulegroup;
         var_4.ruletouse = var_3.ruletouse;
     }
@@ -1613,7 +1613,7 @@ watchforplayerlookat( var_0 )
     var_0 endon( "stop_interaction_logic" );
     var_0 thread unsetplayerlookat( var_0 );
     var_1 = scripts\engine\utility::getstruct( "entangler_button", "script_noteworthy" );
-    var_2 = var_1._id_32F7;
+    var_2 = var_1.buttons;
     var_3 = undefined;
     var_4 = undefined;
 

@@ -82,7 +82,7 @@ blockarea( var_0 )
 
 }
 
-_id_2BAD( var_0, var_1 )
+blockentsinarea( var_0, var_1 )
 {
 
 }
@@ -92,7 +92,7 @@ unblockarea( var_0 )
 
 }
 
-_id_12B82( var_0, var_1 )
+unblockentsinarea( var_0, var_1 )
 {
 
 }

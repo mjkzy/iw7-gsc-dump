@@ -3,19 +3,19 @@
 
 init()
 {
-    if ( !_id_B4E8() )
+    if ( !mayprocesschallenges() )
         return;
 
-    level._id_B8CD = [];
-    _id_DEFF( "playerDamaged", ::_id_3BF5 );
-    _id_DEFF( "playerKilled", ::_id_3BFE );
-    _id_DEFF( "playerKilled", ::_id_3C01 );
-    _id_DEFF( "playerUsedKillstreak", ::_id_3C02 );
-    _id_DEFF( "playerKillstreakActive", ::_id_3C00 );
-    _id_DEFF( "playerAssist", ::_id_3BF3 );
-    _id_DEFF( "roundEnd", ::_id_3C04 );
-    _id_DEFF( "roundEnd", ::_id_3C03 );
-    _id_DEFF( "vehicleKilled", ::_id_3C09 );
+    level.missioncallbacks = [];
+    registermissioncallback( "playerDamaged", ::_id_3BF5 );
+    registermissioncallback( "playerKilled", ::_id_3BFE );
+    registermissioncallback( "playerKilled", ::ch_killstreak_kills );
+    registermissioncallback( "playerUsedKillstreak", ::_id_3C02 );
+    registermissioncallback( "playerKillstreakActive", ::ch_hardpoints );
+    registermissioncallback( "playerAssist", ::ch_assists );
+    registermissioncallback( "roundEnd", ::ch_roundwin );
+    registermissioncallback( "roundEnd", ::ch_roundplayed );
+    registermissioncallback( "vehicleKilled", ::ch_vehicle_killed );
     level thread onplayerconnect();
     level thread onroundended();
 }
@@ -36,7 +36,7 @@ onroundended()
     }
 }
 
-getweaponweight( var_0 )
+_id_823C( var_0 )
 {
     for ( var_1 = 0; var_1 < 3; var_1++ )
     {
@@ -50,7 +50,7 @@ getweaponweight( var_0 )
     return "";
 }
 
-_id_7E57( var_0 )
+getdailyref( var_0 )
 {
     for ( var_1 = 0; var_1 < 3; var_1++ )
     {
@@ -69,71 +69,71 @@ _id_3BF8( var_0 )
     if ( !isenumvaluevalid( "mp", "Challenge", var_0 ) )
         return 0;
 
-    if ( level._id_3C2C[var_0]["type"] == 0 )
+    if ( level.challengeinfo[var_0]["type"] == 0 )
         return self getrankedplayerdata( "mp", "challengeProgress", var_0 );
-    else if ( level._id_3C2C[var_0]["type"] == 1 )
-        return self getrankedplayerdata( "mp", "challengeProgress", _id_7E57( var_0 ) );
-    else if ( level._id_3C2C[var_0]["type"] == 2 )
-        return self getrankedplayerdata( "mp", "challengeProgress", getweaponweight( var_0 ) );
+    else if ( level.challengeinfo[var_0]["type"] == 1 )
+        return self getrankedplayerdata( "mp", "challengeProgress", getdailyref( var_0 ) );
+    else if ( level.challengeinfo[var_0]["type"] == 2 )
+        return self getrankedplayerdata( "mp", "challengeProgress", _id_823C( var_0 ) );
 }
 
-_id_3BF9( var_0 )
+ch_getstate( var_0 )
 {
     if ( !isenumvaluevalid( "mp", "Challenge", var_0 ) )
         return 0;
 
-    if ( level._id_3C2C[var_0]["type"] == 0 )
+    if ( level.challengeinfo[var_0]["type"] == 0 )
         return self getrankedplayerdata( "mp", "challengeState", var_0 );
-    else if ( level._id_3C2C[var_0]["type"] == 1 )
-        return self getrankedplayerdata( "mp", "challengeState", _id_7E57( var_0 ) );
-    else if ( level._id_3C2C[var_0]["type"] == 2 )
-        return self getrankedplayerdata( "mp", "challengeState", getweaponweight( var_0 ) );
+    else if ( level.challengeinfo[var_0]["type"] == 1 )
+        return self getrankedplayerdata( "mp", "challengeState", getdailyref( var_0 ) );
+    else if ( level.challengeinfo[var_0]["type"] == 2 )
+        return self getrankedplayerdata( "mp", "challengeState", _id_823C( var_0 ) );
 }
 
 _id_3C05( var_0, var_1 )
 {
-    if ( level._id_3C2C[var_0]["type"] == 0 )
+    if ( level.challengeinfo[var_0]["type"] == 0 )
         return self setplayerdata( "mp", "challengeProgress", var_0, var_1 );
-    else if ( level._id_3C2C[var_0]["type"] == 1 )
-        return self setplayerdata( "mp", "challengeProgress", _id_7E57( var_0 ), var_1 );
-    else if ( level._id_3C2C[var_0]["type"] == 2 )
-        return self setplayerdata( "mp", "challengeProgress", getweaponweight( var_0 ), var_1 );
+    else if ( level.challengeinfo[var_0]["type"] == 1 )
+        return self setplayerdata( "mp", "challengeProgress", getdailyref( var_0 ), var_1 );
+    else if ( level.challengeinfo[var_0]["type"] == 2 )
+        return self setplayerdata( "mp", "challengeProgress", _id_823C( var_0 ), var_1 );
 }
 
 _id_3C06( var_0, var_1 )
 {
-    if ( level._id_3C2C[var_0]["type"] == 0 )
+    if ( level.challengeinfo[var_0]["type"] == 0 )
         return self setplayerdata( "mp", "challengeState", var_0, var_1 );
-    else if ( level._id_3C2C[var_0]["type"] == 1 )
-        return self setplayerdata( "mp", "challengeState", _id_7E57( var_0 ), var_1 );
-    else if ( level._id_3C2C[var_0]["type"] == 2 )
-        return self setplayerdata( "mp", "challengeState", getweaponweight( var_0 ), var_1 );
+    else if ( level.challengeinfo[var_0]["type"] == 1 )
+        return self setplayerdata( "mp", "challengeState", getdailyref( var_0 ), var_1 );
+    else if ( level.challengeinfo[var_0]["type"] == 2 )
+        return self setplayerdata( "mp", "challengeState", _id_823C( var_0 ), var_1 );
 }
 
-_id_3BFA( var_0, var_1 )
+ch_gettarget( var_0, var_1 )
 {
-    if ( level._id_3C2C[var_0]["type"] == 0 )
+    if ( level.challengeinfo[var_0]["type"] == 0 )
         return _id_B029( var_0, var_1 );
-    else if ( level._id_3C2C[var_0]["type"] == 1 )
+    else if ( level.challengeinfo[var_0]["type"] == 1 )
         return int( tablelookup( "mp/dailyChallengesTable.csv", 0, var_0, 9 + var_1 * 3 ) );
-    else if ( level._id_3C2C[var_0]["type"] == 2 )
+    else if ( level.challengeinfo[var_0]["type"] == 2 )
         return int( tablelookup( "mp/weeklyChallengesTable.csv", 0, var_0, 9 + var_1 * 3 ) );
 }
 
 showchallengesplash( var_0, var_1 )
 {
     var_2 = undefined;
-    var_2 = _id_3BF9( var_0 ) - 1;
-    var_3 = level._id_3C2C[var_0]["displayParam"];
+    var_2 = ch_getstate( var_0 ) - 1;
+    var_3 = level.challengeinfo[var_0]["displayParam"];
 
     if ( !isdefined( var_3 ) )
     {
-        var_3 = _id_3BFA( var_0, var_2 );
+        var_3 = ch_gettarget( var_0, var_2 );
 
         if ( var_3 == 0 )
             var_3 = 1;
 
-        var_4 = level._id_3C2C[var_0]["paramScale"];
+        var_4 = level.challengeinfo[var_0]["paramScale"];
 
         if ( isdefined( var_4 ) )
             var_3 = int( var_3 / var_4 );
@@ -145,7 +145,7 @@ showchallengesplash( var_0, var_1 )
         var_5 = int( min( var_2, scripts\mp\hud_message::getsplashtablemaxaltdisplays() ) );
     else
     {
-        var_6 = _id_2139( var_0 );
+        var_6 = areallmerittierscomplete( var_0 );
 
         if ( scripts\mp\utility::istrue( var_6 ) )
             var_5 = 1;
@@ -154,14 +154,14 @@ showchallengesplash( var_0, var_1 )
     thread scripts\mp\hud_message::showsplash( var_0, var_3, undefined, var_5 );
 }
 
-_id_B4E8()
+mayprocesschallenges()
 {
     return level.rankedmatch;
 }
 
 _id_D3D6()
 {
-    if ( !_id_B4E8() )
+    if ( !mayprocesschallenges() )
         return 0;
 
     if ( level.players.size < 2 )
@@ -182,37 +182,37 @@ onplayerconnect()
     {
         level waittill( "connected", var_0 );
         var_0._id_A6B3 = var_0.pers["killstreaksKilledByWeapon"];
-        var_0 thread _id_989E();
+        var_0 thread initmissiondata();
 
         if ( isai( var_0 ) )
             continue;
 
         var_0 thread onplayerspawned();
-        var_0 thread _id_BA2A();
-        var_0 thread _id_B9C0();
-        var_0 thread _id_B9ED();
-        var_0 thread _id_BA24();
-        var_0 thread _id_B9BF();
-        var_0 thread _id_BA08();
-        var_0 thread _id_B9E9();
-        var_0 thread _id_B9E6();
-        var_0 thread _id_BA3B();
-        var_0 thread _id_B9DA();
+        var_0 thread monitorstreaks();
+        var_0 thread monitorbombuse();
+        var_0 thread monitorlivetime();
+        var_0 thread monitorstreakreward();
+        var_0 thread monitorblastshieldsurvival();
+        var_0 thread monitorprocesschallenge();
+        var_0 thread monitorkillstreakprogress();
+        var_0 thread monitorkilledkillstreak();
+        var_0 thread monitorweaponswap();
+        var_0 thread monitorflashbang();
         var_0 thread _id_BA29();
         var_0 thread _id_BA1F();
         var_0 thread _id_B9CE();
         var_0 thread _id_B9BA();
-        var_0 thread _id_B9DF();
+        var_0 thread monitorhealed();
         var_0 thread awardpostshipadjustedtargets();
         var_0 notifyonplayercommand( "hold_breath", "+breath_sprint" );
         var_0 notifyonplayercommand( "hold_breath", "+melee_breath" );
         var_0 notifyonplayercommand( "release_breath", "-breath_sprint" );
         var_0 notifyonplayercommand( "release_breath", "-melee_breath" );
-        var_0 thread _id_B9E0();
+        var_0 thread monitorholdbreath();
         var_0 notifyonplayercommand( "jumped", "+goStand" );
-        var_0 thread _id_B9F0();
+        var_0 thread monitormantle();
 
-        if ( isdefined( level._id_C978 ) && issubstr( var_0.name, level._id_C978 ) )
+        if ( isdefined( level.patientzeroname ) && issubstr( var_0.name, level.patientzeroname ) )
         {
             var_0 setplayerdata( "mp", "challengeState", "ch_infected", 2 );
             var_0 setplayerdata( "mp", "challengeProgress", "ch_infected", 1 );
@@ -230,7 +230,7 @@ onplayerconnect()
         if ( randomint( 1001 ) == 1 )
             var_0 setplayerdata( "mp", "plagued", 1 );
 
-        if ( var_0 _id_3BF9( "ch_solar_rig" ) == 1 )
+        if ( var_0 ch_getstate( "ch_solar_rig" ) == 1 )
             var_0 thread monitorblackskykills();
     }
 }
@@ -242,7 +242,7 @@ onplayerspawned()
     for (;;)
     {
         self waittill( "spawned_player" );
-        self._id_A686 = [];
+        self.killsthismag = [];
         self._id_110E5 = 0;
         self._id_D99C = 0;
         self._id_6A06 = [];
@@ -284,7 +284,7 @@ monitorblackskykills()
             self.pers[self.loadoutarchetype + "_kills"]++;
 
             if ( isdefined( self.pers["archetype_assault_kills"] ) && self.pers["archetype_assault_kills"] >= 5 && isdefined( self.pers["archetype_heavy_kills"] ) && self.pers["archetype_heavy_kills"] >= 5 && isdefined( self.pers["archetype_scout_kills"] ) && self.pers["archetype_scout_kills"] >= 5 && isdefined( self.pers["archetype_assassin_kills"] ) && self.pers["archetype_assassin_kills"] >= 5 && isdefined( self.pers["archetype_engineer_kills"] ) && self.pers["archetype_engineer_kills"] >= 5 && isdefined( self.pers["archetype_sniper_kills"] ) && self.pers["archetype_sniper_kills"] >= 5 )
-                _id_D991( "ch_uber_camo_rig" );
+                processchallengedaily( "ch_uber_camo_rig" );
         }
     }
 }
@@ -320,17 +320,17 @@ awardpostshipadjustedtargets()
 
 checkpostshipadjustedchallenge( var_0 )
 {
-    var_1 = _id_7E22( var_0 );
+    var_1 = getchallengestatus( var_0 );
     var_2 = _id_3BF8( var_0 );
-    var_3 = level._id_3C2C[var_0]["targetval"].size - 1;
+    var_3 = level.challengeinfo[var_0]["targetval"].size - 1;
 
     if ( var_1 > var_3 )
         return;
 
-    for ( var_4 = level._id_3C2C[var_0]["targetval"][var_1]; var_2 >= var_4; var_4 = level._id_3C2C[var_0]["targetval"][var_1] )
+    for ( var_4 = level.challengeinfo[var_0]["targetval"][var_1]; var_2 >= var_4; var_4 = level.challengeinfo[var_0]["targetval"][var_1] )
     {
-        _id_D991( var_0 );
-        var_1 = _id_7E22( var_0 );
+        processchallengedaily( var_0 );
+        var_1 = getchallengestatus( var_0 );
 
         if ( var_1 > var_3 )
             break;
@@ -339,18 +339,18 @@ checkpostshipadjustedchallenge( var_0 )
 
 awardpostshipchallenge( var_0 )
 {
-    var_1 = _id_7E22( var_0 );
-    var_2 = level._id_3C2C[var_0]["targetval"].size - 1;
+    var_1 = getchallengestatus( var_0 );
+    var_2 = level.challengeinfo[var_0]["targetval"].size - 1;
 
     if ( var_1 > var_2 )
         return;
 
-    var_3 = level._id_3C2C[var_0]["targetval"][var_2];
+    var_3 = level.challengeinfo[var_0]["targetval"][var_2];
 
-    for ( var_4 = level._id_3C2C[var_0]["targetval"][var_1]; var_3 >= var_4; var_4 = level._id_3C2C[var_0]["targetval"][var_1] )
+    for ( var_4 = level.challengeinfo[var_0]["targetval"][var_1]; var_3 >= var_4; var_4 = level.challengeinfo[var_0]["targetval"][var_1] )
     {
-        _id_D991( var_0 );
-        var_1 = _id_7E22( var_0 );
+        processchallengedaily( var_0 );
+        var_1 = getchallengestatus( var_0 );
 
         if ( var_1 > var_2 )
             break;
@@ -363,14 +363,14 @@ runonce_checkpostshiprigprogress()
 
     foreach ( var_2 in var_0 )
     {
-        var_3 = _id_3BF9( var_2 );
+        var_3 = ch_getstate( var_2 );
 
         if ( var_3 > 0 )
         {
             thread giverankxpafterwait( var_2, var_3 );
-            scripts\mp\matchdata::_id_AF99( var_2, var_3 );
-            _id_110AE( var_2 );
-            _id_8358( level._id_3C2C[var_2]["score"][var_3] );
+            scripts\mp\matchdata::logchallenge( var_2, var_3 );
+            storecompletedchallenge( var_2 );
+            _id_8358( level.challengeinfo[var_2]["score"][var_3] );
             thread showchallengesplash( var_2 );
         }
     }
@@ -386,7 +386,7 @@ _id_BA12()
     for (;;)
     {
         self waittill( "scavenger_pickup" );
-        _id_D991( "ch_perk_scavenger" );
+        processchallengedaily( "ch_perk_scavenger" );
 
         if ( !var_0 )
         {
@@ -396,7 +396,7 @@ _id_BA12()
 
             foreach ( var_5 in var_3 )
             {
-                if ( !scripts\mp\utility::iscacprimaryweapon( var_5 ) && !scripts\mp\weapons::_id_9F54( var_5 ) )
+                if ( !scripts\mp\utility::iscacprimaryweapon( var_5 ) && !scripts\mp\weapons::issidearm( var_5 ) )
                     continue;
 
                 var_2++;
@@ -409,7 +409,7 @@ _id_BA12()
 
             if ( var_2 > 0 && var_1 == var_2 )
             {
-                _id_D991( "ch_scavenger_full_ammo" );
+                processchallengedaily( "ch_scavenger_full_ammo" );
                 var_0 = 1;
             }
         }
@@ -447,13 +447,13 @@ _id_B9E8()
         switch ( var_0 )
         {
             case "super_rewind":
-                _id_D991( "ch_ability_rewind" );
+                processchallengedaily( "ch_ability_rewind" );
                 break;
             case "super_teleport":
-                _id_D991( "ch_ability_teleport" );
+                processchallengedaily( "ch_ability_teleport" );
                 break;
             case "super_phaseshift":
-                _id_D991( "ch_ability_phase_shift" );
+                processchallengedaily( "ch_ability_phase_shift" );
                 break;
         }
     }
@@ -468,34 +468,34 @@ _id_D98A( var_0 )
             default:
                 break;
             case "super_amplify":
-                _id_D991( "ch_ability_amplify" );
+                processchallengedaily( "ch_ability_amplify" );
                 break;
             case "super_overdrive":
-                _id_D991( "ch_ability_overdrive" );
+                processchallengedaily( "ch_ability_overdrive" );
                 break;
             case "super_chargemode":
-                _id_D991( "ch_ability_bull_charge" );
+                processchallengedaily( "ch_ability_bull_charge" );
                 break;
             case "super_armorup":
-                _id_D991( "ch_ability_reactive_armor" );
+                processchallengedaily( "ch_ability_reactive_armor" );
                 break;
             case "super_reaper":
-                _id_D991( "ch_ability_reaper" );
+                processchallengedaily( "ch_ability_reaper" );
                 break;
         }
     }
 
     if ( scripts\mp\utility::istrue( var_0.attackervisionpulsedvictim ) )
-        _id_D991( "ch_ability_pulsar" );
+        processchallengedaily( "ch_ability_pulsar" );
 
     if ( scripts\mp\utility::istrue( var_0.attackerhassupertrophyout ) )
-        _id_D991( "ch_ability_centurion" );
+        processchallengedaily( "ch_ability_centurion" );
 
     if ( isdefined( var_0.sweapon ) && var_0.sweapon == "micro_turret_gun_mp" )
-        _id_D991( "ch_ability_micro_turret" );
+        processchallengedaily( "ch_ability_micro_turret" );
 
     if ( isdefined( var_0.modifiers ) && isdefined( self.modifiers["super_kill_medal"] ) && self.modifiers["super_kill_medal"] == "super_invisible" )
-        _id_D991( "ch_ability_active_camo" );
+        processchallengedaily( "ch_ability_active_camo" );
 }
 
 _id_B9C2()
@@ -507,7 +507,7 @@ _id_B9C2()
     for (;;)
     {
         self waittill( "bounceKillVerify" );
-        _id_D991( "ch_darkops_bounce" );
+        processchallengedaily( "ch_darkops_bounce" );
     }
 }
 
@@ -523,7 +523,7 @@ _id_BA36()
 
         if ( self._id_127D0 == 3 )
         {
-            _id_D991( "ch_darkops_slidestop" );
+            processchallengedaily( "ch_darkops_slidestop" );
             self._id_127D0 = undefined;
             break;
         }
@@ -571,7 +571,7 @@ _id_D998( var_0, var_1, var_2 )
         }
 
         if ( var_4 && var_3 > 1 )
-            _id_D991( "ch_darkops_chrome" );
+            processchallengedaily( "ch_darkops_chrome" );
     }
 }
 
@@ -585,7 +585,7 @@ _id_D996( var_0 )
     if ( isdefined( var_0._id_94B7 ) )
     {
         if ( var_0._id_94B7 )
-            _id_D991( "ch_darkops_howthe" );
+            processchallengedaily( "ch_darkops_howthe" );
     }
 
     if ( scripts\engine\utility::isbulletdamage( var_0.smeansofdeath ) && var_0._id_24E3 == 0 && !scripts\mp\utility::iskillstreakweapon( var_0.sweapon ) )
@@ -607,7 +607,7 @@ _id_D996( var_0 )
         self notify( "tripleStopCancel" );
     }
 
-    if ( isdefined( var_0.modifiers["headshot"] ) && var_0._id_92BE & level.idflags_ricochet )
+    if ( isdefined( var_0.modifiers["headshot"] ) && var_0.idflags & level.idflags_ricochet )
     {
         if ( isdefined( self._id_2F04 ) )
             self notify( "bounceKillVerify" );
@@ -626,33 +626,33 @@ _id_D996( var_0 )
     if ( isdefined( var_0._id_1337C ) && isdefined( var_0._id_1337A ) && isdefined( var_0._id_250D ) && isdefined( var_0._id_24E8 ) )
     {
         if ( var_0._id_1337C && var_0._id_250D && var_0._id_1337A == "super_phaseshift" && var_0._id_24E8 == "super_phaseshift" )
-            _id_D991( "ch_darkops_phase" );
+            processchallengedaily( "ch_darkops_phase" );
     }
 
     if ( isdefined( var_0.sweapon ) )
     {
         var_1 = scripts\mp\utility::getweaponrootname( var_0.sweapon );
 
-        if ( var_1 == "iw7_revolver" && scripts\mp\utility::weaponhasattachment( var_0.sweapon, "akimbo" ) && scripts\mp\utility::weaponhasattachment( var_0.sweapon, "fastaim" ) && scripts\mp\weapons::_id_13C98( var_0.sweapon ) )
-            _id_D991( "ch_darkops_no_idea" );
+        if ( var_1 == "iw7_revolver" && scripts\mp\utility::weaponhasattachment( var_0.sweapon, "akimbo" ) && scripts\mp\utility::weaponhasattachment( var_0.sweapon, "fastaim" ) && scripts\mp\weapons::weaponhasselectableoptic( var_0.sweapon ) )
+            processchallengedaily( "ch_darkops_no_idea" );
     }
 }
 
 processrigkillchallengesonkill_delayed( var_0 )
 {
-    var_0.attacker _id_D991( "ch_" + var_0.attackerarchetype + "_kills" );
+    var_0.attacker processchallengedaily( "ch_" + var_0.attackerarchetype + "_kills" );
 
-    if ( isdefined( var_0.attackerkillsthislife ) && _id_9EBC( var_0.attackerkillsthislife, 3 ) )
-        var_0.attacker _id_D991( "ch_" + var_0.attackerarchetype + "_3streak" );
+    if ( isdefined( var_0.attackerkillsthislife ) && isnumbermultipleof( var_0.attackerkillsthislife, 3 ) )
+        var_0.attacker processchallengedaily( "ch_" + var_0.attackerarchetype + "_3streak" );
 
     if ( isdefined( var_0._id_2504 ) )
     {
-        if ( _id_9EBC( var_0._id_2504, 2 ) )
+        if ( isnumbermultipleof( var_0._id_2504, 2 ) )
         {
-            var_0.attacker _id_D991( "ch_" + var_0.attackerarchetype + "_2multikill" );
+            var_0.attacker processchallengedaily( "ch_" + var_0.attackerarchetype + "_2multikill" );
 
             if ( isdefined( var_0._id_2506 ) && var_0._id_2506 == "specialty_boom" )
-                var_0.attacker _id_D991( "ch_assault_ping_2multi" );
+                var_0.attacker processchallengedaily( "ch_assault_ping_2multi" );
         }
     }
 
@@ -661,31 +661,31 @@ processrigkillchallengesonkill_delayed( var_0 )
         var_1 = scripts\mp\utility::getequipmenttype( var_0.sweapon );
 
         if ( isdefined( var_1 ) && var_1 == "lethal" )
-            var_0.attacker _id_D991( "ch_assault_resupply_lethal_kills" );
+            var_0.attacker processchallengedaily( "ch_assault_resupply_lethal_kills" );
     }
 
     if ( isdefined( var_0._id_2506 ) && var_0._id_2506 == "specialty_rugged_eqp" )
     {
         if ( scripts\mp\utility::istrue( var_0.wasplantedmine ) )
-            var_0.attacker _id_D991( "ch_engineer_hardened_kill" );
+            var_0.attacker processchallengedaily( "ch_engineer_hardened_kill" );
     }
 
-    if ( isdefined( var_0.sweapon ) && var_0.sweapon == "iw7_reaperblade_mp" && isdefined( var_0._id_24F3[var_0.sweapon] ) && _id_9EBC( var_0._id_24F3[var_0.sweapon], 4 ) )
-        var_0.attacker _id_D991( "ch_scout_reaper_4multi" );
+    if ( isdefined( var_0.sweapon ) && var_0.sweapon == "iw7_reaperblade_mp" && isdefined( var_0._id_24F3[var_0.sweapon] ) && isnumbermultipleof( var_0._id_24F3[var_0.sweapon], 4 ) )
+        var_0.attacker processchallengedaily( "ch_scout_reaper_4multi" );
 
     if ( isdefined( var_0._id_2506 ) && var_0._id_2506 == "specialty_ftlslide" && var_0._id_24EF && scripts\mp\utility::istrue( var_0.modifiers["slidekill"] ) )
-        var_0.attacker _id_D991( "ch_assassin_ads_slide_kill" );
+        var_0.attacker processchallengedaily( "ch_assassin_ads_slide_kill" );
 
     if ( isdefined( var_0.attackersixthsensesource ) && scripts\mp\utility::istrue( var_0.attackersixthsensesource[var_0.victimid] ) )
-        var_0.attacker _id_D991( "ch_assassin_perception_revenge" );
+        var_0.attacker processchallengedaily( "ch_assassin_perception_revenge" );
 
     if ( isdefined( var_0.attackerrelaysource ) && scripts\mp\utility::istrue( var_0.attackerrelaysource[var_0.victimid] ) )
-        var_0.attacker _id_D991( "ch_engineer_relay_kill" );
+        var_0.attacker processchallengedaily( "ch_engineer_relay_kill" );
 
     if ( isdefined( var_0._id_2506 ) && var_0._id_2506 == "specialty_rearguard" )
     {
         if ( isdefined( var_0.attackerrearguardattackers ) && isdefined( var_0.attackerrearguardattackers[var_0.victimid] ) )
-            var_0.attacker _id_D991( "ch_sniper_rearguard_kill" );
+            var_0.attacker processchallengedaily( "ch_sniper_rearguard_kill" );
     }
 }
 
@@ -697,42 +697,42 @@ _id_D9A8( var_0 )
     switch ( var_0.modifiers["superShutdown"] )
     {
         case "super_claw":
-            _id_D991( "ch_killjoy_assault_weapon" );
+            processchallengedaily( "ch_killjoy_assault_weapon" );
             break;
         case "super_steeldragon":
-            _id_D991( "ch_killjoy_armor_weapon" );
+            processchallengedaily( "ch_killjoy_armor_weapon" );
             break;
         case "super_armmgs":
-            _id_D991( "ch_killjoy_synaptic_weapon" );
+            processchallengedaily( "ch_killjoy_synaptic_weapon" );
             break;
         case "super_atomizer":
-            _id_D991( "ch_killjoy_ftl_weapon" );
+            processchallengedaily( "ch_killjoy_ftl_weapon" );
             break;
         case "super_blackholegun":
-            _id_D991( "ch_killjoy_six_weapon" );
+            processchallengedaily( "ch_killjoy_six_weapon" );
             break;
         case "super_penetrationrailgun":
-            _id_D991( "ch_killjoy_ghost_weapon" );
+            processchallengedaily( "ch_killjoy_ghost_weapon" );
             break;
         case "super_overdrive":
         case "super_amplify":
-            _id_D991( "ch_killjoy_assault_ability" );
+            processchallengedaily( "ch_killjoy_assault_ability" );
             break;
         case "super_armorup":
         case "super_chargemode":
-            _id_D991( "ch_killjoy_armor_ability" );
+            processchallengedaily( "ch_killjoy_armor_ability" );
             break;
         case "super_reaper":
         case "super_rewind":
-            _id_D991( "ch_killjoy_synaptic_ability" );
+            processchallengedaily( "ch_killjoy_synaptic_ability" );
             break;
         case "super_phaseshift":
         case "super_teleport":
-            _id_D991( "ch_killjoy_ftl_ability" );
+            processchallengedaily( "ch_killjoy_ftl_ability" );
             break;
         case "super_visionpulse":
         case "super_invisible":
-            _id_D991( "ch_killjoy_ghost_ability" );
+            processchallengedaily( "ch_killjoy_ghost_ability" );
             break;
     }
 }
@@ -740,9 +740,9 @@ _id_D9A8( var_0 )
 _id_D995()
 {
     if ( self iswallrunning() )
-        _id_D991( "ch_darkops_epic_run" );
+        processchallengedaily( "ch_darkops_epic_run" );
     else if ( self issprintsliding() )
-        _id_D991( "ch_darkops_epic_slide" );
+        processchallengedaily( "ch_darkops_epic_slide" );
 }
 
 _id_D9B1( var_0 )
@@ -750,7 +750,7 @@ _id_D9B1( var_0 )
     if ( var_0 getrankedplayerdata( "mp", "plagued" ) )
     {
         self setplayerdata( "mp", "plagued", 1 );
-        _id_D991( "ch_darkops_plague" );
+        processchallengedaily( "ch_darkops_plague" );
     }
 }
 
@@ -764,7 +764,7 @@ _id_D9BE( var_0 )
         self endon( "killedPlayer" + var_0.guid );
 
     wait 60.0;
-    _id_D991( "ch_darkops_warchief" );
+    processchallengedaily( "ch_darkops_warchief" );
 }
 
 _id_D9AF( var_0 )
@@ -804,7 +804,7 @@ _id_D9B7( var_0, var_1, var_2 )
             self._id_114ED[var_0.guid][var_3] = 1;
 
             if ( self._id_114ED[var_0.guid].size == 4 )
-                _id_D991( "ch_darkops_chimp" );
+                processchallengedaily( "ch_darkops_chimp" );
         }
     }
 }
@@ -819,26 +819,26 @@ _id_D9BB( var_0 )
         default:
             break;
         case "specialty_man_at_arms":
-            _id_D991( "ch_trait_man_at_arms" );
+            processchallengedaily( "ch_trait_man_at_arms" );
             break;
         case "specialty_rush":
-            _id_D991( "ch_trait_momentum" );
+            processchallengedaily( "ch_trait_momentum" );
             break;
         case "specialty_afterburner":
-            _id_D991( "ch_trait_rushdown" );
+            processchallengedaily( "ch_trait_rushdown" );
             break;
         case "specialty_rearguard":
-            _id_D991( "ch_trait_perch" );
+            processchallengedaily( "ch_trait_perch" );
             break;
     }
 
     if ( isdefined( var_0.sweapon ) )
     {
         if ( var_0.sweapon == "groundpound_mp" )
-            _id_D991( "ch_heavy_ground_pound_kills" );
+            processchallengedaily( "ch_heavy_ground_pound_kills" );
 
         if ( var_0.sweapon == "thruster_mp" )
-            _id_D991( "ch_scout_afterburner_kill" );
+            processchallengedaily( "ch_scout_afterburner_kill" );
     }
 }
 
@@ -868,7 +868,7 @@ monitorsuperscoreearned()
         if ( var_2 >= var_0 )
         {
             var_0 = var_0 + 500;
-            _id_D991( "ch_assault_amplify_score" );
+            processchallengedaily( "ch_assault_amplify_score" );
         }
 
         scripts\engine\utility::waitframe();
@@ -896,22 +896,22 @@ _id_BA2B()
             switch ( var_0 )
             {
                 case "iw7_claw_mp":
-                    _id_D991( "ch_super_streak_assault" );
+                    processchallengedaily( "ch_super_streak_assault" );
                     break;
                 case "iw7_steeldragon_mp":
-                    _id_D991( "ch_super_streak_armor" );
+                    processchallengedaily( "ch_super_streak_armor" );
                     break;
                 case "iw7_armmgs_mp":
-                    _id_D991( "ch_super_streak_synaptic" );
+                    processchallengedaily( "ch_super_streak_synaptic" );
                     break;
                 case "iw7_atomizer_mp":
-                    _id_D991( "ch_super_streak_ftl" );
+                    processchallengedaily( "ch_super_streak_ftl" );
                     break;
                 case "iw7_blackholegun_mp":
-                    _id_D991( "ch_super_streak_six" );
+                    processchallengedaily( "ch_super_streak_six" );
                     break;
                 case "iw7_penetrationrail_mp":
-                    _id_D991( "ch_super_streak_ghost" );
+                    processchallengedaily( "ch_super_streak_ghost" );
                     break;
             }
         }
@@ -926,34 +926,34 @@ updatesuperkills( var_0, var_1, var_2 )
     switch ( var_0 )
     {
         case "super_overdrive":
-            if ( _id_9EBC( var_2, 2 ) )
-                _id_D991( "ch_assault_overdrive_2multi" );
+            if ( isnumbermultipleof( var_2, 2 ) )
+                processchallengedaily( "ch_assault_overdrive_2multi" );
 
             break;
         case "super_chargemode":
-            if ( _id_9EBC( var_2, 2 ) )
-                _id_D991( "ch_heavy_bullcharge_multi" );
+            if ( isnumbermultipleof( var_2, 2 ) )
+                processchallengedaily( "ch_heavy_bullcharge_multi" );
 
             break;
         case "super_teleport":
             if ( var_1 == "MOD_MELEE" )
-                _id_D991( "ch_assassin_jump_melee" );
+                processchallengedaily( "ch_assassin_jump_melee" );
 
             break;
         case "super_invisible":
             if ( var_1 == "MOD_MELEE" )
-                _id_D991( "ch_sniper_camo_melee" );
+                processchallengedaily( "ch_sniper_camo_melee" );
 
             break;
         case "super_visionpulse":
-            if ( _id_9EBC( var_2, 2 ) )
-                _id_D991( "ch_sniper_pulsar_2multi" );
+            if ( isnumbermultipleof( var_2, 2 ) )
+                processchallengedaily( "ch_sniper_pulsar_2multi" );
 
             break;
     }
 }
 
-_id_12F33( var_0, var_1 )
+updatesuperweaponkills( var_0, var_1 )
 {
     if ( !isdefined( self._id_112A8 ) )
         return;
@@ -966,19 +966,19 @@ _id_12F33( var_0, var_1 )
     switch ( var_0 )
     {
         case "iw7_claw_mp":
-            _id_D991( "ch_super_weapon_assault" );
+            processchallengedaily( "ch_super_weapon_assault" );
             break;
         case "iw7_steeldragon_mp":
-            _id_D991( "ch_super_weapon_armor" );
+            processchallengedaily( "ch_super_weapon_armor" );
             break;
         case "iw7_armmgs_mp":
-            _id_D991( "ch_super_weapon_synaptic" );
+            processchallengedaily( "ch_super_weapon_synaptic" );
             break;
         case "iw7_atomizer_mp":
-            _id_D991( "ch_super_weapon_ftl" );
+            processchallengedaily( "ch_super_weapon_ftl" );
             break;
         case "iw7_blackholegun_mp":
-            _id_D991( "ch_super_weapon_six" );
+            processchallengedaily( "ch_super_weapon_six" );
 
             if ( isdefined( var_1 ) )
             {
@@ -987,18 +987,18 @@ _id_12F33( var_0, var_1 )
                 else
                     var_1.kills++;
 
-                if ( _id_9EBC( var_1.kills, 2 ) )
-                    _id_D991( "ch_engineer_bhgun_3multi" );
+                if ( isnumbermultipleof( var_1.kills, 2 ) )
+                    processchallengedaily( "ch_engineer_bhgun_3multi" );
             }
 
             break;
         case "iw7_penetrationrail_mp":
-            _id_D991( "ch_super_weapon_ghost" );
+            processchallengedaily( "ch_super_weapon_ghost" );
             break;
     }
 }
 
-_id_BA2A()
+monitorstreaks()
 {
     self endon( "disconnect" );
 
@@ -1008,7 +1008,7 @@ _id_BA2A()
         var_0 = scripts\mp\supers::getcurrentsuperref();
 
         if ( isdefined( var_0 ) && var_0 == "super_phaseshift" && self.health < self.maxhealth )
-            _id_D991( "ch_assassin_damaged_phase_shift" );
+            processchallengedaily( "ch_assassin_damaged_phase_shift" );
 
         if ( isdefined( var_0 ) && var_0 == "super_amplify" )
             thread monitorsuperscoreearned();
@@ -1019,7 +1019,7 @@ _id_BA2A()
     }
 }
 
-_id_B9DF()
+monitorhealed()
 {
     level endon( "game_ended" );
     self endon( "disconnect" );
@@ -1029,11 +1029,11 @@ _id_B9DF()
         self waittill( "healed" );
 
         if ( isdefined( self.trait ) && self.trait == "specialty_regenfaster" )
-            _id_D991( "ch_heavy_icu_heals" );
+            processchallengedaily( "ch_heavy_icu_heals" );
     }
 }
 
-_id_BA24()
+monitorstreakreward()
 {
     self endon( "disconnect" );
 
@@ -1042,13 +1042,13 @@ _id_BA24()
         self waittill( "received_earned_killstreak" );
 
         if ( _id_66B8( "specialty_hardline" ) )
-            _id_D991( "ch_perk_hardline" );
+            processchallengedaily( "ch_perk_hardline" );
 
         wait 0.05;
     }
 }
 
-_id_B9BF()
+monitorblastshieldsurvival()
 {
     self endon( "disconnect" );
 
@@ -1066,7 +1066,7 @@ _id_B9BF()
     }
 }
 
-_id_989E()
+initmissiondata()
 {
     self.explosiveinfo = [];
 
@@ -1119,43 +1119,43 @@ _id_989E()
     }
 }
 
-_id_DEFF( var_0, var_1 )
+registermissioncallback( var_0, var_1 )
 {
-    if ( !isdefined( level._id_B8CD[var_0] ) )
-        level._id_B8CD[var_0] = [];
+    if ( !isdefined( level.missioncallbacks[var_0] ) )
+        level.missioncallbacks[var_0] = [];
 
-    level._id_B8CD[var_0][level._id_B8CD[var_0].size] = var_1;
+    level.missioncallbacks[var_0][level.missioncallbacks[var_0].size] = var_1;
 }
 
-_id_7E22( var_0 )
+getchallengestatus( var_0 )
 {
-    if ( isdefined( self._id_3C2A[var_0] ) )
-        return self._id_3C2A[var_0];
+    if ( isdefined( self.challengedata[var_0] ) )
+        return self.challengedata[var_0];
     else
         return 0;
 }
 
-_id_3BF3( var_0 )
+ch_assists( var_0 )
 {
     var_1 = var_0.player;
 
     if ( isdefined( var_0.sweapon ) && scripts\mp\utility::iskillstreakweapon( var_0.sweapon ) )
-        var_1 _id_D991( "ch_lifetime_streak_assists" );
+        var_1 processchallengedaily( "ch_lifetime_streak_assists" );
 }
 
 _id_3C02( var_0 )
 {
     var_1 = var_0.player;
-    var_1 _id_D991( "ch_lifetime_streaks_used" );
+    var_1 processchallengedaily( "ch_lifetime_streaks_used" );
 }
 
-_id_3C00( var_0 )
+ch_hardpoints( var_0 )
 {
     var_1 = var_0.player;
     var_2 = 0;
     var_3 = 0;
 
-    foreach ( var_5 in level._id_1655 )
+    foreach ( var_5 in level.activekillstreaks )
     {
         if ( var_5.owner == var_1 )
         {
@@ -1164,7 +1164,7 @@ _id_3C00( var_0 )
                 var_2++;
 
                 if ( var_2 == 2 )
-                    var_1 _id_D991( "ch_two_sentries" );
+                    var_1 processchallengedaily( "ch_two_sentries" );
             }
 
             continue;
@@ -1175,13 +1175,15 @@ _id_3C00( var_0 )
     }
 
     if ( var_3 && var_0._id_A6A7 == "counter_uav" )
-        var_1 _id_D991( "ch_counter_other_uav" );
+        var_1 processchallengedaily( "ch_counter_other_uav" );
 
     if ( var_0._id_A6A7 == "jammer" )
-        return;
+    {
+
+    }
 }
 
-_id_3C01( var_0 )
+ch_killstreak_kills( var_0 )
 {
     if ( !isdefined( var_0.attacker ) || !isplayer( var_0.attacker ) )
         return;
@@ -1190,49 +1192,49 @@ _id_3C01( var_0 )
         return;
 
     var_1 = var_0.attacker;
-    var_2 = _id_7F48( var_0.sweapon );
+    var_2 = getkillstreaknamefromweapon( var_0.sweapon );
 
     switch ( var_2 )
     {
         case "sentry_shock":
-            var_1 _id_D991( "ch_scorestreak_kills_sentry" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_sentry" );
             break;
         case "ball_drone_backup":
-            var_1 _id_D991( "ch_scorestreak_kills_vulture" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_vulture" );
             break;
         case "drone_hive":
-            var_1 _id_D991( "ch_scorestreak_kills_trinity" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_trinity" );
             break;
         case "precision_airstrike":
-            var_1 _id_D991( "ch_scorestreak_kills_airstrike" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_airstrike" );
             break;
         case "minijackal":
-            var_1 _id_D991( "ch_scorestreak_kills_apex" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_apex" );
             break;
         case "thor":
-            var_1 _id_D991( "ch_scorestreak_kills_thor" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_thor" );
             break;
         case "bombardment":
-            var_1 _id_D991( "ch_scorestreak_kills_bombardment" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_bombardment" );
             break;
         case "remote_c8":
-            if ( isdefined( var_1._id_4BE1 ) && var_1._id_4BE1 == "MANUAL" )
-                var_1 _id_D991( "ch_rc8_controlled_kills" );
+            if ( isdefined( var_1.currentcombatmode ) && var_1.currentcombatmode == "MANUAL" )
+                var_1 processchallengedaily( "ch_rc8_controlled_kills" );
 
-            var_1 _id_D991( "ch_scorestreak_kills_rc8" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_rc8" );
             break;
         case "venom":
-            var_1 _id_D991( "ch_scorestreak_kills_scarab" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_scarab" );
             break;
         case "jackal":
-            var_1 _id_D991( "ch_scorestreak_kills_warden" );
+            var_1 processchallengedaily( "ch_scorestreak_kills_warden" );
             break;
     }
 
-    var_1 _id_D991( "ch_lifetime_streak_kills" );
+    var_1 processchallengedaily( "ch_lifetime_streak_kills" );
 }
 
-_id_7F48( var_0 )
+getkillstreaknamefromweapon( var_0 )
 {
     if ( isdefined( level.killstreakweildweapons[var_0] ) )
         return level.killstreakweildweapons[var_0];
@@ -1288,7 +1290,7 @@ _id_9E4B( var_0 )
 
             break;
         case "grind":
-            foreach ( var_3 in level._id_13FC1 )
+            foreach ( var_3 in level.zonelist )
             {
                 var_4 = distancesquared( var_3.origin, var_0 );
 
@@ -1309,7 +1311,7 @@ _id_9E4B( var_0 )
     return var_1;
 }
 
-_id_9DBA( var_0 )
+isdefending( var_0 )
 {
     var_1 = 0;
 
@@ -1375,25 +1377,25 @@ _id_9DBA( var_0 )
     return var_1;
 }
 
-_id_D9BC( var_0, var_1 )
+processuavassist( var_0, var_1 )
 {
     switch ( var_1 )
     {
         case "uav":
-            var_0 _id_D991( "ch_scorestreak_assists_uav" );
+            var_0 processchallengedaily( "ch_scorestreak_assists_uav" );
             break;
         case "counter_uav":
-            var_0 _id_D991( "ch_scorestreak_assists_cuav" );
+            var_0 processchallengedaily( "ch_scorestreak_assists_cuav" );
             break;
         case "directional_uav":
-            var_0 _id_D991( "ch_scorestreak_assists_auav" );
+            var_0 processchallengedaily( "ch_scorestreak_assists_auav" );
             break;
     }
 
-    var_0 _id_D991( "ch_lifetime_streak_assists" );
+    var_0 processchallengedaily( "ch_lifetime_streak_assists" );
 }
 
-_id_3C09( var_0 )
+ch_vehicle_killed( var_0 )
 {
     if ( !isdefined( var_0.attacker ) || !isplayer( var_0.attacker ) )
         return;
@@ -1406,27 +1408,27 @@ _id_D98F( var_0 )
     switch ( var_0 )
     {
         case "quad_feed":
-            _id_D991( "ch_quad_feed" );
+            processchallengedaily( "ch_quad_feed" );
             break;
         case "one_shot_two_kills":
-            _id_D991( "ch_collateral" );
+            processchallengedaily( "ch_collateral" );
             break;
         case "first_place_kill":
-            _id_D991( "ch_kill_1st_place" );
+            processchallengedaily( "ch_kill_1st_place" );
             break;
         case "gun_butt":
-            _id_D991( "ch_gun_butt" );
+            processchallengedaily( "ch_gun_butt" );
             break;
         case "backfire":
-            _id_D991( "ch_owner_kill" );
+            processchallengedaily( "ch_owner_kill" );
             break;
         case "item_impact":
-            _id_D991( "ch_direct_impact" );
+            processchallengedaily( "ch_direct_impact" );
             break;
     }
 
     if ( var_0 == "longshot" && self.awardsthislife["longshot"] == 1 && isdefined( self.awardsthislife["pointblank"] ) || var_0 == "pointblank" && self.awardsthislife["pointblank"] == 1 && isdefined( self.awardsthislife["longshot"] ) )
-        _id_D991( "ch_longshot_pointblank" );
+        processchallengedaily( "ch_longshot_pointblank" );
 }
 
 _id_3BF6( var_0, var_1, var_2, var_3, var_4, var_5 )
@@ -1448,7 +1450,7 @@ _id_3BF6( var_0, var_1, var_2, var_3, var_4, var_5 )
                         var_6._id_69F2++;
 
                         if ( var_6._id_69F2 == 3 )
-                            var_6 _id_D991( "ch_blastshield_hits" );
+                            var_6 processchallengedaily( "ch_blastshield_hits" );
                     }
                 }
             }
@@ -1491,7 +1493,7 @@ _id_3BFF( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
             var_9 = gettime() - var_1._id_A949;
 
             if ( var_9 <= 50 )
-                var_1 _id_D991( "ch_biospike_double" );
+                var_1 processchallengedaily( "ch_biospike_double" );
         }
     }
 
@@ -1502,33 +1504,33 @@ _id_3BFF( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
         else
             var_0.kills++;
 
-        if ( _id_9EBC( var_0.kills, 2 ) )
-            var_1 _id_D991( "ch_engineer_micro_turret_2multi" );
+        if ( isnumbermultipleof( var_0.kills, 2 ) )
+            var_1 processchallengedaily( "ch_engineer_micro_turret_2multi" );
     }
 
     if ( scripts\mp\utility::iskillstreakweapon( var_5 ) )
     {
-        var_10 = _id_7F48( var_5 );
+        var_10 = getkillstreaknamefromweapon( var_5 );
 
         if ( !isdefined( var_1._id_A6A5 ) )
             var_1._id_A6A5 = [];
 
-        if ( isdefined( var_0 ) && isdefined( var_0._id_1653 ) )
+        if ( isdefined( var_0 ) && isdefined( var_0.activeid ) )
         {
-            if ( !isdefined( var_1._id_A6A5[var_0._id_1653] ) )
+            if ( !isdefined( var_1._id_A6A5[var_0.activeid] ) )
             {
                 var_11 = spawnstruct();
                 var_11._id_A6A7 = var_10;
                 var_11.kills = 1;
                 var_11._id_C2A4 = scripts\engine\utility::ter_op( _id_9E4B( var_0.origin ), 1, 0 );
-                var_1._id_A6A5[var_0._id_1653] = var_11;
+                var_1._id_A6A5[var_0.activeid] = var_11;
             }
             else
             {
-                var_1._id_A6A5[var_0._id_1653].kills++;
+                var_1._id_A6A5[var_0.activeid].kills++;
 
                 if ( _id_9E4B( var_0.origin ) )
-                    var_1._id_A6A5[var_0._id_1653]._id_C2A4++;
+                    var_1._id_A6A5[var_0.activeid]._id_C2A4++;
             }
         }
         else
@@ -1539,53 +1541,53 @@ _id_3BFF( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
         switch ( var_10 )
         {
             case "sentry_shock":
-                if ( _id_9EBC( var_1._id_A6A5[var_0._id_1653]._id_C2A4, 3 ) )
-                    var_1 _id_D991( "ch_sentry_defender" );
+                if ( isnumbermultipleof( var_1._id_A6A5[var_0.activeid]._id_C2A4, 3 ) )
+                    var_1 processchallengedaily( "ch_sentry_defender" );
 
-                if ( _id_9EBC( var_1._id_A6A5[var_0._id_1653].kills, 5 ) )
-                    var_1 _id_D991( "ch_sentry_streak" );
+                if ( isnumbermultipleof( var_1._id_A6A5[var_0.activeid].kills, 5 ) )
+                    var_1 processchallengedaily( "ch_sentry_streak" );
 
                 break;
             case "ball_drone_backup":
                 break;
             case "drone_hive":
-                if ( var_1._id_DDC3[var_5] > 0 && var_1._id_DDC3[var_5] % 3 == 0 )
-                    var_1 _id_D991( "ch_scorestreak_triple_kills" );
+                if ( var_1.recentkillsperweapon[var_5] > 0 && var_1.recentkillsperweapon[var_5] % 3 == 0 )
+                    var_1 processchallengedaily( "ch_scorestreak_triple_kills" );
 
                 break;
             case "precision_airstrike":
-                if ( var_1._id_DDC3[var_5] > 0 && var_1._id_DDC3[var_5] % 3 == 0 )
-                    var_1 _id_D991( "ch_scorestreak_triple_kills" );
+                if ( var_1.recentkillsperweapon[var_5] > 0 && var_1.recentkillsperweapon[var_5] % 3 == 0 )
+                    var_1 processchallengedaily( "ch_scorestreak_triple_kills" );
 
                 break;
             case "minijackal":
-                if ( var_1._id_DDC3[var_5] > 0 && var_1._id_DDC3[var_5] % 3 == 0 )
-                    var_1 _id_D991( "ch_scorestreak_triple_kills" );
+                if ( var_1.recentkillsperweapon[var_5] > 0 && var_1.recentkillsperweapon[var_5] % 3 == 0 )
+                    var_1 processchallengedaily( "ch_scorestreak_triple_kills" );
 
                 break;
             case "thor":
-                if ( var_1._id_DDC3[var_5] > 0 && var_1._id_DDC3[var_5] % 3 == 0 )
-                    var_1 _id_D991( "ch_scorestreak_triple_kills" );
+                if ( var_1.recentkillsperweapon[var_5] > 0 && var_1.recentkillsperweapon[var_5] % 3 == 0 )
+                    var_1 processchallengedaily( "ch_scorestreak_triple_kills" );
 
                 break;
             case "bombardment":
-                if ( var_1._id_DDC3[var_5] > 0 && var_1._id_DDC3[var_5] % 3 == 0 )
-                    var_1 _id_D991( "ch_scorestreak_triple_kills" );
+                if ( var_1.recentkillsperweapon[var_5] > 0 && var_1.recentkillsperweapon[var_5] % 3 == 0 )
+                    var_1 processchallengedaily( "ch_scorestreak_triple_kills" );
 
                 break;
             case "remote_c8":
                 break;
             case "venom":
-                if ( var_1._id_DDC3[var_5] > 0 && var_1._id_DDC3[var_5] % 2 == 0 )
-                    var_1 _id_D991( "ch_scorestreak_double_scarab" );
+                if ( var_1.recentkillsperweapon[var_5] > 0 && var_1.recentkillsperweapon[var_5] % 2 == 0 )
+                    var_1 processchallengedaily( "ch_scorestreak_double_scarab" );
 
                 if ( self iswallrunning() )
-                    var_1 _id_D991( "ch_scarab_wall_kill" );
+                    var_1 processchallengedaily( "ch_scarab_wall_kill" );
 
                 break;
             case "jackal":
-                if ( var_1._id_DDC3[var_5] > 0 && var_1._id_DDC3[var_5] % 3 == 0 )
-                    var_1 _id_D991( "ch_scorestreak_triple_kills" );
+                if ( var_1.recentkillsperweapon[var_5] > 0 && var_1.recentkillsperweapon[var_5] % 3 == 0 )
+                    var_1 processchallengedaily( "ch_scorestreak_triple_kills" );
 
                 break;
         }
@@ -1604,7 +1606,7 @@ _id_3BFE( var_0, var_1 )
         return;
 
     var_1 = var_0.time;
-    var_2 _id_D991( "ch_lifetime_kills" );
+    var_2 processchallengedaily( "ch_lifetime_kills" );
 
     if ( isdefined( var_0.victim ) && isdefined( var_0.victim.guid ) )
         var_2 notify( "killedPlayer" + var_0.victim.guid );
@@ -1625,17 +1627,17 @@ _id_3BFE( var_0, var_1 )
         var_4 = var_0._id_13374[var_2.guid];
 
         if ( scripts\mp\utility::istrue( var_4.diddamagewithlethalequipment ) && var_0.isbulletdamage )
-            var_2 _id_D991( "ch_lethal_bullet_combo" );
+            var_2 processchallengedaily( "ch_lethal_bullet_combo" );
 
-        if ( scripts\mp\utility::istrue( var_4._id_54B4 ) && scripts\mp\utility::iscacsecondaryweapon( var_0.sweapon ) )
-            var_2 _id_D991( "ch_swap_kill" );
+        if ( scripts\mp\utility::istrue( var_4.diddamagewithprimary ) && scripts\mp\utility::iscacsecondaryweapon( var_0.sweapon ) )
+            var_2 processchallengedaily( "ch_swap_kill" );
 
         if ( isdefined( var_0._id_24E0 ) )
         {
             if ( isdefined( var_0._id_24E0[var_3.guid] ) )
             {
                 if ( !scripts\mp\utility::istrue( var_4.didnonmeleedamage ) )
-                    var_2 _id_D991( "ch_hurt_melee_kill" );
+                    var_2 processchallengedaily( "ch_hurt_melee_kill" );
             }
         }
     }
@@ -1647,35 +1649,35 @@ _id_3BFE( var_0, var_1 )
     {
         var_5 = var_0._id_24F2[var_3.guid];
 
-        if ( _id_9EBC( var_5, 5 ) )
-            var_2 _id_D991( "ch_repeat_kill" );
+        if ( isnumbermultipleof( var_5, 5 ) )
+            var_2 processchallengedaily( "ch_repeat_kill" );
     }
 
     if ( var_0._id_24E1 )
-        var_2 _id_D991( "ch_while_stunned_kill" );
+        var_2 processchallengedaily( "ch_while_stunned_kill" );
 
     if ( var_0._id_13375 )
-        var_2 _id_D991( "ch_stun_kill" );
+        var_2 processchallengedaily( "ch_stun_kill" );
 
     if ( scripts\mp\utility::istrue( var_0._id_24EA ) )
-        var_2 _id_D991( "ch_tactical_smoke" );
+        var_2 processchallengedaily( "ch_tactical_smoke" );
 
     if ( scripts\mp\utility::istrue( var_0._id_2501 ) )
-        var_2 _id_D991( "ch_tactical_radar" );
+        var_2 processchallengedaily( "ch_tactical_radar" );
 
     if ( _id_9E8A( var_0.shitloc ) )
-        var_2 _id_D991( "ch_lower_body_kill" );
+        var_2 processchallengedaily( "ch_lower_body_kill" );
 
     if ( scripts\mp\utility::istrue( var_0._id_2511 ) )
-        var_2 _id_D991( "ch_pre_adrenaline" );
+        var_2 processchallengedaily( "ch_pre_adrenaline" );
 
     if ( isdefined( var_0._id_13377 ) )
     {
         if ( var_0._id_13377 == var_2 )
-            var_2 _id_D991( "ch_dome_defense" );
+            var_2 processchallengedaily( "ch_dome_defense" );
 
         if ( var_0._id_13377 == var_3 )
-            var_2 _id_D991( "ch_dome_assault" );
+            var_2 processchallengedaily( "ch_dome_assault" );
     }
 
     if ( isdefined( var_3.debuffedbyplayers ) )
@@ -1683,23 +1685,23 @@ _id_3BFE( var_0, var_1 )
         var_6 = var_2 getentitynumber();
 
         if ( isdefined( var_0._id_13376["cryo_mine_mp"] ) && isdefined( var_0._id_13376["cryo_mine_mp"][var_6] ) )
-            var_2 _id_D991( "ch_tactical_cryomine" );
+            var_2 processchallengedaily( "ch_tactical_cryomine" );
 
         if ( isdefined( var_0._id_13376["blackout_grenade_mp"] ) && isdefined( var_0._id_13376["blackout_grenade_mp"][var_6] ) )
-            var_2 _id_D991( "ch_tactical_blackout" );
+            var_2 processchallengedaily( "ch_tactical_blackout" );
 
         if ( isdefined( var_0._id_13376["emp_grenade_mp"] ) && isdefined( var_0._id_13376["emp_grenade_mp"][var_6] ) || isdefined( var_0._id_13376["concussion_grenade_mp"] ) && isdefined( var_0._id_13376["concussion_grenade_mp"][var_6] ) )
-            var_2 _id_D991( "ch_tactical_concussion" );
+            var_2 processchallengedaily( "ch_tactical_concussion" );
     }
 
     if ( isdefined( var_0._id_24E9[var_3.guid] ) )
-        var_2 _id_D991( "ch_blastshield_revenge" );
+        var_2 processchallengedaily( "ch_blastshield_revenge" );
 
     var_7 = [];
 
     foreach ( var_9 in var_0._id_24FD )
     {
-        var_10 = scripts\mp\perks::_id_805C( var_9 );
+        var_10 = scripts\mp\perks::getperkslot( var_9 );
 
         if ( isdefined( var_10 ) )
         {
@@ -1714,13 +1716,13 @@ _id_3BFE( var_0, var_1 )
     }
 
     if ( isdefined( var_7[1] ) && var_7[1] == 2 )
-        var_2 _id_D991( "ch_perk_1_combo" );
+        var_2 processchallengedaily( "ch_perk_1_combo" );
 
     if ( isdefined( var_7[2] ) && var_7[2] == 2 )
-        var_2 _id_D991( "ch_perk_2_combo" );
+        var_2 processchallengedaily( "ch_perk_2_combo" );
 
     if ( isdefined( var_7[3] ) && var_7[3] == 2 )
-        var_2 _id_D991( "ch_perk_3_combo" );
+        var_2 processchallengedaily( "ch_perk_3_combo" );
 
     if ( scripts\mp\utility::iskillstreakweapon( var_0.sweapon ) && !allowinteractivecombat( var_2, var_0.sweapon ) )
         return;
@@ -1728,7 +1730,7 @@ _id_3BFE( var_0, var_1 )
     _id_D9C8( var_0, var_1, var_2, var_3 );
 
     if ( isdefined( var_0._id_24F8 ) && var_0.time - var_0._id_24F8 < 4500 )
-        var_2 _id_D991( "ch_use_gesture" );
+        var_2 processchallengedaily( "ch_use_gesture" );
 
     if ( isdefined( var_3._id_A6AE ) )
     {
@@ -1739,7 +1741,7 @@ _id_3BFE( var_0, var_1 )
                 switch ( var_13._id_A6A7 )
                 {
                     case "remote_c8":
-                        var_2 _id_D991( "ch_rc8_defense" );
+                        var_2 processchallengedaily( "ch_rc8_defense" );
                         break;
                 }
             }
@@ -1749,22 +1751,22 @@ _id_3BFE( var_0, var_1 )
 
 _id_D98B()
 {
-    if ( isdefined( level._id_1655 ) )
+    if ( isdefined( level.activekillstreaks ) )
     {
-        foreach ( var_1 in level._id_1655 )
+        foreach ( var_1 in level.activekillstreaks )
         {
             if ( var_1.owner == self )
             {
                 switch ( var_1.streakname )
                 {
                     case "uav":
-                        _id_D991( "ch_scorestreak_kills_uav" );
+                        processchallengedaily( "ch_scorestreak_kills_uav" );
                         break;
                     case "counter_uav":
-                        _id_D991( "ch_scorestreak_kills_cuav" );
+                        processchallengedaily( "ch_scorestreak_kills_cuav" );
                         break;
                     case "directional_uav":
-                        _id_D991( "ch_scorestreak_kills_auav" );
+                        processchallengedaily( "ch_scorestreak_kills_auav" );
                         break;
                 }
             }
@@ -1781,16 +1783,16 @@ _id_D9D8( var_0, var_1 )
         switch ( var_2.quality )
         {
             case 4:
-                var_1 _id_D991( "ch_outfitter_epic" );
+                var_1 processchallengedaily( "ch_outfitter_epic" );
                 break;
             case 3:
-                var_1 _id_D991( "ch_outfitter_legendary" );
+                var_1 processchallengedaily( "ch_outfitter_legendary" );
                 break;
             case 2:
-                var_1 _id_D991( "ch_outfitter_rare" );
+                var_1 processchallengedaily( "ch_outfitter_rare" );
                 break;
             case 1:
-                var_1 _id_D991( "ch_outfitter_common" );
+                var_1 processchallengedaily( "ch_outfitter_common" );
                 break;
         }
     }
@@ -1809,8 +1811,8 @@ _id_D9D8( var_0, var_1 )
             var_3++;
         }
 
-        if ( _id_9EBC( var_3, 3 ) )
-            var_1 _id_D991( "ch_outfitter_variant_triplet" );
+        if ( isnumbermultipleof( var_3, 3 ) )
+            var_1 processchallengedaily( "ch_outfitter_variant_triplet" );
     }
 
     if ( var_0.sweapon != var_1.primaryweapon && var_0.sweapon != var_1.secondaryweapon )
@@ -1826,16 +1828,16 @@ _id_D9D8( var_0, var_1 )
             switch ( var_8.quality )
             {
                 case 4:
-                    var_1 _id_D991( "ch_outfitter_epic_set" );
+                    var_1 processchallengedaily( "ch_outfitter_epic_set" );
                     break;
                 case 3:
-                    var_1 _id_D991( "ch_outfitter_legendary_set" );
+                    var_1 processchallengedaily( "ch_outfitter_legendary_set" );
                     break;
                 case 2:
-                    var_1 _id_D991( "ch_outfitter_rare_set" );
+                    var_1 processchallengedaily( "ch_outfitter_rare_set" );
                     break;
                 case 1:
-                    var_1 _id_D991( "ch_outfitter_common_set" );
+                    var_1 processchallengedaily( "ch_outfitter_common_set" );
                     break;
             }
         }
@@ -1845,39 +1847,39 @@ _id_D9D8( var_0, var_1 )
 _id_D9AE( var_0, var_1, var_2, var_3 )
 {
     if ( scripts\mp\utility::istrue( var_0.modifiers["wallkill"] ) )
-        var_2 _id_D991( "ch_wallrun_kill" );
+        var_2 processchallengedaily( "ch_wallrun_kill" );
 
     if ( scripts\mp\utility::istrue( var_0.modifiers["jumpkill"] ) )
-        var_2 _id_D991( "ch_air_kill" );
+        var_2 processchallengedaily( "ch_air_kill" );
 
     if ( scripts\mp\utility::istrue( var_0.modifiers["slidekill"] ) )
-        var_2 _id_D991( "ch_slide_kill" );
+        var_2 processchallengedaily( "ch_slide_kill" );
 
     if ( scripts\mp\utility::istrue( var_0.modifiers["killonwall"] ) )
-        var_2 _id_D991( "ch_kill_wallrunner" );
+        var_2 processchallengedaily( "ch_kill_wallrunner" );
 
     if ( scripts\mp\utility::istrue( var_0.modifiers["killinair"] ) )
-        var_2 _id_D991( "ch_kill_jumper" );
+        var_2 processchallengedaily( "ch_kill_jumper" );
 
     if ( scripts\mp\utility::istrue( var_0.modifiers["clutchkill"] ) )
-        var_2 _id_D991( "ch_clutch_grenade" );
+        var_2 processchallengedaily( "ch_clutch_grenade" );
 
     if ( scripts\mp\utility::istrue( var_0.modifiers["wallkill"] ) && scripts\mp\utility::istrue( var_0.modifiers["killonwall"] ) )
-        var_2 _id_D991( "ch_wall_vs_wall" );
+        var_2 processchallengedaily( "ch_wall_vs_wall" );
 }
 
 _id_D9B9( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( var_0._id_24E4 ) )
     {
-        if ( _id_9EBC( var_0._id_24E4, 5 ) )
-            var_2 _id_D991( "ch_bloodthirsty" );
+        if ( isnumbermultipleof( var_0._id_24E4, 5 ) )
+            var_2 processchallengedaily( "ch_bloodthirsty" );
 
-        if ( _id_9EBC( var_0._id_24E4, 10 ) )
-            var_2 _id_D991( "ch_merciless" );
+        if ( isnumbermultipleof( var_0._id_24E4, 10 ) )
+            var_2 processchallengedaily( "ch_merciless" );
 
-        if ( _id_9EBC( var_0._id_24E4, 15 ) )
-            var_2 _id_D991( "ch_ruthless" );
+        if ( isnumbermultipleof( var_0._id_24E4, 15 ) )
+            var_2 processchallengedaily( "ch_ruthless" );
     }
 }
 
@@ -1885,14 +1887,14 @@ _id_D9B2( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( var_0._id_2504 ) )
     {
-        if ( _id_9EBC( var_0._id_2504, 2 ) )
-            var_2 _id_D991( "ch_double_kill" );
+        if ( isnumbermultipleof( var_0._id_2504, 2 ) )
+            var_2 processchallengedaily( "ch_double_kill" );
 
-        if ( _id_9EBC( var_0._id_2504, 3 ) )
-            var_2 _id_D991( "ch_triple_kill" );
+        if ( isnumbermultipleof( var_0._id_2504, 3 ) )
+            var_2 processchallengedaily( "ch_triple_kill" );
 
-        if ( _id_9EBC( var_0._id_2504, 4 ) )
-            var_2 _id_D991( "ch_quad_kill" );
+        if ( isnumbermultipleof( var_0._id_2504, 4 ) )
+            var_2 processchallengedaily( "ch_quad_kill" );
     }
 }
 
@@ -1903,61 +1905,61 @@ _id_D9B0( var_0, var_1, var_2, var_3 )
         switch ( var_5 )
         {
             case "specialty_expanded_minimap":
-                var_2 _id_D991( "ch_perk_kills_awareness" );
+                var_2 processchallengedaily( "ch_perk_kills_awareness" );
                 break;
             case "specialty_blastshield":
-                var_2 _id_D991( "ch_perk_kills_blastshield" );
+                var_2 processchallengedaily( "ch_perk_kills_blastshield" );
                 break;
             case "specialty_dexterity":
-                var_2 _id_D991( "ch_perk_kills_dexterity" );
+                var_2 processchallengedaily( "ch_perk_kills_dexterity" );
 
                 if ( isdefined( var_0._id_24FA ) && gettime() - var_0._id_24FA < 5000 || isdefined( var_0._id_24FC ) && gettime() - var_0._id_24FC < 5000 )
-                    var_2 _id_D991( "ch_dexterity_actions" );
+                    var_2 processchallengedaily( "ch_dexterity_actions" );
 
                 break;
             case "specialty_ghost":
                 if ( scripts\mp\utility::istrue( var_0._id_13384 ) )
-                    var_2 _id_D991( "ch_perk_kills_ghost" );
+                    var_2 processchallengedaily( "ch_perk_kills_ghost" );
 
                 if ( scripts\mp\utility::istrue( var_0.modifiers["backstab"] ) )
-                    var_2 _id_D991( "ch_ghost_backstab" );
+                    var_2 processchallengedaily( "ch_ghost_backstab" );
 
                 break;
             case "specialty_momentum":
                 if ( var_0.smeansofdeath == "MOD_MELEE" && var_0._id_24FE > 1.0 )
-                    var_2 _id_D991( "ch_momentum_melee" );
+                    var_2 processchallengedaily( "ch_momentum_melee" );
 
                 break;
             case "specialty_tracker":
-                var_2 _id_D991( "ch_perk_kills_tracker" );
+                var_2 processchallengedaily( "ch_perk_kills_tracker" );
 
                 if ( var_0.smeansofdeath == "MOD_MELEE" )
-                    var_2 _id_D991( "ch_tracker_melee" );
+                    var_2 processchallengedaily( "ch_tracker_melee" );
 
                 break;
             case "specialty_stun_resistance":
                 if ( isdefined( var_0._id_250C[var_3.guid] ) )
-                    var_2 _id_D991( "ch_perk_kills_tacresist" );
+                    var_2 processchallengedaily( "ch_perk_kills_tacresist" );
 
                 break;
             case "specialty_coldblooded":
                 if ( scripts\mp\utility::weaponhasattachment( var_0._id_13385, "thermal" ) || scripts\mp\utility::istrue( var_0._id_1337D ) || scripts\mp\utility::istrue( var_0._id_1337B ) )
-                    var_2 _id_D991( "ch_perk_kills_coldblooded" );
+                    var_2 processchallengedaily( "ch_perk_kills_coldblooded" );
 
                 if ( scripts\mp\utility::getweapongroup( var_0.sweapon ) == "weapon_sniper" )
-                    var_2 _id_D991( "ch_coldblood_sniper" );
+                    var_2 processchallengedaily( "ch_coldblood_sniper" );
 
                 break;
             case "specialty_sprintfire":
                 if ( var_0._id_24F1 && var_0.isbulletdamage )
-                    var_2 _id_D991( "ch_perk_kills_gungho" );
+                    var_2 processchallengedaily( "ch_perk_kills_gungho" );
 
-                if ( isdefined( var_0._id_24F5 ) && _id_9EBC( var_0._id_24F5, 2 ) )
-                    var_2 _id_D991( "ch_gungho_double_kill" );
+                if ( isdefined( var_0._id_24F5 ) && isnumbermultipleof( var_0._id_24F5, 2 ) )
+                    var_2 processchallengedaily( "ch_gungho_double_kill" );
 
                 break;
             case "specialty_bullet_outline":
-                var_2 _id_D991( "ch_perk_kills_pinpoint" );
+                var_2 processchallengedaily( "ch_perk_kills_pinpoint" );
                 var_6 = undefined;
 
                 if ( isdefined( var_0._id_13374[var_2.guid] ) )
@@ -1971,26 +1973,26 @@ _id_D9B0( var_0, var_1, var_2, var_3 )
                         var_7 = var_0._id_24E0[var_3.guid].firsttimedamaged;
 
                     if ( isdefined( var_7 ) && var_7 < var_6 )
-                        var_2 _id_D991( "ch_pinpoint_counter_kill" );
+                        var_2 processchallengedaily( "ch_pinpoint_counter_kill" );
                 }
 
                 break;
             case "specialty_marksman":
                 if ( scripts\mp\utility::istrue( var_0.modifiers["longshot"] ) )
-                    var_2 _id_D991( "ch_marksman_longshot" );
+                    var_2 processchallengedaily( "ch_marksman_longshot" );
 
                 if ( var_0._id_24EF && isdefined( var_0._id_24F9 ) && gettime() < var_0._id_24F9 + 3000 )
-                    var_2 _id_D991( "ch_marksman_flinch" );
+                    var_2 processchallengedaily( "ch_marksman_flinch" );
 
                 break;
             case "specialty_empimmune":
-                var_2 _id_D991( "ch_perk_kills_hardwired" );
+                var_2 processchallengedaily( "ch_perk_kills_hardwired" );
                 break;
             case "specialty_quieter":
-                var_2 _id_D991( "ch_perk_kills_deadsilence" );
+                var_2 processchallengedaily( "ch_perk_kills_deadsilence" );
 
                 if ( var_0.smeansofdeath == "MOD_MELEE" )
-                    var_2 _id_D991( "ch_deadsilence_melee" );
+                    var_2 processchallengedaily( "ch_deadsilence_melee" );
 
                 break;
         }
@@ -2009,14 +2011,14 @@ _id_D9C8( var_0, var_1, var_2, var_3 )
 
     if ( var_0.attacker scripts\mp\utility::ispickedupweapon( var_0.sweapon ) )
     {
-        var_2 _id_D991( "ch_pickup_kills" );
+        var_2 processchallengedaily( "ch_pickup_kills" );
         var_4 = scripts\mp\loot::getlootinfoforweapon( var_0.sweapon );
 
         if ( isdefined( var_4 ) && isdefined( var_4.quality ) && var_4.quality == 4 )
-            var_2 _id_D991( "ch_outfitter_thief" );
+            var_2 processchallengedaily( "ch_outfitter_thief" );
 
         if ( isdefined( var_0._id_2512 ) && isdefined( var_0._id_2512[var_0.sweapon] ) && gettime() - var_0._id_2512[var_0.sweapon] < 10000 )
-            var_2 _id_D991( "ch_quick_pickup_kill" );
+            var_2 processchallengedaily( "ch_quick_pickup_kill" );
     }
 
     var_5 = scripts\mp\utility::getweaponrootname( var_0.sweapon );
@@ -2027,7 +2029,7 @@ _id_D9C8( var_0, var_1, var_2, var_3 )
     else if ( isexplosivedamagemod( var_0.smeansofdeath ) )
         _id_D99E( var_0, var_2, var_1, var_6, var_5 );
     else if ( issubstr( var_0.smeansofdeath, "MOD_MELEE" ) && !scripts\mp\weapons::isriotshield( var_0.sweapon ) )
-        _id_D9AC( var_0, var_2, var_1, var_6, var_5 );
+        processmastermerit( var_0, var_2, var_1, var_6, var_5 );
     else if ( scripts\mp\weapons::isriotshield( var_0.sweapon ) )
         _id_D9B3( var_0, var_2, var_1, var_6, var_5 );
     else if ( issubstr( var_0.smeansofdeath, "MOD_IMPACT" ) )
@@ -2081,7 +2083,7 @@ _id_D9C8( var_0, var_1, var_2, var_3 )
 
         if ( var_8 && var_9 && var_10 )
         {
-            var_2 _id_D991( "ch_3_kill_types" );
+            var_2 processchallengedaily( "ch_3_kill_types" );
             var_2._id_D99C = 1;
         }
     }
@@ -2124,17 +2126,17 @@ _id_D990( var_0, var_1, var_2, var_3, var_4 )
     }
 
     if ( scripts\mp\utility::istrue( weaponusesenergybullets( var_0.sweapon ) ) )
-        var_1 _id_D991( "ch_lifetime_energy_kills" );
+        var_1 processchallengedaily( "ch_lifetime_energy_kills" );
 
     if ( scripts\mp\utility::istrue( var_0.modifiers["headshot"] ) )
-        var_1 _id_D991( "ch_lifetime_headshots" );
+        var_1 processchallengedaily( "ch_lifetime_headshots" );
 
     if ( var_0._id_24E3 == 0 )
     {
         var_5 = weaponclipsize( var_0.sweapon );
 
         if ( var_5 >= 10 )
-            var_1 _id_D991( "ch_last_bullet_kill" );
+            var_1 processchallengedaily( "ch_last_bullet_kill" );
     }
 
     var_6 = scripts\mp\utility::getweaponrootname( var_0.sweapon );
@@ -2159,9 +2161,9 @@ _id_D98E( var_0, var_1, var_2, var_3, var_4 )
         return 0;
 
     if ( getweaponcamoname( var_0.sweapon ) != "camo0" )
-        var_1 _id_D991( "ch_outfitter_camo" );
+        var_1 processchallengedaily( "ch_outfitter_camo" );
 
-    if ( var_3 == "weapon_sniper" && !scripts\mp\weapons::_id_13C98( var_0.sweapon ) )
+    if ( var_3 == "weapon_sniper" && !scripts\mp\weapons::weaponhasselectableoptic( var_0.sweapon ) )
         var_1 _id_D9C3( var_4, "noscope", var_0 );
 
     var_5 = 0;
@@ -2170,9 +2172,9 @@ _id_D98E( var_0, var_1, var_2, var_3, var_4 )
 
     foreach ( var_9 in var_7 )
     {
-        if ( scripts\mp\utility::_id_248E( var_9 ) )
+        if ( scripts\mp\utility::attachmentiscosmetic( var_9 ) )
         {
-            var_1 _id_D991( "ch_outfitter_charm" );
+            var_1 processchallengedaily( "ch_outfitter_charm" );
 
             if ( var_9 == "cos_026" || var_9 == "cos_007" || var_9 == "cos_006" )
                 var_5 = 1;
@@ -2192,48 +2194,48 @@ _id_D98E( var_0, var_1, var_2, var_3, var_4 )
             case "acog":
             case "thermal":
                 var_1 _id_D9C3( var_4, var_9, var_0 );
-                var_1 _id_D991( "ch_attach_rof" );
+                var_1 processchallengedaily( "ch_attach_rof" );
                 var_6 = 1;
                 break;
             case "smart":
-                var_1 _id_D991( "ch_attach_rof" );
+                var_1 processchallengedaily( "ch_attach_rof" );
                 var_6 = 1;
                 break;
             case "xmags":
-                if ( _id_9EBC( var_0._id_24F4, 2 ) )
-                    var_1 _id_D991( "ch_xmags_two_kills" );
+                if ( isnumbermultipleof( var_0._id_24F4, 2 ) )
+                    var_1 processchallengedaily( "ch_xmags_two_kills" );
 
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
                 break;
             case "xmagse":
-                if ( _id_9EBC( var_0._id_24F4, 2 ) )
-                    var_1 _id_D991( "ch_xmags_two_kills" );
+                if ( isnumbermultipleof( var_0._id_24F4, 2 ) )
+                    var_1 processchallengedaily( "ch_xmags_two_kills" );
 
-                var_1 _id_D991( "ch_attach_xmags" );
+                var_1 processchallengedaily( "ch_attach_xmags" );
                 break;
             case "fastaim":
                 if ( gettime() - var_0._id_24F7 < 3000 )
-                    var_1 _id_D991( "ch_fastaim_ads_kill" );
+                    var_1 processchallengedaily( "ch_fastaim_ads_kill" );
 
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
                 break;
             case "stock":
                 if ( var_0._id_24EF && var_0._id_250A >= 50 )
-                    var_1 _id_D991( "ch_stock_ads_kill" );
+                    var_1 processchallengedaily( "ch_stock_ads_kill" );
 
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
                 break;
             case "cpu":
                 if ( var_0._id_24EF && !var_0._id_24EB )
-                    var_1 _id_D991( "ch_cpu_ads_kill" );
+                    var_1 processchallengedaily( "ch_cpu_ads_kill" );
 
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
                 break;
             case "akimbo":
-                if ( !var_0._id_2500 )
-                    var_1 _id_D991( "ch_akimbo_jump_kill" );
+                if ( !var_0.attackeronground )
+                    var_1 processchallengedaily( "ch_akimbo_jump_kill" );
 
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
 
                 if ( !isdefined( var_1.akimbokills ) )
                     var_1.akimbokills = 1;
@@ -2242,38 +2244,38 @@ _id_D98E( var_0, var_1, var_2, var_3, var_4 )
 
                 break;
             case "fmj":
-                if ( var_0._id_92BE & level.idflags_penetration )
-                    var_1 _id_D991( "ch_fmj_penetrate" );
+                if ( var_0.idflags & level.idflags_penetration )
+                    var_1 processchallengedaily( "ch_fmj_penetrate" );
 
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
                 break;
             case "highcal":
                 if ( isdefined( var_0.modifiers["headshot"] ) )
-                    var_1 _id_D991( "ch_highcal_headshots" );
+                    var_1 processchallengedaily( "ch_highcal_headshots" );
 
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
                 break;
             case "barrelrange":
                 if ( isdefined( var_0.modifiers["longshot"] ) )
-                    var_1 _id_D991( "ch_barrelrange_longshots" );
+                    var_1 processchallengedaily( "ch_barrelrange_longshots" );
 
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
                 break;
             case "hipaim":
                 if ( isdefined( var_0.modifiers["hipfire"] ) )
-                    var_1 _id_D991( "ch_hipaim_hipfire" );
+                    var_1 processchallengedaily( "ch_hipaim_hipfire" );
 
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
                 break;
             case "overclock":
             case "rof":
             case "silencer":
             case "grip":
             case "firetypeauto":
-                var_1 _id_D991( "ch_attach_" + var_9 );
+                var_1 processchallengedaily( "ch_attach_" + var_9 );
                 break;
             case "reflect":
-                var_1 _id_D991( "ch_attach_ricochet" );
+                var_1 processchallengedaily( "ch_attach_ricochet" );
                 break;
             default:
                 break;
@@ -2285,26 +2287,26 @@ _id_D98E( var_0, var_1, var_2, var_3, var_4 )
         var_3 = scripts\mp\utility::getweapongroup( var_0.sweapon );
 
         if ( var_3 == "weapon_assault" && scripts\mp\utility::istrue( weaponusesenergybullets( var_0.sweapon ) ) )
-            var_1 _id_D991( "ch_rvn_unlock" );
+            var_1 processchallengedaily( "ch_rvn_unlock" );
 
         if ( var_3 == "weapon_pistol" && var_6 == 1 )
-            var_1 _id_D991( "ch_udm_unlock" );
+            var_1 processchallengedaily( "ch_udm_unlock" );
     }
 
-    if ( scripts\mp\utility::_id_13C91( var_0.sweapon ) )
-        var_1 _id_D9BF( var_4, "firetypeburst" );
+    if ( scripts\mp\utility::weaponhasintegratedfiretypeburst( var_0.sweapon ) )
+        var_1 processweaponattachmentchallenge( var_4, "firetypeburst" );
 
     if ( scripts\mp\utility::_id_13C94( var_4 ) )
-        var_1 _id_D9BF( var_4, "silencer" );
+        var_1 processweaponattachmentchallenge( var_4, "silencer" );
 
-    if ( scripts\mp\utility::_id_13C93( var_4 ) )
-        var_1 _id_D9BF( var_4, "grip" );
+    if ( scripts\mp\utility::weaponhasintegratedgrip( var_4 ) )
+        var_1 processweaponattachmentchallenge( var_4, "grip" );
 
-    if ( scripts\mp\utility::_id_13C92( var_4 ) )
-        var_1 _id_D9BF( var_4, "fmj" );
+    if ( scripts\mp\utility::weaponhasintegratedfmj( var_4 ) )
+        var_1 processweaponattachmentchallenge( var_4, "fmj" );
 
-    if ( var_1 scripts\mp\utility::_id_9EE8() && scripts\mp\utility::_id_13C95( var_0.sweapon ) )
-        var_1 _id_D9BF( var_4, "tracker" );
+    if ( var_1 scripts\mp\utility::isplayerads() && scripts\mp\utility::weaponhasintegratedtrackerscope( var_0.sweapon ) )
+        var_1 processweaponattachmentchallenge( var_4, "tracker" );
 }
 
 _id_D99E( var_0, var_1, var_2, var_3, var_4 )
@@ -2317,7 +2319,7 @@ _id_D99E( var_0, var_1, var_2, var_3, var_4 )
         {
             case "gl":
                 if ( scripts\mp\utility::isstrstart( var_0.sweapon, "alt_" ) )
-                    var_1 _id_D9BF( var_4, var_7 );
+                    var_1 processweaponattachmentchallenge( var_4, var_7 );
 
                 break;
         }
@@ -2332,7 +2334,7 @@ _id_D99E( var_0, var_1, var_2, var_3, var_4 )
                 if ( var_0._id_94B3 == var_1 )
                 {
                     if ( var_0._id_94B5 == var_1 )
-                        var_1 _id_D991( "ch_explodingdrone_combo" );
+                        var_1 processchallengedaily( "ch_explodingdrone_combo" );
                 }
             }
         }
@@ -2343,16 +2345,16 @@ _id_D99E( var_0, var_1, var_2, var_3, var_4 )
                 if ( var_0._id_94B3 == var_1 )
                 {
                     if ( var_0._id_94B5 == var_1 )
-                        var_1 _id_D991( "ch_tripmine_explode" );
+                        var_1 processchallengedaily( "ch_tripmine_explode" );
                     else if ( var_0._id_94B5 == var_0.victim )
-                        var_1 _id_D991( "ch_enemy_equip_kill" );
+                        var_1 processchallengedaily( "ch_enemy_equip_kill" );
                 }
             }
         }
     }
 }
 
-_id_D9AC( var_0, var_1, var_2, var_3, var_4 )
+processmastermerit( var_0, var_1, var_2, var_3, var_4 )
 {
     var_5 = scripts\mp\utility::getweaponattachmentsbasenames( var_0.sweapon );
 
@@ -2361,13 +2363,13 @@ _id_D9AC( var_0, var_1, var_2, var_3, var_4 )
         switch ( var_7 )
         {
             case "tactical":
-                var_1 _id_D9BF( var_4, var_7 );
+                var_1 processweaponattachmentchallenge( var_4, var_7 );
                 break;
         }
     }
 
     if ( var_0._id_13380 == "crouch" || var_0._id_13380 == "prone" )
-        var_1 _id_D991( "ch_melee_crouch_prone" );
+        var_1 processchallengedaily( "ch_melee_crouch_prone" );
 
     if ( var_3 == "weapon_melee" )
     {
@@ -2392,7 +2394,7 @@ _id_D9B3( var_0, var_1, var_2, var_3, var_4 )
             case "rshieldspikes":
             case "rshieldscrambler":
             case "rshieldradar":
-                var_1 _id_D9BF( var_4, var_7 );
+                var_1 processweaponattachmentchallenge( var_4, var_7 );
                 break;
         }
     }
@@ -2408,7 +2410,7 @@ _id_D9A0( var_0, var_1, var_2, var_3, var_4 )
         {
             case "gl":
                 if ( scripts\mp\utility::isstrstart( var_0.sweapon, "alt_" ) )
-                    var_1 _id_D9BF( var_4, var_7 );
+                    var_1 processweaponattachmentchallenge( var_4, var_7 );
 
                 break;
         }
@@ -2417,39 +2419,39 @@ _id_D9A0( var_0, var_1, var_2, var_3, var_4 )
 
 _id_D9A9( var_0, var_1, var_2, var_3, var_4 )
 {
-    var_5 = level._id_D7A4[var_0.sweapon];
+    var_5 = level.powerweaponmap[var_0.sweapon];
 
     switch ( var_5 )
     {
         case "power_splashGrenade":
-            var_1 _id_D991( "ch_lethal_splash" );
+            var_1 processchallengedaily( "ch_lethal_splash" );
             break;
         case "power_clusterGrenade":
-            var_1 _id_D991( "ch_lethal_cluster" );
+            var_1 processchallengedaily( "ch_lethal_cluster" );
             break;
         case "power_tripMine":
-            var_1 _id_D991( "ch_lethal_tripmine" );
+            var_1 processchallengedaily( "ch_lethal_tripmine" );
             break;
         case "power_splitGrenade":
-            var_1 _id_D991( "ch_lethal_split" );
+            var_1 processchallengedaily( "ch_lethal_split" );
             break;
         case "power_explodingDrone":
-            var_1 _id_D991( "ch_lethal_explodingdrone" );
+            var_1 processchallengedaily( "ch_lethal_explodingdrone" );
             break;
         case "power_blackholeGrenade":
-            var_1 _id_D991( "ch_lethal_blackhole" );
+            var_1 processchallengedaily( "ch_lethal_blackhole" );
             break;
         case "power_wristRocket":
-            var_1 _id_D991( "ch_lethal_armlauncher" );
+            var_1 processchallengedaily( "ch_lethal_armlauncher" );
             break;
         case "power_spiderGrenade":
-            var_1 _id_D991( "ch_lethal_spider" );
+            var_1 processchallengedaily( "ch_lethal_spider" );
             break;
         case "power_c4":
-            var_1 _id_D991( "ch_lethal_c4" );
+            var_1 processchallengedaily( "ch_lethal_c4" );
             break;
         case "power_bioSpike":
-            var_1 _id_D991( "ch_lethal_biospike" );
+            var_1 processchallengedaily( "ch_lethal_biospike" );
             break;
         case "power_throwingKnife":
             break;
@@ -2457,10 +2459,10 @@ _id_D9A9( var_0, var_1, var_2, var_3, var_4 )
     }
 
     if ( isdefined( var_0._id_94B4 ) && var_0._id_94B4 == "friendly" )
-        var_1 _id_D991( "ch_stick_teammate" );
+        var_1 processchallengedaily( "ch_stick_teammate" );
 }
 
-_id_3C03( var_0 )
+ch_roundplayed( var_0 )
 {
     if ( !isdefined( game["uniquePlayerCount"] ) || game["uniquePlayerCount"] < 3 )
         return;
@@ -2488,17 +2490,17 @@ _id_3C03( var_0 )
         if ( var_1.score > 0 )
         {
             var_6 = scripts\mp\utility::roundup( var_1.score / 100 );
-            var_1 _id_D991( "ch_lifetime_score", var_6 );
+            var_1 processchallengedaily( "ch_lifetime_score", var_6 );
 
             switch ( level.gametype )
             {
                 case "dm":
-                    if ( var_0._id_CBFC < 3 )
-                        var_1 _id_D991( "ch_ffa_wins" );
+                    if ( var_0.place < 3 )
+                        var_1 processchallengedaily( "ch_ffa_wins" );
 
                     break;
                 case "sotf_ffa":
-                    if ( var_0._id_CBFC < 3 )
+                    if ( var_0.place < 3 )
                         var_1 processchallenge( "ch_hunted_victor" );
 
                     break;
@@ -2518,9 +2520,9 @@ _id_3C03( var_0 )
     var_1 checkatlasunlockchallenge();
 }
 
-_id_3C04( var_0 )
+ch_roundwin( var_0 )
 {
-    if ( !var_0._id_13D8A )
+    if ( !var_0.winner )
         return;
 
     if ( !isdefined( game["uniquePlayerCount"] ) || game["uniquePlayerCount"] < 3 )
@@ -2530,39 +2532,39 @@ _id_3C04( var_0 )
 
     if ( var_1.wasaliveatmatchstart )
     {
-        var_1 _id_D991( "ch_global_wins" );
+        var_1 processchallengedaily( "ch_global_wins" );
 
         if ( level.tactical )
-            var_1 _id_D991( "ch_ctf_wins" );
+            var_1 processchallengedaily( "ch_ctf_wins" );
 
-        if ( var_0._id_CBFC == 0 )
-            var_1 _id_D991( "ch_first_place" );
+        if ( var_0.place == 0 )
+            var_1 processchallengedaily( "ch_first_place" );
 
-        if ( var_0._id_CBFC <= 2 )
-            var_1 _id_D991( "ch_top3" );
+        if ( var_0.place <= 2 )
+            var_1 processchallengedaily( "ch_top3" );
 
         switch ( level.gametype )
         {
             case "war":
-                var_1 _id_D991( "ch_war_wins" );
+                var_1 processchallengedaily( "ch_war_wins" );
                 break;
             case "sd":
-                var_1 _id_D991( "ch_sd_sr_wins" );
+                var_1 processchallengedaily( "ch_sd_sr_wins" );
                 break;
             case "dom":
-                var_1 _id_D991( "ch_dom_wins" );
+                var_1 processchallengedaily( "ch_dom_wins" );
                 break;
             case "conf":
-                var_1 _id_D991( "ch_kc_grind_wins" );
+                var_1 processchallengedaily( "ch_kc_grind_wins" );
                 break;
             case "sr":
-                var_1 _id_D991( "ch_sd_sr_wins" );
+                var_1 processchallengedaily( "ch_sd_sr_wins" );
                 break;
             case "grind":
-                var_1 _id_D991( "ch_kc_grind_wins" );
+                var_1 processchallengedaily( "ch_kc_grind_wins" );
                 break;
             case "ball":
-                var_1 _id_D991( "ch_ball_wins" );
+                var_1 processchallengedaily( "ch_ball_wins" );
                 break;
             case "infect":
                 break;
@@ -2573,23 +2575,23 @@ _id_3C04( var_0 )
             case "grnd":
                 break;
             case "siege":
-                var_1 _id_D991( "ch_siege_wins" );
+                var_1 processchallengedaily( "ch_siege_wins" );
                 break;
             case "koth":
-                var_1 _id_D991( "ch_koth_wins" );
+                var_1 processchallengedaily( "ch_koth_wins" );
                 break;
             case "mp_zomb":
                 break;
             case "ctf":
                 break;
             case "dd":
-                var_1 _id_D991( "ch_dd_wins" );
+                var_1 processchallengedaily( "ch_dd_wins" );
                 break;
             case "tdef":
-                var_1 _id_D991( "ch_tdef_wins" );
+                var_1 processchallengedaily( "ch_tdef_wins" );
                 break;
             case "front":
-                var_1 _id_D991( "ch_war_wins" );
+                var_1 processchallengedaily( "ch_war_wins" );
                 break;
             default:
                 break;
@@ -2616,7 +2618,7 @@ _id_3C04( var_0 )
 
 checkvrunlockchallenge()
 {
-    if ( _id_2139( "ch_vr_unlock" ) )
+    if ( areallmerittierscomplete( "ch_vr_unlock" ) )
         return;
 
     if ( isdefined( self.killsperweapon ) )
@@ -2632,7 +2634,7 @@ checkvrunlockchallenge()
 
                 if ( var_0.size >= 6 )
                 {
-                    _id_D991( "ch_vr_unlock" );
+                    processchallengedaily( "ch_vr_unlock" );
                     return;
                 }
             }
@@ -2642,7 +2644,7 @@ checkvrunlockchallenge()
 
 checkcrdbunlockchallenge()
 {
-    if ( _id_2139( "ch_crdb_unlock" ) )
+    if ( areallmerittierscomplete( "ch_crdb_unlock" ) )
         return;
 
     if ( isdefined( self.killsperweapon ) )
@@ -2656,7 +2658,7 @@ checkcrdbunlockchallenge()
 
             if ( var_0 > 0 )
             {
-                _id_D991( "ch_crdb_unlock" );
+                processchallengedaily( "ch_crdb_unlock" );
                 return;
             }
         }
@@ -2665,43 +2667,43 @@ checkcrdbunlockchallenge()
 
 checkminilmgunlockchallenge()
 {
-    if ( _id_2139( "ch_minilmg_unlock" ) )
+    if ( areallmerittierscomplete( "ch_minilmg_unlock" ) )
         return;
 
     if ( isdefined( self.shotslandedlmg ) && self.shotslandedlmg >= 50 )
-        _id_D991( "ch_minilmg_unlock" );
+        processchallengedaily( "ch_minilmg_unlock" );
 }
 
 checkmp28unlockchallenge()
 {
-    if ( _id_2139( "ch_mp28_unlock" ) )
+    if ( areallmerittierscomplete( "ch_mp28_unlock" ) )
         return;
 
     if ( isdefined( self.classickills ) && self.classickills >= 10 )
-        _id_D991( "ch_mp28_unlock" );
+        processchallengedaily( "ch_mp28_unlock" );
 }
 
 checkba50calunlockchallenge()
 {
-    if ( _id_2139( "ch_ba50cal_unlock" ) )
+    if ( areallmerittierscomplete( "ch_ba50cal_unlock" ) )
         return;
 
     if ( isdefined( self.pers["oneShotKills"] ) && self.pers["oneShotKills"] >= 5 )
-        _id_D991( "ch_ba50cal_unlock" );
+        processchallengedaily( "ch_ba50cal_unlock" );
 }
 
 checkmod2187unlockchallenge()
 {
-    if ( _id_2139( "ch_mod2187_unlock" ) )
+    if ( areallmerittierscomplete( "ch_mod2187_unlock" ) )
         return;
 
     if ( isdefined( self.akimbokills ) && self.akimbokills >= 10 )
-        _id_D991( "ch_mod2187_unlock" );
+        processchallengedaily( "ch_mod2187_unlock" );
 }
 
 checklongshotunlockchallenge()
 {
-    if ( _id_2139( "ch_longshot_unlock" ) )
+    if ( areallmerittierscomplete( "ch_longshot_unlock" ) )
         return;
 
     var_0 = 0;
@@ -2722,21 +2724,21 @@ checklongshotunlockchallenge()
     }
 
     if ( var_0 && var_1 )
-        _id_D991( "ch_longshot_unlock" );
+        processchallengedaily( "ch_longshot_unlock" );
 }
 
 checkgaussunlockchallenge()
 {
-    if ( _id_2139( "ch_gauss_unlock" ) )
+    if ( areallmerittierscomplete( "ch_gauss_unlock" ) )
         return;
 
     if ( isdefined( self.hipfiremagkills ) && self.hipfiremagkills >= 5 )
-        _id_D991( "ch_gauss_unlock" );
+        processchallengedaily( "ch_gauss_unlock" );
 }
 
 checkmustangunlockchallenge()
 {
-    if ( _id_2139( "ch_mag_unlock" ) )
+    if ( areallmerittierscomplete( "ch_mag_unlock" ) )
         return;
 
     var_0 = 1;
@@ -2759,21 +2761,21 @@ checkmustangunlockchallenge()
     }
 
     if ( var_0 && var_1 >= 5 )
-        _id_D991( "ch_mag_unlock" );
+        processchallengedaily( "ch_mag_unlock" );
 }
 
 checktacburstunlockchallenge()
 {
-    if ( _id_2139( "ch_tacburst_unlock" ) )
+    if ( areallmerittierscomplete( "ch_tacburst_unlock" ) )
         return;
 
     if ( isdefined( self.burstfirekills ) && self.burstfirekills >= 10 )
-        _id_D991( "ch_tacburst_unlock" );
+        processchallengedaily( "ch_tacburst_unlock" );
 }
 
 checkatlasunlockchallenge()
 {
-    if ( _id_2139( "ch_unsalmg_unlock" ) )
+    if ( areallmerittierscomplete( "ch_unsalmg_unlock" ) )
         return;
 
     if ( isdefined( self.killsperweapon ) )
@@ -2787,7 +2789,7 @@ checkatlasunlockchallenge()
 
             if ( var_0 >= 10 )
             {
-                _id_D991( "ch_unsalmg_unlock" );
+                processchallengedaily( "ch_unsalmg_unlock" );
                 return;
             }
         }
@@ -2796,7 +2798,7 @@ checkatlasunlockchallenge()
 
 _id_D378( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
-    if ( !_id_B4E8() )
+    if ( !mayprocesschallenges() )
         return;
 
     if ( !isplayer( self ) )
@@ -2809,7 +2811,7 @@ _id_D378( var_0, var_1, var_2, var_3, var_4, var_5 )
 
     _id_3BF6( var_0, var_1, var_2, var_3, var_4, var_5 );
     wait 0.05;
-    scripts\mp\utility::_id_13842();
+    scripts\mp\utility::waittillslowprocessallowed();
     var_6 = spawnstruct();
     var_6.victim = self;
     var_6.einflictor = var_0;
@@ -2818,19 +2820,19 @@ _id_D378( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_6.smeansofdeath = var_3;
     var_6.sweapon = var_4;
     var_6.shitloc = var_5;
-    _id_5914( "playerDamaged", var_6 );
+    domissioncallback( "playerDamaged", var_6 );
 }
 
 playerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
 {
-    if ( !_id_B4E8() )
+    if ( !mayprocesschallenges() )
         return;
 
     if ( !isdefined( var_1 ) )
         return;
 
-    if ( isdefined( var_1._id_A686 ) )
-        var_1._id_A686++;
+    if ( isdefined( var_1.killsthismag ) )
+        var_1.killsthismag++;
 
     if ( isplayer( var_1 ) && var_1 issprinting() )
     {
@@ -2849,7 +2851,7 @@ playerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     var_9.einflictor = var_0;
     var_9.attacker = var_1;
     var_9.idamage = var_2;
-    var_9._id_92BE = var_3;
+    var_9.idflags = var_3;
     var_9.smeansofdeath = var_4;
     var_9.sweapon = var_5;
     var_9.sprimaryweapon = var_6;
@@ -2885,35 +2887,35 @@ playerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
                 var_1.killsperweapon[var_9.sweapon] = 1;
         }
 
-        var_9._id_24EC = isdefined( var_9.attacker.laststand );
-        var_9._id_2500 = var_9.attacker isonground();
-        var_9._id_250B = var_9.attacker getstance();
+        var_9.attackerinlaststand = isdefined( var_9.attacker.laststand );
+        var_9.attackeronground = var_9.attacker isonground();
+        var_9.attackerstance = var_9.attacker getstance();
         var_9._id_24E4 = var_1.pers["cur_kill_streak"];
-        var_9._id_2504 = var_1._id_DDC2;
-        var_9._id_2505 = var_1._id_DDC3;
+        var_9._id_2504 = var_1.recentkillcount;
+        var_9._id_2505 = var_1.recentkillsperweapon;
         var_9.attackerarchetype = getsubstr( var_1.loadoutarchetype, 10, var_1.loadoutarchetype.size );
         var_9.attackerkillsthislife = var_1.killsthislife.size;
         var_9._id_24F3 = var_1.killsthislifeperweapon;
         var_9._id_24E3 = var_1 getweaponammoclip( var_5 );
-        var_9._id_24EB = var_1._id_9074;
+        var_9._id_24EB = var_1.holdingbreath;
         var_9._id_24F8 = var_1._id_A960;
         var_9._id_2503 = var_1.pers["primaryWeapon"];
         var_9._id_2509 = var_1.pers["secondaryWeapon"];
         var_9._id_24F6 = var_1._id_A6B4;
-        var_9._id_24F2 = var_1._id_A653;
+        var_9._id_24F2 = var_1.killedplayers;
         var_9._id_24E1 = var_1 scripts\mp\weapons::isstunnedorblinded();
         var_9._id_24E0 = var_1.attackerdata;
         var_9._id_2512 = var_1._id_13CB9;
         var_9._id_24EA = var_1.hasactivesmokegrenade;
         var_9._id_2501 = var_1.personalradaractive;
         var_9._id_2511 = var_1.usedadrenalineatfullhp;
-        var_9._id_24F4 = var_1._id_A686;
-        var_9._id_24EF = var_1 scripts\mp\utility::_id_9EE8();
-        var_9._id_24F7 = var_1._id_A932;
+        var_9._id_24F4 = var_1.killsthismag;
+        var_9._id_24EF = var_1 scripts\mp\utility::isplayerads();
+        var_9._id_24F7 = var_1.lastadsstarttime;
         var_9._id_250A = length( var_1 getvelocity() );
         var_9._id_24FD = var_1.pers["loadoutPerks"];
         var_9._id_24FA = var_1._id_A9DD;
-        var_9._id_24FC = var_1._id_A9D3;
+        var_9._id_24FC = var_1.lastprimaryweaponswaptime;
         var_9._id_24F9 = var_1._id_A98B;
         var_9._id_24FE = scripts\engine\utility::ter_op( isdefined( var_1.movespeedscaler ), var_1.movespeedscaler, 1.0 );
         var_9._id_24E9 = var_1._id_6A06;
@@ -2939,9 +2941,9 @@ playerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     }
     else
     {
-        var_9._id_24EC = 0;
-        var_9._id_2500 = 0;
-        var_9._id_250B = "stand";
+        var_9.attackerinlaststand = 0;
+        var_9.attackeronground = 0;
+        var_9.attackerstance = "stand";
         var_9._id_24E4 = 0;
         var_9._id_2505 = 0;
         var_9._id_24F3 = [];
@@ -2971,7 +2973,7 @@ playerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     var_9._id_13375 = scripts\mp\weapons::isstunnedorblinded();
     var_9._id_13380 = self getstance();
     var_9._id_13376 = self.debuffedbyplayers;
-    var_9._id_13384 = scripts\mp\killstreaks\utility::_id_9FB9( self.team );
+    var_9._id_13384 = scripts\mp\killstreaks\utility::isuavactiveforteam( self.team );
     var_9._id_13385 = self._id_EB6C;
     var_9._id_1337D = _id_66B8( "specialty_tracker" );
     var_9._id_1337B = _id_66B8( "specialty_sixth_sense" );
@@ -2981,14 +2983,14 @@ playerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     var_10 = var_9.victim scripts\mp\supers::getcurrentsuper();
 
     if ( isdefined( var_10 ) )
-        var_9._id_13381 = var_10._id_A986;
+        var_9._id_13381 = var_10.lastfinishtime;
 
     var_11 = scripts\mp\domeshield::_id_7E80( self );
 
     if ( isdefined( var_11 ) )
         var_9._id_13377 = var_11.owner;
 
-    _id_1369C( var_9 );
+    waitandprocessplayerkilledcallback( var_9 );
     var_9.attacker notify( "playerKilledChallengesProcessed" );
 }
 
@@ -2997,18 +2999,18 @@ killstreakdamaged( var_0, var_1, var_2, var_3, var_4 )
     if ( !isdefined( var_2._id_A6AE ) )
         var_2._id_A6AE = [];
 
-    if ( isdefined( self._id_1653 ) )
+    if ( isdefined( self.activeid ) )
     {
-        if ( !isdefined( var_2._id_A6AE[self._id_1653] ) )
+        if ( !isdefined( var_2._id_A6AE[self.activeid] ) )
         {
             var_5 = spawnstruct();
             var_5.owner = self.owner;
             var_5._id_A6A7 = var_0;
             var_5._id_4D71 = var_4;
-            var_2._id_A6AE[self._id_1653] = var_5;
+            var_2._id_A6AE[self.activeid] = var_5;
         }
         else
-            var_2._id_A6AE[self._id_1653]._id_4D71 = var_2._id_A6AE[self._id_1653]._id_4D71 + var_4;
+            var_2._id_A6AE[self.activeid]._id_4D71 = var_2._id_A6AE[self.activeid]._id_4D71 + var_4;
     }
     else
     {
@@ -3018,7 +3020,7 @@ killstreakdamaged( var_0, var_1, var_2, var_3, var_4 )
 
 killstreakkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
 {
-    if ( !_id_B4E8() )
+    if ( !mayprocesschallenges() )
         return;
 
     if ( isdefined( var_4 ) && isplayer( var_4 ) && ( !isdefined( var_1 ) || var_4 != var_1 ) && isdefined( var_7 ) )
@@ -3034,15 +3036,15 @@ killstreakkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 
             var_4._id_A6B3[var_9]++;
 
         if ( var_4 _id_66B8( "specialty_engineer" ) )
-            var_4 _id_D991( "ch_perk_kills_engineer" );
+            var_4 processchallengedaily( "ch_perk_kills_engineer" );
 
         if ( var_4.killsthislife.size > 0 )
             var_4 _id_D9B8();
 
-        if ( scripts\mp\killstreaks\utility::_id_9D28( var_0 ) )
+        if ( scripts\mp\killstreaks\utility::isaffectedbyblindeye( var_0 ) )
         {
             if ( var_4 _id_66B8( "specialty_blindeye" ) )
-                var_4 _id_D991( "ch_perk_kills_blindeye" );
+                var_4 processchallengedaily( "ch_perk_kills_blindeye" );
         }
 
         var_10 = var_7;
@@ -3055,7 +3057,7 @@ killstreakkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 
 
         if ( var_11 )
         {
-            switch ( _id_7F48( var_10 ) )
+            switch ( getkillstreaknamefromweapon( var_10 ) )
             {
                 case "jackal":
                 case "bombardment":
@@ -3077,16 +3079,16 @@ killstreakkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 
             case "directional_uav":
             case "counter_uav":
             case "uav":
-                var_4 _id_D991( "ch_destroy_uav" );
+                var_4 processchallengedaily( "ch_destroy_uav" );
                 var_13 = 1;
                 break;
             case "minijackal":
-                var_4 _id_D991( "ch_destroy_apex" );
+                var_4 processchallengedaily( "ch_destroy_apex" );
                 var_13 = 1;
                 break;
             case "thor":
                 if ( var_16 )
-                    var_4 _id_D991( "ch_thor_bullet_kill" );
+                    var_4 processchallengedaily( "ch_thor_bullet_kill" );
 
                 var_13 = 1;
                 break;
@@ -3095,43 +3097,43 @@ killstreakkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 
                 break;
             case "jackal":
                 if ( var_16 )
-                    var_4 _id_D991( "ch_armada_warden_bullet_kill" );
+                    var_4 processchallengedaily( "ch_armada_warden_bullet_kill" );
 
                 var_13 = 1;
                 break;
             case "dronedrop":
-                var_4 _id_D991( "ch_destroy_dronepackage" );
+                var_4 processchallengedaily( "ch_destroy_dronepackage" );
                 var_13 = 1;
                 break;
             case "sentry_shock":
-                var_4 _id_D991( "ch_destroy_sentry" );
+                var_4 processchallengedaily( "ch_destroy_sentry" );
                 var_14 = 1;
                 break;
             case "ball_drone_backup":
-                var_4 _id_D991( "ch_destroy_vulture" );
+                var_4 processchallengedaily( "ch_destroy_vulture" );
                 var_14 = 1;
                 break;
             case "remote_c8":
-                var_4 _id_D991( "ch_kill_rc8" );
+                var_4 processchallengedaily( "ch_kill_rc8" );
                 var_14 = 1;
                 break;
             case "venom":
-                var_4 _id_D991( "ch_destroy_scarab" );
+                var_4 processchallengedaily( "ch_destroy_scarab" );
                 var_14 = 1;
                 break;
         }
 
         if ( var_13 )
-            var_4 _id_D991( "ch_destroy_aerial" );
+            var_4 processchallengedaily( "ch_destroy_aerial" );
 
         if ( var_12 && var_13 )
-            var_4 _id_D991( "ch_scorestreak_air_to_air" );
+            var_4 processchallengedaily( "ch_scorestreak_air_to_air" );
 
         if ( var_12 && var_14 )
-            var_4 _id_D991( "ch_scorestreak_air_to_ground" );
+            var_4 processchallengedaily( "ch_scorestreak_air_to_ground" );
 
         if ( var_15 )
-            var_4 _id_D991( "ch_super_scorestreak_kill" );
+            var_4 processchallengedaily( "ch_super_scorestreak_kill" );
 
         var_4 _id_D9D4( var_9, var_0, var_2 );
         var_4._id_A9A8 = gettime();
@@ -3183,7 +3185,7 @@ _id_8375( var_0, var_1 )
                 if ( isdefined( self.owner ) && self.owner == var_3 )
                     continue;
 
-                if ( isdefined( self.owner.team ) && scripts\mp\utility::_id_9E05( self.owner.team, var_3 ) )
+                if ( isdefined( self.owner.team ) && scripts\mp\utility::isfriendly( self.owner.team, var_3 ) )
                     continue;
 
                 if ( var_3 == var_1 )
@@ -3195,19 +3197,19 @@ _id_8375( var_0, var_1 )
     }
 }
 
-_id_1369C( var_0 )
+waitandprocessplayerkilledcallback( var_0 )
 {
     if ( isdefined( var_0.attacker ) )
         var_0.attacker endon( "disconnect" );
 
-    self._id_D9A6 = 1;
+    self.processingkilledchallenges = 1;
     wait 0.05;
-    scripts\mp\utility::_id_13842();
-    _id_5914( "playerKilled", var_0 );
-    self._id_D9A6 = undefined;
+    scripts\mp\utility::waittillslowprocessallowed();
+    domissioncallback( "playerKilled", var_0 );
+    self.processingkilledchallenges = undefined;
 }
 
-_id_D366( var_0 )
+playerassist( var_0 )
 {
     var_1 = spawnstruct();
     var_1.player = self;
@@ -3217,37 +3219,37 @@ _id_D366( var_0 )
     if ( isdefined( var_2 ) )
         var_1.sweapon = var_2.weapon;
 
-    _id_5914( "playerAssist", var_1 );
+    domissioncallback( "playerAssist", var_1 );
 }
 
 _id_13079( var_0 )
 {
     self endon( "disconnect" );
     wait 0.05;
-    scripts\mp\utility::_id_13842();
+    scripts\mp\utility::waittillslowprocessallowed();
     var_1 = spawnstruct();
     var_1.player = self;
     var_1._id_A6A7 = var_0;
-    _id_5914( "playerUsedKillstreak", var_1 );
+    domissioncallback( "playerUsedKillstreak", var_1 );
 }
 
 _id_A691( var_0 )
 {
     self endon( "disconnect" );
     wait 0.05;
-    scripts\mp\utility::_id_13842();
+    scripts\mp\utility::waittillslowprocessallowed();
     var_1 = spawnstruct();
     var_1.player = self.owner;
     var_1._id_A6A7 = var_0;
-    _id_5914( "playerKillstreakActive", var_1 );
+    domissioncallback( "playerKillstreakActive", var_1 );
 }
 
-_id_E75B()
+roundbegin()
 {
-    _id_5914( "roundBegin" );
+    domissioncallback( "roundBegin" );
 }
 
-_id_E75D( var_0 )
+roundend( var_0 )
 {
     var_1 = spawnstruct();
 
@@ -3258,9 +3260,9 @@ _id_E75D( var_0 )
         for ( var_3 = 0; var_3 < level.placement[var_2].size; var_3++ )
         {
             var_1.player = level.placement[var_2][var_3];
-            var_1._id_13D8A = var_2 == var_0;
-            var_1._id_CBFC = var_3;
-            _id_5914( "roundEnd", var_1 );
+            var_1.winner = var_2 == var_0;
+            var_1.place = var_3;
+            domissioncallback( "roundEnd", var_1 );
             var_1.player scripts\mp\contractchallenges::contractmatchend( var_1 );
         }
 
@@ -3269,9 +3271,9 @@ _id_E75D( var_0 )
         for ( var_3 = 0; var_3 < level.placement[var_2].size; var_3++ )
         {
             var_1.player = level.placement[var_2][var_3];
-            var_1._id_13D8A = var_2 == var_0;
-            var_1._id_CBFC = var_3;
-            _id_5914( "roundEnd", var_1 );
+            var_1.winner = var_2 == var_0;
+            var_1.place = var_3;
+            domissioncallback( "roundEnd", var_1 );
             var_1.player scripts\mp\contractchallenges::contractmatchend( var_1 );
         }
     }
@@ -3280,17 +3282,17 @@ _id_E75D( var_0 )
         for ( var_3 = 0; var_3 < level.placement["all"].size; var_3++ )
         {
             var_1.player = level.placement["all"][var_3];
-            var_1._id_13D8A = isdefined( var_0 ) && isplayer( var_0 ) && var_1.player == var_0;
-            var_1._id_CBFC = var_3;
-            _id_5914( "roundEnd", var_1 );
+            var_1.winner = isdefined( var_0 ) && isplayer( var_0 ) && var_1.player == var_0;
+            var_1.place = var_3;
+            domissioncallback( "roundEnd", var_1 );
             var_1.player scripts\mp\contractchallenges::contractmatchend( var_1 );
         }
     }
 }
 
-_id_5914( var_0, var_1 )
+domissioncallback( var_0, var_1 )
 {
-    if ( !_id_B4E8() )
+    if ( !mayprocesschallenges() )
         return;
 
     if ( isdefined( var_1 ) )
@@ -3307,18 +3309,18 @@ _id_5914( var_0, var_1 )
     if ( getdvarint( "disable_challenges" ) > 0 )
         return;
 
-    if ( !isdefined( level._id_B8CD[var_0] ) )
+    if ( !isdefined( level.missioncallbacks[var_0] ) )
         return;
 
     if ( isdefined( var_1 ) )
     {
-        for ( var_3 = 0; var_3 < level._id_B8CD[var_0].size; var_3++ )
-            thread [[ level._id_B8CD[var_0][var_3] ]]( var_1 );
+        for ( var_3 = 0; var_3 < level.missioncallbacks[var_0].size; var_3++ )
+            thread [[ level.missioncallbacks[var_0][var_3] ]]( var_1 );
     }
     else
     {
-        for ( var_3 = 0; var_3 < level._id_B8CD[var_0].size; var_3++ )
-            thread [[ level._id_B8CD[var_0][var_3] ]]();
+        for ( var_3 = 0; var_3 < level.missioncallbacks[var_0].size; var_3++ )
+            thread [[ level.missioncallbacks[var_0][var_3] ]]();
     }
 }
 
@@ -3362,7 +3364,7 @@ _id_BA18()
     self waittill( "momentum_reset" );
 
     if ( gettime() > var_0 + 5000 )
-        _id_D991( "ch_momentum_time" );
+        processchallengedaily( "ch_momentum_time" );
 }
 
 _id_B9BA()
@@ -3386,7 +3388,7 @@ _id_B9BA()
 _id_27FA()
 {
     if ( scripts\mp\utility::istrue( self._id_6DE0 ) )
-        _id_D991( "ch_keep_away" );
+        processchallengedaily( "ch_keep_away" );
 }
 
 _id_BA17()
@@ -3412,7 +3414,7 @@ _id_BA17()
     var_5 = gettime() - var_1;
     var_6 = int( var_5 * 0.35 );
     var_0 = int( min( var_0, var_6 ) / 12 );
-    _id_D991( "ch_sprint", var_0 );
+    processchallengedaily( "ch_sprint", var_0 );
 }
 
 _id_B9B4()
@@ -3439,7 +3441,7 @@ _id_B9B4()
 
             if ( var_1 >= 20 )
             {
-                _id_D991( "ch_stay_in_air" );
+                processchallengedaily( "ch_stay_in_air" );
                 return;
             }
 
@@ -3474,7 +3476,7 @@ _id_B9D5()
         self waittill( "killed_exploding_drone", var_0 );
 
         if ( isdefined( var_0 ) && var_0 != self )
-            _id_D991( "ch_destroy_explodingdrone" );
+            processchallengedaily( "ch_destroy_explodingdrone" );
     }
 }
 
@@ -3496,17 +3498,17 @@ _id_BA07()
 
         if ( var_2 == "secondary" )
         {
-            _id_D991( "ch_tactical_uses" );
+            processchallengedaily( "ch_tactical_uses" );
 
-            if ( _id_9EBC( var_0[var_2], 2 ) )
-                _id_D991( "ch_tactical_two_uses" );
+            if ( isnumbermultipleof( var_0[var_2], 2 ) )
+                processchallengedaily( "ch_tactical_two_uses" );
         }
     }
 }
 
 lastmansd()
 {
-    if ( !_id_B4E8() )
+    if ( !mayprocesschallenges() )
         return;
 
     if ( !self.wasaliveatmatchstart )
@@ -3518,7 +3520,7 @@ lastmansd()
     processchallenge( "ch_lastmanstanding" );
 }
 
-_id_B9C0()
+monitorbombuse()
 {
     self endon( "disconnect" );
 
@@ -3540,16 +3542,16 @@ _id_B9C0()
     }
 }
 
-_id_B9ED()
+monitorlivetime()
 {
     for (;;)
     {
         self waittill( "spawned_player" );
-        thread _id_112E0();
+        thread survivalistchallenge();
     }
 }
 
-_id_112E0()
+survivalistchallenge()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -3578,8 +3580,8 @@ _id_B9EF()
         {
             self._id_AF2C[self._id_AF2C.size] = var_0;
 
-            if ( isdefined( self._id_10FAA ) && isdefined( self._id_10FA9 ) && self._id_10FA9 == 2 )
-                var_0._id_C83D = self._id_10FAA;
+            if ( isdefined( self.stingertarget ) && isdefined( self.stingerstage ) && self.stingerstage == 2 )
+                var_0._id_C83D = self.stingertarget;
         }
     }
 }
@@ -3589,7 +3591,7 @@ processchallenge( var_0, var_1, var_2 )
 
 }
 
-_id_D991( var_0, var_1, var_2 )
+processchallengedaily( var_0, var_1, var_2 )
 {
     if ( !_id_D3D6() )
         return;
@@ -3610,13 +3612,13 @@ _id_D991( var_0, var_1, var_2 )
     if ( !_id_9D84( var_0 ) )
         return;
 
-    var_3 = _id_7E22( var_0 );
+    var_3 = getchallengestatus( var_0 );
 
-    if ( _id_2139( var_0 ) )
+    if ( areallmerittierscomplete( var_0 ) )
         return;
 
     var_4 = _id_3BF8( var_0 );
-    var_5 = level._id_3C2C[var_0]["targetval"][var_3];
+    var_5 = level.challengeinfo[var_0]["targetval"][var_3];
 
     if ( isdefined( var_2 ) && var_2 )
         var_6 = var_1;
@@ -3640,14 +3642,14 @@ _id_D991( var_0, var_1, var_2 )
     if ( var_8 )
     {
         thread giverankxpafterwait( var_0, var_3 );
-        scripts\mp\matchdata::_id_AF99( var_0, var_3 );
-        _id_110AE( var_0 );
-        _id_8358( level._id_3C2C[var_0]["score"][var_3] );
+        scripts\mp\matchdata::logchallenge( var_0, var_3 );
+        storecompletedchallenge( var_0 );
+        _id_8358( level.challengeinfo[var_0]["score"][var_3] );
         var_3++;
         _id_3C06( var_0, var_3 );
-        self._id_3C2A[var_0] = var_3;
+        self.challengedata[var_0] = var_3;
 
-        if ( _id_2139( var_0 ) )
+        if ( areallmerittierscomplete( var_0 ) )
         {
             thread showchallengesplash( var_0, challengesplasheseachtier( var_0 ) );
             processmasterchallenge( var_0 );
@@ -3662,7 +3664,7 @@ _id_D991( var_0, var_1, var_2 )
                 case "ch_iw7_g18_gold":
                 case "ch_iw7_revolver_gold":
                 case "ch_iw7_nrg_gold":
-                    thread _id_D991( "ch_diamond_melee" );
+                    thread processchallengedaily( "ch_diamond_melee" );
                     break;
             }
         }
@@ -3679,27 +3681,27 @@ _id_D991( var_0, var_1, var_2 )
 
 processmasterchallenge( var_0 )
 {
-    var_1 = level._id_3C2C[var_0]["master"];
+    var_1 = level.challengeinfo[var_0]["master"];
 
     if ( isdefined( var_1 ) )
-        thread _id_D991( var_1 );
+        thread processchallengedaily( var_1 );
 }
 
-_id_110AE( var_0 )
+storecompletedchallenge( var_0 )
 {
-    if ( !isdefined( self._id_3C30 ) )
-        self._id_3C30 = [];
+    if ( !isdefined( self.challengescompleted ) )
+        self.challengescompleted = [];
 
     var_1 = 0;
 
-    foreach ( var_3 in self._id_3C30 )
+    foreach ( var_3 in self.challengescompleted )
     {
         if ( var_3 == var_0 )
             var_1 = 1;
     }
 
     if ( !var_1 )
-        self._id_3C30[self._id_3C30.size] = var_0;
+        self.challengescompleted[self.challengescompleted.size] = var_0;
 }
 
 giverankxpafterwait( var_0, var_1 )
@@ -3713,9 +3715,9 @@ giverankxpafterwait( var_0, var_1 )
     var_3 = undefined;
 
     if ( _id_9FFC( var_0 ) )
-        var_3 = scripts\mp\utility::_id_13C75( _id_8222( var_0 ) );
+        var_3 = scripts\mp\utility::weaponassetnamemap( getweaponfromequipmentref( var_0 ) );
 
-    var_4 = level._id_3C2C[var_0]["reward"][var_1];
+    var_4 = level.challengeinfo[var_0]["reward"][var_1];
     var_5 = "bonus_challenge_xp";
 
     if ( isdefined( level.prestigeextras[var_5] ) )
@@ -3733,31 +3735,31 @@ _id_8358( var_0 )
     self setplayerdata( "mp", "challengeScore", var_1 + var_0 );
 }
 
-_id_12E71()
+updatechallenges()
 {
-    self._id_3C2A = [];
+    self.challengedata = [];
     self endon( "disconnect" );
 
-    if ( !_id_B4E8() )
+    if ( !mayprocesschallenges() )
         return;
 
     var_0 = 0;
 
-    foreach ( var_5, var_2 in level._id_3C2C )
+    foreach ( var_5, var_2 in level.challengeinfo )
     {
         var_0++;
 
         if ( var_0 % 20 == 0 )
             wait 0.05;
 
-        self._id_3C2A[var_5] = 0;
+        self.challengedata[var_5] = 0;
         var_3 = var_2["index"];
-        var_4 = _id_3BF9( var_5 );
-        self._id_3C2A[var_5] = var_4;
+        var_4 = ch_getstate( var_5 );
+        self.challengedata[var_5] = var_4;
     }
 }
 
-_id_7E20( var_0 )
+getchallengefilter( var_0 )
 {
     return tablelookup( "mp/allChallengesTable.csv", 0, var_0, 6 );
 }
@@ -3782,7 +3784,7 @@ _id_9F27( var_0 )
     if ( !isdefined( var_0 ) )
         return 0;
 
-    var_1 = _id_7E20( var_0 );
+    var_1 = getchallengefilter( var_0 );
 
     switch ( var_1 )
     {
@@ -3807,7 +3809,7 @@ isrigcustomizationchallenge( var_0 )
     if ( !isdefined( var_0 ) )
         return 0;
 
-    var_1 = _id_7E20( var_0 );
+    var_1 = getchallengefilter( var_0 );
 
     if ( var_1 == "rig_customization" )
         return 1;
@@ -3820,7 +3822,7 @@ _id_9FFC( var_0 )
     if ( !isdefined( var_0 ) )
         return 0;
 
-    var_1 = _id_7E20( var_0 );
+    var_1 = getchallengefilter( var_0 );
 
     if ( isdefined( var_1 ) )
     {
@@ -3846,7 +3848,7 @@ isweaponclasschallenge( var_0 )
     if ( !isdefined( var_0 ) )
         return 0;
 
-    var_1 = _id_7E20( var_0 );
+    var_1 = getchallengefilter( var_0 );
 
     if ( isdefined( var_1 ) )
     {
@@ -3868,29 +3870,29 @@ isweaponclasschallenge( var_0 )
     return 0;
 }
 
-_id_8222( var_0 )
+getweaponfromequipmentref( var_0 )
 {
-    return _id_7E20( var_0 );
+    return getchallengefilter( var_0 );
 }
 
 _id_8122( var_0 )
 {
-    return _id_7E20( var_0 );
+    return getchallengefilter( var_0 );
 }
 
-_id_3C27( var_0, var_1, var_2 )
+challenge_targetval( var_0, var_1, var_2 )
 {
     var_3 = tablelookup( var_0, 0, var_1, 10 + var_2 * 3 );
     return int( var_3 );
 }
 
-_id_3C20( var_0, var_1, var_2 )
+challenge_rewardval( var_0, var_1, var_2 )
 {
     var_3 = tablelookup( var_0, 0, var_1, 11 + var_2 * 3 );
     return int( var_3 );
 }
 
-_id_3C25( var_0, var_1, var_2 )
+challenge_sprewardval( var_0, var_1, var_2 )
 {
     var_3 = tablelookup( var_0, 0, var_1, 12 + var_2 * 3 );
     return int( var_3 );
@@ -3908,7 +3910,7 @@ _id_3C1C( var_0, var_1 )
     return scripts\engine\utility::ter_op( var_2 == "", undefined, int( var_2 ) );
 }
 
-_id_31D8( var_0, var_1 )
+buildchallengetableinfo( var_0, var_1 )
 {
     var_2 = 0;
     var_3 = 0;
@@ -3923,34 +3925,34 @@ _id_31D8( var_0, var_1 )
             break;
 
         var_5 = _id_7E21( var_4 );
-        level._id_3C2C[var_4] = [];
-        level._id_3C2C[var_4]["index"] = var_2;
-        level._id_3C2C[var_4]["type"] = var_1;
-        level._id_3C2C[var_4]["targetval"] = [];
-        level._id_3C2C[var_4]["reward"] = [];
-        level._id_3C2C[var_4]["score"] = [];
-        level._id_3C2C[var_4]["filter"] = _id_7E20( var_4 );
-        level._id_3C2C[var_4]["master"] = var_5;
+        level.challengeinfo[var_4] = [];
+        level.challengeinfo[var_4]["index"] = var_2;
+        level.challengeinfo[var_4]["type"] = var_1;
+        level.challengeinfo[var_4]["targetval"] = [];
+        level.challengeinfo[var_4]["reward"] = [];
+        level.challengeinfo[var_4]["score"] = [];
+        level.challengeinfo[var_4]["filter"] = getchallengefilter( var_4 );
+        level.challengeinfo[var_4]["master"] = var_5;
 
         for ( var_6 = 0; var_6 < 8; var_6++ )
         {
-            var_7 = _id_3C27( var_0, var_4, var_6 );
+            var_7 = challenge_targetval( var_0, var_4, var_6 );
 
             if ( var_7 == 0 )
                 break;
 
-            var_8 = _id_3C20( var_0, var_4, var_6 );
-            var_9 = _id_3C25( var_0, var_4, var_6 );
-            level._id_3C2C[var_4]["targetval"][var_6] = var_7;
-            level._id_3C2C[var_4]["reward"][var_6] = var_8;
-            level._id_3C2C[var_4]["score"][var_6] = var_9;
+            var_8 = challenge_rewardval( var_0, var_4, var_6 );
+            var_9 = challenge_sprewardval( var_0, var_4, var_6 );
+            level.challengeinfo[var_4]["targetval"][var_6] = var_7;
+            level.challengeinfo[var_4]["reward"][var_6] = var_8;
+            level.challengeinfo[var_4]["score"][var_6] = var_9;
             var_3 = var_3 + var_8;
         }
 
         var_10 = _id_3C18( var_0, var_4 );
-        level._id_3C2C[var_4]["displayParam"] = var_10;
+        level.challengeinfo[var_4]["displayParam"] = var_10;
         var_11 = _id_3C1C( var_0, var_4 );
-        level._id_3C2C[var_4]["paramScale"] = var_11;
+        level.challengeinfo[var_4]["paramScale"] = var_11;
 
         if ( isdefined( var_5 ) )
         {
@@ -3979,32 +3981,32 @@ validatemasterchallenges()
         {
             if ( givesmasterprogresseachtier( var_1 ) )
             {
-                var_2 = var_2 + level._id_3C2C[var_1]["targetval"].size;
+                var_2 = var_2 + level.challengeinfo[var_1]["targetval"].size;
                 continue;
             }
 
             var_2 = var_2 + 1;
         }
 
-        var_5 = level._id_3C2C[var_6]["targetval"][0];
+        var_5 = level.challengeinfo[var_6]["targetval"][0];
     }
 }
 
-_id_31D7()
+buildchallegeinfo()
 {
-    level._id_3C2C = [];
+    level.challengeinfo = [];
     var_0 = 0;
-    var_0 = var_0 + _id_31D8( "mp/allChallengesTable.csv", 0 );
+    var_0 = var_0 + buildchallengetableinfo( "mp/allChallengesTable.csv", 0 );
 }
 
-_id_BA08()
+monitorprocesschallenge()
 {
     self endon( "disconnect" );
     level endon( "game_end" );
 
     for (;;)
     {
-        if ( !_id_B4E8() )
+        if ( !mayprocesschallenges() )
             return;
 
         self waittill( "process", var_0 );
@@ -4012,7 +4014,7 @@ _id_BA08()
     }
 }
 
-_id_B9E9()
+monitorkillstreakprogress()
 {
     self endon( "disconnect" );
     level endon( "game_end" );
@@ -4024,7 +4026,7 @@ _id_B9E9()
         if ( !isdefined( var_0 ) )
             continue;
 
-        if ( var_0 == 10 && self._id_A6AB.size == 0 )
+        if ( var_0 == 10 && self.killstreaks.size == 0 )
         {
             processchallenge( "ch_theloner" );
             continue;
@@ -4032,13 +4034,13 @@ _id_B9E9()
 
         if ( var_0 == 9 )
         {
-            if ( isdefined( self._id_A6AB[7] ) && isdefined( self._id_A6AB[8] ) && isdefined( self._id_A6AB[9] ) )
+            if ( isdefined( self.killstreaks[7] ) && isdefined( self.killstreaks[8] ) && isdefined( self.killstreaks[9] ) )
                 processchallenge( "ch_6fears7" );
         }
     }
 }
 
-_id_B9E6()
+monitorkilledkillstreak()
 {
     self endon( "disconnect" );
     level endon( "game_end" );
@@ -4052,7 +4054,7 @@ _id_B9E6()
     }
 }
 
-_id_D39B()
+playerhasammo()
 {
     var_0 = self getweaponslistprimaries();
 
@@ -4081,16 +4083,16 @@ monitoradstime()
     level endon( "game_ended" );
     self endon( "death" );
     self endon( "disconnect" );
-    var_0 = scripts\mp\utility::_id_9EE8();
-    self._id_A932 = 0;
+    var_0 = scripts\mp\utility::isplayerads();
+    self.lastadsstarttime = 0;
 
     for (;;)
     {
-        if ( scripts\mp\utility::_id_9EE8() )
+        if ( scripts\mp\utility::isplayerads() )
         {
             if ( !var_0 )
             {
-                self._id_A932 = gettime();
+                self.lastadsstarttime = gettime();
                 var_0 = 1;
             }
         }
@@ -4101,24 +4103,24 @@ monitoradstime()
     }
 }
 
-_id_B9E0()
+monitorholdbreath()
 {
     self endon( "disconnect" );
-    self._id_9074 = 0;
+    self.holdingbreath = 0;
 
     for (;;)
     {
         self waittill( "hold_breath" );
-        self._id_9074 = 1;
+        self.holdingbreath = 1;
         self waittill( "release_breath" );
-        self._id_9074 = 0;
+        self.holdingbreath = 0;
     }
 }
 
-_id_B9F0()
+monitormantle()
 {
     self endon( "disconnect" );
-    self._id_B315 = 0;
+    self.mantling = 0;
 
     for (;;)
     {
@@ -4128,11 +4130,11 @@ _id_B9F0()
         var_1 = self getcurrentweapon();
 
         if ( var_1 == "none" )
-            self._id_B315 = 1;
+            self.mantling = 1;
         else
-            self._id_B315 = 0;
+            self.mantling = 0;
 
-        if ( self._id_B315 )
+        if ( self.mantling )
         {
             if ( self isitemunlocked( "specialty_fastmantle", "perk" ) && scripts\mp\utility::_hasperk( "specialty_fastmantle" ) )
                 processchallenge( "ch_fastmantle" );
@@ -4141,12 +4143,12 @@ _id_B9F0()
             var_1 = self getcurrentweapon();
 
             if ( var_1 == var_0 )
-                self._id_B315 = 0;
+                self.mantling = 0;
         }
     }
 }
 
-_id_BA3B()
+monitorweaponswap()
 {
     self endon( "disconnect" );
     var_0 = self getcurrentweapon();
@@ -4172,11 +4174,11 @@ _id_BA3B()
         if ( var_2 != "primary" )
             continue;
 
-        self._id_A9D3 = gettime();
+        self.lastprimaryweaponswaptime = gettime();
     }
 }
 
-_id_B9DA()
+monitorflashbang()
 {
     self endon( "disconnect" );
 
@@ -4187,22 +4189,22 @@ _id_B9DA()
         if ( self == var_3 )
             continue;
 
-        self._id_A98A = gettime();
+        self.lastflashedtime = gettime();
     }
 }
 
-_id_B9F4()
+monitorminetriggering()
 {
     self endon( "disconnect" );
 
     for (;;)
     {
         self waittill( "triggeredExpl", var_0 );
-        thread _id_136A2();
+        thread waitdelayminetime();
     }
 }
 
-_id_136A2()
+waitdelayminetime()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -4211,19 +4213,19 @@ _id_136A2()
     processchallenge( "ch_delaymine" );
 }
 
-_id_10061( var_0 )
+shouldprocesschallengeforperk( var_0 )
 {
     return self isitemunlocked( var_0, "perk" ) && scripts\mp\utility::_hasperk( var_0 );
 }
 
-_id_D9BF( var_0, var_1 )
+processweaponattachmentchallenge( var_0, var_1 )
 {
     processchallenge( "ch_" + var_1 );
 }
 
 processfinalkillchallenges( var_0, var_1 )
 {
-    if ( !_id_B4E8() || isai( var_0 ) )
+    if ( !mayprocesschallenges() || isai( var_0 ) )
         return;
 
     var_0 processchallenge( "ch_theedge" );
@@ -4245,35 +4247,35 @@ processfinalkillchallenges( var_0, var_1 )
     if ( !level.teambased )
         var_2 = "none";
 
-    var_0 _id_D991( "ch_final_killcam" );
+    var_0 processchallengedaily( "ch_final_killcam" );
 }
 
 _id_D9C3( var_0, var_1, var_2 )
 {
-    if ( scripts\mp\utility::_id_9EE8() )
+    if ( scripts\mp\utility::isplayerads() )
     {
-        _id_D991( "ch_" + var_1 + "_kills" );
+        processchallengedaily( "ch_" + var_1 + "_kills" );
 
         if ( isdefined( var_2.modifiers["headshot"] ) )
-            _id_D991( "ch_" + var_1 + "_headshots" );
+            processchallengedaily( "ch_" + var_1 + "_headshots" );
 
         if ( isdefined( var_2.modifiers["longshot"] ) )
-            _id_D991( "ch_" + var_1 + "_longshots" );
+            processchallengedaily( "ch_" + var_1 + "_longshots" );
 
         if ( var_2._id_2504 % 2 == 0 )
-            _id_D991( "ch_" + var_1 + "_double_kills" );
+            processchallengedaily( "ch_" + var_1 + "_double_kills" );
     }
 
     if ( var_2._id_24E4 > 0 && var_2._id_24E4 % 3 == 0 )
-        _id_D991( "ch_" + var_1 + "_streak" );
+        processchallengedaily( "ch_" + var_1 + "_streak" );
 }
 
 _id_D9C9( var_0, var_1 )
 {
-    _id_D991( "ch_lifetime_ar_kills" );
-    _id_D991( "ch_" + var_0 );
-    _id_3DF9( var_1, "headshot", var_0 );
-    _id_3DF9( var_1, "longshot", var_0 );
+    processchallengedaily( "ch_lifetime_ar_kills" );
+    processchallengedaily( "ch_" + var_0 );
+    checkchallengekillmodifier( var_1, "headshot", var_0 );
+    checkchallengekillmodifier( var_1, "longshot", var_0 );
     _id_3E59( var_0, var_1.sweapon );
     _id_3DEF( var_0, var_1.sweapon, 0 );
     _id_3E2B( var_1.sweapon, var_1, var_0, 2 );
@@ -4282,11 +4284,11 @@ _id_D9C9( var_0, var_1 )
 
 _id_D9D1( var_0, var_1 )
 {
-    _id_D991( "ch_lifetime_smg_kills" );
-    _id_D991( "ch_" + var_0 );
-    _id_3DF9( var_1, "hipfire", var_0 );
-    _id_3DF9( var_1, "pointblank", var_0 );
-    _id_3DF9( var_1, "sliding", var_0 );
+    processchallengedaily( "ch_lifetime_smg_kills" );
+    processchallengedaily( "ch_" + var_0 );
+    checkchallengekillmodifier( var_1, "hipfire", var_0 );
+    checkchallengekillmodifier( var_1, "pointblank", var_0 );
+    checkchallengekillmodifier( var_1, "sliding", var_0 );
     _id_3DEF( var_0, var_1.sweapon, 0 );
     _id_3E2B( var_1.sweapon, var_1, var_0, 2 );
     _id_3DFE( var_1.sweapon, var_1, var_0, 3 );
@@ -4294,12 +4296,12 @@ _id_D9D1( var_0, var_1 )
 
 _id_D9CB( var_0, var_1 )
 {
-    _id_D991( "ch_lifetime_lmg_kills" );
-    _id_D991( "ch_" + var_0 );
-    _id_3DF9( var_1, "headshot", var_0 );
+    processchallengedaily( "ch_lifetime_lmg_kills" );
+    processchallengedaily( "ch_" + var_0 );
+    checkchallengekillmodifier( var_1, "headshot", var_0 );
 
     if ( isdefined( var_1.modifiers["hipfire"] ) )
-        _id_D991( "ch_" + var_0 + "_penetrate" );
+        processchallengedaily( "ch_" + var_0 + "_penetrate" );
 
     _id_3E25( var_1, var_0, var_1.sweapon );
     _id_3DEF( var_0, var_1.sweapon, 6 );
@@ -4309,43 +4311,43 @@ _id_D9CB( var_0, var_1 )
 
 _id_D9CA( var_0, var_1 )
 {
-    _id_D991( "ch_" + var_0 );
+    processchallengedaily( "ch_" + var_0 );
 
-    if ( var_1._id_250B == "crouch" )
+    if ( var_1.attackerstance == "crouch" )
         processchallenge( "ch_" + var_0 + "_crouch" );
 
     _id_3DFA( var_1, "defender", var_0 );
     _id_3DFA( var_1, "longshot", var_0 );
     _id_3DFA( var_1, "headshot", var_0 );
     _id_3DFA( var_1, "pointblank", var_0 );
-    _id_3DF8( var_0 );
+    checkchallengeisleaning( var_0 );
 }
 
 _id_D9D2( var_0, var_1 )
 {
-    _id_D991( "ch_lifetime_sniper_kills" );
-    _id_D991( "ch_" + var_0 );
-    _id_3DF9( var_1, "headshot", var_0 );
-    _id_3DF9( var_1, "longshot", var_0 );
+    processchallengedaily( "ch_lifetime_sniper_kills" );
+    processchallengedaily( "ch_" + var_0 );
+    checkchallengekillmodifier( var_1, "headshot", var_0 );
+    checkchallengekillmodifier( var_1, "longshot", var_0 );
 
     if ( var_1._id_24EB )
-        _id_D991( "ch_" + var_0 + "_holdbreath" );
+        processchallengedaily( "ch_" + var_0 + "_holdbreath" );
 
     _id_3DEF( var_0, var_1.sweapon, 6 );
     _id_3E2B( var_1.sweapon, var_1, var_0, 2 );
     _id_3DFE( var_1.sweapon, var_1, var_0, 3 );
 
     if ( scripts\mp\utility::istrue( var_1.modifiers["pointblank"] ) )
-        _id_D991( "ch_point_blank_sniper" );
+        processchallengedaily( "ch_point_blank_sniper" );
 }
 
 _id_D9D0( var_0, var_1 )
 {
-    _id_D991( "ch_lifetime_shotgun_kills" );
-    _id_D991( "ch_" + var_0 );
-    _id_3DF9( var_1, "hipfire", var_0 );
-    _id_3DF9( var_1, "pointblank", var_0 );
-    _id_3DF9( var_1, "sliding", var_0 );
+    processchallengedaily( "ch_lifetime_shotgun_kills" );
+    processchallengedaily( "ch_" + var_0 );
+    checkchallengekillmodifier( var_1, "hipfire", var_0 );
+    checkchallengekillmodifier( var_1, "pointblank", var_0 );
+    checkchallengekillmodifier( var_1, "sliding", var_0 );
     _id_3DEF( var_0, var_1.sweapon, 0 );
     _id_3E2B( var_1.sweapon, var_1, var_0, 2 );
     _id_3DFE( var_1.sweapon, var_1, var_0, 3 );
@@ -4353,18 +4355,18 @@ _id_D9D0( var_0, var_1 )
 
 _id_D9CF( var_0, var_1 )
 {
-    _id_D991( "ch_" + var_0 );
+    processchallengedaily( "ch_" + var_0 );
 }
 
 _id_D9CD( var_0, var_1 )
 {
-    _id_D991( "ch_lifetime_pistol_kills" );
-    _id_D991( "ch_" + var_0 );
-    _id_3DF9( var_1, "headshot", var_0 );
-    _id_3DF9( var_1, "pointblank", var_0 );
+    processchallengedaily( "ch_lifetime_pistol_kills" );
+    processchallengedaily( "ch_" + var_0 );
+    checkchallengekillmodifier( var_1, "headshot", var_0 );
+    checkchallengekillmodifier( var_1, "pointblank", var_0 );
 
     if ( !_id_3E17( var_1 ) )
-        _id_D991( "ch_" + var_0 + "_pistol_only" );
+        processchallengedaily( "ch_" + var_0 + "_pistol_only" );
 
     _id_3DEF( var_0, var_1.sweapon, 5 );
     _id_3E2B( var_1.sweapon, var_1, var_0, 2 );
@@ -4401,20 +4403,20 @@ _id_D9CE( var_0, var_1 )
 
 _id_D9C6( var_0, var_1 )
 {
-    _id_D991( "ch_iw7_glprox" );
+    processchallengedaily( "ch_iw7_glprox" );
 
     if ( var_1.smeansofdeath == "MOD_IMPACT" || var_1.smeansofdeath == "MOD_GRENADE" )
-        _id_D991( "ch_iw7_glprox_direct" );
+        processchallengedaily( "ch_iw7_glprox_direct" );
 
     _id_3E2B( var_1.sweapon, var_1, var_0, 2 );
 
     if ( !_id_3E17( var_1 ) )
-        _id_D991( "ch_iw7_glprox_no_primary" );
+        processchallengedaily( "ch_iw7_glprox_no_primary" );
 
     if ( isdefined( var_1.victim ) )
     {
         if ( distancesquared( var_1.victim.origin, self.origin ) > 1440000 )
-            _id_D991( "ch_iw7_glprox_long_range" );
+            processchallengedaily( "ch_iw7_glprox_long_range" );
     }
 
     _id_3DFE( var_1.sweapon, var_1, var_0, 3 );
@@ -4422,25 +4424,25 @@ _id_D9C6( var_0, var_1 )
 
 _id_D9D6( var_0, var_1, var_2 )
 {
-    _id_D991( "ch_iw7_glprox_kill_streak" );
+    processchallengedaily( "ch_iw7_glprox_kill_streak" );
 }
 
 processweaponchallenge_venomx( var_0, var_1 )
 {
-    _id_D991( "ch_iw7_venomx" );
+    processchallengedaily( "ch_iw7_venomx" );
 
     if ( var_1.smeansofdeath == "MOD_IMPACT" || var_1.smeansofdeath == "MOD_GRENADE" )
-        _id_D991( "ch_iw7_venomx_direct" );
+        processchallengedaily( "ch_iw7_venomx_direct" );
 
     _id_3E2B( var_1.sweapon, var_1, var_0, 2 );
 
     if ( !_id_3E17( var_1 ) )
-        _id_D991( "ch_iw7_venomx_no_primary" );
+        processchallengedaily( "ch_iw7_venomx_no_primary" );
 
     if ( isdefined( var_1.victim ) )
     {
         if ( distancesquared( var_1.victim.origin, self.origin ) > 1440000 )
-            _id_D991( "ch_iw7_venomx_long_range" );
+            processchallengedaily( "ch_iw7_venomx_long_range" );
     }
 
     _id_3DFE( var_1.sweapon, var_1, var_0, 3 );
@@ -4448,40 +4450,40 @@ processweaponchallenge_venomx( var_0, var_1 )
 
 processweaponkilledkillstreak_venomx( var_0, var_1, var_2 )
 {
-    _id_D991( "ch_iw7_venomx_kill_streak" );
+    processchallengedaily( "ch_iw7_venomx_kill_streak" );
 }
 
 _id_D9C5( var_0, var_1 )
 {
-    _id_D991( "ch_iw7_chargeshot_kill" );
+    processchallengedaily( "ch_iw7_chargeshot_kill" );
     _id_3E2B( var_1.sweapon, var_1, var_0, 2 );
     _id_3E4D( var_0 );
 }
 
 _id_D9D5( var_0, var_1, var_2 )
 {
-    _id_D991( "ch_iw7_chargeshot" );
-    _id_D991( "ch_iw7_chargeshot_kill_streak_points", scripts\mp\killstreaks\killstreaks::getstreakcost( var_1 ) );
+    processchallengedaily( "ch_iw7_chargeshot" );
+    processchallengedaily( "ch_iw7_chargeshot_kill_streak_points", scripts\mp\killstreaks\killstreaks::getstreakcost( var_1 ) );
 
     if ( isdefined( self._id_A9A8 ) && gettime() - self._id_A9A8 < 10000 )
-        _id_D991( "ch_iw7_chargeshot_streak_double" );
+        processchallengedaily( "ch_iw7_chargeshot_streak_double" );
 
-    if ( isdefined( self._id_A6B3 ) && isdefined( self._id_A6B3[var_0] ) && _id_9EBC( self._id_A6B3[var_0], 3 ) )
-        _id_D991( "ch_iw7_chargeshot_kill_3_streaks" );
+    if ( isdefined( self._id_A6B3 ) && isdefined( self._id_A6B3[var_0] ) && isnumbermultipleof( self._id_A6B3[var_0], 3 ) )
+        processchallengedaily( "ch_iw7_chargeshot_kill_3_streaks" );
 
     _id_3E4D( var_0 );
 }
 
 _id_D9C7( var_0, var_1 )
 {
-    _id_D991( "ch_iw7_lockon_kill" );
+    processchallengedaily( "ch_iw7_lockon_kill" );
     _id_3E4D( var_0 );
 }
 
 _id_D9D7( var_0, var_1, var_2 )
 {
-    _id_D991( "ch_iw7_lockon" );
-    _id_D991( "ch_iw7_lockon_kill_streak_points", scripts\mp\killstreaks\killstreaks::getstreakcost( var_1 ) );
+    processchallengedaily( "ch_iw7_lockon" );
+    processchallengedaily( "ch_iw7_lockon_kill_streak_points", scripts\mp\killstreaks\killstreaks::getstreakcost( var_1 ) );
     var_3 = undefined;
     var_4 = 0;
 
@@ -4500,30 +4502,30 @@ _id_D9D7( var_0, var_1, var_2 )
     }
 
     if ( isdefined( var_3 ) && !isdefined( var_3._id_C83D ) )
-        _id_D991( "ch_iw7_lockon_no_lock_on" );
+        processchallengedaily( "ch_iw7_lockon_no_lock_on" );
 
     if ( isdefined( self._id_A9A8 ) && gettime() - self._id_A9A8 < 10000 )
-        _id_D991( "ch_iw7_lockon_streak_double" );
+        processchallengedaily( "ch_iw7_lockon_streak_double" );
 
-    if ( isdefined( self._id_A6B3 ) && isdefined( self._id_A6B3[var_0] ) && _id_9EBC( self._id_A6B3[var_0], 3 ) )
-        _id_D991( "ch_iw7_lockon_kill_3_streaks" );
+    if ( isdefined( self._id_A6B3 ) && isdefined( self._id_A6B3[var_0] ) && isnumbermultipleof( self._id_A6B3[var_0], 3 ) )
+        processchallengedaily( "ch_iw7_lockon_kill_3_streaks" );
 
     _id_3E4D( var_0 );
 }
 
 _id_D9CC( var_0, var_1 )
 {
-    _id_D991( "ch_" + var_0 );
+    processchallengedaily( "ch_" + var_0 );
 
     if ( isdefined( var_1.modifiers["backstab"] ) )
-        _id_D991( "ch_" + var_0 + "_backstab" );
+        processchallengedaily( "ch_" + var_0 + "_backstab" );
     else
-        _id_D991( "ch_" + var_0 + "_frontstab" );
+        processchallengedaily( "ch_" + var_0 + "_frontstab" );
 
     if ( !_id_3E17( var_1 ) )
-        _id_D991( "ch_" + var_0 + "_melee_only" );
+        processchallengedaily( "ch_" + var_0 + "_melee_only" );
 
-    _id_3DF9( var_1, "sliding", var_0 );
+    checkchallengekillmodifier( var_1, "sliding", var_0 );
     _id_3E2B( var_1.sweapon, var_1, var_0, 2 );
     _id_3DFE( var_1.sweapon, var_1, var_0, 3 );
 }
@@ -4531,10 +4533,10 @@ _id_D9CC( var_0, var_1 )
 processweaponchallenge_axemelee( var_0, var_1 )
 {
     var_2 = "alt_" + var_1.sweapon;
-    _id_D991( "ch_iw7_axe" );
+    processchallengedaily( "ch_iw7_axe" );
 
     if ( isdefined( var_1.modifiers["backstab"] ) )
-        _id_D991( "ch_" + var_0 + "_backstab" );
+        processchallengedaily( "ch_" + var_0 + "_backstab" );
 
     checkaxecombochallenge( var_1, var_1.sweapon, var_2 );
     checkaxemultikillchallenge( var_1, var_1.sweapon, var_2 );
@@ -4543,16 +4545,16 @@ processweaponchallenge_axemelee( var_0, var_1 )
 
 processweaponchallenge_axethrow( var_0, var_1 )
 {
-    var_2 = scripts\mp\utility::_id_E0CF( var_1.sweapon );
-    _id_D991( "ch_iw7_axe_frontstab" );
+    var_2 = scripts\mp\utility::removealtmodefromweaponname( var_1.sweapon );
+    processchallengedaily( "ch_iw7_axe_frontstab" );
 
     if ( isdefined( var_1.modifiers["backstab"] ) )
-        _id_D991( "ch_" + var_0 + "_backstab" );
+        processchallengedaily( "ch_" + var_0 + "_backstab" );
 
     var_3 = var_1._id_24F3[var_1.sweapon];
 
-    if ( isdefined( var_3 ) && _id_9EBC( var_3, 2 ) )
-        _id_D991( "ch_iw7_axe_melee_only" );
+    if ( isdefined( var_3 ) && isnumbermultipleof( var_3, 2 ) )
+        processchallengedaily( "ch_iw7_axe_melee_only" );
 
     checkaxecombochallenge( var_1, var_2, var_1.sweapon );
     checkaxemultikillchallenge( var_1, var_2, var_1.sweapon );
@@ -4571,7 +4573,7 @@ checkaxecombochallenge( var_0, var_1, var_2 )
 
         if ( var_5 && var_6 )
         {
-            _id_D991( "ch_iw7_axe_sliding" );
+            processchallengedaily( "ch_iw7_axe_sliding" );
             return;
         }
     }
@@ -4582,7 +4584,7 @@ checkaxecombochallenge( var_0, var_1, var_2 )
 
         if ( var_7 && var_8 )
         {
-            _id_D991( "ch_iw7_axe_sliding" );
+            processchallengedaily( "ch_iw7_axe_sliding" );
             return;
         }
     }
@@ -4602,8 +4604,8 @@ checkaxemultikillchallenge( var_0, var_1, var_2 )
     if ( isdefined( var_0._id_2505[var_2] ) )
         var_3 = var_3 + var_0._id_2505[var_2];
 
-    if ( isdefined( var_3 ) && _id_9EBC( var_3, 2 ) )
-        _id_D991( "ch_iw7_axe_2multikill" );
+    if ( isdefined( var_3 ) && isnumbermultipleof( var_3, 2 ) )
+        processchallengedaily( "ch_iw7_axe_2multikill" );
 }
 
 checkaxeconsecutivechallenge( var_0, var_1, var_2 )
@@ -4616,14 +4618,14 @@ checkaxeconsecutivechallenge( var_0, var_1, var_2 )
     if ( isdefined( var_0._id_24F3[var_2] ) )
         var_3 = var_3 + var_0._id_24F3[var_2];
 
-    if ( isdefined( var_3 ) && _id_9EBC( var_3, 3 ) )
-        _id_D991( "ch_iw7_axe_3streak" );
+    if ( isdefined( var_3 ) && isnumbermultipleof( var_3, 3 ) )
+        processchallengedaily( "ch_iw7_axe_3streak" );
 }
 
-_id_3DF9( var_0, var_1, var_2 )
+checkchallengekillmodifier( var_0, var_1, var_2 )
 {
     if ( isdefined( var_0.modifiers[var_1] ) )
-        _id_D991( "ch_" + var_2 + "_" + var_1 );
+        processchallengedaily( "ch_" + var_2 + "_" + var_1 );
 }
 
 _id_3DFA( var_0, var_1, var_2 )
@@ -4632,33 +4634,33 @@ _id_3DFA( var_0, var_1, var_2 )
         processchallenge( "ch_" + var_2 + "_" + var_1 );
 }
 
-_id_3DF8( var_0 )
+checkchallengeisleaning( var_0 )
 {
     if ( self isleaning() )
         processchallenge( "ch_" + var_0 + "_leaning" );
 }
 
-_id_3E32( var_0, var_1 )
+checkpenetrationchallenge( var_0, var_1 )
 {
-    if ( var_0._id_92BE & level.idflags_penetration )
+    if ( var_0.idflags & level.idflags_penetration )
         processchallenge( "ch_" + var_1 + "_penetrate" );
 }
 
 _id_3E31( var_0, var_1 )
 {
-    if ( var_0._id_92BE & level.idflags_penetration )
-        _id_D991( "ch_" + var_1 + "_penetrate" );
+    if ( var_0.idflags & level.idflags_penetration )
+        processchallengedaily( "ch_" + var_1 + "_penetrate" );
 }
 
 _id_3DFE( var_0, var_1, var_2, var_3 )
 {
     var_4 = var_1._id_24F3[var_0];
 
-    if ( isdefined( var_4 ) && _id_9EBC( var_4, var_3 ) )
-        _id_D991( "ch_" + var_2 + "_" + var_3 + "streak" );
+    if ( isdefined( var_4 ) && isnumbermultipleof( var_4, var_3 ) )
+        processchallengedaily( "ch_" + var_2 + "_" + var_3 + "streak" );
 }
 
-_id_3E5F()
+checkwaslastweaponriotshield()
 {
     var_0 = self getcurrentweapon();
 
@@ -4671,11 +4673,11 @@ _id_3E5F()
     }
 }
 
-_id_3DE3( var_0, var_1, var_2 )
+checkaachallenges( var_0, var_1, var_2 )
 {
     if ( isdefined( var_2 ) )
     {
-        if ( isdefined( level._id_C321 ) && isdefined( level._id_C321["odin_assault"] ) && ( var_2 == level._id_C321["odin_assault"].weapon["large_rod"].projectile || var_2 == level._id_C321["odin_assault"].weapon["small_rod"].projectile ) )
+        if ( isdefined( level.odinsettings ) && isdefined( level.odinsettings["odin_assault"] ) && ( var_2 == level.odinsettings["odin_assault"].weapon["large_rod"].projectile || var_2 == level.odinsettings["odin_assault"].weapon["small_rod"].projectile ) )
         {
             var_0 processchallenge( "ch_shooting_star" );
             return 1;
@@ -4688,7 +4690,7 @@ _id_3DE3( var_0, var_1, var_2 )
     return 0;
 }
 
-_id_3DFF( var_0, var_1 )
+checkcostumechallenge( var_0, var_1 )
 {
     if ( !isai( var_0 ) )
     {
@@ -4708,7 +4710,7 @@ _id_3E59( var_0, var_1 )
 
         foreach ( var_4 in var_2 )
         {
-            var_5 = scripts\mp\weapons::_id_248C( var_4 );
+            var_5 = scripts\mp\weapons::attachmentgroup( var_4 );
 
             if ( var_5 == "rail" )
             {
@@ -4716,7 +4718,7 @@ _id_3E59( var_0, var_1 )
 
                 if ( scripts\mp\weapons::_id_9F3C( var_0, var_6 ) )
                 {
-                    _id_D991( "ch_" + var_0 + "_optic" );
+                    processchallengedaily( "ch_" + var_0 + "_optic" );
                     break;
                 }
             }
@@ -4730,8 +4732,8 @@ _id_3E2B( var_0, var_1, var_2, var_3 )
     {
         var_4 = var_1._id_2505[var_0];
 
-        if ( isdefined( var_4 ) && _id_9EBC( var_4, var_3 ) )
-            _id_D991( "ch_" + var_2 + "_" + var_3 + "multikill" );
+        if ( isdefined( var_4 ) && isnumbermultipleof( var_4, var_3 ) )
+            processchallengedaily( "ch_" + var_2 + "_" + var_3 + "multikill" );
     }
 }
 
@@ -4748,7 +4750,7 @@ _id_3DEF( var_0, var_1, var_2 )
     }
 
     if ( var_3 == var_2 )
-        _id_D991( "ch_" + var_0 + "_" + var_2 + "attachments" );
+        processchallengedaily( "ch_" + var_0 + "_" + var_2 + "attachments" );
 }
 
 _id_3E25( var_0, var_1, var_2 )
@@ -4760,7 +4762,7 @@ _id_3E25( var_0, var_1, var_2 )
     var_4 = weaponclipsize( var_2 );
 
     if ( var_3 <= var_4 * 0.15 )
-        _id_D991( "ch_" + var_1 + "_lastshots" );
+        processchallengedaily( "ch_" + var_1 + "_lastshots" );
 }
 
 _id_3E17( var_0 )
@@ -4783,13 +4785,13 @@ _id_3E4D( var_0 )
     {
         if ( self.killsthislife.size > 0 && self._id_A6B4.size > 0 && !scripts\mp\utility::istrue( self._id_110E6[var_0] ) )
         {
-            _id_D991( "ch_" + var_0 + "_combo" );
+            processchallengedaily( "ch_" + var_0 + "_combo" );
             self._id_110E6[var_0] = 1;
         }
     }
 }
 
-_id_D994( var_0, var_1 )
+processchallengeforteam( var_0, var_1 )
 {
     foreach ( var_3 in level.players )
     {
@@ -4800,7 +4802,7 @@ _id_D994( var_0, var_1 )
 
 _id_9D84( var_0 )
 {
-    var_1 = level._id_3C2C[var_0]["filter"];
+    var_1 = level.challengeinfo[var_0]["filter"];
 
     if ( !isdefined( var_1 ) )
         return 1;
@@ -4810,7 +4812,7 @@ _id_9D84( var_0 )
 
 _id_8C49( var_0 )
 {
-    return isdefined( level._id_3C2C ) && isdefined( level._id_3C2C[var_0] );
+    return isdefined( level.challengeinfo ) && isdefined( level.challengeinfo[var_0] );
 }
 
 allowinteractivecombat( var_0, var_1 )
@@ -4818,18 +4820,18 @@ allowinteractivecombat( var_0, var_1 )
     return 0;
 }
 
-_id_3E2D( var_0, var_1 )
+checknumusesofpersistentdata( var_0, var_1 )
 {
     var_2 = self.pers[var_0];
-    return _id_9EBC( var_2, var_1 );
+    return isnumbermultipleof( var_2, var_1 );
 }
 
-_id_9EBC( var_0, var_1 )
+isnumbermultipleof( var_0, var_1 )
 {
     return var_0 > 0 && var_0 % var_1 == 0;
 }
 
-_id_8C0E()
+hasnoperks()
 {
     if ( isdefined( self.pers["loadoutPerks"] ) )
         return self.pers["loadoutPerks"].size == 0;
@@ -4842,15 +4844,15 @@ _id_9D83( var_0 )
     if ( !_id_D3D6() )
         return 0;
 
-    if ( _id_2139( var_0 ) )
+    if ( areallmerittierscomplete( var_0 ) )
         return 0;
 
     return 1;
 }
 
-_id_2139( var_0 )
+areallmerittierscomplete( var_0 )
 {
-    if ( self._id_3C2A[var_0] >= level._id_3C2C[var_0]["targetval"].size )
+    if ( self.challengedata[var_0] >= level.challengeinfo[var_0]["targetval"].size )
         return 1;
 
     return 0;
@@ -4861,7 +4863,7 @@ _id_D9B8()
     if ( scripts\mp\utility::istrue( self._id_110E5 ) )
         return;
 
-    _id_D991( "ch_streak_player_kill" );
+    processchallengedaily( "ch_streak_player_kill" );
     self._id_110E5 = 1;
 }
 
@@ -4892,7 +4894,7 @@ _id_D3A8( var_0, var_1 )
         return;
 
     if ( isdefined( var_0.debuffedbyplayers ) && isdefined( var_0.debuffedbyplayers["cryo_mine_mp"] ) && var_0.debuffedbyplayers["cryo_mine_mp"].size > 0 )
-        var_2 _id_D991( "ch_plasma_cryo_combo" );
+        var_2 processchallengedaily( "ch_plasma_cryo_combo" );
 }
 
 minedestroyed( var_0, var_1, var_2 )
@@ -4903,14 +4905,14 @@ minedestroyed( var_0, var_1, var_2 )
     if ( isdefined( var_0.weapon_name ) && var_0.weapon_name == "c4_mp" )
     {
         if ( var_0.owner != var_1 && !scripts\mp\utility::istrue( var_0.planted ) && scripts\engine\utility::isbulletdamage( var_2 ) )
-            var_1 _id_D991( "ch_c4_air_kill" );
+            var_1 processchallengedaily( "ch_c4_air_kill" );
     }
 }
 
 _id_2AEA( var_0, var_1, var_2 )
 {
     if ( var_0.disttravelled >= 1300 )
-        var_1 _id_D991( "ch_biospike_longrange" );
+        var_1 processchallengedaily( "ch_biospike_longrange" );
 }
 
 _id_BA0B()
@@ -4918,25 +4920,25 @@ _id_BA0B()
     level endon( "game_ended" );
     self endon( "death" );
     self endon( "disconnect" );
-    self._id_A686 = 0;
+    self.killsthismag = 0;
 
     for (;;)
     {
         self waittill( "reload" );
         self._id_A9DD = gettime();
-        self._id_A686 = 0;
+        self.killsthismag = 0;
     }
 }
 
-_id_C5A8( var_0 )
+onsuccessfulhit( var_0 )
 {
-    if ( !_id_B4E8() )
+    if ( !mayprocesschallenges() )
         return;
 
     if ( isdefined( self.consecutivehitsperweapon ) && isdefined( self.consecutivehitsperweapon[var_0] ) )
     {
-        if ( _id_9EBC( self.consecutivehitsperweapon[var_0], 5 ) && scripts\mp\utility::weaponhasattachment( var_0, "grip" ) )
-            _id_D991( "ch_grip_accuracy" );
+        if ( isnumbermultipleof( self.consecutivehitsperweapon[var_0], 5 ) && scripts\mp\utility::weaponhasattachment( var_0, "grip" ) )
+            processchallengedaily( "ch_grip_accuracy" );
     }
 }
 
@@ -4954,17 +4956,17 @@ _id_BA29()
 
         if ( _id_66B8( "specialty_overclock" ) )
         {
-            _id_D991( "ch_perk_overclock" );
+            processchallengedaily( "ch_perk_overclock" );
 
             if ( self.pers["supersEarned"] % 5 == 0 )
-                _id_D991( "ch_overclock_unlocked" );
+                processchallengedaily( "ch_overclock_unlocked" );
         }
     }
 }
 
 _id_66B8( var_0 )
 {
-    if ( !scripts\mp\utility::_hasperk( var_0 ) || !scripts\mp\perks::_id_9EDF( var_0 ) )
+    if ( !scripts\mp\utility::_hasperk( var_0 ) || !scripts\mp\perks::isperkinloadout( var_0 ) )
         return 0;
 
     return 1;
@@ -4987,16 +4989,16 @@ _id_B9D4()
     for (;;)
     {
         self waittill( "destroyed_equipment" );
-        _id_D991( "ch_destroy_items" );
+        processchallengedaily( "ch_destroy_items" );
 
         if ( _id_66B8( "specialty_engineer" ) )
-            _id_D991( "ch_perk_kills_engineer" );
+            processchallengedaily( "ch_perk_kills_engineer" );
     }
 }
 
-_id_127BC()
+triggereddelayedexplosion()
 {
-    _id_D991( "ch_engineer_explosion_delay" );
+    processchallengedaily( "ch_engineer_explosion_delay" );
 }
 
 _id_B9CE()
@@ -5049,18 +5051,18 @@ _id_B9CE()
         }
 
         if ( var_1 )
-            _id_D991( "ch_kill_defenders" );
+            processchallengedaily( "ch_kill_defenders" );
 
         if ( var_2 )
-            _id_D991( "ch_kill_attackers" );
+            processchallengedaily( "ch_kill_attackers" );
 
         if ( var_3 )
-            _id_D991( "ch_objectives" );
+            processchallengedaily( "ch_objectives" );
 
         if ( var_5 )
-            _id_D991( "ch_defuse" );
+            processchallengedaily( "ch_defuse" );
 
         if ( var_4 )
-            _id_D991( "ch_kill_carrier" );
+            processchallengedaily( "ch_kill_carrier" );
     }
 }

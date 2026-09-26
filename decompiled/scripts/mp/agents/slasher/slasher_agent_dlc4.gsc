@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\slasher::_id_DEE8();
-    scripts\asm\slasher_dlc4\mp\states::_id_2371();
+    behaviortree\slasher::registerbehaviortree();
+    scripts\asm\slasher_dlc4\mp\states::asm_register();
     scripts\mp\agents\slasher\slasher_tunedata::setuptunedata();
     thread _id_FAB0();
 }

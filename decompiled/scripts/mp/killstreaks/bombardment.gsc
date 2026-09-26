@@ -3,14 +3,14 @@
 
 init()
 {
-    _id_FAB1();
+    setupfx();
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "bombardment", ::_id_128DC, undefined, undefined, ::triggeredbombardmentweapon, ::_id_13C8B );
     level.dangermaxradius["bombardment"] = 160000;
     var_0 = [ "passive_fast_launch", "passive_decreased_explosions", "passive_extra_selection", "passive_increased_cost", "passive_impulse_explosion", "passive_single_explosion" ];
     scripts\mp\killstreak_loot::_id_DF07( "bombardment", var_0 );
 }
 
-_id_FAB1()
+setupfx()
 {
     level._effect["spike_charge"] = loadfx( "vfx/iw7/_requests/mp/vfx_bombard_blast_source.vfx" );
     level._effect["spike_fire"] = loadfx( "vfx/iw7/_requests/mp/vfx_bombardment_aerial_blast.vfx" );

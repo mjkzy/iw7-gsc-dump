@@ -628,7 +628,7 @@ use_phone_keypad( var_0, var_1, var_2 )
     var_3 = var_1 geteye();
 
     foreach ( var_5 in var_0.keypad_buttons )
-        var_5.vdronestrikeheight = vectornormalize( var_5.keypos - var_3 );
+        var_5._id_13191 = vectornormalize( var_5.keypos - var_3 );
 
     var_1 thread phone_hilight_focused_button( var_0, var_1 );
     var_1 thread phone_exit_look( var_0 );
@@ -662,7 +662,7 @@ use_phone_keypad( var_0, var_1, var_2 )
 
         foreach ( var_16, var_13 in var_0.keypad_buttons )
         {
-            var_14 = vectordot( var_11, var_13.vdronestrikeheight );
+            var_14 = vectordot( var_11, var_13._id_13191 );
 
             if ( var_14 > 0.999 )
             {
@@ -752,7 +752,7 @@ phone_hilight_focused_button( var_0, var_1 )
 
         foreach ( var_7, var_5 in var_0.keypad_buttons )
         {
-            var_6 = vectordot( var_2, var_5.vdronestrikeheight );
+            var_6 = vectordot( var_2, var_5._id_13191 );
 
             if ( var_6 > 0.999 && !var_3 )
             {

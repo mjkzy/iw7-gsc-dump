@@ -269,7 +269,7 @@ zone_onuse( var_0 )
 
         level.zone.gameobject thread updatechevrons( var_1 );
         thread _id_8B4C();
-        level._id_911E = var_1;
+        level.hpcapteam = var_1;
 
         if ( !isdefined( level.lastcaptureteam ) || var_1 != level.lastcaptureteam )
             scripts\mp\utility::setmlgannouncement( 6, var_1, var_0 getentitynumber() );
@@ -370,12 +370,12 @@ zone_onunoccupied()
         return;
 
     level notify( "zone_destroyed" );
-    level._id_911E = "neutral";
+    level.hpcapteam = "neutral";
 
     if ( level.timerstoppedforgamemode && level.pausemodetimer )
         level scripts\mp\gamelogic::resumetimer();
 
-    if ( self._id_C248["axis"] == 0 && self._id_C248["allies"] == 0 )
+    if ( self.numtouching["axis"] == 0 && self.numtouching["allies"] == 0 )
     {
         level.zone.gameobject.wasleftunoccupied = 1;
         level scripts\mp\gametypes\koth::updateservericons( "neutral", 0 );

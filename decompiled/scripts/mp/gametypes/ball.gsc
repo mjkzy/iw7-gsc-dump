@@ -66,7 +66,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_ball_scoreCarry", getmatchrulesdata( "ballData", "scoreCarry" ) );
     setdynamicdvar( "scr_ball_scoreThrow", getmatchrulesdata( "ballData", "scoreThrow" ) );
     setdynamicdvar( "scr_ball_satelliteCount", getmatchrulesdata( "ballData", "satelliteCount" ) );
@@ -427,7 +427,7 @@ ball_create_team_goal( var_0 )
 
     if ( scripts\mp\utility::istrue( level.tactical ) )
         var_2.origin = var_2.ground_origin + ( 0, 0, 130 );
-    else if ( scripts\mp\utility::istrue( level.supportdoublejump_MAYBE ) )
+    else if ( scripts\mp\utility::istrue( level.supportdoublejump ) )
     {
         if ( level.mapname == "mp_frontier" )
             var_2.origin = var_2.ground_origin + ( 0, 0, 180 );
@@ -589,7 +589,7 @@ ball_carrier_touched_goal( var_0 )
     var_1 = level.scorecarry;
     var_0 thread scripts\mp\awards::givemidmatchaward( "mode_uplink_dunk" );
     ball_check_assist( var_0, 1 );
-    var_0 scripts\mp\utility::incperstat( "touchdowns", 1 );
+    var_0 scripts\mp\utility::incpersstat( "touchdowns", 1 );
     var_0 scripts\mp\persistence::statsetchild( "round", "touchdowns", var_0.pers["touchdowns"] );
 
     if ( isplayer( var_0 ) )
@@ -653,7 +653,7 @@ ball_touched_goal( var_0 )
         self.lastcarrierscored = 1;
         self.lastcarrier thread scripts\mp\awards::givemidmatchaward( "mode_uplink_fieldgoal" );
         ball_check_assist( self.lastcarrier, 0 );
-        self.lastcarrier scripts\mp\utility::incperstat( "fieldgoals", 1 );
+        self.lastcarrier scripts\mp\utility::incpersstat( "fieldgoals", 1 );
         self.lastcarrier scripts\mp\persistence::statsetchild( "round", "fieldgoals", self.lastcarrier.pers["fieldgoals"] );
 
         if ( isplayer( self.lastcarrier ) )
@@ -929,9 +929,9 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
         if ( isdefined( var_10.ball_carried ) )
         {
             var_1 thread scripts\mp\awards::givemidmatchaward( "mode_uplink_kill_carrier" );
-            var_1 scripts\mp\utility::incperstat( "defends", 1 );
+            var_1 scripts\mp\utility::incpersstat( "defends", 1 );
             var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
-            thread scripts\mp\matchdata::loginitialstats( var_9, "carrying" );
+            thread scripts\mp\matchdata::logkillevent( var_9, "carrying" );
             scripts\mp\gametypes\obj_ball::updatetimers( "neutral", 1, 0 );
             var_11 = 1;
         }

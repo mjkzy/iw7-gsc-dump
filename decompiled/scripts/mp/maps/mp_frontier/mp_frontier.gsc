@@ -17,7 +17,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     level._effect["launchSmoke"] = loadfx( "vfx/iw7/core/smktrail/vfx_jackal_launch_smoke.vfx" );
     level._effect["takeoffThrust2"] = loadfx( "vfx/iw7/levels/mp_frontier/vfx_jkl_thrust_takeoff.vfx" );
     level._effect["takeoffThrust"] = loadfx( "vfx/iw7/levels/mp_frontier/vfx_jkl_boost_emit.vfx" );
@@ -26,7 +26,7 @@ main()
     thread _id_A3FF();
     thread _id_6F1A();
     thread _id_CDA4( "mp_frontier_forest" );
-    scripts\mp\utility::_id_627A( 1, -0.05 );
+    scripts\mp\utility::enableragdollzerog( 1, -0.05 );
     _id_1F01();
     thread _id_E837();
     runmodespecifictriggers();

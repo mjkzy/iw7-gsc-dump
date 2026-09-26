@@ -29,7 +29,7 @@ update_challenge( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8,
             return;
 
         var_10 = self.current_challenge;
-        self thread [[ var_10._id_12E9C ]]( var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
+        self thread [[ var_10.updatefunc ]]( var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
     }
     else
     {
@@ -37,11 +37,11 @@ update_challenge( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8,
             return;
 
         var_10 = var_9.current_challenge;
-        var_9 thread [[ var_10._id_12E9C ]]( var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
+        var_9 thread [[ var_10.updatefunc ]]( var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
     }
 }
 
-_id_62C6()
+end_current_challenge()
 {
     if ( current_challenge_exist() && scripts\cp\utility::coop_mode_has( "challenge" ) )
         deactivate_current_challenge();
@@ -53,12 +53,12 @@ deactivate_current_challenge( var_0 )
         return;
 
     var_1 = var_0.current_challenge;
-    var_0 _id_12BF7();
+    var_0 unset_current_challenge();
 
-    if ( var_1 [[ var_1._id_9F82 ]]( var_0 ) )
+    if ( var_1 [[ var_1.issuccessfunc ]]( var_0 ) )
     {
-        _id_56AD( "challenge_success", 0, undefined, var_0 );
-        var_1 [[ var_1._id_E4C5 ]]();
+        display_challenge_message( "challenge_success", 0, undefined, var_0 );
+        var_1 [[ var_1.rewardfunc ]]();
         var_2 = "challenge";
 
         if ( isdefined( level._id_3C24 ) )
@@ -72,7 +72,7 @@ deactivate_current_challenge( var_0 )
     }
     else
     {
-        _id_56AD( "challenge_failed", 0, undefined, var_0 );
+        display_challenge_message( "challenge_failed", 0, undefined, var_0 );
 
         if ( _id_9F17( var_1 ) )
         {
@@ -96,14 +96,14 @@ deactivate_current_challenge( var_0 )
             }
         }
 
-        var_1 [[ var_1._id_6AD0 ]]();
-        level._id_1BE8 = 0;
+        var_1 [[ var_1.failfunc ]]();
+        level.all_challenge_completed = 0;
         scripts\cp\cp_persistence::update_lb_aliensession_challenge( 0 );
         scripts\cp\cp_analytics::update_challenges_status( var_1.ref, 0 );
     }
 
     level notify( "challenge_deactivated" );
-    var_1 [[ var_1._id_4DDE ]]( var_0 );
+    var_1 [[ var_1.deactivatefunc ]]( var_0 );
 }
 
 _id_9F17( var_0 )
@@ -126,14 +126,14 @@ copy_challenge_struct( var_0 )
     var_2.ref = var_1.ref;
     var_2.goal = var_1.goal;
     var_2.default_success = var_1.default_success;
-    var_2._id_9F82 = var_1._id_9F82;
-    var_2._id_386E = var_1._id_386E;
-    var_2._id_1609 = var_1._id_1609;
-    var_2._id_4DDE = var_1._id_4DDE;
-    var_2._id_6ACB = var_1._id_6ACB;
-    var_2._id_12E9C = var_1._id_12E9C;
-    var_2._id_E4C5 = var_1._id_E4C5;
-    var_2._id_6AD0 = var_1._id_6AD0;
+    var_2.issuccessfunc = var_1.issuccessfunc;
+    var_2.canactivatefunc = var_1.canactivatefunc;
+    var_2.activatefunc = var_1.activatefunc;
+    var_2.deactivatefunc = var_1.deactivatefunc;
+    var_2.failactivatefunc = var_1.failactivatefunc;
+    var_2.updatefunc = var_1.updatefunc;
+    var_2.rewardfunc = var_1.rewardfunc;
+    var_2.failfunc = var_1.failfunc;
     return var_2;
 }
 
@@ -141,30 +141,30 @@ activate_new_challenge( var_0, var_1 )
 {
     var_1.current_challenge = copy_challenge_struct( var_0 );
 
-    if ( var_1.current_challenge [[ var_1.current_challenge._id_386E ]]() )
+    if ( var_1.current_challenge [[ var_1.current_challenge.canactivatefunc ]]() )
     {
-        var_2 = _id_7897( var_0 );
+        var_2 = get_challenge_scalar( var_0 );
 
         if ( isdefined( var_2 ) )
             var_1.current_challenge.goal = var_2;
         else
             level.current_challenge_scalar = -1;
 
-        _id_56AD( var_0, 1, var_2, var_1 );
-        var_1 _id_F31A( var_0 );
+        display_challenge_message( var_0, 1, var_2, var_1 );
+        var_1 set_current_challenge( var_0 );
         var_1 notify( "new_challenge_started" );
-        var_1.current_challenge [[ var_1.current_challenge._id_1609 ]]( var_1 );
+        var_1.current_challenge [[ var_1.current_challenge.activatefunc ]]( var_1 );
     }
     else
-        var_1.current_challenge [[ var_1.current_challenge._id_6ACB ]]();
+        var_1.current_challenge [[ var_1.current_challenge.failactivatefunc ]]();
 }
 
-_id_7897( var_0 )
+get_challenge_scalar( var_0 )
 {
     return [[ level.challenge_scalar_func ]]( var_0 );
 }
 
-_id_56AD( var_0, var_1, var_2, var_3 )
+display_challenge_message( var_0, var_1, var_2, var_3 )
 {
     var_4 = tablelookup( level.zombie_challenge_table, 1, var_0, 0 );
 
@@ -215,10 +215,10 @@ _id_56AD( var_0, var_1, var_2, var_3 )
         return;
     }
 
-    level thread _id_100CB( var_0, var_4, var_3 );
+    level thread show_challenge_outcome( var_0, var_4, var_3 );
 }
 
-_id_100CB( var_0, var_1, var_2 )
+show_challenge_outcome( var_0, var_1, var_2 )
 {
     level endon( "game_ended" );
     var_2 endon( "disconnect" );
@@ -270,33 +270,33 @@ register_challenge( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_
     var_11.ref = var_0;
     var_11.goal = var_1;
     var_11.default_success = var_2;
-    var_11._id_9F82 = ::_id_4FFA;
+    var_11.issuccessfunc = ::default_issuccessfunc;
 
     if ( isdefined( var_3 ) )
-        var_11._id_9F82 = var_3;
+        var_11.issuccessfunc = var_3;
 
-    var_11._id_386E = ::_id_4FDD;
+    var_11.canactivatefunc = ::default_canactivatefunc;
 
     if ( isdefined( var_4 ) )
-        var_11._id_386E = var_4;
+        var_11.canactivatefunc = var_4;
 
-    var_11._id_1609 = var_5;
-    var_11._id_4DDE = var_6;
-    var_11._id_6ACB = ::_id_4FED;
+    var_11.activatefunc = var_5;
+    var_11.deactivatefunc = var_6;
+    var_11.failactivatefunc = ::default_failactivatefunc;
 
     if ( isdefined( var_7 ) )
-        var_11._id_6ACB = var_7;
+        var_11.failactivatefunc = var_7;
 
-    var_11._id_12E9C = var_8;
-    var_11._id_E4C5 = ::_id_5011;
+    var_11.updatefunc = var_8;
+    var_11.rewardfunc = ::default_rewardfunc;
 
     if ( isdefined( var_9 ) )
-        var_11._id_E4C5 = var_9;
+        var_11.rewardfunc = var_9;
 
-    var_11._id_6AD0 = ::_id_4FEE;
+    var_11.failfunc = ::default_failfunc;
 
     if ( isdefined( var_10 ) )
-        var_11._id_6AD0 = var_10;
+        var_11.failfunc = var_10;
 
     level.challenge_data[var_0] = var_11;
 }
@@ -307,17 +307,17 @@ update_challenge_progress( var_0, var_1 )
     self setclientomnvar( "ui_intel_progress_current", var_0 );
 }
 
-_id_4FDD()
+default_canactivatefunc()
 {
     return 1;
 }
 
-_id_4FED()
+default_failactivatefunc()
 {
 
 }
 
-_id_4FFA()
+default_issuccessfunc()
 {
     if ( isdefined( self.success ) )
         return self.success;
@@ -333,7 +333,7 @@ default_successfunc()
         return self.default_success;
 }
 
-_id_4FEE()
+default_failfunc()
 {
 
 }
@@ -343,7 +343,7 @@ default_resetsuccess()
     self.current_challenge.success = self.current_challenge.default_success;
 }
 
-_id_5011()
+default_rewardfunc()
 {
 
 }
@@ -358,12 +358,12 @@ current_challenge_is( var_0 )
     return current_challenge_exist() && self.current_player_challenge == var_0;
 }
 
-_id_12BF7()
+unset_current_challenge()
 {
     self.current_challenge = undefined;
 }
 
-_id_F31A( var_0 )
+set_current_challenge( var_0 )
 {
     self.current_player_challenge = var_0;
 }
@@ -395,8 +395,8 @@ _id_97B0()
 
         if ( isdefined( level.challenge_data[var_10] ) )
         {
-            level.challenge_data[var_10]._id_1C81 = var_11;
-            level.challenge_data[var_10]._id_1C8C = int( tablelookup( var_0, var_1, var_9, var_6 ) );
+            level.challenge_data[var_10].allowed_cycles = var_11;
+            level.challenge_data[var_10].allowedinsolo = int( tablelookup( var_0, var_1, var_9, var_6 ) );
             level.challenge_data[var_10].active_time = strtok( var_12, " " );
         }
     }

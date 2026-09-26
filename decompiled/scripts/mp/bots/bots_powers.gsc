@@ -71,16 +71,16 @@ bot_think_powers()
 
     if ( isdefined( self.powers ) && self.powers.size > 0 )
     {
-        if ( isdefined( self._id_AE7B ) && isdefined( self.powers[self._id_AE7B] ) )
+        if ( isdefined( self.loadoutpowerprimary ) && isdefined( self.powers[self.loadoutpowerprimary] ) )
         {
-            if ( isdefined( level._id_2D1C[self._id_AE7B] ) )
-                self thread [[ level._id_2D1C[self._id_AE7B] ]]( self._id_AE7B, "primary" );
+            if ( isdefined( level._id_2D1C[self.loadoutpowerprimary] ) )
+                self thread [[ level._id_2D1C[self.loadoutpowerprimary] ]]( self.loadoutpowerprimary, "primary" );
         }
 
-        if ( isdefined( self._id_AE7D ) && isdefined( self.powers[self._id_AE7D] ) )
+        if ( isdefined( self.loadoutpowersecondary ) && isdefined( self.powers[self.loadoutpowersecondary] ) )
         {
-            if ( isdefined( level._id_2D1C[self._id_AE7D] ) )
-                self thread [[ level._id_2D1C[self._id_AE7D] ]]( self._id_AE7D, "secondary" );
+            if ( isdefined( level._id_2D1C[self.loadoutpowersecondary] ) )
+                self thread [[ level._id_2D1C[self.loadoutpowersecondary] ]]( self.loadoutpowersecondary, "secondary" );
         }
     }
 
@@ -131,7 +131,7 @@ _id_5234( var_0, var_1 )
         var_3 = 1400;
         var_4 = distance( self.origin, self.enemy.origin );
 
-        if ( self _meth_8520() )
+        if ( self botenemyfacesbot() )
             var_2 = 700;
 
         if ( var_2 != 0 )
@@ -169,7 +169,7 @@ _id_8BEE()
     if ( !isalive( self ) || !isdefined( self.enemy ) )
         return 0;
 
-    if ( self botcanseeentity( self.enemy ) && self _meth_8520() )
+    if ( self botcanseeentity( self.enemy ) && self botenemyfacesbot() )
         return 1;
 
     return 0;
@@ -207,7 +207,7 @@ _id_9D7E()
     return 0;
 }
 
-useprompt( var_0, var_1, var_2, var_3 )
+_id_130C1( var_0, var_1, var_2, var_3 )
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -255,7 +255,7 @@ useprompt( var_0, var_1, var_2, var_3 )
     }
 }
 
-usequickrope( var_0, var_1, var_2, var_3, var_4 )
+_id_130C2( var_0, var_1, var_2, var_3, var_4 )
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -288,6 +288,6 @@ usequickrope( var_0, var_1, var_2, var_3, var_4 )
 
 _id_8991( var_0, var_1 )
 {
-    thread useprompt( var_0, var_1, 400, ::usepowerweapon );
-    thread usequickrope( var_0, var_1, 450, 80, ::usepowerweapon );
+    thread _id_130C1( var_0, var_1, 400, ::usepowerweapon );
+    thread _id_130C2( var_0, var_1, 450, 80, ::usepowerweapon );
 }

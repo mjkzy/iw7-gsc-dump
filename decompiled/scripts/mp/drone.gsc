@@ -58,7 +58,7 @@ _id_10610()
 {
     level.supportcranked = 1;
     level.crankedbombtimer = 30.0;
-    scripts\mp\utility::_id_B2AC( "" );
+    scripts\mp\utility::makeplayercranked( "" );
 }
 
 _id_10611()

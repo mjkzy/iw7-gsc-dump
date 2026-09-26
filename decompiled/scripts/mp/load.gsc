@@ -3,11 +3,11 @@
 
 main()
 {
-    if ( isdefined( level._id_1307 ) )
+    if ( isdefined( level._loadstarted ) )
         return;
 
     level.func = [];
-    level._id_1307 = 1;
+    level._loadstarted = 1;
     level.createfx_enabled = getdvar( "createfx" ) != "";
     level.players_waiting_for_callback = [];
     scripts\engine\utility::struct_class_init();
@@ -24,8 +24,8 @@ main()
         level.flags_lock = [];
     }
 
-    level._id_499A = scripts\mp\hud_util::createfontstring;
-    level._id_91B0 = scripts\mp\hud_util::setpoint;
+    level.createclientfontstring_func = scripts\mp\hud_util::createfontstring;
+    level.hudsetpoint_func = scripts\mp\hud_util::setpoint;
     thread scripts\mp\tweakables::init();
 
     if ( !isdefined( level.func ) )
@@ -118,7 +118,7 @@ main()
             if ( var_3 == "trigger_multiple_arbitrary_up" )
             {
                 var_5 = var_4[var_1];
-                var_5 _meth_84C0( 1 );
+                var_5 setworlduptrigger( 1 );
 
                 if ( isdefined( var_5.target ) )
                 {
@@ -133,10 +133,10 @@ main()
     thread scripts\mp\animatedmodels::main();
     level.func["damagefeedback"] = scripts\mp\damagefeedback::updatedamagefeedback;
     level.func["setTeamHeadIcon"] = scripts\mp\entityheadicons::setteamheadicon;
-    level._id_A879 = ::laseron;
-    level._id_A877 = ::laseroff;
-    level._id_4537 = ::connectpaths;
-    level._id_563A = ::disconnectpaths;
+    level.laseron_func = ::laseron;
+    level.laseroff_func = ::laseroff;
+    level.connectpathsfunction = ::connectpaths;
+    level.disconnectpathsfunction = ::disconnectpaths;
     setdvar( "sm_sunShadowScale", 1 );
     setdvar( "sm_spotLightScoreModelScale", 0 );
     setdvar( "r_specularcolorscale", 1 );
@@ -146,10 +146,10 @@ main()
     setdvar( "r_lightGridContrast", 0 );
     setdvar( "ui_showInfo", 1 );
     setdvar( "ui_showMinimap", 1 );
-    setupdamagetriggers();
+    setupdestructiblekillcaments();
     precacheitem( "bomb_site_mp" );
     level.fauxvehiclecount = 0;
-    level._id_AD86 = "vehicle_aas_72x_killstreak";
+    level.littlebird_model = "vehicle_aas_72x_killstreak";
 }
 
 exploder_load( var_0 )
@@ -261,7 +261,7 @@ setupexploders()
         var_7.v["firefx"] = var_6.script_firefx;
         var_7.v["firefxdelay"] = var_6.script_firefxdelay;
         var_7.v["firefxsound"] = var_6.script_firefxsound;
-        var_7.v["firefxtimeout"] = var_6._id_ED96;
+        var_7.v["firefxtimeout"] = var_6.script_firefxtimeout;
         var_7.v["earthquake"] = var_6.script_earthquake;
         var_7.v["damage"] = var_6.script_damage;
         var_7.v["damage_radius"] = var_6.script_radius;
@@ -312,7 +312,7 @@ lanterns()
     scripts\common\fx::loopfx( "lantern_light", self.origin, 0.3, self.origin + ( 0, 0, 1 ) );
 }
 
-setupdamagetriggers()
+setupdestructiblekillcaments()
 {
     var_0 = getentarray( "scriptable_destructible_vehicle", "targetname" );
 

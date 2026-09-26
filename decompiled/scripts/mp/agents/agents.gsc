@@ -10,7 +10,7 @@ main()
     level.badplace_cylinder_func = ::badplace_cylinder;
     level.badplace_delete_func = ::badplace_delete;
     scripts\mp\mp_agent::init_agent( "mp/default_agent_definition.csv" );
-    _id_0F6E::registerscriptedagent();
+    scripts\mp\agents\seeker\seeker_agent::registerscriptedagent();
     level thread scripts\mp\agents\agent_common::init();
     level thread scripts\mp\killstreaks\agent_killstreak::init();
 }
@@ -26,7 +26,7 @@ setup_callbacks()
     level.agent_funcs["player"]["on_killed"] = ::on_agent_player_killed;
     level.agent_funcs["player"]["on_damaged"] = ::on_agent_player_damaged;
     level.agent_funcs["player"]["on_damaged_finished"] = ::agent_damage_finished;
-    _id_0F6E::setupcallbacks();
+    scripts\mp\agents\seeker\seeker_agent::setupcallbacks();
     scripts\mp\equipment\phase_split::_id_CAC9();
     scripts\mp\killstreaks\agent_killstreak::setup_callbacks();
     scripts\mp\killstreaks\remotec8::setup_callbacks();
@@ -111,7 +111,7 @@ spawn_agent_player( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_
     if ( isdefined( self.owner ) )
         thread destroyonownerdisconnect( self.owner );
 
-    thread scripts\mp\flashgrenades::_id_B9D9();
+    thread scripts\mp\flashgrenades::monitorflash();
     self enableanimstate( 0 );
     self takeallweapons();
     self [[ level.onspawnplayer ]]();
@@ -242,7 +242,7 @@ on_agent_generic_damaged( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7
     {
         if ( var_3 & level.idflags_stun )
             var_14 = "stun";
-        else if ( !scripts\mp\damage::_id_100C1( var_5 ) )
+        else if ( !scripts\mp\damage::shouldweaponfeedback( var_5 ) )
             var_14 = "none";
         else
             var_14 = "standard";

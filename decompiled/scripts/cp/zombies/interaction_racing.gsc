@@ -407,13 +407,13 @@ _id_830E( var_0, var_1, var_2 )
     {
         if ( scripts\engine\utility::is_true( var_0.in_afterlife_arcade ) )
         {
-            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_0, level.wave_num_at_start_of_game, self._id_4B87.name, 1, var_2, var_0.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game][self._id_4B87.name] );
+            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_0, level.wave_num_at_start_of_game, self._id_4B87.name, 1, var_2, var_0.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game][self._id_4B87.name] );
             var_0 scripts\cp\zombies\zombie_afterlife_arcade::give_soul_power( var_0, var_2 );
         }
     }
     else
     {
-        scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_0, level.wave_num_at_start_of_game, self._id_4B87.name, 0, var_2, var_0.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game][self._id_4B87.name] );
+        scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_0, level.wave_num_at_start_of_game, self._id_4B87.name, 0, var_2, var_0.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game][self._id_4B87.name] );
         var_0 scripts\cp\zombies\arcade_game_utility::give_player_tickets( var_0, var_2 );
     }
 }

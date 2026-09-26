@@ -26,7 +26,7 @@ bot_setup_bombzone_bottargets()
     level.bot_set_bombzone_bottargets = 1;
 }
 
-bot_setup_objective_bottargets()
+bot_setup_radio_bottargets()
 {
     bot_setup_bot_targets( level.radios );
 }
@@ -324,10 +324,10 @@ bot_defend_think( var_0, var_1, var_2, var_3 )
 
         if ( isdefined( var_3["override_entrances"] ) && var_3["override_entrances"].size > 0 )
         {
-            self.defense_override_watch_nodes = var_3["override_entrances"];
+            self.defense_override_entrances = var_3["override_entrances"];
             self.defend_entrance_index = self.name + " " + gettime();
 
-            foreach ( var_8 in self.defense_override_watch_nodes )
+            foreach ( var_8 in self.defense_override_entrances )
             {
                 var_8.prone_visible_from[self.defend_entrance_index] = scripts\mp\bots\bots_util::entrance_visible_from( var_8.origin, scripts\mp\bots\bots_util::defend_valid_center(), "prone" );
                 wait 0.05;
@@ -775,7 +775,7 @@ defense_cautious_approach()
                 {
                     for ( var_31 = 0; var_29[var_13].frames_visible < 18 && var_31 < 3.6; var_31 = var_31 + 0.25 )
                     {
-                        self botlookatpoint( var_29[var_13].origin + ( 0, 0, self _meth_8157() ), 0.25, "script_search" );
+                        self botlookatpoint( var_29[var_13].origin + ( 0, 0, self getplayerviewheight() ), 0.25, "script_search" );
                         wait 0.25;
                     }
                 }
@@ -804,7 +804,7 @@ monitor_cautious_approach_early_out()
         var_0 = self.bot_defending_radius * self.bot_defending_radius;
     else if ( isdefined( self.bot_defending_nodes ) )
     {
-        var_1 = _id_2D2D();
+        var_1 = bot_capture_zone_get_furthest_distance();
         var_0 = var_1 * var_1;
     }
 
@@ -926,8 +926,8 @@ protect_watch_allies()
 
 defense_get_initial_entrances()
 {
-    if ( isdefined( self.defense_override_watch_nodes ) )
-        return self.defense_override_watch_nodes;
+    if ( isdefined( self.defense_override_entrances ) )
+        return self.defense_override_entrances;
     else if ( scripts\mp\bots\bots_util::bot_is_capturing() )
     {
         var_0 = bot_defend_get_precalc_entrances_for_current_area( self.cur_defend_stance );
@@ -1240,7 +1240,7 @@ bot_defend_stop()
     self.cur_defend_angle_override = undefined;
     self.cur_defend_point_override = undefined;
     self.defend_entrance_index = undefined;
-    self.defense_override_watch_nodes = undefined;
+    self.defense_override_entrances = undefined;
     self botclearscriptgoal();
     self botsetstance( "none" );
 }
@@ -1443,9 +1443,9 @@ find_defend_node_patrol()
 bot_handle_no_valid_defense_node( var_0, var_1 )
 {
     if ( self.bot_defending_type == "capture_zone" )
-        self.cur_defend_point_override = scripts\mp\bots\bots_util::bot_pick_random_point_from_set( scripts\mp\bots\bots_util::defend_valid_center(), self.bot_defending_nodes, ::_id_2D2A );
+        self.cur_defend_point_override = scripts\mp\bots\bots_util::bot_pick_random_point_from_set( scripts\mp\bots\bots_util::defend_valid_center(), self.bot_defending_nodes, ::bot_can_use_point_in_defend );
     else
-        self.cur_defend_point_override = scripts\mp\bots\bots_util::bot_pick_random_point_in_radius( scripts\mp\bots\bots_util::defend_valid_center(), self.bot_defending_radius, ::_id_2D2A, 0.15, 0.9 );
+        self.cur_defend_point_override = scripts\mp\bots\bots_util::bot_pick_random_point_in_radius( scripts\mp\bots\bots_util::defend_valid_center(), self.bot_defending_radius, ::bot_can_use_point_in_defend, 0.15, 0.9 );
 
     if ( isdefined( var_0 ) )
     {
@@ -1459,15 +1459,15 @@ bot_handle_no_valid_defense_node( var_0, var_1 )
     }
 }
 
-_id_2D2A( var_0 )
+bot_can_use_point_in_defend( var_0 )
 {
-    if ( _id_2D2F( var_0, 1, 1, 1 ) )
+    if ( bot_check_team_is_using_position( var_0, 1, 1, 1 ) )
         return 0;
 
     return 1;
 }
 
-_id_2D2F( var_0, var_1, var_2, var_3 )
+bot_check_team_is_using_position( var_0, var_1, var_2, var_3 )
 {
     for ( var_4 = 0; var_4 < level.participants.size; var_4++ )
     {
@@ -1505,7 +1505,7 @@ _id_2D2F( var_0, var_1, var_2, var_3 )
     return 0;
 }
 
-_id_2D2D()
+bot_capture_zone_get_furthest_distance()
 {
     var_0 = 0;
 

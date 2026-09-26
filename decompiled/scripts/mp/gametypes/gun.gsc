@@ -57,7 +57,7 @@ alwaysgamemodeclass()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata( 1 );
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata( 1 );
     setdynamicdvar( "scr_gun_setback", getmatchrulesdata( "gunData", "setback" ) );
     setdynamicdvar( "scr_gun_setbackStreak", getmatchrulesdata( "gunData", "setbackStreak" ) );
     setdynamicdvar( "scr_gun_killsPerWeapon", getmatchrulesdata( "gunData", "killsPerWeapon" ) );
@@ -132,7 +132,7 @@ onplayerconnect()
         var_0.gungameprevgunindex = 0;
         var_0 thread refillammo();
         var_0 thread refillsinglecountammo();
-        var_0 scripts\mp\utility::_id_F6FF( level.gun_guns[0], 1 );
+        var_0 scripts\mp\utility::setfakeloadoutweaponslot( level.gun_guns[0], 1 );
     }
 }
 
@@ -230,14 +230,14 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
 
             if ( self.gungameprevgunindex > self.gungamegunindex )
             {
-                scripts\mp\utility::incperstat( "setbacks", 1 );
+                scripts\mp\utility::incpersstat( "setbacks", 1 );
                 scripts\mp\persistence::statsetchild( "round", "setbacks", self.pers["setbacks"] );
 
                 if ( isplayer( self ) )
                     scripts\mp\utility::setextrascore1( self.pers["setbacks"] );
 
                 thread scripts\mp\utility::giveunifiedpoints( "dropped_gun_score", var_4, undefined, 0, 1 );
-                scripts\mp\utility::_id_F6FF( level.gun_guns[self.gungamegunindex], 1 );
+                scripts\mp\utility::setfakeloadoutweaponslot( level.gun_guns[self.gungamegunindex], 1 );
             }
 
             if ( var_3 == "MOD_MELEE" )
@@ -247,7 +247,7 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
 
                 var_1 updateknivesperminute();
                 var_1 scripts\mp\awards::givemidmatchaward( "mode_gun_melee" );
-                var_1 scripts\mp\utility::incperstat( "stabs", 1 );
+                var_1 scripts\mp\utility::incpersstat( "stabs", 1 );
                 var_1 scripts\mp\persistence::statsetchild( "round", "stabs", var_1.pers["stabs"] );
 
                 if ( isplayer( var_1 ) )
@@ -297,7 +297,7 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
                 var_1 thread scripts\mp\rank::scoreeventpopup( "gained_gun_rank" );
                 var_1 playlocalsound( "mp_war_objective_taken" );
                 var_1 thread givenextgun( 0 );
-                var_1 scripts\mp\utility::_id_F6FF( level.gun_guns[var_1.gungamegunindex], 1 );
+                var_1 scripts\mp\utility::setfakeloadoutweaponslot( level.gun_guns[var_1.gungamegunindex], 1 );
             }
 
             if ( isdefined( var_1.lastgunrankincreasetime ) && gettime() - var_1.lastgunrankincreasetime < 5000 )
@@ -866,7 +866,7 @@ getvalidattachments( var_0, var_1, var_2, var_3, var_4 )
 giveortakethrowingknife( var_0 )
 {
     var_1 = "primary";
-    var_2 = scripts\mp\powers::getcurrentequipment( var_1 );
+    var_2 = scripts\mp\powers::getpower( var_1 );
 
     if ( isdefined( var_2 ) )
         scripts\mp\powers::removepower( var_2 );
@@ -886,7 +886,7 @@ isvalidthrowingknifekill( var_0 )
 
 onplayerscore( var_0, var_1, var_2 )
 {
-    var_1 scripts\mp\utility::incperstat( "gamemodeScore", var_2, 1 );
+    var_1 scripts\mp\utility::incpersstat( "gamemodeScore", var_2, 1 );
     var_3 = var_1 scripts\mp\utility::getpersstat( "gamemodeScore" );
     var_1 scripts\mp\persistence::statsetchild( "round", "gamemodeScore", var_3 );
     var_4 = 0;

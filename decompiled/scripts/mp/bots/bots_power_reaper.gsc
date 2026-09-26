@@ -3,8 +3,8 @@
 
 _id_8995( var_0, var_1 )
 {
-    thread scripts\mp\bots\bots_powers::useprompt( var_0, var_1, 450, ::_id_1307D );
-    thread scripts\mp\bots\bots_powers::usequickrope( var_0, var_1, 450, 80, ::_id_1307D );
+    thread scripts\mp\bots\bots_powers::_id_130C1( var_0, var_1, 450, ::_id_1307D );
+    thread scripts\mp\bots\bots_powers::_id_130C2( var_0, var_1, 450, 80, ::_id_1307D );
 }
 
 _id_C166( var_0, var_1 )

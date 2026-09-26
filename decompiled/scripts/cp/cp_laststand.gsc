@@ -135,7 +135,7 @@ check_for_invalid_attachments()
 
     var_0 = undefined;
 
-    if ( isdefined( self.lastweapon ) && !scripts\engine\utility::exist_in_array_MAYBE( self.copy_fullweaponlist, self.lastweapon ) )
+    if ( isdefined( self.lastweapon ) && !scripts\engine\utility::_id_693B( self.copy_fullweaponlist, self.lastweapon ) )
         self.copy_fullweaponlist = scripts\engine\utility::array_add( self.copy_fullweaponlist, self.lastweapon );
 
     foreach ( var_2 in self.copy_fullweaponlist )
@@ -557,7 +557,7 @@ getrevivetimescaler( var_0, var_1 )
     return var_2;
 }
 
-_id_B529( var_0, var_1 )
+medic_revive( var_0, var_1 )
 {
     instant_revive( var_1 );
     record_revive_success( var_0, var_1 );
@@ -711,7 +711,7 @@ default_player_init_laststand()
     init_revive_icon_list( self );
 }
 
-_id_9730( var_0 )
+init_selfrevive_icon( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -1240,8 +1240,8 @@ remove_from_player_revive_icon_list( var_0, var_1 )
 
 get_revive_icon_initial_alpha( var_0 )
 {
-    if ( isdefined( level._id_E49D ) )
-        return [[ level._id_E49D ]]( var_0 );
+    if ( isdefined( level.revive_icon_initial_alpha_func ) )
+        return [[ level.revive_icon_initial_alpha_func ]]( var_0 );
     else
         return 1;
 }

@@ -5,10 +5,10 @@ init()
 {
     setdvar( "match_running", 1 );
     level.splitscreen = issplitscreen();
-    scripts\mp\utility::_id_F305();
+    scripts\mp\utility::set_console_status();
     level.onlinegame = getdvarint( "onlinegame" );
     level.rankedmatch = level.onlinegame && !getdvarint( "xblive_privatematch" ) || getdvarint( "force_ranking" );
-    scripts\mp\utility::_id_F7F1();
+    scripts\mp\utility::setplayerdatagroups();
     level.script = tolower( getdvar( "mapname" ) );
     level.gametype = tolower( getdvar( "g_gametype" ) );
     level.teamnamelist = [ "axis", "allies" ];
@@ -17,23 +17,23 @@ init()
     level.multiteambased = 0;
     level.teambased = 0;
     level.objectivebased = 0;
-    level._id_6329 = 1;
+    level.endgameontimelimit = 1;
     level.showingfinalkillcam = 0;
     level.tispawndelay = getdvarint( "scr_tispawndelay" );
 
-    if ( !isdefined( level._id_12AC9 ) )
+    if ( !isdefined( level.tweakablesinitialized ) )
         scripts\mp\tweakables::init();
 
-    level._id_8865 = "halftime";
-    level._id_AA1E = 0;
+    level.halftimetype = "halftime";
+    level.laststatustime = 0;
     level.waswinning = "none";
-    level._id_A9F1 = 0;
+    level.lastslowprocessframe = 0;
     level.placement["allies"] = [];
     level.placement["axis"] = [];
     level.placement["all"] = [];
-    level._id_D706 = 3.5;
-    level._id_D420 = [];
-    _id_DEEC();
+    level.postroundtime = 3.5;
+    level.playerslookingforsafespawn = [];
+    registerdvars();
 
     if ( scripts\mp\utility::matchmakinggame() )
     {
@@ -57,11 +57,11 @@ init()
     level.alivecount["spectator"] = 0;
     level.livescount["allies"] = 0;
     level.livescount["axis"] = 0;
-    level._id_C50B = [];
+    level.onelefttime = [];
     level.hasspawned["allies"] = 0;
     level.hasspawned["axis"] = 0;
     var_3 = 9;
-    _id_9694( var_3 );
+    init_multiteamdata( var_3 );
 }
 
 endmatchonhostdisconnect()
@@ -83,7 +83,7 @@ endmatchonhostdisconnect()
     thread scripts\mp\gamelogic::endgame( "draw", game["end_reason"]["host_ended_game"] );
 }
 
-_id_9694( var_0 )
+init_multiteamdata( var_0 )
 {
     for ( var_1 = 0; var_1 < var_0; var_1++ )
     {
@@ -96,7 +96,7 @@ _id_9694( var_0 )
     }
 }
 
-_id_DEEC()
+registerdvars()
 {
     setomnvar( "ui_bomb_timer", 0 );
 
@@ -118,17 +118,17 @@ setupcallbacks()
     level.onspawnplayer = scripts\mp\gametypes\common::onspawnplayer;
     level.onrespawndelay = ::blank;
     level.ontimelimit = scripts\mp\gamelogic::default_ontimelimit;
-    level._id_C539 = scripts\mp\gamelogic::default_onhalftime;
-    level.ondeadevent = scripts\mp\gamelogic::_id_5007;
+    level.onhalftime = scripts\mp\gamelogic::default_onhalftime;
+    level.ondeadevent = scripts\mp\gamelogic::default_ondeadevent;
     level.ononeleftevent = scripts\mp\gamelogic::default_ononeleftevent;
     level.onprecachegametype = ::blank;
     level.onstartgametype = ::blank;
     level.onplayerkilled = ::blank;
-    level._id_A6A2 = scripts\mp\killstreaks\init::init;
-    level._id_B3E7 = scripts\mp\matchevents::init;
-    level._id_9994 = scripts\mp\intel::init;
+    level.killstreakinit = scripts\mp\killstreaks\init::init;
+    level.matcheventsinit = scripts\mp\matchevents::init;
+    level.intelinit = scripts\mp\intel::init;
     level.matchrecording_init = scripts\mp\matchrecording::init;
-    level.weaponmapfunc = scripts\mp\utility::_id_13CA1;
+    level.weaponmapfunc = scripts\mp\utility::weaponmap;
     level.initagentscriptvariables = scripts\mp\agents\agent_utility::initagentscriptvariables;
     level.setagentteam = scripts\mp\agents\agent_utility::set_agent_team;
     level.agentvalidateattacker = scripts\mp\utility::_validateattacker;
@@ -156,7 +156,7 @@ blank( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 
 }
 
-_id_11757()
+testshock()
 {
     self endon( "death" );
     self endon( "disconnect" );

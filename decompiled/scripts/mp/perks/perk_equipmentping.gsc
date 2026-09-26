@@ -32,7 +32,7 @@ runequipmentping( var_0, var_1 )
                     if ( var_6 scripts\mp\utility::_hasperk( "specialty_engineer" ) )
                         continue;
 
-                    if ( isdefined( var_6._id_C78B ) )
+                    if ( isdefined( var_6.outlined ) )
                         continue;
 
                     var_7 = scripts\engine\utility::array_add( level.players, self );
@@ -55,11 +55,11 @@ runequipmentping( var_0, var_1 )
                 {
                     if ( !scripts\mp\utility::istrue( self.eyespyalerted ) )
                     {
-                        var_2 scripts\mp\missions::_id_D991( "ch_trait_eye_spy" );
+                        var_2 scripts\mp\missions::processchallengedaily( "ch_trait_eye_spy" );
                         self.eyespyalerted = 1;
                     }
 
-                    playfxontagforclients( var_3._id_7636, self, "tag_origin", var_2 );
+                    playfxontagforclients( var_3.fxid_ping, self, "tag_origin", var_2 );
                     self playsoundtoplayer( "ghost_senses_ping", var_2 );
                     triggerportableradarping( self.origin, var_2, 400, 800 );
                     wait 3;

@@ -7,7 +7,7 @@ main()
     scripts\mp\maps\mp_mansion\gen\mp_mansion_art::main();
     scripts\mp\maps\mp_mansion\mp_mansion_fx::main();
     scripts\mp\load::main();
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     scripts\mp\compass::setupminimap( "compass_map_mp_mansion" );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.33 );
@@ -139,6 +139,6 @@ spawn_oob_trigger()
     var_1 = spawn( "trigger_radius", ( -1220, 1112, 210 ), 0, 60, 15 );
     var_0 hide();
     var_1 hide();
-    level._id_C7B3[level._id_C7B3.size] = var_0;
-    level._id_C7B3[level._id_C7B3.size] = var_1;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_0;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_1;
 }

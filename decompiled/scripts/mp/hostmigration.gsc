@@ -17,7 +17,7 @@ callback_hostmigration()
     setdvar( "ui_inhostmigration", 1 );
     level.hostmigration = 1;
     level notify( "host_migration_begin" );
-    scripts\mp\gamelogic::_id_12F45();
+    scripts\mp\gamelogic::updatetimerpausedness();
 
     foreach ( var_1 in level.characters )
     {
@@ -37,7 +37,7 @@ callback_hostmigration()
     visionsetthermal( game["thermal_vision"] );
     level.hostmigration = 0;
     level notify( "host_migration_end" );
-    scripts\mp\gamelogic::_id_12F45();
+    scripts\mp\gamelogic::updatetimerpausedness();
     level thread scripts\mp\gamelogic::updategameevents();
     setdvar( "match_running", 1 );
 }
@@ -64,7 +64,7 @@ hostmigrationwait()
     wait 5;
     level.ingraceperiod = 0;
 
-    if ( scripts\mp\utility::istrue( level._id_72F2 ) && !scripts\mp\utility::istrue( level._id_72F1 ) )
+    if ( scripts\mp\utility::istrue( level.forfeitinprogress ) && !scripts\mp\utility::istrue( level.forfeit_aborted ) )
         setomnvar( "ui_match_start_text", "opponent_forfeiting_in" );
 }
 

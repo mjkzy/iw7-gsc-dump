@@ -102,14 +102,14 @@ dochargedamageoncontact( var_0, var_1 )
             if ( var_6 < var_2.charge_attack_stop_facing_enemy_dist_sq )
             {
                 scripts\asm\zombie\melee::_id_1106E();
-                self _meth_8281( "code_move" );
+                self scragentsetanimmode( "code_move" );
                 self scragentsetorientmode( "face angle abs", self.angles );
             }
 
             if ( scripts\asm\dlc4\dlc4_asm::shouldmeleeattackhit( var_5, var_2.charge_attack_damage_radius_sq, var_2.charge_attack_damage_dot ) )
             {
                 scripts\asm\zombie\melee::_id_1106E();
-                self _meth_8281( "code_move" );
+                self scragentsetanimmode( "code_move" );
                 self scragentsetorientmode( "face angle abs", self.angles );
                 var_7 = var_2.charge_attack_damage_amt;
 
@@ -175,7 +175,7 @@ playchargeloop( var_0, var_1, var_2, var_3 )
     if ( isdefined( self.preventplayerpushdist ) )
         self _meth_85C9( self.preventplayerpushdist );
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 playchargeintro( var_0, var_1, var_2, var_3 )
@@ -184,7 +184,7 @@ playchargeintro( var_0, var_1, var_2, var_3 )
         thread scripts\asm\zombie\melee::_id_6A6A( var_1, self.curmeleetarget );
 
     self notify( "charge_start" );
-    return scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    return scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 shouldabortcharge( var_0, var_1, var_2, var_3 )
@@ -195,7 +195,7 @@ shouldabortcharge( var_0, var_1, var_2, var_3 )
         return 1;
     }
 
-    if ( !_func_2AC( self.origin, self.pathgoalpos, self ) )
+    if ( !navisstraightlinereachable( self.origin, self.pathgoalpos, self ) )
     {
         self.bchargeaborted = 1;
         return 1;
@@ -213,7 +213,7 @@ playtauntanim( var_0, var_1, var_2, var_3 )
         thread scripts\asm\zombie\melee::_id_6A6A( var_1, var_4 );
 
     self notify( "taunt" );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 playsharpturnanim_rhino( var_0, var_1, var_2, var_3 )
@@ -229,5 +229,5 @@ playrhinochargeoutro( var_0, var_1, var_2, var_3 )
     if ( isdefined( self.preventplayerpushdist ) )
         self _meth_85C9( self.preventplayerpushdist );
 
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }

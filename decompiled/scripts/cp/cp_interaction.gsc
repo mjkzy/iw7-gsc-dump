@@ -4,7 +4,7 @@
 coop_interaction_pregame()
 {
     _id_96E3();
-    level thread _id_23D8();
+    level thread assign_trigger_on_player_spawned();
 
     if ( scripts\cp\utility::coop_mode_has( "guided_interaction" ) )
         level thread _id_23CB();
@@ -22,9 +22,9 @@ init()
     level.all_interaction_structs = scripts\engine\utility::getstructarray( "interaction", "targetname" );
     level.current_interaction_structs = level.all_interaction_structs;
     level._id_9A46 = 0;
-    level.weapon_hint_func = ::_id_502F;
+    level.weapon_hint_func = ::default_weapon_hint_func;
     level._id_13C63 = ::_id_5030;
-    level thread _id_9A3D();
+    level thread interaction_sound_monitor();
 
     foreach ( var_1 in level.current_interaction_structs )
     {
@@ -46,10 +46,10 @@ init()
         var_1.powered_on = 0;
     }
 
-    level thread _id_5CF3();
+    level thread drop_interaction_structs_to_ground();
 
-    if ( isdefined( level._id_768C ) )
-        [[ level._id_768C ]]();
+    if ( isdefined( level.gametype_interaction_func ) )
+        [[ level.gametype_interaction_func ]]();
 
     if ( isdefined( level.map_interaction_func ) )
         [[ level.map_interaction_func ]]();
@@ -71,14 +71,14 @@ init()
         var_7 = var_6 getcurrentweapon();
 
         if ( isdefined( level.wave_num ) && isdefined( var_7 ) )
-            self._id_13BE8 = [ level.wave_num ][var_7];
+            self.waveswithweapons = [ level.wave_num ][var_7];
     }
 
     level thread _id_C00C();
     level thread _id_4616();
 }
 
-_id_5CF3()
+drop_interaction_structs_to_ground()
 {
     if ( !scripts\engine\utility::flag_exist( "wall_buy_setup_done" ) )
         scripts\engine\utility::flag_init( "wall_buy_setup_done" );
@@ -140,8 +140,8 @@ _id_23CB()
                 var_2._id_23DE = 1;
                 var_3 = spawn( "script_model", var_2.origin );
                 var_2.guidedinteractionent = var_3;
-                var_3 thread _id_DF3C( var_2 );
-                var_3 thread _id_BC88( var_2 );
+                var_3 thread release_interaction_ent( var_2 );
+                var_3 thread move_to_closest_interaction( var_2 );
                 var_2 setclientomnvar( "zm_interaction_cost", -1 );
                 var_2 setclientomnvar( "zm_interaction_ent", var_3 );
 
@@ -157,7 +157,7 @@ _id_23CB()
     }
 }
 
-_id_BC88( var_0 )
+move_to_closest_interaction( var_0 )
 {
     level endon( "game_ended" );
     var_0 endon( "disconnect" );
@@ -172,12 +172,12 @@ _id_BC88( var_0 )
         if ( scripts\engine\utility::is_true( var_0.inlaststand ) || scripts\engine\utility::is_true( var_0.siege_activated ) || scripts\engine\utility::is_true( var_0.flung ) )
         {
             var_1 = undefined;
-            _id_12E34( var_0, -1, undefined, undefined );
+            update_struct_information( var_0, -1, undefined, undefined );
         }
         else if ( !var_0 scripts\cp\utility::areinteractionsenabled() )
         {
             var_1 = undefined;
-            _id_12E34( var_0, -1, undefined, undefined );
+            update_struct_information( var_0, -1, undefined, undefined );
         }
         else
         {
@@ -190,14 +190,14 @@ _id_BC88( var_0 )
 
             foreach ( var_9 in var_7 )
             {
-                if ( _id_9C64( var_0, var_9, var_1 ) )
+                if ( is_permitted_guided_interaction( var_0, var_9, var_1 ) )
                     var_6[var_6.size] = var_9;
             }
 
             if ( scripts\engine\utility::is_true( var_0.resetguidedinteraction ) )
             {
                 var_1 = undefined;
-                _id_12E34( var_0, -1, undefined, undefined );
+                update_struct_information( var_0, -1, undefined, undefined );
                 var_0.resetguidedinteraction = undefined;
                 wait 0.05;
                 continue;
@@ -209,7 +209,7 @@ _id_BC88( var_0 )
             if ( var_6.size < 1 )
             {
                 var_1 = undefined;
-                _id_12E34( var_0, -1, undefined, undefined );
+                update_struct_information( var_0, -1, undefined, undefined );
                 wait 0.05;
                 continue;
             }
@@ -222,7 +222,7 @@ _id_BC88( var_0 )
 
                 if ( var_0 adsbuttonpressed() )
                 {
-                    _id_12E34( var_0, -1, undefined, undefined );
+                    update_struct_information( var_0, -1, undefined, undefined );
                     var_1 = undefined;
 
                     while ( var_0 adsbuttonpressed() )
@@ -231,7 +231,7 @@ _id_BC88( var_0 )
 
                 if ( distancesquared( var_0.origin, var_14.origin ) <= var_5 )
                 {
-                    _id_12E34( var_0, -1, undefined, undefined );
+                    update_struct_information( var_0, -1, undefined, undefined );
                     var_1 = undefined;
                     continue;
                 }
@@ -239,8 +239,8 @@ _id_BC88( var_0 )
                     break;
                 else
                 {
-                    var_2 = _id_7A4A( var_14, var_0 );
-                    var_3 = _id_7A48( var_14, var_0 );
+                    var_2 = get_interaction_origin( var_14, var_0 );
+                    var_3 = get_interaction_cost( var_14, var_0 );
                     var_1 = var_14;
                     var_4 = 1;
                     break;
@@ -248,14 +248,14 @@ _id_BC88( var_0 )
             }
 
             if ( var_4 )
-                _id_12E34( var_0, var_3, var_2, var_1 );
+                update_struct_information( var_0, var_3, var_2, var_1 );
         }
 
         wait 0.1;
     }
 }
 
-_id_7A4A( var_0, var_1 )
+get_interaction_origin( var_0, var_1 )
 {
     var_2 = ( 0, 0, 68 );
     var_3 = var_0.origin;
@@ -319,7 +319,7 @@ _id_7A4A( var_0, var_1 )
     return var_7;
 }
 
-_id_7A48( var_0, var_1 )
+get_interaction_cost( var_0, var_1 )
 {
     var_2 = 1;
     var_3 = int( level.interactions[var_0.script_noteworthy].cost );
@@ -357,7 +357,7 @@ _id_7A48( var_0, var_1 )
         if ( scripts\engine\utility::is_true( level.has_picked_up_fuses ) && !isdefined( level.placed_alien_fuses ) )
             var_3 = 0;
     }
-    else if ( _id_9CDB( var_0 ) )
+    else if ( is_struct_perk_machine( var_0 ) )
     {
         if ( isdefined( var_0.name ) && !var_1 can_use_perk( var_0 ) )
             var_3 = 0;
@@ -380,7 +380,7 @@ _id_7A48( var_0, var_1 )
     return var_3;
 }
 
-_id_9CDB( var_0 )
+is_struct_perk_machine( var_0 )
 {
     if ( !isdefined( var_0.name ) )
         return 0;
@@ -414,7 +414,7 @@ get_perk_machine_cost( var_0 )
     }
 }
 
-_id_9C64( var_0, var_1, var_2 )
+is_permitted_guided_interaction( var_0, var_1, var_2 )
 {
     level endon( "game_ended" );
     var_0 endon( "disconnect" );
@@ -492,7 +492,7 @@ _id_9C64( var_0, var_1, var_2 )
 
         foreach ( var_7 in var_5 )
         {
-            var_8 = var_7 _id_77D3();
+            var_8 = var_7 get_adjacent_volumes_from_volume();
 
             foreach ( var_10 in var_8 )
             {
@@ -513,14 +513,14 @@ _id_9C64( var_0, var_1, var_2 )
         return 0;
 }
 
-_id_77D3()
+get_adjacent_volumes_from_volume()
 {
-    if ( isdefined( level._id_186E[self.basename] ) )
+    if ( isdefined( level.adjacent_volumes[self.basename] ) )
     {
         var_0 = [];
 
-        foreach ( var_2 in level._id_186E[self.basename] )
-            var_0[var_0.size] = level._id_10817[var_2];
+        foreach ( var_2 in level.adjacent_volumes[self.basename] )
+            var_0[var_0.size] = level.spawn_volume_names[var_2];
 
         return var_0;
     }
@@ -528,15 +528,15 @@ _id_77D3()
     return [];
 }
 
-_id_9C0F( var_0 )
+is_in_adjacent_volume( var_0 )
 {
     if ( !isdefined( var_0 ) )
         return 0;
 
-    if ( !isdefined( var_0._id_186E ) )
+    if ( !isdefined( var_0.adjacent_volumes ) )
         return 0;
 
-    foreach ( var_2 in var_0._id_186E )
+    foreach ( var_2 in var_0.adjacent_volumes )
     {
         if ( !var_2.active )
             continue;
@@ -550,8 +550,8 @@ _id_9C0F( var_0 )
 
 get_spawn_volumes_player_is_in( var_0, var_1, var_2 )
 {
-    if ( isdefined( level._id_7C80 ) )
-        return [[ level._id_7C80 ]]();
+    if ( isdefined( level.get_spawn_volume_func ) )
+        return [[ level.get_spawn_volume_func ]]();
 
     var_3 = [];
     var_4 = level.spawn_volume_array;
@@ -568,7 +568,7 @@ get_spawn_volumes_player_is_in( var_0, var_1, var_2 )
 
         if ( var_2 istouching( var_6 ) )
             var_7 = 1;
-        else if ( scripts\engine\utility::is_true( var_0 ) && var_2 _id_9C0F( var_6 ) )
+        else if ( scripts\engine\utility::is_true( var_0 ) && var_2 is_in_adjacent_volume( var_6 ) )
             var_7 = 1;
 
         if ( var_7 )
@@ -578,7 +578,7 @@ get_spawn_volumes_player_is_in( var_0, var_1, var_2 )
     return var_3;
 }
 
-_id_12E34( var_0, var_1, var_2, var_3 )
+update_struct_information( var_0, var_1, var_2, var_3 )
 {
     if ( !isdefined( var_1 ) )
         var_1 = -1;
@@ -614,14 +614,14 @@ _id_79D0( var_0 )
     }
 }
 
-_id_DF3C( var_0 )
+release_interaction_ent( var_0 )
 {
     var_0 waittill( "disconnect" );
     self.in_use = 0;
     self notify( "interaction_ent_released" );
 }
 
-_id_23D8()
+assign_trigger_on_player_spawned()
 {
     level endon( "game_ended" );
 
@@ -640,13 +640,13 @@ _id_23D8()
 
         var_0.last_interaction_point = undefined;
         var_0.interaction_trigger makeunusable();
-        var_0 thread _id_DF3F();
+        var_0 thread release_player_interaction_trigger();
         var_0 thread player_interaction_monitor();
-        var_0 thread _id_D104();
+        var_0 thread player_interaction_weapon_switch_monitor();
     }
 }
 
-_id_D104()
+player_interaction_weapon_switch_monitor()
 {
     self endon( "disconnect" );
     self endon( "death" );
@@ -678,7 +678,7 @@ get_player_interaction_trigger()
     return undefined;
 }
 
-_id_DF3F()
+release_player_interaction_trigger()
 {
     var_0 = self.interaction_trigger;
     scripts\engine\utility::waittill_any( "death", "disconnect" );
@@ -720,11 +720,11 @@ reset_interaction_triggers()
     foreach ( var_1 in level.players )
     {
         if ( isdefined( var_1.interaction_trigger ) )
-            _id_8E90( var_1 );
+            hide_interaction_trigger_from_others( var_1 );
     }
 }
 
-_id_8E90( var_0 )
+hide_interaction_trigger_from_others( var_0 )
 {
     foreach ( var_2 in level.players )
     {
@@ -738,7 +738,7 @@ _id_8E90( var_0 )
     }
 }
 
-_id_13D07( var_0, var_1 )
+wherethehellami( var_0, var_1 )
 {
     for (;;)
     {
@@ -769,12 +769,12 @@ flash_inventory()
     self endon( "window_trap_placed" );
     self endon( "death" );
 
-    if ( !isdefined( self._id_BF46 ) )
-        self._id_BF46 = gettime() + 2500;
-    else if ( gettime() < self._id_BF46 )
+    if ( !isdefined( self.next_inventory_flash ) )
+        self.next_inventory_flash = gettime() + 2500;
+    else if ( gettime() < self.next_inventory_flash )
         return;
 
-    self._id_BF46 = gettime() + 2500;
+    self.next_inventory_flash = gettime() + 2500;
     self setclientomnvar( "zom_crafted_weapon", 0 );
     wait 0.5;
     self setclientomnvar( "zom_crafted_weapon", 8 );
@@ -821,7 +821,7 @@ reset_interaction()
 
 set_interaction_point( var_0, var_1 )
 {
-    if ( scripts\engine\utility::is_true( self.interaction_trigger._id_55F3 ) )
+    if ( scripts\engine\utility::is_true( self.interaction_trigger.disableinteraction ) )
         return;
 
     self.interaction_trigger dontinterpolate();
@@ -851,15 +851,15 @@ set_interaction_point( var_0, var_1 )
     {
         if ( !scripts\cp\cp_weapon::has_weapon_variation( var_0.script_noteworthy ) )
         {
-            var_5 = _id_8228( var_0.script_noteworthy );
-            var_6 = _id_8220( var_0.script_noteworthy );
+            var_5 = getweaponnamestring( var_0.script_noteworthy );
+            var_6 = getweaponcostint( var_0.script_noteworthy );
             self.interaction_trigger sethintstringparams( var_5, var_6 );
         }
     }
     else if ( interaction_is_weapon_upgrade( var_0 ) )
     {
         var_7 = self getcurrentweapon();
-        var_5 = _id_8228( var_7 );
+        var_5 = getweaponnamestring( var_7 );
 
         if ( scripts\cp\cp_weapon::can_upgrade( var_7 ) )
         {
@@ -873,7 +873,7 @@ set_interaction_point( var_0, var_1 )
         else if ( isdefined( var_5 ) )
             self.interaction_trigger sethintstringparams( var_5 );
     }
-    else if ( _id_9A16( var_0 ) )
+    else if ( interaction_is_chess_piece( var_0 ) )
     {
         if ( !isdefined( self.current_crafting_struct ) )
         {
@@ -889,9 +889,9 @@ set_interaction_point( var_0, var_1 )
 
         self.interaction_trigger.origin = var_0.origin;
     }
-    else if ( _id_9A26( var_0 ) )
+    else if ( interaction_is_trap( var_0 ) )
         self.interaction_trigger.origin = ( var_0.origin[0], var_0.origin[1], var_2[2] - 15 );
-    else if ( _id_9A15( var_0 ) && var_0.script_noteworthy == "atm_withdrawal" )
+    else if ( interaction_is_atm( var_0 ) && var_0.script_noteworthy == "atm_withdrawal" )
         self.interaction_trigger sethintstringparams( level.atm_amount_deposited );
     else if ( interaction_is_fortune_teller( var_0 ) )
     {
@@ -903,15 +903,15 @@ set_interaction_point( var_0, var_1 )
     else if ( var_0.script_noteworthy == "spawned_essence" )
         self.interaction_trigger.origin = var_0.origin;
 
-    _id_F422( self.interaction_trigger, var_0 );
+    set_interaction_trigger_properties( self.interaction_trigger, var_0 );
 
     if ( !isdefined( var_1 ) )
-        thread _id_135DF( var_0 );
+        thread wait_for_interaction_triggered( var_0 );
 
     self.interaction_trigger makeusable();
 }
 
-_id_8228( var_0 )
+getweaponnamestring( var_0 )
 {
     if ( !isdefined( var_0 ) )
         return undefined;
@@ -1054,14 +1054,14 @@ _id_8228( var_0 )
     }
 }
 
-_id_8220( var_0 )
+getweaponcostint( var_0 )
 {
     return int( level.interactions[var_0].cost );
 }
 
-_id_F422( var_0, var_1 )
+set_interaction_trigger_properties( var_0, var_1 )
 {
-    var_2 = _id_7A49( var_1, self );
+    var_2 = get_interaction_hintstring( var_1, self );
 
     if ( isdefined( var_2 ) )
         self.interaction_trigger sethintstring( var_2 );
@@ -1072,7 +1072,7 @@ _id_F422( var_0, var_1 )
             self.interaction_trigger sethintstringparams( scripts\cp\zombies\direct_boss_fight::get_kung_fu_string( self.weapon_purchase_looking_at.weaponname ) );
         else
         {
-            var_3 = _id_8228( self.weapon_purchase_looking_at.weaponname );
+            var_3 = getweaponnamestring( self.weapon_purchase_looking_at.weaponname );
             self.interaction_trigger sethintstringparams( var_3, int( scripts\cp\zombies\direct_boss_fight::get_weapon_cost( self.weapon_purchase_looking_at.weaponname ) ) );
         }
     }
@@ -1082,7 +1082,7 @@ _id_F422( var_0, var_1 )
         {
             var_4 = scripts\cp\utility::getrawbaseweaponname( var_1.script_noteworthy );
             var_5 = scripts\cp\cp_weapon::get_weapon_level( var_4 );
-            var_3 = _id_8228( var_1.script_noteworthy );
+            var_3 = getweaponnamestring( var_1.script_noteworthy );
 
             if ( var_5 > 1 )
                 self.interaction_trigger sethintstringparams( int( 4500 ), var_3 );
@@ -1095,7 +1095,7 @@ _id_F422( var_0, var_1 )
         if ( isdefined( self.lost_and_found_spot ) && self.lost_and_found_spot == var_1 )
             _id_F474( self );
     }
-    else if ( interaction_is_window_entrance( var_1 ) || _id_9A19( var_1 ) || _id_9A1C( var_1 ) || _id_9A1E( var_1 ) || interaction_is_weapon_upgrade( var_1 ) || _id_9A16( var_1 ) )
+    else if ( interaction_is_window_entrance( var_1 ) || interaction_is_floor_is_lava_client( var_1 ) || interaction_is_jugg_maze_button( var_1 ) || _id_9A1E( var_1 ) || interaction_is_weapon_upgrade( var_1 ) || interaction_is_chess_piece( var_1 ) )
     {
         self.interaction_trigger usetriggerrequirelookat( 0 );
         self.interaction_trigger setusefov( 360 );
@@ -1147,19 +1147,19 @@ _id_F474( var_0 )
 
         if ( var_1.size > 2 )
         {
-            var_5 = _id_8228( var_1[1] );
-            var_6 = _id_8228( var_1[2] );
+            var_5 = getweaponnamestring( var_1[1] );
+            var_6 = getweaponnamestring( var_1[2] );
             var_0.interaction_trigger sethintstringparams( var_5, var_6 );
         }
         else
         {
-            var_5 = _id_8228( var_1[1] );
+            var_5 = getweaponnamestring( var_1[1] );
             var_0.interaction_trigger sethintstringparams( var_5 );
         }
     }
 }
 
-_id_7A49( var_0, var_1 )
+get_interaction_hintstring( var_0, var_1 )
 {
     if ( isdefined( level.interactions[var_0.script_noteworthy].hint_func ) )
         return [[ level.interactions[var_0.script_noteworthy].hint_func ]]( var_0, var_1 );
@@ -1187,7 +1187,7 @@ _id_7A49( var_0, var_1 )
             return level.interaction_hintstrings["crafting_nopiece"];
     }
 
-    if ( _id_9A16( var_0 ) )
+    if ( interaction_is_chess_piece( var_0 ) )
         return level.interaction_hintstrings["crafting_item_swap"];
 
     return level.interaction_hintstrings[var_0.script_noteworthy];
@@ -1237,7 +1237,7 @@ _id_4616()
     }
 }
 
-_id_135DF( var_0 )
+wait_for_interaction_triggered( var_0 )
 {
     if ( isdefined( level.wait_for_interaction_func ) )
         self thread [[ level.wait_for_interaction_func ]]( var_0 );
@@ -1449,7 +1449,7 @@ interaction_post_activate_delay( var_0 )
     if ( interaction_is_door_buy( var_0 ) )
         return;
 
-    if ( _id_9A15( var_0 ) )
+    if ( interaction_is_atm( var_0 ) )
         return;
 
     scripts\cp\utility::allow_player_interactions( 0 );
@@ -1649,7 +1649,7 @@ _id_5030( var_0, var_1 )
 
 }
 
-_id_7DBA( var_0, var_1 )
+getammopurchasestring( var_0, var_1 )
 {
     var_2 = level.interactions[var_0.script_noteworthy].cost;
     var_3 = scripts\cp\utility::getrawbaseweaponname( var_0.script_noteworthy );
@@ -1691,15 +1691,15 @@ _id_7DBA( var_0, var_1 )
     }
 }
 
-_id_502F( var_0, var_1 )
+default_weapon_hint_func( var_0, var_1 )
 {
     if ( var_1 scripts\cp\cp_weapon::has_weapon_variation( var_0.script_noteworthy ) )
-        return _id_7DBA( var_0, var_1 );
+        return getammopurchasestring( var_0, var_1 );
 
     return undefined;
 }
 
-_id_9A3D()
+interaction_sound_monitor()
 {
     level endon( "game_ended" );
 
@@ -1733,7 +1733,7 @@ _id_9A3D()
 
                 break;
             case "purchase":
-                var_3 = _id_7A4B( var_1, var_2 );
+                var_3 = get_interaction_sound( var_1, var_2 );
 
                 if ( isdefined( var_3 ) && soundexists( var_3 ) )
                     var_2 playlocalsound( var_3 );
@@ -1754,7 +1754,7 @@ _id_9A3D()
     }
 }
 
-_id_7A4B( var_0, var_1 )
+get_interaction_sound( var_0, var_1 )
 {
     var_2 = [];
 
@@ -1851,7 +1851,7 @@ interaction_post_activate_update( var_0 )
     }
 }
 
-_id_9A26( var_0 )
+interaction_is_trap( var_0 )
 {
     return var_0.script_noteworthy == "trap_electric" || var_0.script_noteworthy == "trap_firebarrel";
 }
@@ -1866,12 +1866,12 @@ interaction_is_ark_quest_station( var_0 )
     return var_0.script_noteworthy == "ark_quest_station";
 }
 
-_id_9A15( var_0 )
+interaction_is_atm( var_0 )
 {
     return var_0.script_noteworthy == "atm_withdrawal" || var_0.script_noteworthy == "atm_deposit";
 }
 
-_id_9A1C( var_0 )
+interaction_is_jugg_maze_button( var_0 )
 {
     return var_0.script_noteworthy == "neil_head";
 }
@@ -1897,7 +1897,7 @@ _id_9A1E( var_0 )
     return var_0.script_noteworthy == "pillage_item";
 }
 
-_id_9A19( var_0 )
+interaction_is_floor_is_lava_client( var_0 )
 {
     return var_0.script_noteworthy == "fast_travel";
 }
@@ -1912,7 +1912,7 @@ interaction_is_grenade_wall_buy( var_0 )
     return var_0.script_noteworthy == "power_bioSpike" || var_0.script_noteworthy == "power_c4";
 }
 
-_id_9A16( var_0 )
+interaction_is_chess_piece( var_0 )
 {
     return var_0.script_noteworthy == "crafting_pickup";
 }
@@ -1927,7 +1927,7 @@ interaction_is_perk( var_0 )
     return isdefined( var_0.perk_type );
 }
 
-_id_9A42( var_0 )
+interaction_waiting_on_power( var_0 )
 {
     return var_0.requires_power && !var_0.powered_on;
 }
@@ -1975,7 +1975,7 @@ interaction_is_valid( var_0, var_1 )
     if ( scripts\engine\utility::is_true( var_0.in_use ) )
         return 0;
 
-    if ( _id_9A42( var_0 ) )
+    if ( interaction_waiting_on_power( var_0 ) )
     {
         level notify( "player_accessed_nonpowered_interaction", var_1, var_0 );
 
@@ -2044,7 +2044,7 @@ _id_9A1F( var_0 )
 
 _id_D0C3( var_0 )
 {
-    return scripts\cp\powers\coop_powers::hasequipment( var_0.power_name );
+    return scripts\cp\powers\coop_powers::haspower( var_0.power_name );
 }
 
 can_use_perk( var_0 )
@@ -2072,7 +2072,7 @@ interaction_fail_internal( var_0, var_1, var_2, var_3 )
     self.interaction_trigger sethintstring( var_1 );
     wait 1;
     self.delay_hint = undefined;
-    _id_F422( self.interaction_trigger, var_0 );
+    set_interaction_trigger_properties( self.interaction_trigger, var_0 );
 }
 
 disable_linked_interactions( var_0 )
@@ -2135,7 +2135,7 @@ interaction_cooldown( var_0, var_1 )
             var_4.cooling_down = 1;
     }
 
-    if ( scripts\engine\utility::is_true( level._id_4614 ) )
+    if ( scripts\engine\utility::is_true( level.cooldown_override ) )
         wait 1;
     else
         level scripts\engine\utility::waittill_any_timeout( var_1, "override_cooldowns" );
@@ -2190,7 +2190,7 @@ _id_9A3A( var_0 )
     return scripts\engine\utility::is_true( var_0.requires_power ) && isdefined( var_0.power_area );
 }
 
-_id_55A2()
+disable_wall_buy_interactions()
 {
     var_0 = scripts\engine\utility::getstructarray( "interaction", "targetname" );
 

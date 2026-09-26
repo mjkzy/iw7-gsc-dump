@@ -9,7 +9,7 @@ init_ghost_n_skull_3_quest()
     scripts\cp\zombies\zombie_quest::register_quest_step( "ghostThree", 3, ::blank, ::do_sky_steps, ::complete_sky_steps, ::debug_do_sky_steps );
     scripts\cp\zombies\zombie_quest::register_quest_step( "ghostThree", 4, ::blank, ::grab_skull_in_front_train, ::complete_grab_skull_in_front_train, ::debug_grab_skull_in_front_train );
     scripts\cp\zombies\zombie_quest::register_quest_step( "ghostThree", 5, ::blank, ::call_service_number, ::complete_call_service_number, ::debug_call_service_number );
-    scripts\cp\zombies\zombie_quest::register_quest_step( "ghostThree", 6, ::blank, ::wait_for_player_activation, ::complete_clean_arcade_cabinet, ::debug_wait_for_player_activation );
+    scripts\cp\zombies\zombie_quest::register_quest_step( "ghostThree", 6, ::blank, ::wait_for_player_activation, ::complete_wait_for_player_activation, ::debug_wait_for_player_activation );
 }
 
 blank()
@@ -1647,7 +1647,7 @@ wait_for_player_activation()
     }
 }
 
-complete_clean_arcade_cabinet()
+complete_wait_for_player_activation()
 {
     scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::notify_activation_progress( -1, 0.5 );
     scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::start_ghost_wave();
@@ -2146,7 +2146,7 @@ reactivate_skullbuster_cabinet()
             return;
 
         scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 0, scripts\cp\maps\cp_zmb\cp_zmb_ghost_wave::reactivate_cabinet, ::call_service_number, ::complete_call_service_number, ::debug_call_service_number );
-        scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 1, ::blank, ::wait_for_player_activation, ::complete_clean_arcade_cabinet, ::debug_wait_for_player_activation );
+        scripts\cp\zombies\zombie_quest::register_quest_step( "reactivateghost", 1, ::blank, ::wait_for_player_activation, ::complete_wait_for_player_activation, ::debug_wait_for_player_activation );
     }
 
     level thread scripts\cp\zombies\zombie_quest::start_quest_line( "reactivateghost" );

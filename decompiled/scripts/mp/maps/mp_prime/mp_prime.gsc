@@ -8,7 +8,7 @@ main()
     scripts\mp\maps\mp_prime\mp_prime_fx::main();
     scripts\mp\load::main();
     scripts\mp\compass::setupminimap( "compass_map_mp_prime" );
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.33 );
     setdvar( "r_umbraMinObjectContribution", 8 );

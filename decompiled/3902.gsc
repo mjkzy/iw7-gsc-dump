@@ -15,20 +15,20 @@ _id_FE61( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     _id_FE89();
-    var_4 = _id_FE64();
-    self _meth_83CE();
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = shoot_getrate();
+    self updateplayersightaccuracy();
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     shootblankorrpg( var_1, 0.2, 2 );
     self.asm.shootparams._id_C21C--;
-    _id_32BE();
+    burstdelay();
     scripts\asm\asm::asm_fireevent( var_1, "shoot_finished" );
 }
 
-_id_FE7D( var_0 )
+shoot_shotgunpumpsound( var_0 )
 {
     var_1 = var_0 + "_shotgun_sound";
     var_2 = var_0 + "kill_shotgun_sound";
-    thread _id_FE84( var_1, var_2, 2 );
+    thread shoot_timeout( var_1, var_2, 2 );
     self endon( var_1 );
     self waittillmatch( var_0, "rechamber" );
     self playsound( "ai_shotgun_pump" );
@@ -39,7 +39,7 @@ shootblankorrpg( var_0, var_1, var_2 )
 {
     var_3 = var_0 + "_timeout";
     var_4 = var_0 + "_timeout_end";
-    thread _id_FE84( var_3, var_4, var_2 );
+    thread shoot_timeout( var_3, var_4, var_2 );
     self endon( var_3 );
     self endon( var_0 + "_finished" );
     var_5 = 0;
@@ -55,7 +55,7 @@ shootblankorrpg( var_0, var_1, var_2 )
 
         if ( isdefined( self.enemy ) )
         {
-            if ( !_id_0F3C::isfacingenemy() && !_id_0F3C::_id_9FFF() )
+            if ( !scripts\asm\shared\mp\utility::isfacingenemy() && !scripts\asm\shared\mp\utility::isweaponfacingenemy() )
                 break;
         }
 
@@ -75,9 +75,9 @@ shootblankorrpg( var_0, var_1, var_2 )
         var_5++;
 
         if ( var_9 )
-            childthread _id_FE7D( var_0 );
+            childthread shoot_shotgunpumpsound( var_0 );
 
-        if ( self.asm.shootparams._id_6B92 && var_5 == var_6 )
+        if ( self.asm.shootparams.fastburst && var_5 == var_6 )
             break;
 
         wait( var_1 );
@@ -90,7 +90,7 @@ _id_FE5C( var_0, var_1, var_2, var_3 )
 {
     var_4 = var_1 + "_timeout";
     var_5 = var_1 + "_timeout_end";
-    thread _id_FE84( var_4, var_5, var_3 );
+    thread shoot_timeout( var_4, var_5, var_3 );
     self endon( var_4 );
     var_6 = self getanimentry( var_1, var_2 );
     var_7 = animhasnotetrack( var_6, "fire" );
@@ -128,9 +128,9 @@ _id_FE5C( var_0, var_1, var_2, var_3 )
         var_9++;
 
         if ( var_13 )
-            childthread _id_FE7D( var_1 );
+            childthread shoot_shotgunpumpsound( var_1 );
 
-        if ( self.asm.shootparams._id_6B92 && var_9 == var_10 )
+        if ( self.asm.shootparams.fastburst && var_9 == var_10 )
             break;
 
         if ( !var_7 || var_10 == 1 && self.asm.shootparams._id_1119D == "single" )
@@ -140,14 +140,14 @@ _id_FE5C( var_0, var_1, var_2, var_3 )
     self notify( var_5 );
 }
 
-_id_FE84( var_0, var_1, var_2 )
+shoot_timeout( var_0, var_1, var_2 )
 {
     self endon( var_1 );
     wait( var_2 );
     self notify( var_0 );
 }
 
-_id_FEFE()
+shotgunfirerate()
 {
     if ( scripts\anim\utility_common::weapon_pump_action_shotgun() )
         return 1.0;
@@ -158,13 +158,13 @@ _id_FEFE()
     return 0.4;
 }
 
-_id_FE64()
+shoot_getrate()
 {
     var_0 = self.asm.shootparams._id_1119D;
     var_1 = 1.0;
 
-    if ( isdefined( self._id_FED4 ) )
-        var_1 = self._id_FED4;
+    if ( isdefined( self.shootrateoverride ) )
+        var_1 = self.shootrateoverride;
     else if ( var_0 == "full" )
         var_1 = scripts\anim\weaponlist::autoshootanimrate() * randomfloatrange( 0.5, 1.0 );
     else if ( var_0 == "burst" )
@@ -172,7 +172,7 @@ _id_FE64()
     else if ( scripts\anim\utility_common::isusingsidearm() )
         var_1 = 3.0;
     else if ( scripts\anim\utility_common::isusingshotgun() )
-        var_1 = _id_FEFE();
+        var_1 = shotgunfirerate();
 
     return var_1;
 }
@@ -188,32 +188,32 @@ _id_FE89()
     }
 
     self.asm.shootparams._id_1119D = var_0._id_1119D;
-    self.asm.shootparams._id_6B92 = var_0._id_6B92;
+    self.asm.shootparams.fastburst = var_0.fastburst;
     self.asm.shootparams._id_FF0B = var_0._id_FF0B;
     self.asm.shootparams.pos = var_0.pos;
     self.asm.shootparams.ent = var_0.ent;
 }
 
-_id_32BE()
+burstdelay()
 {
-    if ( self.asm.shootparams._id_1119D == "full" && !self.asm.shootparams._id_6B92 )
+    if ( self.asm.shootparams._id_1119D == "full" && !self.asm.shootparams.fastburst )
     {
-        if ( self._id_A9ED == gettime() )
+        if ( self.lastshoottime == gettime() )
             wait 0.05;
 
         return;
     }
 
-    var_0 = _id_80E7();
+    var_0 = getremainingburstdelaytime();
 
     if ( var_0 )
         wait( var_0 );
 }
 
-_id_80E7()
+getremainingburstdelaytime()
 {
-    var_0 = ( gettime() - self._id_A9ED ) / 1000;
-    var_1 = _id_7E12();
+    var_0 = ( gettime() - self.lastshoottime ) / 1000;
+    var_1 = getburstdelaytime();
 
     if ( var_1 > var_0 )
         return var_1 - var_0;
@@ -221,23 +221,23 @@ _id_80E7()
     return 0;
 }
 
-_id_8130()
+getsniperburstdelaytime()
 {
     if ( isplayer( self.enemy ) )
-        return randomfloatrange( self.enemy.gs._id_B750, self.enemy.gs._id_B461 );
+        return randomfloatrange( self.enemy.gs.min_sniper_burst_delay_time, self.enemy.gs.max_sniper_burst_delay_time );
     else
-        return randomfloatrange( anim._id_B750, anim._id_B461 );
+        return randomfloatrange( anim.min_sniper_burst_delay_time, anim.max_sniper_burst_delay_time );
 }
 
-_id_7E12()
+getburstdelaytime()
 {
     if ( scripts\anim\utility_common::isusingsidearm() )
         return randomfloatrange( 0.15, 0.55 );
     else if ( scripts\anim\utility_common::weapon_pump_action_shotgun() )
         return randomfloatrange( 1.0, 1.7 );
     else if ( scripts\anim\utility_common::isasniper() )
-        return _id_8130();
-    else if ( self.asm.shootparams._id_6B92 )
+        return getsniperburstdelaytime();
+    else if ( self.asm.shootparams.fastburst )
         return randomfloatrange( 0.1, 0.35 );
     else
         return randomfloatrange( 0.4, 0.9 );

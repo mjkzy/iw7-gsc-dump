@@ -8,8 +8,8 @@ main( var_0 )
         level._id_A3B9 = spawnstruct();
         level._id_A3B9._id_11888 = loadfx( "vfx/iw7/core/vehicle/jackal/vfx_jackal_rear_thrust_fly_atmosphere.vfx" );
         level._id_A3B9._id_10573 = loadfx( "vfx/old/space_fighter/space_particulate_player_oneshot.vfx" );
-        level._id_A3B9._id_375D = var_0;
-        level._id_A3B9._id_375D._id_444F = ::init;
+        level._id_A3B9.callbackfinishweaponchange = var_0;
+        level._id_A3B9.callbackfinishweaponchange._id_444F = ::init;
         _id_A22F( var_0 );
     }
 }
@@ -41,9 +41,9 @@ init()
 {
     if ( isdefined( level._id_A3B9 ) && !isdefined( self._id_A3B9 ) )
     {
-        var_0 = level._id_A3B9._id_375D;
+        var_0 = level._id_A3B9.callbackfinishweaponchange;
         self._id_A3B9 = spawnstruct();
-        self._id_A3B9._id_375D = var_0;
+        self._id_A3B9.callbackfinishweaponchange = var_0;
         _id_9639();
         self [[ var_0.init ]]();
     }
@@ -51,7 +51,7 @@ init()
 
 _id_9639()
 {
-    self._id_5958 = 1;
+    self.dontdisconnectpaths = 1;
     self._id_C1DB = 0;
     self _meth_8455( self.origin );
 }
@@ -100,8 +100,8 @@ _id_104FE()
 
     for (;;)
     {
-        var_0 = anglestoforward( level._id_D127.angles ) * 300;
-        playfx( scripts\engine\utility::getfx( "space_particulate_player" ), level._id_D127.origin + var_0 );
+        var_0 = anglestoforward( level.player_jackal.angles ) * 300;
+        playfx( scripts\engine\utility::getfx( "space_particulate_player" ), level.player_jackal.origin + var_0 );
         wait 0.6;
     }
 }
@@ -112,14 +112,14 @@ _id_104FF()
 
     for (;;)
     {
-        var_0 = level._id_D127.origin;
+        var_0 = level.player_jackal.origin;
         wait 0.1;
 
-        if ( distance( var_0, level._id_D127.origin ) > 1 )
+        if ( distance( var_0, level.player_jackal.origin ) > 1 )
         {
-            var_1 = vectortoangles( level._id_D127.origin - var_0 );
+            var_1 = vectortoangles( level.player_jackal.origin - var_0 );
             var_2 = anglestoforward( var_1 ) * 256;
-            playfx( scripts\engine\utility::getfx( "space_particulate_player" ), level._id_D127.origin + var_2 );
+            playfx( scripts\engine\utility::getfx( "space_particulate_player" ), level.player_jackal.origin + var_2 );
         }
     }
 }

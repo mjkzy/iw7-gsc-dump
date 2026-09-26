@@ -1272,7 +1272,7 @@ validateplayspace( var_0, var_1, var_2, var_3, var_4 )
 
 play_char_intro_music()
 {
-    if ( self issplitscreenplayer() && !self isreloading() )
+    if ( self issplitscreenplayer() && !self issplitscreenplayerprimary() )
         return;
 
     if ( scripts\cp\zombies\direct_boss_fight::should_directly_go_to_boss_fight() )

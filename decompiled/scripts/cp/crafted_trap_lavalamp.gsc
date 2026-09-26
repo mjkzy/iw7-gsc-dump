@@ -13,9 +13,9 @@ init()
     var_0.cannotplacestring = &"COOP_CRAFTABLES_CANNOT_PLACE";
     var_0.placecancelablestring = &"COOP_CRAFTABLES_PLACE_CANCELABLE";
     var_0.lifespan = 120.0;
-    var_0._id_DDAC = 2;
-    var_0._id_8487 = 0.4;
-    var_0._id_C228 = 12;
+    var_0.rearmtime = 2;
+    var_0.graceperiod = 0.4;
+    var_0.numexplosives = 12;
     var_0.placementheighttolerance = 30.0;
     var_0.placementradius = 16.0;
     var_0.carriedtrapoffset = ( 0, 0, 35 );
@@ -152,7 +152,7 @@ create_lavalamp_trap( var_0, var_1 )
     var_3 = var_0.lavalamp_trap_type;
     var_4 = spawn( "script_model", var_0.origin + ( 0, 0, 1 ) );
     var_4 setmodel( level.lavalamp_trap_settings[var_3].modelbase );
-    var_4._id_EB9C = 3;
+    var_4.scale = 3;
     var_4.angles = var_0.angles + ( 0, -90, 0 );
     var_4.lavalamp_trap_type = var_3;
     var_4.owner = var_2;
@@ -161,8 +161,8 @@ create_lavalamp_trap( var_0, var_1 )
     var_4.name = "crafted_lavalamp";
     var_4.shouldsplash = 0;
     var_4.hidden = 0;
-    var_4._id_252E = 1;
-    var_4._id_8BF0 = [];
+    var_4.attacks = 1;
+    var_4.hasexplosivefired = [];
     var_4.config = level.lavalamp_trap_settings[var_3];
     var_4 thread lavalamp_trap_handleuse();
 
@@ -174,13 +174,13 @@ create_lavalamp_trap( var_0, var_1 )
     return var_4;
 }
 
-_id_936D( var_0 )
+ims_moving_platform_death( var_0 )
 {
-    self._id_933C = 1;
+    self.immediatedeath = 1;
     self notify( "death" );
 }
 
-_id_9367( var_0 )
+ims_handledeath( var_0 )
 {
     self endon( "carried" );
     self waittill( "death" );
@@ -197,11 +197,11 @@ _id_9367( var_0 )
         wait 1.0;
     }
 
-    _id_66A7();
+    equipmentdeletefx();
     self delete();
 }
 
-_id_66A7()
+equipmentdeletefx()
 {
     self setscriptablepartstate( "base", "explode" );
     wait 0.5;
@@ -256,7 +256,7 @@ lavalamp_trap_setplaced( var_0 )
     self.firstplacement = undefined;
     var_1 = create_lavalamp_trap( self, var_0 );
     var_1.isplaced = 1;
-    var_1 thread _id_9367( self.owner );
+    var_1 thread ims_handledeath( self.owner );
     self notify( "placed" );
     var_1 thread lavalamp_trap_setactive();
     var_2 = spawnstruct();
@@ -265,7 +265,7 @@ lavalamp_trap_setplaced( var_0 )
         var_2.linkparent = self.moving_platform;
 
     var_2.endonstring = "carried";
-    var_2.deathoverridecallback = ::_id_936D;
+    var_2.deathoverridecallback = ::ims_moving_platform_death;
     var_1 thread scripts\cp\cp_movers::handle_moving_platforms( var_2 );
     self.carried_lavalamp_trap delete();
     self delete();
@@ -283,7 +283,7 @@ lavalamp_trap_setcancelled( var_0 )
     }
 
     if ( isdefined( var_0 ) && var_0 )
-        _id_66A7();
+        equipmentdeletefx();
 
     self.carried_lavalamp_trap delete();
     self delete();
@@ -298,12 +298,12 @@ lavalamp_trap_setcarried( var_0 )
     var_0.iscarrying = 1;
     var_0 thread scripts\cp\utility::update_trap_placement_internal( self, self.carried_lavalamp_trap, level.lavalamp_trap_settings["crafted_lavalamp"] );
     thread scripts\cp\utility::item_oncarrierdeath( var_0 );
-    thread _id_936F( var_0 );
-    thread _id_9371( var_0 );
+    thread ims_oncarrierdisconnect( var_0 );
+    thread ims_ongameended( var_0 );
     self notify( "carried" );
 }
 
-_id_936F( var_0 )
+ims_oncarrierdisconnect( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -312,7 +312,7 @@ _id_936F( var_0 )
     lavalamp_trap_setcancelled();
 }
 
-_id_9371( var_0 )
+ims_ongameended( var_0 )
 {
     self endon( "placed" );
     self endon( "death" );
@@ -329,7 +329,7 @@ lavalamp_trap_setactive()
     scripts\cp\utility::addtotraplist();
     var_0 = self.owner;
     var_0 forceusehintoff();
-    self._id_2536 = spawn( "trigger_radius", self.origin, 0, 96, 96 );
+    self.attacktrigger = spawn( "trigger_radius", self.origin, 0, 96, 96 );
     thread scripts\cp\utility::item_handleownerdisconnect( "fireworks_disconnect" );
     earthquake( 0.25, 5, self.origin, 128 );
     self playsound( "trap_lavalamp_place_tick" );
@@ -348,13 +348,13 @@ lavalamp_trap_setinactive()
 {
     self makeunusable();
 
-    if ( isdefined( self._id_2536 ) )
-        self._id_2536 delete();
+    if ( isdefined( self.attacktrigger ) )
+        self.attacktrigger delete();
 
-    if ( isdefined( self._id_69F6 ) )
+    if ( isdefined( self.explosive1 ) )
     {
-        self._id_69F6 delete();
-        self._id_69F6 = undefined;
+        self.explosive1 delete();
+        self.explosive1 = undefined;
     }
 
     scripts\cp\utility::removefromtraplist();
@@ -367,10 +367,10 @@ lavalamp_trap_attackzombies()
 
     for (;;)
     {
-        if ( !isdefined( self._id_2536 ) )
+        if ( !isdefined( self.attacktrigger ) )
             break;
 
-        self._id_2536 waittill( "trigger", var_0 );
+        self.attacktrigger waittill( "trigger", var_0 );
 
         if ( isplayer( var_0 ) && isalive( var_0 ) && !scripts\cp\cp_laststand::player_in_laststand( var_0 ) && !isdefined( var_0.padding_damage ) )
         {

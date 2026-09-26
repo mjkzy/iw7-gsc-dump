@@ -3,7 +3,7 @@
 
 init()
 {
-    level._id_77C0 = [];
+    level.gestureinfo = [];
     var_0 = 0;
 
     for (;;)
@@ -18,7 +18,7 @@ init()
         if ( !isdefined( var_2 ) || var_2 == "" )
             break;
 
-        level._id_77C0[var_1] = var_2;
+        level.gestureinfo[var_1] = var_2;
         var_0++;
     }
 
@@ -30,10 +30,10 @@ getgesturedata( var_0 )
     if ( isbot( self ) && var_0 == "devilhorns_mp" )
         var_0 = "gesture009";
 
-    return level._id_77C0[var_0];
+    return level.gestureinfo[var_0];
 }
 
-_id_41B2()
+cleargesture()
 {
     self notify( "clearGesture" );
 
@@ -114,9 +114,9 @@ givegesture( var_0 )
         thread monitorgamepadswitch();
 
     scripts\mp\utility::_giveweapon( var_0 );
-    self _meth_8541( var_0 );
+    self assignweaponoffhandtaunt( var_0 );
     self.gestureweapon = var_0;
-    thread _id_77A4();
+    thread gesture_manage3rdperson();
 }
 
 monitorgamepadswitch()
@@ -127,7 +127,7 @@ monitorgamepadswitch()
 
     for (;;)
     {
-        if ( isdefined( self._id_55C9 ) && self._id_55C9 > 0 )
+        if ( isdefined( self.disabledgesture ) && self.disabledgesture > 0 )
         {
             wait 0.05;
             continue;
@@ -154,7 +154,7 @@ monitorgamepadswitch()
     }
 }
 
-_id_77A4()
+gesture_manage3rdperson()
 {
     self endon( "clearGesture" );
     self endon( "death" );
@@ -211,7 +211,7 @@ gesture_rockpaperscissorsthink()
 
 gesture_resetrockpaperscissorsgesture()
 {
-    _id_41B2();
+    cleargesture();
     givegesture( "ges_plyr_gesture043" );
 }
 
@@ -268,14 +268,14 @@ gesture_getrockpaperscissorsplayers()
         var_3 = vectornormalize( var_3 );
         var_4 = vectordot( var_3, var_0 );
 
-        if ( var_4 < 0.707107 )
+        if ( var_4 < 0.70710677 )
             continue;
 
         var_5 = anglestoforward( var_2 getplayerangles() );
         var_6 = var_3 * -1;
         var_7 = vectordot( var_6, var_5 );
 
-        if ( var_7 < 0.707107 )
+        if ( var_7 < 0.70710677 )
             continue;
 
         return var_2;
@@ -325,7 +325,7 @@ gesture_coinflipthink( var_0 )
 
 gesture_resetcoinflipgesture()
 {
-    _id_41B2();
+    cleargesture();
     givegesture( "ges_plyr_gesture050" );
 }
 

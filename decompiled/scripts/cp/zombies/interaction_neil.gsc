@@ -246,7 +246,7 @@ _id_BEE2( var_0 )
         var_2 playlocalsound( "mp_intel_received" );
 
     level notify( "challenge_started" );
-    var_4 = level._id_C1E1;
+    var_4 = level.num_challenge_completed;
     var_5 = _id_7895( var_4, var_0 );
     level thread scripts\cp\cp_challenge::activate_new_challenge( var_5 );
     return var_5;
@@ -263,9 +263,9 @@ _id_BEB7( var_0, var_1, var_2, var_3 )
 
     if ( var_1 == "challenge_deactivated" || var_1 == "challenge_force_complete" || var_1 == "challenge_force_fail" )
     {
-        if ( var_3 != level._id_C1E1 )
+        if ( var_3 != level.num_challenge_completed )
         {
-            var_3 = level._id_C1E1;
+            var_3 = level.num_challenge_completed;
             level thread _id_8320();
             level._id_6ACC = 0;
             level.neil.upper_body _id_BEDF( "happy" );
@@ -288,9 +288,9 @@ _id_BEB7( var_0, var_1, var_2, var_3 )
             level.neil.upper_body _id_BEDF( "sad" );
         }
     }
-    else if ( var_3 != level._id_C1E1 )
+    else if ( var_3 != level.num_challenge_completed )
     {
-        var_3 = level._id_C1E1;
+        var_3 = level.num_challenge_completed;
         level thread _id_8320();
         level.neil.upper_body _id_BEDF( "happy" );
     }
@@ -307,7 +307,7 @@ _id_BED1()
 
     wait 1;
     var_4 = 5;
-    setomnvar( "zm_neil_progress", level._id_C1E1 / var_4 );
+    setomnvar( "zm_neil_progress", level.num_challenge_completed / var_4 );
     level.neil.upper_body _id_BEDF( "happy" );
 
     if ( getdvar( "challenge_prep_time" ) != "" )
@@ -326,7 +326,7 @@ _id_BED1()
         scripts\engine\utility::flag_waitopen( "pause_challenges" );
     }
 
-    scripts\cp\cp_challenge::_id_62C6();
+    scripts\cp\cp_challenge::end_current_challenge();
     wait 5;
 
     if ( scripts\engine\utility::flag( "pause_challenges" ) )
@@ -341,9 +341,9 @@ _id_BED1()
 _id_BEB6( var_0 )
 {
     level endon( "game_ended" );
-    level._id_C1E1 = 0;
+    level.num_challenge_completed = 0;
     var_1 = 5;
-    setomnvar( "zm_neil_progress", level._id_C1E1 / var_1 );
+    setomnvar( "zm_neil_progress", level.num_challenge_completed / var_1 );
     level._id_6ACD = [];
     level._id_3C12 = undefined;
     var_2 = [];
@@ -368,14 +368,14 @@ _id_BEB6( var_0 )
 
     for (;;)
     {
-        var_3 = level._id_C1E1;
+        var_3 = level.num_challenge_completed;
         var_4 = _id_BEE2( var_2 );
         var_5 = level scripts\engine\utility::waittill_any_return( "challenge_deactivated", "challenge_timed_out", "challenge_force_complete", "challenge_force_fail" );
         _id_BEB7( var_4, var_5, var_0, var_3 );
         level._id_3C12 = scripts\engine\utility::array_remove( level._id_3C12, var_4 );
         var_1 = 5;
 
-        if ( level._id_C1E1 * ( level._id_3C16 + 1 ) >= var_1 * ( level._id_3C16 + 1 ) )
+        if ( level.num_challenge_completed * ( level._id_3C16 + 1 ) >= var_1 * ( level._id_3C16 + 1 ) )
             break;
 
         if ( level._id_3C12.size <= 0 )
@@ -742,7 +742,7 @@ _id_1176C( var_0 )
     level.the_hoff._id_FFEF = undefined;
     level.the_hoff scripts\asm\asm::asm_fireevent( "introloop", "introdone" );
     wait 1;
-    level.the_hoff scripts\mp\mp_agent::_id_FAFA( "iw7_erad_zm" );
+    level.the_hoff scripts\mp\mp_agent::setupweapon( "iw7_erad_zm" );
     stopfxontag( level._effect["neil_trail"], var_0, "tag_origin" );
     scripts\engine\utility::flag_clear( "landing_zone_active" );
     level.the_hoff unlink();
@@ -926,7 +926,7 @@ _id_A82C()
 _id_A56E( var_0 )
 {
     var_1 = spawn( "trigger_radius", var_0, 0, 40, 72 );
-    level thread _id_51CE( var_1 );
+    level thread deleteplacedequipment( var_1 );
 
     while ( scripts\engine\utility::flag( "landing_zone_active" ) )
     {
@@ -961,7 +961,7 @@ _id_A56E( var_0 )
     var_1 delete();
 }
 
-_id_51CE( var_0 )
+deleteplacedequipment( var_0 )
 {
     var_0 endon( "death" );
 
@@ -1012,7 +1012,7 @@ _id_7895( var_0, var_1 )
 
             var_2 = scripts\engine\utility::random( level._id_3C12 );
 
-            if ( !level.challenge_data[var_2]._id_1C8C )
+            if ( !level.challenge_data[var_2].allowedinsolo )
             {
                 level._id_3C12 = scripts\engine\utility::array_remove( level._id_3C12, var_2 );
                 wait 0.05;

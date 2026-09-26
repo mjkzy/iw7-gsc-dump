@@ -156,7 +156,7 @@ stuck_decideturn( var_0, var_1 )
     if ( var_3 > var_4.max_dist_to_enemy_to_allow_turn_sq )
         return 0;
 
-    if ( !_func_2AC( self.origin, var_2.origin, self ) )
+    if ( !navisstraightlinereachable( self.origin, var_2.origin, self ) )
         return 0;
 
     var_5 = scripts\engine\utility::getyawtospot( var_2.origin );
@@ -284,10 +284,10 @@ trymeleeattacks( var_0 )
 
     if ( var_5 > var_2.check_reachable_dist_sq )
     {
-        var_6 = self _meth_84AC();
+        var_6 = self getnavposition();
         var_7 = getclosestpointonnavmesh( var_1.origin, self );
 
-        if ( !_func_2AC( var_6, var_7, self ) )
+        if ( !navisstraightlinereachable( var_6, var_7, self ) )
             return 0;
     }
 

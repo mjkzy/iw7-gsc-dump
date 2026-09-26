@@ -83,7 +83,7 @@ backstory_activation( var_0, var_1 )
 
     level.pause_nag_vo = 1;
     var_2 = "";
-    scripts\cp\cp_vo::_id_C9CB( [ var_1 ] );
+    scripts\cp\cp_vo::pause_vo_system( [ var_1 ] );
     var_2 = get_random_alias( var_0, var_1 );
 
     if ( var_2 != "" && !scripts\engine\utility::array_contains( var_1.completed_aliases_for_backstory_achievement, var_2 ) )
@@ -130,7 +130,7 @@ backstory_activation( var_0, var_1 )
     if ( var_1.completed_aliases_for_backstory_achievement.size >= 9 )
         var_1 scripts\cp\zombies\achievement::update_achievement( "DEAR_DIARY", 1 );
 
-    scripts\cp\cp_vo::_id_12BE3( [ var_1 ] );
+    scripts\cp\cp_vo::unpause_vo_system( [ var_1 ] );
     level.pause_nag_vo = 0;
 }
 
@@ -2245,7 +2245,7 @@ runcutiegestureloop( var_0, var_1 )
     if ( isdefined( var_0.cutiechargecount ) && var_0.cutiechargecount >= 5 )
         return;
 
-    var_2 = var_0 _meth_8513( "ges_cutie_crank", "crank_loop_end" );
+    var_2 = var_0 getgesturenotetracktimes( "ges_cutie_crank", "crank_loop_end" );
 
     if ( isdefined( var_0.disabledfire ) && var_0.disabledfire < 1 )
         var_0 scripts\engine\utility::allow_fire( 0 );

@@ -18,22 +18,22 @@ init()
     level._id_117B0["thor"].modelbase = "veh_mil_air_thor_wm";
     level._id_117B0["thor"].teamsplash = "used_thor";
     level._id_117B0["thor"].votimedout = "loki_gone";
-    level._id_117B0["thor"]._id_1352D = "odin_target_killed";
-    level._id_117B0["thor"]._id_1352C = "odin_targets_killed";
-    level._id_117B0["thor"]._id_12B20 = 4;
-    level._id_117B0["thor"]._id_12B80 = &"KILLSTREAKS_LOKI_UNAVAILABLE";
+    level._id_117B0["thor"].vokillsingle = "odin_target_killed";
+    level._id_117B0["thor"].vokillmulti = "odin_targets_killed";
+    level._id_117B0["thor"].ui_num = 4;
+    level._id_117B0["thor"].unavailable_string = &"KILLSTREAKS_LOKI_UNAVAILABLE";
     level._id_117B0["thor"]._id_73BE = "compass_objpoint_airstrike_friendly";
     level._id_117B0["thor"]._id_6485 = "compass_objpoint_airstrike_busy";
     level._id_117B0["thor"].weapon["missile"] = spawnstruct();
     level._id_117B0["thor"].weapon["missile"].weaponname = "thorproj_mp";
     level._id_117B0["thor"].weapon["missile"]._id_13FCB = "thorproj_zoomed_mp";
     level._id_117B0["thor"].weapon["missile"].projectile = "thorproj_mp";
-    level._id_117B0["thor"].weapon["missile"]._id_E7BA = "heavygun_fire";
+    level._id_117B0["thor"].weapon["missile"].rumble = "heavygun_fire";
     level._id_117B0["thor"].weapon["missile"]._id_DF5C = 0.1;
     level._id_117B0["thor"].weapon["missile"]._id_B47C = 5;
-    level._id_117B0["thor"].weapon["missile"]._id_D5E4 = "null";
-    level._id_117B0["thor"].weapon["missile"]._id_D5DD = "null";
-    level._id_117B0["thor"].weapon["missile"]._id_C195 = "null";
+    level._id_117B0["thor"].weapon["missile"].plr_ready_sound = "null";
+    level._id_117B0["thor"].weapon["missile"].plr_fire_sound = "null";
+    level._id_117B0["thor"].weapon["missile"].npc_fire_sound = "null";
     level._id_C20D = 0;
     var_0 = [ "passive_increased_armor", "passive_decreased_duration", "passive_seek_cluster", "passive_no_cursor", "passive_switch_thruster", "passive_armor_duration" ];
     scripts\mp\killstreak_loot::_id_DF07( "thor", var_0 );
@@ -115,7 +115,7 @@ _id_12909( var_0 )
 
 _id_10DFC( var_0 )
 {
-    self._id_117AF = spawn( "script_model", level._id_12AF6 );
+    self._id_117AF = spawn( "script_model", level.uavrotationorigin );
     self._id_117AF setmodel( "tag_origin" );
     self._id_117AF.angles = ( 0, 115, 0 );
     self._id_117AF.owner = self;
@@ -231,9 +231,9 @@ _id_117AE( var_0, var_1 )
     var_0.owner scripts\mp\utility::_giveweapon( var_4 );
     var_0.owner scripts\mp\utility::_switchtoweaponimmediate( var_3 );
     var_0.owner playerlinkweaponviewtodelta( var_0, "tag_player", 0.0, 180, 180, 45, 180 );
-    var_0.owner _meth_8236( 0 );
+    var_0.owner playerlinkedsetviewznear( 0 );
     var_0.owner visionsetkillstreakforplayer( getthormapvisionset( level.mapname ) );
-    var_0.owner thread _id_B011( var_0 );
+    var_0.owner thread lookcenter( var_0 );
     var_0.owner setclientomnvar( "ui_thor_show", 1 );
     var_0.owner setclientomnvar( "ui_thor_missiles_loaded", var_2.weapon["missile"]._id_B47C );
     var_0.owner thermalvisionfofoverlayon();
@@ -265,7 +265,7 @@ _id_117AE( var_0, var_1 )
     var_0 setscriptablepartstate( "thrusters", "idle", 0 );
     scripts\mp\shellshock::_earthquake( 0.2, 0.76, var_0.origin, 1000 );
     var_0 linkto( self._id_117AF, "tag_origin" );
-    var_0 scripts\mp\killstreaks\utility::_id_1843( var_0.streakname, undefined, var_0.owner, 1 );
+    var_0 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_0.streakname, undefined, var_0.owner, 1 );
     var_8 = "icon_minimap_thor_friendly";
     var_0.minimapid = var_0 scripts\mp\killstreaks\airdrop::createobjective( var_8, undefined, 1, 1, 1 );
     var_9 = var_2.timeout;
@@ -363,17 +363,17 @@ watchhostmigrationfinishedinit( var_0, var_1 )
     }
 }
 
-_id_B011( var_0 )
+lookcenter( var_0 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
     var_0 endon( "death" );
     wait 0.05;
-    var_1 = vectortoangles( level._id_12AF5.origin - var_0 gettagorigin( "tag_player" ) );
+    var_1 = vectortoangles( level.uavrig.origin - var_0 gettagorigin( "tag_player" ) );
     self setplayerangles( var_1 );
 }
 
-_id_1369B( var_0 )
+waitandoutlineowner( var_0 )
 {
     self endon( "disconnect" );
     var_0 endon( "death" );
@@ -403,7 +403,7 @@ _id_1178F( var_0 )
 
 _id_1179C( var_0 )
 {
-    while ( isdefined( self._id_9BE2 ) && var_0 > 0 )
+    while ( isdefined( self.is_firing ) && var_0 > 0 )
     {
         wait 0.05;
         var_0 = var_0 - 0.05;
@@ -451,7 +451,7 @@ _id_117A0()
             self.owner setclientomnvar( var_4.omnvar, -1 );
     }
 
-    _id_4074();
+    cleanup_ents();
     scripts\mp\utility::decrementfauxvehiclecount();
     playfx( scripts\engine\utility::getfx( "thor_explode" ), self.origin );
     self delete();
@@ -540,7 +540,7 @@ _id_11795( var_0 )
     self scriptmodelplayanim( "iw7_mp_killstreak_thor_extend_up", 1 );
     self setscriptablepartstate( "thrusters", "leave", 0 );
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 5 );
-    _id_4074();
+    cleanup_ents();
     scripts\mp\utility::decrementfauxvehiclecount();
     self delete();
 }
@@ -566,7 +566,7 @@ _id_11791( var_0, var_1 )
         self setplayerangles( self.restoreangles );
 
         if ( scripts\mp\utility::istrue( var_1 ) )
-            scripts\mp\utility::_id_1136C( scripts\engine\utility::getlastweapon(), 1 );
+            scripts\mp\utility::switch_to_last_weapon( scripts\engine\utility::getlastweapon(), 1 );
         else
             thread _id_11794();
 
@@ -575,11 +575,11 @@ _id_11791( var_0, var_1 )
 
         foreach ( var_4 in level._id_117B0[var_0.streakname].weapon )
         {
-            if ( isdefined( var_4._id_D5E4 ) )
-                self stoplocalsound( var_4._id_D5E4 );
+            if ( isdefined( var_4.plr_ready_sound ) )
+                self stoplocalsound( var_4.plr_ready_sound );
 
-            if ( isdefined( var_4._id_D5DD ) )
-                self stoplocalsound( var_4._id_D5DD );
+            if ( isdefined( var_4.plr_fire_sound ) )
+                self stoplocalsound( var_4.plr_fire_sound );
         }
 
         thread scripts\mp\killstreaks\killstreaks::_id_11086();
@@ -615,8 +615,8 @@ _id_117AA()
     var_1 setmodel( "tag_origin" );
     var_1 hide();
     self.targeting_marker = var_1;
-    self _meth_8549();
-    self _meth_8594();
+    self scriptmoveroutline();
+    self scriptmoverthermal();
 
     for (;;)
     {
@@ -653,7 +653,7 @@ _id_1179F()
     for (;;)
     {
         self waittill( "damage", var_7, var_8, var_9, var_10, var_11, var_12, var_13, var_14, var_15, var_16, var_17, var_18, var_19, var_20 );
-        var_16 = scripts\mp\utility::_id_13CA1( var_16, var_20 );
+        var_16 = scripts\mp\utility::weaponmap( var_16, var_20 );
 
         if ( isdefined( var_8 ) )
         {
@@ -896,7 +896,7 @@ _id_B06B( var_0 )
     }
 }
 
-_id_B9F2( var_0 )
+monitormarkervisibility( var_0 )
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -1015,7 +1015,7 @@ _id_117A3()
     {
         var_0 waittill( "missile_fire", var_3, var_4 );
 
-        if ( scripts\mp\utility::istrue( self._id_9BE2 ) )
+        if ( scripts\mp\utility::istrue( self.is_firing ) )
             continue;
 
         if ( scripts\mp\utility::istrue( self._id_9C9F ) )
@@ -1059,10 +1059,10 @@ _id_139D1( var_0, var_1, var_2 )
     var_4 = var_2._id_B88C;
     var_5 = var_2._id_B888;
     var_6 = self.angles;
-    var_2._id_9BE2 = 1;
+    var_2.is_firing = 1;
     var_2 notify( "start_fire" );
     var_7 = var_3.origin;
-    var_8 = scripts\mp\killstreaks\utility::_id_7E92( var_0 );
+    var_8 = scripts\mp\killstreaks\utility::getenemytargets( var_0 );
     var_9 = [];
 
     foreach ( var_11 in var_8 )
@@ -1104,7 +1104,7 @@ _id_139D1( var_0, var_1, var_2 )
             var_22 thread _id_50E6( 0.3, var_3 );
 
         var_22 thread _id_139F6( var_22.owner, var_2 );
-        var_22 thread _id_13A22( var_22.owner, var_2 );
+        var_22 thread watchexplosion( var_22.owner, var_2 );
         var_22 thread scripts\mp\killstreaks\utility::watchsupertrophynotify( var_22.owner );
         var_2._id_C239--;
         var_0 setclientomnvar( "ui_thor_missiles_loaded", var_2._id_C239 );
@@ -1114,7 +1114,7 @@ _id_139D1( var_0, var_1, var_2 )
     var_2 scriptmodelplayanim( "iw7_mp_killstreak_thor_extend_reload", 1 );
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 2 );
     var_2 notify( "start_reload" );
-    var_2._id_9BE2 = undefined;
+    var_2.is_firing = undefined;
 }
 
 delayseekopentargetinview( var_0, var_1, var_2, var_3 )
@@ -1218,7 +1218,7 @@ _id_139F6( var_0, var_1 )
     }
 }
 
-_id_13A22( var_0, var_1 )
+watchexplosion( var_0, var_1 )
 {
     self waittill( "explode", var_2 );
 
@@ -1236,7 +1236,7 @@ _id_13B42( var_0, var_1 )
 {
     var_0 endon( "disconnect" );
     var_1 endon( "death" );
-    var_1._id_9BE2 = 1;
+    var_1.is_firing = 1;
     var_1 notify( "start_fire" );
     var_2 = var_1._id_B88C;
     var_3 = var_1._id_B888;
@@ -1247,7 +1247,7 @@ _id_13B42( var_0, var_1 )
     var_0 setclientomnvar( self.id.omnvar, self );
     var_0 setclientomnvar( self._id_5716.omnvar, int( self.zoffset ) );
     thread _id_139F6( var_0, var_1 );
-    thread _id_13A22( var_0, var_1 );
+    thread watchexplosion( var_0, var_1 );
     thread scripts\mp\killstreaks\utility::watchsupertrophynotify( var_0 );
     var_1._id_C239--;
     var_0 setclientomnvar( "ui_thor_missiles_loaded", var_1._id_C239 );
@@ -1262,7 +1262,7 @@ _id_13B42( var_0, var_1 )
         var_1 notify( "start_reload" );
     }
 
-    var_1._id_9BE2 = undefined;
+    var_1.is_firing = undefined;
 }
 
 _id_1179E()
@@ -1354,10 +1354,10 @@ _id_117A6()
     level endon( "game_ended" );
 
     foreach ( var_1 in level.participants )
-        _id_20D2( var_1 );
+        applyoutline( var_1 );
 }
 
-_id_20D2( var_0 )
+applyoutline( var_0 )
 {
     if ( level.teambased && var_0.team != self.team )
         return;
@@ -1418,9 +1418,9 @@ _id_11790( var_0 )
         scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( var_2 );
 
         if ( self.enemieskilledintimewindow > 1 )
-            self.owner scripts\mp\utility::leaderdialogonplayer( var_1._id_1352C );
+            self.owner scripts\mp\utility::leaderdialogonplayer( var_1.vokillmulti );
         else
-            self.owner scripts\mp\utility::leaderdialogonplayer( var_1._id_1352D );
+            self.owner scripts\mp\utility::leaderdialogonplayer( var_1.vokillsingle );
 
         self.enemieskilledintimewindow = 0;
     }
@@ -1442,10 +1442,10 @@ _id_11797( var_0 )
 {
     self endon( "disconnect" );
     self waittill( "spawned_player" );
-    var_0 _id_20D2( self );
+    var_0 applyoutline( self );
 }
 
-_id_4074()
+cleanup_ents()
 {
     if ( isdefined( self.targeting_marker ) )
         self.targeting_marker delete();

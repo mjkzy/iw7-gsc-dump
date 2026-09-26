@@ -17,7 +17,7 @@ _id_10A54( var_0 )
     for ( var_1 = 0; var_1 < 2; var_1++ )
     {
         var_2 = scripts\mp\utility::_launchgrenade( "split_grenade_mini_mp", var_0.origin, ( 0, 0, 0 ), 100, 1 );
-        scripts\mp\utility::_id_85C6( var_2, "split_grenade_mp" );
+        scripts\mp\utility::grenadeinitialize( var_2, "split_grenade_mp" );
         var_2.exploding = 1;
         var_2.parentinflictor = var_0 getentitynumber();
         var_2 linkto( var_0 );

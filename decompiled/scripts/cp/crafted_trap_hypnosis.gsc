@@ -356,7 +356,7 @@ hypnosis_sfx()
     if ( isdefined( self ) )
         self stoploopsound();
 
-    thread _id_66A7();
+    thread equipmentdeletefx();
 }
 
 go_to_radio_and_dance( var_0, var_1 )
@@ -377,7 +377,7 @@ go_to_radio_and_dance( var_0, var_1 )
     self setgoalpos( var_1.origin );
     scripts\engine\utility::waittill_any( "goal", "goal_reached" );
     self setscriptablepartstate( "eyes", "hypnotized" );
-    self._id_CF80 = var_0.owner;
+    self.player_attacker = var_0.owner;
     self.is_dancing = 1;
     var_0.dancers[var_0.dancers.size] = self;
 }
@@ -410,7 +410,7 @@ hypnosis_explode()
     }
 }
 
-_id_66A7()
+equipmentdeletefx()
 {
     self playsound( "trap_boom_box_explode" );
     playfx( level._effect["violet_light_explode"], self.origin );

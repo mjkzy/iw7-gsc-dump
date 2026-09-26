@@ -185,7 +185,7 @@ _id_22FF( var_0, var_1, var_2 )
     _screenshakeonposition( var_3, var_2 );
 }
 
-_id_10F44( var_0 )
+stealthairstrike_earthquake( var_0 )
 {
     playrumbleonposition( "grenade_rumble", var_0 );
     earthquake( 1.0, 0.6, var_0, 2000 );

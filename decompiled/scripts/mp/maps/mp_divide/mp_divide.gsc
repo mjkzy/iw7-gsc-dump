@@ -18,7 +18,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     thread scripts\mp\animation_suite::animationsuite();
     thread _id_E838();
     thread _id_CDA4( "mp_divide_screens" );
@@ -148,7 +148,7 @@ _id_E838()
 mpdividecollisionfunc( var_0 )
 {
     if ( var_0.origin[2] - self.origin[2] > 30 )
-        var_0 _meth_84DC( ( 0, -40, 10 ), 200 );
+        var_0 knockback( ( 0, -40, 10 ), 200 );
     else
         var_0 scripts\mp\movers::mover_suicide();
 }
@@ -304,10 +304,10 @@ spawn_oob_trigger()
     {
         var_0 = spawn( "trigger_radius", ( 340, 1120, 280 ), 0, 250, 300 );
         var_0 hide();
-        level._id_C7B3[level._id_C7B3.size] = var_0;
+        level.outofboundstriggers[level.outofboundstriggers.size] = var_0;
     }
 
     var_1 = spawn( "trigger_radius", ( -757, 825, 1040 ), 0, 100, 50 );
     var_1 hide();
-    level._id_C7B3[level._id_C7B3.size] = var_1;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_1;
 }

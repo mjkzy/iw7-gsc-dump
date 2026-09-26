@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    _id_03B2::_id_DEE8();
-    _id_0F44::_id_2371();
+    behaviortree\zombie::registerbehaviortree();
+    _id_0F44::asm_register();
     level._id_13BDC = 1;
     level._id_4878 = 0;
     level._id_BF7C = 0;
@@ -113,7 +113,7 @@ setupagent()
     self.is_cop = undefined;
     self.highlyawareradius = 200;
     self.deathmethod = undefined;
-    self._id_10A57 = undefined;
+    self.spooned = undefined;
     self.gib_fx_override = undefined;
     self._id_CE65 = undefined;
     self._id_29D2 = 1;
@@ -121,7 +121,7 @@ setupagent()
     self.death_anim_no_ragdoll = undefined;
     self._id_B603 = 0.85;
     self._id_A9B8 = gettime();
-    self._id_9342 = undefined;
+    self.immune_against_repulsor = undefined;
 
     if ( getdvarint( "scr_zombie_left_foot_sharp_turn_only", 0 ) == 1 )
         self._id_AB3F = 1;
@@ -263,7 +263,7 @@ _id_12EE6()
     self endon( "updatePainSensor" );
     self endon( "death" );
     self._id_C87E = spawnstruct();
-    self._id_C87E._id_A9C8 = gettime();
+    self._id_C87E.lastpaintime = gettime();
     self._id_C87E.damage = 0.0;
     var_0 = 0.05;
     var_1 = 5 * var_0;
@@ -272,7 +272,7 @@ _id_12EE6()
     {
         wait( var_0 );
 
-        if ( gettime() > self._id_C87E._id_A9C8 + 2000 )
+        if ( gettime() > self._id_C87E.lastpaintime + 2000 )
             self._id_C87E.damage = self._id_C87E.damage - var_1;
 
         self._id_C87E.damage = max( self._id_C87E.damage, 0 );
@@ -318,7 +318,7 @@ _id_C4E4( var_0, var_1, var_2 )
     if ( isdefined( var_2 ) && ( var_2 == "dna_aoe_grenade_zombie_mp" || var_2 == "trap_zm_mp" ) )
         return;
 
-    self._id_C87E._id_A9C8 = gettime();
+    self._id_C87E.lastpaintime = gettime();
     self._id_C87E.damage = self._id_C87E.damage + var_0;
 }
 
@@ -437,7 +437,7 @@ _id_9890()
 {
     level._id_1C7F = 1;
     level._id_4BEE = 0;
-    level._id_C4BD = ::_id_C4BD;
+    level.on_zombie_agent_killed_common = ::on_zombie_agent_killed_common;
 }
 
 _id_98A5()
@@ -1289,7 +1289,7 @@ _id_3729( var_0, var_1, var_2 )
     else
         var_5 = float( var_4 ) / float( var_0 - 1 );
 
-    var_6 = scripts\mp\agents\zombie\zombie_util::_id_AB6F( var_5, var_1, var_2 );
+    var_6 = scripts\mp\agents\zombie\zombie_util::lerp( var_5, var_1, var_2 );
 
     if ( scripts\asm\zombie\zombie::_id_9F87() )
         var_6 = var_6 * 1.2;
@@ -1301,7 +1301,7 @@ _id_372C( var_0, var_1, var_2 )
 {
     var_3 = _id_372B( var_0 );
     var_4 = var_3 / ( level._id_13F3F.size * var_0 - 1.0 );
-    var_5 = scripts\mp\agents\zombie\zombie_util::_id_AB6F( var_4, var_1, var_2 );
+    var_5 = scripts\mp\agents\zombie\zombie_util::lerp( var_4, var_1, var_2 );
     return var_5;
 }
 
@@ -1309,10 +1309,10 @@ _id_7E10()
 {
     var_0 = 1;
 
-    if ( !isdefined( self.bufferedstatwritethink ) )
+    if ( !isdefined( self._id_3170 ) )
         return var_0;
 
-    foreach ( var_3, var_2 in self.bufferedstatwritethink )
+    foreach ( var_3, var_2 in self._id_3170 )
     {
         if ( !isdefined( var_2._id_109AF ) )
             continue;
@@ -1459,7 +1459,7 @@ _id_10840( var_0 )
         level._id_74B9--;
 }
 
-_id_C4BD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
+on_zombie_agent_killed_common( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 {
     var_10 = self._id_164D[self.asmname]._id_4BC0;
     var_11 = anim.asm[self.asmname].states[var_10];
@@ -1470,7 +1470,7 @@ _id_C4BD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 
     var_13 = isdefined( self.ragdollimpactvector );
 
-    if ( scripts\asm\asm_mp::_id_2382( self.asmname, var_11 ) )
+    if ( scripts\asm\asm_mp::asmdodeathtransition( self.asmname, var_11 ) )
     {
         if ( !var_12 || !scripts\engine\utility::is_true( self.is_traversing ) )
             scripts\asm\asm::_id_231E( self.asmname, var_11, var_10 );
@@ -1506,7 +1506,7 @@ _id_C4BD( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 
     if ( isdefined( self.is_burning ) || isdefined( var_1 ) && isdefined( var_4 ) && var_4 == "incendiary_ammo_mp" )
         self.body setscriptablepartstate( "burning", "active", 1 );
-    else if ( isdefined( self._id_10A57 ) )
+    else if ( isdefined( self.spooned ) )
         self.body setscriptablepartstate( "spoon", "active", 1 );
     else if ( isdefined( self.electrocuted ) )
         self.body setscriptablepartstate( "electrocuted", "active", 1 );
@@ -1544,7 +1544,7 @@ velocityragdoll( var_0, var_1, var_2, var_3, var_4, var_5 )
     if ( isdefined( var_0 ) )
     {
         if ( isdefined( var_0.ragdollhitloc ) && isdefined( var_0.ragdollimpactvector ) )
-            var_0 _meth_839B( var_0.ragdollhitloc, var_0.ragdollimpactvector );
+            var_0 startragdollfromimpact( var_0.ragdollhitloc, var_0.ragdollimpactvector );
         else
             var_0 startragdoll();
     }
@@ -1641,7 +1641,7 @@ _id_BA27()
 
         if ( var_0 > 2.0 )
         {
-            var_1 = self _meth_8148();
+            var_1 = self getnegotiationstartnode();
 
             if ( isdefined( var_1 ) )
             {
@@ -1789,7 +1789,7 @@ _id_13F9F( var_0, var_1 )
                     }
                 }
 
-                var_3 _meth_84DC( var_9, var_7 );
+                var_3 knockback( var_9, var_7 );
             }
         }
     }

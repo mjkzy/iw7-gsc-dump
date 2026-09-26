@@ -6,7 +6,7 @@ main()
     if ( isdefined( level.createfx_enabled ) && level.createfx_enabled )
         return;
 
-    level thread _id_B982();
+    level thread monitor_num_players();
 
     if ( !scripts\engine\utility::is_true( level.generic_zombie_agent_func_init_done ) )
     {
@@ -26,7 +26,7 @@ main()
     level.agent_funcs["the_hoff"]["on_damaged"] = ::onhoffdamaged;
     level.agent_funcs["the_hoff"]["gametype_on_damage_finished"] = ::onzombiedamagefinished;
     level.agent_funcs["the_hoff"]["gametype_on_killed"] = ::onzombiekilled;
-    level._id_768B = ::_id_777C;
+    level.gametype_agent_init = ::_id_777C;
     level.in_room_check_func = scripts\cp\zombies\zombies_spawning::is_in_any_room_volume;
     level.fnzombieshouldenterplayspace = ::zombieshouldenterplayspace;
     level.movemodefunc["generic_zombie"] = ::run_if_last_zombie;
@@ -568,7 +568,7 @@ getnumberoffrozenticksfromwave( var_0, var_1 )
 
 shouldapplycrotchdamagemultiplier( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
 {
-    if ( isdefined( var_1._id_4A9A ) )
+    if ( isdefined( var_1.crotch_damage_multiplier ) )
     {
         var_12 = "j_crotch";
 
@@ -579,7 +579,7 @@ shouldapplycrotchdamagemultiplier( var_0, var_1, var_2, var_3, var_4, var_5, var
             var_15 = 10;
 
             if ( var_14 <= var_15 )
-                var_2 = var_2 * var_1._id_4A9A;
+                var_2 = var_2 * var_1.crotch_damage_multiplier;
         }
     }
 
@@ -789,13 +789,13 @@ onzombiekilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
             {
                 for ( var_9 = 0; var_9 < level.revocatorownercount; var_9++ )
                 {
-                    if ( !isdefined( level.revocatorkills[level.revocatorkills[var_9].name] ) )
+                    if ( !isdefined( level.revocatorkills[level.revocatorowner[var_9].name] ) )
                     {
-                        level.revocatorkills[level.revocatorkills[var_9].name] = 1;
+                        level.revocatorkills[level.revocatorowner[var_9].name] = 1;
                         continue;
                     }
 
-                    level.revocatorkills[level.revocatorkills[var_9].name]++;
+                    level.revocatorkills[level.revocatorowner[var_9].name]++;
                 }
             }
         }
@@ -961,7 +961,7 @@ _id_107E1( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9,
         {
             if ( isdefined( self.agent_type ) && ( self.agent_type != "zombie_brute" && self.agent_type != "zombie_grey" && self.agent_type != "zombie_clown" ) )
             {
-                self._id_10A57 = 1;
+                self.spooned = 1;
                 self setscriptablepartstate( "spoon", "active", 1 );
                 return;
             }
@@ -1339,7 +1339,7 @@ givekillreward( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
 
     var_1 thread giveplayerbonuscash( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 );
 
-    if ( isdefined( self.shared_damage_points ) || _id_13C20( var_6 ) )
+    if ( isdefined( self.shared_damage_points ) || weapon_is_crafted_equipment( var_6 ) )
     {
         foreach ( var_10 in level.players )
         {
@@ -1422,7 +1422,7 @@ should_get_currency_from_kill( var_0, var_1, var_2, var_3 )
     return 1;
 }
 
-_id_13C20( var_0 )
+weapon_is_crafted_equipment( var_0 )
 {
     if ( !isdefined( var_0 ) )
         return 0;
@@ -1800,10 +1800,10 @@ onzombiedamagefinished( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, 
         {
             var_15 = gettime();
 
-            if ( var_15 > var_1._id_BF74 && ( level.cash_scalar > 1 || var_1 scripts\cp\utility::is_consumable_active( "hit_reward_upgrade" ) || isdefined( level.consumable_cash_scalar ) ) )
+            if ( var_15 > var_1.nextcasheffecttime && ( level.cash_scalar > 1 || var_1 scripts\cp\utility::is_consumable_active( "hit_reward_upgrade" ) || isdefined( level.consumable_cash_scalar ) ) )
             {
                 playfxontagforclients( level._effect["extra_cash_kill"], self, "j_spineupper", var_1 );
-                var_1._id_BF74 = var_15 + 1000;
+                var_1.nextcasheffecttime = var_15 + 1000;
             }
 
             if ( var_1 scripts\cp\utility::is_consumable_active( "hit_reward_upgrade" ) )
@@ -1822,7 +1822,7 @@ check_for_special_damage( var_0, var_1, var_2, var_3, var_4 )
 {
     var_5 = var_0 scripts\cp\utility::is_trap( var_1, var_3, var_0 );
     var_6 = var_0 should_do_stun_damage( var_3, var_4, self );
-    var_7 = scripts\engine\utility::is_true( var_0._id_9343 );
+    var_7 = scripts\engine\utility::is_true( var_0.immune_against_special_ammo );
 
     if ( !isdefined( var_0.is_afflicted ) && isalive( var_0 ) )
     {
@@ -2435,7 +2435,7 @@ launch_and_kill( var_0, var_1, var_2 )
     self dodamage( self.health + 1000, var_0.origin, var_0, var_0, "MOD_MELEE" );
 }
 
-_id_B982()
+monitor_num_players()
 {
     scripts\engine\utility::flag_init( "player_count_determined" );
     var_0 = getdvar( "party_partyPlayerCountNum" );

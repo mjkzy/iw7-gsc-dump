@@ -24,7 +24,7 @@ melee_init( var_0, var_1 )
 
 melee_destroy()
 {
-    self _meth_8484();
+    self clearbtgoal();
 
     if ( isdefined( self.melee ) )
     {
@@ -35,12 +35,12 @@ melee_destroy()
     }
 }
 
-_id_3914( var_0 )
+canstealmelee( var_0 )
 {
     if ( isdefined( self.melee ) )
         return 0;
 
-    if ( !isdefined( self._id_B5E4 ) || !self._id_B5E4 )
+    if ( !isdefined( self.meleecansteal ) || !self.meleecansteal )
         return 0;
 
     if ( !isdefined( var_0.melee ) )
@@ -51,7 +51,7 @@ _id_3914( var_0 )
     if ( !isdefined( var_1 ) || !isdefined( var_1.melee ) )
         return 0;
 
-    if ( isdefined( var_1.melee._id_29A8 ) )
+    if ( isdefined( var_1.melee.bchargecomplete ) )
         return 0;
 
     var_2 = distance( var_0.origin, self.origin );
@@ -63,7 +63,7 @@ _id_3914( var_0 )
     return 1;
 }
 
-_id_9E96( var_0 )
+ismeleeallowed( var_0 )
 {
     var_1 = self.enemy;
 
@@ -85,9 +85,9 @@ _id_9E96( var_0 )
     if ( isdefined( self._stealth ) && !canmeleeduringstealth() )
         return 0;
 
-    if ( _id_9DD1( var_1 ) )
+    if ( iseitherofusalreadyinmelee( var_1 ) )
     {
-        if ( !_id_3914( var_1 ) )
+        if ( !canstealmelee( var_1 ) )
             return 0;
     }
 
@@ -99,23 +99,23 @@ shouldmelee( var_0, var_1 )
     if ( !isdefined( var_1 ) )
         var_1 = self.enemy;
 
-    if ( !_id_9E96( var_1 ) )
+    if ( !ismeleeallowed( var_1 ) )
         return anim.failure;
 
     if ( ![[ self.fnismeleevalid ]]( var_1, 1 ) )
         return anim.failure;
 
-    if ( !_id_9E98( var_1 ) )
+    if ( !ismeleerangevalid( var_1 ) )
         return anim.failure;
 
     return anim.success;
 }
 
-_id_9896( var_0 )
+initmeleeaction( var_0 )
 {
     self.bt.instancedata[var_0] = spawnstruct();
     self.bt.instancedata[var_0].timeout = gettime();
-    self.bt.instancedata[var_0]._id_312F = 0;
+    self.bt.instancedata[var_0].bstarted = 0;
 
     if ( isplayer( self.melee.target ) )
     {
@@ -125,11 +125,11 @@ _id_9896( var_0 )
 
     scripts\asm\asm_bb::bb_requestmelee( self.melee.target );
 
-    if ( isdefined( self._id_71BF ) )
-        self [[ self._id_71BF ]]();
+    if ( isdefined( self.fnmeleeaction_init ) )
+        self [[ self.fnmeleeaction_init ]]();
 
-    if ( !isdefined( self._id_B5DA ) && isplayer( self.melee.target ) && !self.melee.target isonground() )
-        self.melee._id_2720 = 1;
+    if ( !isdefined( self.meleeallowoffground ) && isplayer( self.melee.target ) && !self.melee.target isonground() )
+        self.melee.babort = 1;
 
     self clearpath();
 
@@ -137,12 +137,12 @@ _id_9896( var_0 )
         self.melee.target clearpath();
 }
 
-_id_5903( var_0 )
+domeleeaction( var_0 )
 {
     if ( !isdefined( self.melee ) )
         return anim.failure;
 
-    if ( isdefined( self.melee._id_2720 ) )
+    if ( isdefined( self.melee.babort ) )
         return anim.failure;
 
     if ( scripts\asm\asm::asm_ephemeraleventfired( "melee_attack", "end" ) )
@@ -150,11 +150,11 @@ _id_5903( var_0 )
 
     if ( scripts\asm\asm::asm_ephemeraleventfired( "melee_attack", "begin", 0 ) )
     {
-        self.bt.instancedata[var_0]._id_312F = 1;
+        self.bt.instancedata[var_0].bstarted = 1;
         self.bt.instancedata[var_0].timeout = gettime() + 10000;
     }
 
-    if ( !self.bt.instancedata[var_0]._id_312F )
+    if ( !self.bt.instancedata[var_0].bstarted )
     {
         if ( !isdefined( self.melee.target ) || !isalive( self.melee.target ) )
             return anim.failure;
@@ -162,7 +162,7 @@ _id_5903( var_0 )
 
     if ( gettime() > self.bt.instancedata[var_0].timeout + 2000 )
     {
-        self.melee._id_2720 = 1;
+        self.melee.babort = 1;
         return anim.failure;
     }
 
@@ -172,11 +172,11 @@ _id_5903( var_0 )
     return anim.running;
 }
 
-_id_41C6( var_0 )
+clearmeleeaction( var_0 )
 {
     scripts\asm\asm_bb::bb_clearmeleerequest();
 
-    if ( isdefined( self.melee ) && !isdefined( self.melee._id_312F ) )
+    if ( isdefined( self.melee ) && !isdefined( self.melee.bstarted ) )
     {
         if ( isdefined( self.melee.target ) )
             self.melee.target.melee = undefined;
@@ -190,7 +190,7 @@ _id_41C6( var_0 )
     self.bt.instancedata[var_0] = undefined;
 }
 
-_id_B5C3( var_0 )
+melee_steal( var_0 )
 {
     if ( isdefined( self.enemy ) && isdefined( self.enemy.melee ) )
     {
@@ -203,7 +203,7 @@ _id_B5C3( var_0 )
     return anim.success;
 }
 
-_id_B653( var_0 )
+meleevsplayer_init( var_0 )
 {
     melee_init( var_0 );
 
@@ -234,12 +234,12 @@ meleevsplayer_update( var_0 )
     return anim.running;
 }
 
-_id_B5B4( var_0, var_1 )
+melee_setmeleetimer( var_0, var_1 )
 {
     if ( !isdefined( anim ) )
         return;
 
-    if ( !isdefined( anim._id_B5F5 ) )
+    if ( !isdefined( anim.meleechargeintervals ) )
         return;
 
     if ( !isdefined( var_0 ) )
@@ -248,10 +248,10 @@ _id_B5B4( var_0, var_1 )
     if ( !isdefined( var_1 ) )
         var_1 = 1;
 
-    if ( isplayer( self.melee.target ) && isdefined( anim._id_B5F6[self.unittype] ) )
-        anim._id_B5F7[self.unittype] = gettime() + anim._id_B5F6[self.unittype] * var_1;
-    else if ( isdefined( anim._id_B5F5[self.unittype] ) )
-        anim._id_B5F8[self.unittype] = gettime() + anim._id_B5F5[self.unittype] * var_1;
+    if ( isplayer( self.melee.target ) && isdefined( anim.meleechargeplayerintervals[self.unittype] ) )
+        anim.meleechargeplayertimers[self.unittype] = gettime() + anim.meleechargeplayerintervals[self.unittype] * var_1;
+    else if ( isdefined( anim.meleechargeintervals[self.unittype] ) )
+        anim.meleechargetimers[self.unittype] = gettime() + anim.meleechargeintervals[self.unittype] * var_1;
 }
 
 _id_B5E8( var_0 )
@@ -261,11 +261,11 @@ _id_B5E8( var_0 )
     if ( isdefined( self.fnmeleecharge_init ) )
         self [[ self.fnmeleecharge_init ]]( var_0 );
 
-    _id_B5B4( self.unittype, 3 );
+    melee_setmeleetimer( self.unittype, 3 );
     self.bt.instancedata[var_0] = spawnstruct();
-    self.bt.instancedata[var_0]._id_3E30 = gettime() + 100;
+    self.bt.instancedata[var_0].checkpathtime = gettime() + 100;
     self.bt.instancedata[var_0].timeout = gettime() + 4000;
-    self.bt.instancedata[var_0]._id_6572 = self.enemy.origin;
+    self.bt.instancedata[var_0].enemystartpos = self.enemy.origin;
 
     if ( isplayer( self.melee.target ) )
     {
@@ -276,15 +276,15 @@ _id_B5E8( var_0 )
     self.meleeattackdist = 64;
 }
 
-_id_B5EE( var_0 )
+meleecharge_terminate( var_0 )
 {
     if ( isdefined( self.melee ) )
-        _id_B5B4( self.unittype, 0 );
+        melee_setmeleetimer( self.unittype, 0 );
 
-    if ( isdefined( self.melee ) && ( isdefined( self.melee._id_2720 ) || !isdefined( self.melee._id_29A8 ) ) )
+    if ( isdefined( self.melee ) && ( isdefined( self.melee.babort ) || !isdefined( self.melee.bchargecomplete ) ) )
         melee_destroy();
 
-    self _meth_8484();
+    self clearbtgoal();
     self.meleeattackdist = 0;
 
     if ( isdefined( self.bt.instancedata[var_0].grenadeawareness ) )
@@ -298,7 +298,7 @@ _id_B5EE( var_0 )
     self.bt.instancedata[var_0] = undefined;
 }
 
-_id_7FAB( var_0 )
+getmeleechargerange( var_0 )
 {
     if ( isplayer( var_0 ) )
         var_1 = self.meleechargedistvsplayer;
@@ -330,7 +330,7 @@ melee_shouldabort()
     return 0;
 }
 
-_id_B5EB()
+meleecharge_shouldabort()
 {
     if ( melee_shouldabort() )
         return 1;
@@ -338,14 +338,14 @@ _id_B5EB()
     if ( isdefined( self.bt.cannotmelee ) )
         return 1;
 
-    if ( isdefined( self.melee._id_2720 ) )
+    if ( isdefined( self.melee.babort ) )
         return 1;
 
     var_0 = self.melee.target;
 
-    if ( isdefined( var_0._id_C337 ) && var_0._id_C337.active )
+    if ( isdefined( var_0.offhandshield ) && var_0.offhandshield.active )
     {
-        if ( isai( var_0 ) || !isdefined( self._id_B5DC ) || !self._id_B5DC )
+        if ( isai( var_0 ) || !isdefined( self.meleeallowvsshieldedplayer ) || !self.meleeallowvsshieldedplayer )
             return 1;
     }
 
@@ -358,13 +358,13 @@ _id_B5EB()
     return 0;
 }
 
-_id_B5E7( var_0 )
+meleecharge_failed_badpath( var_0 )
 {
-    self._id_BF90 = gettime() + 1500;
-    self._id_A985 = var_0;
+    self.nextmeleechecktime = gettime() + 1500;
+    self.lastfailedmeleechargetarget = var_0;
 }
 
-_id_B5EA( var_0, var_1 )
+meleecharge_justtriedthis( var_0, var_1 )
 {
     var_2 = self.bt.instancedata[var_0].targetpos;
 
@@ -377,12 +377,12 @@ _id_B5EA( var_0, var_1 )
     return distancesquared( var_2, var_1 ) < 4;
 }
 
-_id_B5F0( var_0 )
+meleecharge_update( var_0 )
 {
-    if ( _id_B5EB() )
+    if ( meleecharge_shouldabort() )
     {
         if ( isdefined( self.melee ) )
-            self.melee._id_2720 = 1;
+            self.melee.babort = 1;
 
         return anim.failure;
     }
@@ -394,24 +394,24 @@ _id_B5F0( var_0 )
 
     var_2 = self.melee.target;
 
-    if ( isdefined( self._id_B5DA ) || isdefined( self._id_B621 ) )
+    if ( isdefined( self.meleeallowoffground ) || isdefined( self.meleeignorefinalzdiff ) )
         var_3 = distance2dsquared( var_2.origin, self.origin );
     else
         var_3 = distancesquared( var_2.origin, self.origin );
 
-    var_4 = _id_7FAB( var_2 ) + 24;
+    var_4 = getmeleechargerange( var_2 ) + 24;
     var_5 = var_4 * var_4;
 
     if ( var_3 > var_5 )
     {
-        self.melee._id_2720 = 1;
+        self.melee.babort = 1;
         return anim.failure;
     }
 
     if ( isplayer( var_2 ) )
         var_6 = getclosestpointonnavmesh( var_2.origin, self );
     else
-        var_6 = var_2 _meth_84AC();
+        var_6 = var_2 getnavposition();
 
     var_7 = var_1;
     var_8 = length( self.velocity );
@@ -432,46 +432,46 @@ _id_B5F0( var_0 )
         if ( isdefined( self.stairsstate ) && self.stairsstate != "none" && isplayer( var_2 ) )
             var_9 = 32;
 
-        if ( isdefined( self._id_B621 ) || abs( self.origin[2] - var_2.origin[2] ) < var_9 )
+        if ( isdefined( self.meleeignorefinalzdiff ) || abs( self.origin[2] - var_2.origin[2] ) < var_9 )
         {
-            var_10 = self _meth_84AC();
+            var_10 = self getnavposition();
 
             if ( self [[ self.fncanmovefrompointtopoint ]]( var_10, var_6 ) )
             {
-                self.melee._id_29A8 = 1;
+                self.melee.bchargecomplete = 1;
                 return anim.success;
             }
         }
     }
 
-    if ( self.badpath || gettime() > self.bt.instancedata[var_0]._id_3E30 && !isdefined( self.pathgoalpos ) )
+    if ( self.badpath || gettime() > self.bt.instancedata[var_0].checkpathtime && !isdefined( self.pathgoalpos ) )
     {
-        _id_B5E7( var_2 );
-        self.melee._id_2720 = 1;
+        meleecharge_failed_badpath( var_2 );
+        self.melee.babort = 1;
         return anim.failure;
     }
 
-    if ( !isdefined( self.melee._id_2AC7 ) || !self.melee._id_2AC7 )
+    if ( !isdefined( self.melee.bignoretimeout ) || !self.melee.bignoretimeout )
     {
         if ( gettime() >= self.bt.instancedata[var_0].timeout )
         {
-            _id_B5E7( var_2 );
-            self.melee._id_2720 = 1;
+            meleecharge_failed_badpath( var_2 );
+            self.melee.babort = 1;
             return anim.failure;
         }
     }
 
-    if ( !isdefined( self.melee._id_2AC6 ) || !self.melee._id_2AC6 )
+    if ( !isdefined( self.melee.bignoretargetflee ) || !self.melee.bignoretargetflee )
     {
-        if ( isdefined( self._id_B5DA ) )
-            var_11 = distance2dsquared( var_2.origin, self.bt.instancedata[var_0]._id_6572 );
+        if ( isdefined( self.meleeallowoffground ) )
+            var_11 = distance2dsquared( var_2.origin, self.bt.instancedata[var_0].enemystartpos );
         else
-            var_11 = distancesquared( var_2.origin, self.bt.instancedata[var_0]._id_6572 );
+            var_11 = distancesquared( var_2.origin, self.bt.instancedata[var_0].enemystartpos );
 
         if ( var_11 > 16384 )
         {
-            _id_B5E7( var_2 );
-            self.melee._id_2720 = 1;
+            meleecharge_failed_badpath( var_2 );
+            self.melee.babort = 1;
             return anim.failure;
         }
     }
@@ -481,12 +481,12 @@ _id_B5F0( var_0 )
     var_14 = var_2.origin + var_13 * var_12;
     var_15 = 36;
 
-    if ( isdefined( self._id_B64F ) )
-        var_15 = self._id_B64F;
+    if ( isdefined( self.meleetargetallowedoffmeshdistsq ) )
+        var_15 = self.meleetargetallowedoffmeshdistsq;
 
     var_16 = 1;
 
-    if ( !_id_B5EA( var_0, var_14 ) )
+    if ( !meleecharge_justtriedthis( var_0, var_14 ) )
     {
         var_17 = getclosestpointonnavmesh( var_14, self );
         var_16 = distance2dsquared( var_14, var_17 ) > var_15;
@@ -495,7 +495,7 @@ _id_B5F0( var_0 )
             var_16 = !self [[ self.fncanmovefrompointtopoint ]]( var_17, var_6 );
     }
 
-    if ( var_16 && isdefined( self._id_B651 ) && self._id_B651 )
+    if ( var_16 && isdefined( self.meleetryhard ) && self.meleetryhard )
     {
         if ( isdefined( var_2.node ) )
         {
@@ -515,7 +515,7 @@ _id_B5F0( var_0 )
                 var_14 = var_2.node.origin - var_20 * var_12;
             }
 
-            if ( !_id_B5EA( var_0, var_14 ) )
+            if ( !meleecharge_justtriedthis( var_0, var_14 ) )
             {
                 var_17 = getclosestpointonnavmesh( var_14, self );
                 var_16 = distance2dsquared( var_14, var_17 ) > var_15;
@@ -526,7 +526,7 @@ _id_B5F0( var_0 )
         {
             var_14 = var_2.origin - var_13 * var_12;
 
-            if ( !_id_B5EA( var_0, var_14 ) )
+            if ( !meleecharge_justtriedthis( var_0, var_14 ) )
             {
                 var_17 = getclosestpointonnavmesh( var_14, self );
                 var_16 = distance2dsquared( var_14, var_17 ) > var_15;
@@ -542,12 +542,12 @@ _id_B5F0( var_0 )
 
     if ( var_16 )
     {
-        _id_B5E7( var_2 );
-        self.melee._id_2720 = 1;
+        meleecharge_failed_badpath( var_2 );
+        self.melee.babort = 1;
         return anim.failure;
     }
 
-    self _meth_8481( var_14 );
+    self setbtgoalpos( var_14 );
     self.btgoalradius = 6;
     self.bt.instancedata[var_0].targetpos = var_14;
     scripts\asm\asm_bb::bb_requestmeleecharge( var_2, var_14 );
@@ -576,16 +576,16 @@ gettargetchargepos( var_0 )
 
 canmeleeduringstealth()
 {
-    if ( isdefined( self._id_65DB ) && isdefined( self._id_65DB["_stealth_enabled"] ) && self._id_65DB["_stealth_enabled"] )
+    if ( isdefined( self.ent_flag ) && isdefined( self.ent_flag["_stealth_enabled"] ) && self.ent_flag["_stealth_enabled"] )
     {
-        if ( isdefined( self._id_65DB["_stealth_attack"] ) && !self._id_65DB["_stealth_attack"] )
+        if ( isdefined( self.ent_flag["_stealth_attack"] ) && !self.ent_flag["_stealth_attack"] )
             return 0;
     }
 
     return anim.success;
 }
 
-_id_9DD1( var_0 )
+iseitherofusalreadyinmelee( var_0 )
 {
     var_1 = self.enemy;
 
@@ -601,12 +601,12 @@ _id_9DD1( var_0 )
     return 0;
 }
 
-_id_9E98( var_0 )
+ismeleerangevalid( var_0 )
 {
-    if ( abs( var_0.origin[2] - self.origin[2] ) > self._id_B627 )
+    if ( abs( var_0.origin[2] - self.origin[2] ) > self.meleemaxzdiff )
         return 0;
 
-    var_1 = _id_7FAB( var_0 );
+    var_1 = getmeleechargerange( var_0 );
     var_2 = var_1 * var_1;
     var_3 = distancesquared( self.origin, var_0.origin );
     return var_3 <= var_2;

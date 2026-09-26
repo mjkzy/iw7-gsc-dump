@@ -7,10 +7,10 @@ init()
     var_0.weaponinfo = "deployable_vest_marker_mp";
     var_0.modelbase = "mil_ammo_case_1_open";
     var_0.hintstring = &"KILLSTREAKS_HINTS_DEPLOYABLE_AMMO_USE";
-    var_0._id_3A41 = &"KILLSTREAKS_DEPLOYABLE_AMMO_TAKING";
-    var_0._id_67E5 = "deployable_ammo_taken";
+    var_0.capturingstring = &"KILLSTREAKS_DEPLOYABLE_AMMO_TAKING";
+    var_0.event = "deployable_ammo_taken";
     var_0.streakname = "deployable_ammo";
-    var_0._id_10A38 = "used_deployable_ammo";
+    var_0.splashname = "used_deployable_ammo";
     var_0.shadername = "compass_objpoint_deploy_ammo_friendly";
     var_0.headiconoffset = 25;
     var_0.lifespan = 90.0;
@@ -20,7 +20,7 @@ init()
     var_0.deployedsfx = "mp_vest_deployed_ui";
     var_0.onusesfx = "ammo_crate_use";
     var_0.onusecallback = ::onusedeployable;
-    var_0.canusecallback = ::_id_3937;
+    var_0.canusecallback = ::canusedeployable;
     var_0.usetime = 500;
     var_0.maxhealth = 150;
     var_0.damagefeedback = "deployable_bag";
@@ -30,14 +30,14 @@ init()
     var_0.deathdamagemax = 130;
     var_0.deathdamagemin = 50;
     var_0.allowmeleedamage = 1;
-    var_0.allowhvtspawn = 1;
+    var_0.allowgrenadedamage = 1;
     var_0.maxuses = 4;
     level.boxsettings["deployable_ammo"] = var_0;
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_ammo", ::_id_128DE );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "deployable_ammo", ::tryusedeployableammo );
     level.deployable_box["deployable_ammo"] = [];
 }
 
-_id_128DE( var_0, var_1 )
+tryusedeployableammo( var_0, var_1 )
 {
     var_2 = scripts\mp\killstreaks\deployablebox::begindeployableviamarker( var_0, "deployable_ammo" );
 
@@ -50,10 +50,10 @@ _id_128DE( var_0, var_1 )
 
 onusedeployable( var_0 )
 {
-    _id_17A6();
+    addallweaponammo();
 }
 
-_id_17A6()
+addallweaponammo()
 {
     var_0 = self getweaponslistall();
 
@@ -63,24 +63,24 @@ _id_17A6()
         {
             if ( scripts\mp\weapons::isbulletweapon( var_2 ) )
             {
-                _id_1805( var_2, 2 );
+                addoneweaponammo( var_2, 2 );
                 continue;
             }
 
             if ( weaponclass( var_2 ) == "rocketlauncher" )
-                _id_1805( var_2, 1 );
+                addoneweaponammo( var_2, 1 );
         }
     }
 }
 
-_id_1805( var_0, var_1 )
+addoneweaponammo( var_0, var_1 )
 {
     var_2 = weaponclipsize( var_0 );
     var_3 = self getweaponammostock( var_0 );
     self setweaponammostock( var_0, var_3 + var_1 * var_2 );
 }
 
-_id_1819( var_0 )
+addratiomaxstocktoallweapons( var_0 )
 {
     var_1 = self getweaponslistprimaries();
 
@@ -99,7 +99,7 @@ _id_1819( var_0 )
     }
 }
 
-_id_17C6()
+addfullcliptoallweapons()
 {
     var_0 = self getweaponslistprimaries();
 
@@ -110,7 +110,7 @@ _id_17C6()
     }
 }
 
-_id_3937( var_0 )
+canusedeployable( var_0 )
 {
     return !scripts\mp\utility::isjuggernaut();
 }

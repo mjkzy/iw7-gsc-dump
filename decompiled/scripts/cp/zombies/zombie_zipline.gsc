@@ -69,7 +69,7 @@ _id_97AD()
 
     self._id_13EFC._id_62E4 = self._id_13EFB;
     self._id_13EFC.trigger = self;
-    self._id_13EFB._id_10CBA = self._id_13EFC;
+    self._id_13EFB.start_node = self._id_13EFC;
     self._id_13EFB.trigger = self;
 
     for (;;)
@@ -179,7 +179,7 @@ player_zipline_travel( var_0, var_1 )
     var_0 scripts\engine\utility::allow_reload( 0 );
     var_0 disableautoreload();
     var_0 scripts\engine\utility::allow_weapon_switch( 0 );
-    var_0 _meth_857E( 1 );
+    var_0 disableemptyclipweaponswitch( 1 );
     var_2 = player_zipline( var_0, var_1 );
     var_0 lerpfovbypreset( "zombiedefault" );
     wait 0.1;
@@ -191,7 +191,7 @@ player_zipline_travel( var_0, var_1 )
     var_0 scripts\engine\utility::allow_prone( 1 );
     var_0 enableautoreload();
     var_0 scripts\engine\utility::allow_weapon_switch( 1 );
-    var_0 _meth_857E( 0 );
+    var_0 disableemptyclipweaponswitch( 0 );
     var_0 notify( "fast_travel_complete" );
     var_0 thread scripts\cp\cp_vo::try_to_play_vo( "zipline_exit", "rave_comment_vo" );
 }

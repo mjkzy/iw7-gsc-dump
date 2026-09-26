@@ -194,15 +194,15 @@ arcade_game_player_gets_too_far_away( var_0, var_1, var_2, var_3, var_4, var_5, 
                         }
                     }
 
-                    if ( isdefined( var_1._id_10227 ) && var_1._id_10227 >= 1 )
+                    if ( isdefined( var_1.skeeball_game_score ) && var_1.skeeball_game_score >= 1 )
                     {
-                        var_8 = var_1._id_10227 * 1;
+                        var_8 = var_1.skeeball_game_score * 1;
                         var_0 give_player_tickets( var_0, var_8 );
                     }
 
-                    if ( isdefined( var_1._id_10227 ) && var_1._id_10227 >= 1 )
+                    if ( isdefined( var_1.skeeball_game_score ) && var_1.skeeball_game_score >= 1 )
                     {
-                        var_8 = var_1._id_10227 * 1;
+                        var_8 = var_1.skeeball_game_score * 1;
                         var_0 give_player_tickets( var_0, var_8 );
                     }
                 }
@@ -346,7 +346,7 @@ restore_player_grenades_post_game()
     if ( isdefined( self.pre_arcade_primary_power ) )
     {
         var_0 = level.powers[self.pre_arcade_primary_power].defaultslot;
-        scripts\cp\powers\coop_powers::_id_4171( var_0 );
+        scripts\cp\powers\coop_powers::clear_power_slot( var_0 );
         scripts\cp\powers\coop_powers::givepower( self.pre_arcade_primary_power, var_0, undefined, undefined, undefined, undefined, 1 );
         scripts\cp\powers\coop_powers::power_adjustcharges( self.pre_arcade_primary_power_charges, var_0, 1 );
     }
@@ -354,7 +354,7 @@ restore_player_grenades_post_game()
     if ( isdefined( self.pre_arcade_secondary_power ) )
     {
         var_0 = level.powers[self.pre_arcade_secondary_power].defaultslot;
-        scripts\cp\powers\coop_powers::_id_4171( var_0 );
+        scripts\cp\powers\coop_powers::clear_power_slot( var_0 );
         scripts\cp\powers\coop_powers::givepower( self.pre_arcade_secondary_power, var_0, undefined, undefined, undefined, undefined, 0 );
         scripts\cp\powers\coop_powers::power_adjustcharges( self.pre_arcade_secondary_power_charges, var_0, 1 );
     }

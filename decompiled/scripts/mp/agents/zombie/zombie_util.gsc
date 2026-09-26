@@ -46,10 +46,10 @@ _id_13141( var_0 )
         for ( var_1 = 0; var_1 < _id_800F(); var_1++ )
         {
             self._id_B63E[var_0][var_1] = spawnstruct();
-            self._id_B63E[var_0][var_1]._id_11931 = 0;
+            self._id_B63E[var_0][var_1].timestamp = 0;
             self._id_B63E[var_0][var_1]._id_3FF6 = undefined;
             self._id_B63E[var_0][var_1].origin = undefined;
-            self._id_B63E[var_0][var_1]._id_C1D5 = var_1;
+            self._id_B63E[var_0][var_1].num = var_1;
         }
     }
 }
@@ -58,9 +58,9 @@ _id_8024( var_0 )
 {
     var_1 = var_0.origin;
 
-    if ( isdefined( var_0._id_864C ) )
+    if ( isdefined( var_0.groundpos ) )
     {
-        var_1 = var_0._id_864C;
+        var_1 = var_0.groundpos;
 
         if ( isdefined( self._id_5719 ) && var_0 == self._id_5719 && _id_8BDA() )
         {
@@ -174,7 +174,7 @@ _id_7FB1( var_0, var_1 )
             var_8 = var_2[var_7];
 
             if ( isdefined( var_8._id_3FF6 ) && var_8._id_3FF6 == self )
-                var_6 = var_8._id_C1D5;
+                var_6 = var_8.num;
         }
 
         if ( var_6 < 0 )
@@ -216,7 +216,7 @@ _id_7FB1( var_0, var_1 )
 
             var_8 = var_2[var_18];
 
-            if ( !isdefined( var_11 ) && gettime() - var_8._id_11931 >= self._id_B641 )
+            if ( !isdefined( var_11 ) && gettime() - var_8.timestamp >= self._id_B641 )
             {
                 if ( isdefined( level._id_12892 ) && isdefined( level._id_12892[self.agent_type] ) )
                     [[ level._id_12892[self.agent_type] ]]( var_8, var_3, self._id_252B, self.radius );
@@ -278,11 +278,11 @@ _id_BA13( var_0 )
 
 _id_12892( var_0, var_1, var_2, var_3 )
 {
-    if ( gettime() - var_0._id_11931 >= 50 )
+    if ( gettime() - var_0.timestamp >= 50 )
     {
-        var_0.origin = _id_B63F( var_1, var_0._id_C1D5, var_2 );
+        var_0.origin = _id_B63F( var_1, var_0.num, var_2 );
         var_0.origin = _id_5D54( var_0.origin, var_3, 55 );
-        var_0._id_11931 = gettime();
+        var_0.timestamp = gettime();
     }
 }
 
@@ -436,10 +436,10 @@ _id_3C52( var_0, var_1 )
     scripts\anim\notetracks_mp::setstatelocked( 1, "ChangeAnimClass" );
     self.inplayerportableradar = 1;
     self scragentsetorientmode( "face angle abs", ( 0, self.angles[1], 0 ) );
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetanimscale( 1, 1 );
-    scripts\anim\notetracks_mp::_id_CED6( var_1, randomint( self getanimentrycount( var_1 ) ), "change_anim_class" );
-    self _meth_82A3( var_0 );
+    scripts\anim\notetracks_mp::playanimnuntilnotetrack_safe( var_1, randomint( self getanimentrycount( var_1 ) ), "change_anim_class" );
+    self setanimclass( var_0 );
     scripts\anim\notetracks_mp::setstatelocked( 0, "ChangeAnimClass" );
     self.inplayerportableradar = 0;
     self scragentsetscripted( 0 );
@@ -459,7 +459,7 @@ _id_8205( var_0 )
     return var_8[2];
 }
 
-_id_8088( var_0, var_1, var_2, var_3 )
+getposinspaceatanimtime( var_0, var_1, var_2, var_3 )
 {
     var_4 = getanimlength( var_0 );
     var_5 = getmovedelta( var_0, 0, var_3 / var_4 );
@@ -467,7 +467,7 @@ _id_8088( var_0, var_1, var_2, var_3 )
     return var_1 + var_6;
 }
 
-_id_7F66( var_0 )
+getlerptime( var_0 )
 {
     var_1 = 0.2;
     var_2 = getanimlength( var_0 );
@@ -478,9 +478,9 @@ _id_CA1D( var_0, var_1 )
 {
     self endon( "death" );
     level endon( "game_ended" );
-    self _meth_827B( self.origin, var_0, var_1 );
+    self scragentdoanimlerp( self.origin, var_0, var_1 );
     wait( var_1 );
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
 }
 
 _id_8040( var_0, var_1 )
@@ -607,8 +607,8 @@ _id_553B()
 _id_F9A2()
 {
     var_0 = clamp( level._id_13BDC / 20, 0.0, 1.0 );
-    var_1 = _id_AB6F( var_0, 0.35, 0.55 );
-    var_2 = _id_AB6F( var_0, 0.06, 0.12 );
+    var_1 = lerp( var_0, 0.35, 0.55 );
+    var_2 = lerp( var_0, 0.06, 0.12 );
     _id_B106( 5.0, self._id_B62E * 2, self._id_B62E * 1.5, "attack_lunge_boost", level._effect["boost_lunge"] );
     _id_5811( 5.0, var_1, "dodge_boost", "boost_dodge_" );
     _id_AB05( 10.0, 2.0, var_2, 550, 350, "leap_boost", level._effect["boost_jump"] );
@@ -621,7 +621,7 @@ _id_6203()
     _id_AAFA();
 }
 
-_id_AB6F( var_0, var_1, var_2 )
+lerp( var_0, var_1, var_2 )
 {
     var_3 = var_2 - var_1;
     var_4 = var_0 * var_3;
@@ -709,7 +709,7 @@ _id_13D9B()
     if ( !var_0 && ( isplayer( self.curmeleetarget ) || isagent( self.curmeleetarget ) ) )
     {
         var_1 = undefined;
-        var_1 = self.curmeleetarget _meth_845B();
+        var_1 = self.curmeleetarget getgroundentity();
 
         if ( isdefined( var_1 ) && isdefined( var_1.targetname ) && var_1.targetname == "care_package" )
             var_0 = distancesquared( self.origin, self.curmeleetarget.origin ) <= self.meleeradiusbasesq * 4;
@@ -831,7 +831,7 @@ ismeleeblocked_default()
 
 isreallyalive( var_0 )
 {
-    if ( isalive( var_0 ) && !isdefined( var_0.fauxdeath ) )
+    if ( isalive( var_0 ) && !isdefined( var_0.fauxdead ) )
         return 1;
 
     return 0;
@@ -978,10 +978,10 @@ _id_7E79()
         return "dismemberSound";
 }
 
-_id_7E59( var_0, var_1 )
+getdamagedegree( var_0, var_1 )
 {
     var_2 = self.agent_type;
-    var_3 = level._id_1BA4[var_2]._id_2552["heavy_damage_threshold"];
+    var_3 = level.alien_types[var_2].attributes["heavy_damage_threshold"];
 
     if ( var_0 < var_3 && !var_1 )
         return "light";
@@ -989,18 +989,18 @@ _id_7E59( var_0, var_1 )
         return "heavy";
 }
 
-_id_4E0C( var_0 )
+death_getcombinedhitloc( var_0 )
 {
-    return level._id_1BBA._id_4E2D["hitLoc"][var_0];
+    return level.alienanimdata.deathanims["hitLoc"][var_0];
 }
 
-_id_4E0D( var_0 )
+death_getincomingdirection( var_0 )
 {
-    var_1 = scripts\anim\notetracks_mp::_id_7DBD( var_0 );
-    return level._id_1BBA._id_4E2D["hitDirection"][var_1];
+    var_1 = scripts\anim\notetracks_mp::getangleindexfromselfyaw( var_0 );
+    return level.alienanimdata.deathanims["hitDirection"][var_1];
 }
 
-_id_8044( var_0, var_1, var_2, var_3 )
+getpaindeathanimindex_internal( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( var_2 ) )
         var_4 = var_3[var_0][var_1][var_2];

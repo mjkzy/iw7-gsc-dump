@@ -5,8 +5,8 @@ registerscriptedagent()
 {
     scripts\mp\agents\alien_phantom\alien_phantom_tunedata::setuptunedata();
     scripts\aitypes\bt_util::init();
-    behaviortree\alien_goon::_id_DEE8();
-    scripts\asm\alien_goon\mp\states::_id_2371();
+    behaviortree\alien_goon::registerbehaviortree();
+    scripts\asm\alien_goon\mp\states::asm_register();
     thread _id_FAB0();
 }
 

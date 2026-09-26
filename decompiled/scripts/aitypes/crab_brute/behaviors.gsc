@@ -472,7 +472,7 @@ trycharge( var_0, var_1, var_2 )
     if ( var_8 < 0.707 )
         return 0;
 
-    if ( !_func_2AC( self.origin, var_6, self ) )
+    if ( !navisstraightlinereachable( self.origin, var_6, self ) )
     {
         self.nextchargeattacktesttime = gettime() + 500;
         return 0;

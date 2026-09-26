@@ -17,7 +17,7 @@ _id_BB93()
 {
     self notify( "mortarMount_unset" );
     self unlink();
-    self _meth_845E( 0 );
+    self setcamerathirdperson( 0 );
     self allowads( 1 );
     _id_BB77();
     _id_BB78();
@@ -48,7 +48,7 @@ _id_BB8C()
     self._id_BB6E.isactive = 1;
     var_0 = rotatepointaroundvector( anglestoright( self.angles ), anglestoforward( self.angles ), 0 );
     var_1 = vectortoangles( var_0 );
-    self _meth_845E( 1 );
+    self setcamerathirdperson( 1 );
     self allowads( 0 );
     self setplayerangles( var_1 );
     var_2 = scripts\engine\utility::spawn_tag_origin( self.origin, var_1 );
@@ -82,7 +82,7 @@ _id_BB8E( var_0 )
     if ( isdefined( var_0 ) )
         var_0 delete();
 
-    self _meth_845E( 0 );
+    self setcamerathirdperson( 0 );
     self allowads( 1 );
     _id_BB77();
     _id_BB78();
@@ -168,7 +168,7 @@ _id_BB8A( var_0 )
     self endon( "mortarMount_unset" );
     self endon( "mortarMount_popOut" );
     self endon( "mortarMount_fireButtonPressed" );
-    var_1 = scripts\mp\powers::_id_D735( "power_mortarMount" );
+    var_1 = scripts\mp\powers::power_getinputcommand( "power_mortarMount" );
     self notifyonplayercommand( "mortarMount_powerButtonPressed", var_1 );
     self waittill( "mortarMount_powerButtonPressed" );
     _id_BB95( 0 );

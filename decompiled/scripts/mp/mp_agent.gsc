@@ -55,17 +55,17 @@ init_agent( var_0 )
     level notify( "scripted_agents_initialized" );
 }
 
-_id_F8ED()
+setup_bt_and_asm()
 {
     var_0 = level.agent_definition[self.agent_type];
 
     if ( !isdefined( var_0["behaviorTree"] ) || var_0["behaviorTree"] == "" )
         return;
 
-    scripts\anim\notetracks_mp::_id_197F( var_0["behaviorTree"], var_0["asm"] );
+    scripts\anim\notetracks_mp::ai_init( var_0["behaviorTree"], var_0["asm"] );
 }
 
-_id_FAFA( var_0 )
+setupweapon( var_0 )
 {
     self.weapon = var_0;
     self giveweapon( var_0 );
@@ -108,10 +108,10 @@ spawnnewagent( var_0, var_1, var_2, var_3, var_4, var_5 )
         var_6 addtocharactersarray();
 
         if ( isdefined( var_4 ) )
-            var_6 _id_FAFA( var_4 );
+            var_6 setupweapon( var_4 );
 
-        if ( _id_9CF8( var_0 ) )
-            var_6 _id_F8ED();
+        if ( is_using_behaviortree( var_0 ) )
+            var_6 setup_bt_and_asm();
 
         var_6 activateagent();
     }
@@ -155,7 +155,7 @@ is_scripted_agent( var_0 )
     return level.agent_definition[var_0]["animclass"] != "";
 }
 
-_id_9CF8( var_0 )
+is_using_behaviortree( var_0 )
 {
     if ( !isdefined( level.agent_definition[var_0] ) )
         return 0;
@@ -178,8 +178,8 @@ spawn_scripted_agent( var_0, var_1, var_2, var_3 )
         var_5 = 50;
 
     var_0 spawnagent( var_2, var_3, level.agent_definition[var_1]["animclass"], var_4, var_5 );
-    var_0._id_18F4 = var_5;
-    var_0._id_18F9 = var_4;
+    var_0.agent_height = var_5;
+    var_0.agent_radius = var_4;
     return var_0;
 }
 
@@ -228,7 +228,7 @@ set_agent_species( var_0, var_1 )
     if ( !isdefined( level.species_funcs[var_0.species] ) || !isdefined( level.species_funcs[var_0.species]["on_enter_animstate"] ) )
     {
         level.species_funcs[var_0.species] = [];
-        level.species_funcs[var_0.species]["on_enter_animstate"] = ::_id_5005;
+        level.species_funcs[var_0.species]["on_enter_animstate"] = ::default_on_enter_animstate;
     }
 
     assign_agent_func( "spawn", ::default_spawn_func );
@@ -356,8 +356,8 @@ initplayerscriptvariables()
     self.current_icon = undefined;
     self.do_immediate_ragdoll = undefined;
 
-    if ( isdefined( level._id_768B ) )
-        self [[ level._id_768B ]]();
+    if ( isdefined( level.gametype_agent_init ) )
+        self [[ level.gametype_agent_init ]]();
 }
 
 set_agent_team( var_0, var_1 )
@@ -461,7 +461,7 @@ default_on_damage_finished( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var
     self.damagedir = var_7;
     self.damagetaken = var_2;
     self.damageweapon = var_5;
-    self._id_4D62 = var_6;
+    self.damagepoint = var_6;
     self finishagentdamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 0.0, var_11, var_12 );
 
     if ( self.health > 0 && self.health < var_13 )
@@ -478,8 +478,8 @@ default_on_damage_finished( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var
 
 default_on_killed( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
 {
-    if ( isdefined( level._id_C4BD ) )
-        self [[ level._id_C4BD ]]( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, 0 );
+    if ( isdefined( level.on_zombie_agent_killed_common ) )
+        self [[ level.on_zombie_agent_killed_common ]]( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, 0 );
     else
         on_humanoid_agent_killed_common( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, 0 );
 
@@ -491,7 +491,7 @@ default_on_killed( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8
     deactivateagent();
 }
 
-_id_5005( var_0, var_1 )
+default_on_enter_animstate( var_0, var_1 )
 {
     self.aistate = var_1;
 
@@ -499,7 +499,7 @@ _id_5005( var_0, var_1 )
     {
         case "traverse":
             self.do_immediate_ragdoll = 1;
-            _id_0F3C::_id_5AC0();
+            scripts\asm\shared\mp\utility::dotraversal();
             self.do_immediate_ragdoll = 0;
             break;
         default:
@@ -605,7 +605,7 @@ on_humanoid_agent_killed_common( var_0, var_1, var_2, var_3, var_4, var_5, var_6
     var_10 = self._id_164D[self.asmname]._id_4BC0;
     var_11 = anim.asm[self.asmname].states[var_10];
 
-    if ( scripts\asm\asm_mp::_id_2382( self.asmname, var_11 ) )
+    if ( scripts\asm\asm_mp::asmdodeathtransition( self.asmname, var_11 ) )
         scripts\asm\asm::_id_231E( self.asmname, var_11, var_10 );
 
     if ( isdefined( self.nocorpse ) )
@@ -638,7 +638,7 @@ delaystartragdoll( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     if ( isdefined( var_0 ) )
     {
-        var_6 = var_0 _meth_8112();
+        var_6 = var_0 getcorpseanim();
 
         if ( animhasnotetrack( var_6, "ignore_ragdoll" ) )
             return;
@@ -661,7 +661,7 @@ delaystartragdoll( var_0, var_1, var_2, var_3, var_4, var_5 )
     if ( var_0 isragdoll() )
         return;
 
-    var_6 = var_0 _meth_8112();
+    var_6 = var_0 getcorpseanim();
     var_10 = 0.35;
 
     if ( animhasnotetrack( var_6, "start_ragdoll" ) )
@@ -680,7 +680,7 @@ delaystartragdoll( var_0, var_1, var_2, var_3, var_4, var_5 )
     if ( isdefined( var_0 ) )
     {
         if ( isdefined( var_0.ragdollhitloc ) && isdefined( var_0.ragdollimpactvector ) )
-            var_0 _meth_839B( var_0.ragdollhitloc, var_0.ragdollimpactvector );
+            var_0 startragdollfromimpact( var_0.ragdollhitloc, var_0.ragdollimpactvector );
         else
             var_0 startragdoll();
     }

@@ -10,7 +10,7 @@ main()
 setup_callbacks()
 {
     level.bot_funcs["crate_can_use"] = ::crate_can_use;
-    level.bot_funcs["gametype_think"] = ::bot_dd_think;
+    level.bot_funcs["gametype_think"] = ::bot_demolition_think;
 }
 
 crate_can_use( var_0 )
@@ -21,7 +21,7 @@ crate_can_use( var_0 )
     if ( isdefined( var_0.cratetype ) && !scripts\mp\bots\bots_killstreaks::bot_is_killstreak_supported( var_0.cratetype ) )
         return 0;
 
-    return _id_9C96();
+    return is_protecting_zone();
 }
 
 monitor_zone_control()
@@ -148,7 +148,7 @@ isdefender()
     return 0;
 }
 
-bot_dd_think()
+bot_demolition_think()
 {
     self notify( "bot_dem_think" );
     self endon( "bot_dem_think" );
@@ -163,21 +163,21 @@ bot_dd_think()
     self botsetflag( "separation", 0 );
     self botsetflag( "grenade_objectives", 1 );
     self botsetflag( "use_obj_path_style", 1 );
-    self._id_9BB6 = 0;
-    self._id_9C6A = 0;
+    self.is_defusing = 0;
+    self.is_planting = 0;
     self.current_bombzone = undefined;
 
-    if ( !isdefined( level._id_BF3F ) )
-        level._id_BF3F = gettime() - 100;
+    if ( !isdefined( level.next_game_update_time ) )
+        level.next_game_update_time = gettime() - 100;
 
     for (;;)
     {
         wait 0.05;
 
-        if ( gettime() >= level._id_BF3F )
+        if ( gettime() >= level.next_game_update_time )
         {
-            _id_12DC2();
-            level._id_BF3F = gettime() + 100;
+            update_game_demolition();
+            level.next_game_update_time = gettime() + 100;
         }
 
         if ( self.health <= 0 )
@@ -188,18 +188,18 @@ bot_dd_think()
 
         if ( isattacker() )
         {
-            if ( self._id_9C6A )
+            if ( self.is_planting )
                 plant_set_stage();
             else
             {
                 if ( !isdefined( self.current_bombzone ) )
-                    self.current_bombzone = _id_6C7A( "attackers" );
+                    self.current_bombzone = find_best_bombzone( "attackers" );
 
                 if ( isdefined( self.current_bombzone ) )
                 {
-                    if ( _id_9B7E( self.current_bombzone ) && !_id_9C96() )
+                    if ( is_bomb_planted_on( self.current_bombzone ) && !is_protecting_zone() )
                         scripts\mp\bots\bots_strategy::bot_protect_point( self.current_bombzone.bottarget.origin, 600 );
-                    else if ( !_id_9B7E( self.current_bombzone ) && !_id_9B84() )
+                    else if ( !is_bomb_planted_on( self.current_bombzone ) && !is_capturing_zone() )
                     {
                         var_0["entrance_points_index"] = "zone" + self.current_bombzone.label;
                         scripts\mp\bots\bots_strategy::bot_capture_point( self.current_bombzone.bottarget.origin, 350, var_0 );
@@ -210,31 +210,31 @@ bot_dd_think()
             continue;
         }
 
-        if ( self._id_9BB6 )
+        if ( self.is_defusing )
         {
             if ( !isdefined( level.ddbombmodel[self.current_bombzone.label] ) )
-                self._id_9BB6 = 0;
+                self.is_defusing = 0;
         }
 
-        if ( self._id_9BB6 )
+        if ( self.is_defusing )
         {
-            _id_50A6();
+            defuse_bomb();
             continue;
         }
 
         if ( !isdefined( self.current_bombzone ) )
-            self.current_bombzone = _id_6C7A( "defenders" );
+            self.current_bombzone = find_best_bombzone( "defenders" );
 
         if ( isdefined( self.current_bombzone ) )
         {
-            if ( _id_9B7E( self.current_bombzone ) && !_id_9B84() )
+            if ( is_bomb_planted_on( self.current_bombzone ) && !is_capturing_zone() )
             {
                 var_0["entrance_points_index"] = "zone" + self.current_bombzone.label;
                 scripts\mp\bots\bots_strategy::bot_capture_point( self.current_bombzone.bottarget.origin, 350, var_0 );
                 continue;
             }
 
-            if ( !_id_9B7E( self.current_bombzone ) && !_id_9C96() )
+            if ( !is_bomb_planted_on( self.current_bombzone ) && !is_protecting_zone() )
                 scripts\mp\bots\bots_strategy::bot_protect_point( self.current_bombzone.bottarget.origin, 600 );
         }
     }
@@ -242,15 +242,15 @@ bot_dd_think()
 
 plant_set_stage()
 {
-    _id_8466( 1 );
+    goto_bomb_and_use( 1 );
 }
 
-_id_50A6()
+defuse_bomb()
 {
-    _id_8466( 0 );
+    goto_bomb_and_use( 0 );
 }
 
-_id_8466( var_0 )
+goto_bomb_and_use( var_0 )
 {
     scripts\mp\bots\bots_strategy::bot_defend_stop();
 
@@ -267,36 +267,36 @@ _id_8466( var_0 )
     if ( var_2 == "goal" )
     {
         self botpressbutton( "use", level.defusetime + 2 );
-        _id_1381B( level.defusetime + 2, var_0 );
+        waittill_usebutton_released_or_time( level.defusetime + 2, var_0 );
 
         if ( var_0 )
-            self._id_9C6A = 0;
+            self.is_planting = 0;
         else
-            self._id_9BB6 = 0;
+            self.is_defusing = 0;
     }
 }
 
-_id_1381B( var_0, var_1 )
+waittill_usebutton_released_or_time( var_0, var_1 )
 {
     var_2 = gettime();
     var_3 = var_2 + var_0 * 1000;
     wait 0.05;
 
-    while ( self usebuttonpressed() && gettime() < var_3 && isdefined( self.current_bombzone ) && var_1 != _id_9B7E( self.current_bombzone ) )
+    while ( self usebuttonpressed() && gettime() < var_3 && isdefined( self.current_bombzone ) && var_1 != is_bomb_planted_on( self.current_bombzone ) )
         wait 0.05;
 }
 
-_id_9C96()
+is_protecting_zone()
 {
     return scripts\mp\bots\bots_util::bot_is_protecting();
 }
 
-_id_9B84()
+is_capturing_zone()
 {
     return scripts\mp\bots\bots_util::bot_is_capturing();
 }
 
-_id_787A( var_0, var_1 )
+get_bots_using_zone( var_0, var_1 )
 {
     var_2 = [];
 
@@ -315,33 +315,33 @@ _id_787A( var_0, var_1 )
     return var_2;
 }
 
-_id_7877( var_0 )
+get_bot_defusing_zone( var_0 )
 {
-    var_1 = _id_787A( var_0, "defenders" );
+    var_1 = get_bots_using_zone( var_0, "defenders" );
 
     foreach ( var_3 in var_1 )
     {
-        if ( var_3._id_9BB6 )
+        if ( var_3.is_defusing )
             return var_3;
     }
 
     return undefined;
 }
 
-_id_7878( var_0 )
+get_bot_planting_zone( var_0 )
 {
-    var_1 = _id_787A( var_0, "attackers" );
+    var_1 = get_bots_using_zone( var_0, "attackers" );
 
     foreach ( var_3 in var_1 )
     {
-        if ( var_3._id_9C6A )
+        if ( var_3.is_planting )
             return var_3;
     }
 
     return undefined;
 }
 
-_id_6C7A( var_0 )
+find_best_bombzone( var_0 )
 {
     var_1 = [];
 
@@ -352,9 +352,9 @@ _id_6C7A( var_0 )
             var_4 = 0;
 
             if ( var_0 == "defenders" )
-                var_4 = var_3.bots_defending_wanted > _id_787A( var_3, "defenders" ).size;
+                var_4 = var_3.bots_defending_wanted > get_bots_using_zone( var_3, "defenders" ).size;
             else if ( var_0 == "attackers" )
-                var_4 = var_3.bots_attacking_wanted > _id_787A( var_3, "attackers" ).size;
+                var_4 = var_3.bots_attacking_wanted > get_bots_using_zone( var_3, "attackers" ).size;
 
             if ( var_4 )
                 var_1[var_1.size] = var_3;
@@ -382,7 +382,7 @@ _id_6C7A( var_0 )
     return var_6;
 }
 
-_id_12DC2()
+update_game_demolition()
 {
     var_0 = [];
 
@@ -392,7 +392,7 @@ _id_12DC2()
             var_0[var_0.size] = var_2;
     }
 
-    if ( level._id_D88D == 2 && var_0.size == 1 )
+    if ( level.prev_num_active_zones == 2 && var_0.size == 1 )
     {
         foreach ( var_5 in level.participants )
         {
@@ -401,24 +401,24 @@ _id_12DC2()
                 var_5.current_bombzone = undefined;
                 var_5 scripts\mp\bots\bots_strategy::bot_defend_stop();
                 var_5 notify( "dem_bomb_exploded" );
-                var_5._id_9BB6 = 0;
-                var_5._id_9C6A = 0;
+                var_5.is_defusing = 0;
+                var_5.is_planting = 0;
             }
         }
 
-        level._id_D88D = 1;
+        level.prev_num_active_zones = 1;
     }
 
-    _id_12DAD( var_0 );
-    _id_12DAE( var_0 );
+    update_demolition_attackers( var_0 );
+    update_demolition_defenders( var_0 );
 }
 
-_id_12DAD( var_0 )
+update_demolition_attackers( var_0 )
 {
-    if ( gettime() > level._id_BF62 )
+    if ( gettime() > level.next_target_switch_time )
     {
-        level._id_4BD6 = 1 - level._id_4BD6;
-        level._id_BF62 = gettime() + 90000;
+        level.current_zone_target = 1 - level.current_zone_target;
+        level.next_target_switch_time = gettime() + 90000;
     }
 
     var_1 = 0;
@@ -432,18 +432,18 @@ _id_12DAD( var_0 )
     if ( var_0.size == 2 )
     {
         if ( var_1 >= 2 )
-            var_0[1 - level._id_4BD6].bots_attacking_wanted = 1;
+            var_0[1 - level.current_zone_target].bots_attacking_wanted = 1;
         else
-            var_0[1 - level._id_4BD6].bots_attacking_wanted = 0;
+            var_0[1 - level.current_zone_target].bots_attacking_wanted = 0;
 
-        var_0[level._id_4BD6].bots_attacking_wanted = var_1 - var_0[1 - level._id_4BD6].bots_attacking_wanted;
+        var_0[level.current_zone_target].bots_attacking_wanted = var_1 - var_0[1 - level.current_zone_target].bots_attacking_wanted;
     }
     else if ( var_0.size == 1 )
         var_0[0].bots_attacking_wanted = var_1;
 
     foreach ( var_6 in var_0 )
     {
-        var_7 = _id_787A( var_6, "attackers" );
+        var_7 = get_bots_using_zone( var_6, "attackers" );
 
         if ( var_7.size > var_6.bots_attacking_wanted )
         {
@@ -451,7 +451,7 @@ _id_12DAD( var_0 )
 
             foreach ( var_9 in var_7 )
             {
-                if ( !var_9._id_9C6A )
+                if ( !var_9.is_planting )
                 {
                     var_9.current_bombzone = undefined;
                     var_9 scripts\mp\bots\bots_strategy::bot_defend_stop();
@@ -463,21 +463,21 @@ _id_12DAD( var_0 )
 
     foreach ( var_6 in var_0 )
     {
-        if ( !_id_9B7E( var_6 ) && !isdefined( _id_7878( var_6 ) ) )
+        if ( !is_bomb_planted_on( var_6 ) && !isdefined( get_bot_planting_zone( var_6 ) ) )
         {
-            var_7 = _id_787A( var_6, "attackers" );
+            var_7 = get_bots_using_zone( var_6, "attackers" );
 
             if ( var_7.size > 0 )
             {
                 var_13 = scripts\engine\utility::get_array_of_closest( var_6.bottarget.origin, var_7 );
-                var_13[0]._id_9C6A = 1;
+                var_13[0].is_planting = 1;
                 var_13[0] scripts\mp\bots\bots_strategy::bot_defend_stop();
             }
         }
     }
 }
 
-_id_12DAE( var_0 )
+update_demolition_defenders( var_0 )
 {
     var_1 = 0;
 
@@ -491,11 +491,11 @@ _id_12DAE( var_0 )
     {
         var_0[0].bots_defending_wanted = int( var_1 / 2 );
         var_0[1].bots_defending_wanted = int( var_1 / 2 );
-        var_0[level._id_BB52].bots_defending_wanted = var_0[level._id_BB52].bots_defending_wanted + var_1 % 2;
+        var_0[level.more_populated_bombzone].bots_defending_wanted = var_0[level.more_populated_bombzone].bots_defending_wanted + var_1 % 2;
 
         for ( var_5 = 0; var_5 < var_0.size; var_5++ )
         {
-            if ( _id_9B7E( var_0[var_5] ) )
+            if ( is_bomb_planted_on( var_0[var_5] ) )
             {
                 var_0[var_5].bots_defending_wanted++;
                 var_0[1 - var_5].bots_defending_wanted--;
@@ -507,7 +507,7 @@ _id_12DAE( var_0 )
 
     foreach ( var_7 in var_0 )
     {
-        var_8 = _id_787A( var_7, "defenders" );
+        var_8 = get_bots_using_zone( var_7, "defenders" );
 
         if ( var_8.size > var_7.bots_defending_wanted )
         {
@@ -515,7 +515,7 @@ _id_12DAE( var_0 )
 
             foreach ( var_10 in var_8 )
             {
-                if ( !var_10._id_9BB6 )
+                if ( !var_10.is_defusing )
                 {
                     var_10.current_bombzone = undefined;
                     var_10 scripts\mp\bots\bots_strategy::bot_defend_stop();
@@ -527,13 +527,13 @@ _id_12DAE( var_0 )
 
     foreach ( var_7 in var_0 )
     {
-        if ( _id_9B7E( var_7 ) )
+        if ( is_bomb_planted_on( var_7 ) )
         {
-            var_14 = _id_7877( var_7 );
+            var_14 = get_bot_defusing_zone( var_7 );
 
-            if ( !isdefined( var_14 ) || gettime() > level._id_BF6A )
+            if ( !isdefined( var_14 ) || gettime() > level.next_time_switch_defusers )
             {
-                var_8 = _id_787A( var_7, "defenders" );
+                var_8 = get_bots_using_zone( var_7, "defenders" );
 
                 if ( var_8.size > 0 )
                 {
@@ -541,24 +541,24 @@ _id_12DAE( var_0 )
 
                     if ( !isdefined( var_14 ) || var_15[0] != var_14 )
                     {
-                        var_15[0]._id_9BB6 = 1;
+                        var_15[0].is_defusing = 1;
                         var_15[0] scripts\mp\bots\bots_strategy::bot_defend_stop();
 
                         if ( isdefined( var_14 ) )
                         {
-                            var_14._id_9BB6 = 0;
+                            var_14.is_defusing = 0;
                             var_14 notify( "no_longer_bomb_defuser" );
                         }
                     }
                 }
 
-                level._id_BF6A = gettime() + 2500;
+                level.next_time_switch_defusers = gettime() + 2500;
             }
         }
     }
 }
 
-_id_9B7E( var_0 )
+is_bomb_planted_on( var_0 )
 {
     return isdefined( var_0.bombplanted ) && var_0.bombplanted == 1;
 }
@@ -569,9 +569,9 @@ init_bot_game_demolition()
         return;
 
     level.bots_gametype_initialized = 1;
-    level._id_BB52 = randomint( 2 );
-    level._id_D88D = 2;
-    level._id_4BD6 = randomint( 2 );
-    level._id_BF62 = gettime() + 90000;
-    level._id_BF6A = 0;
+    level.more_populated_bombzone = randomint( 2 );
+    level.prev_num_active_zones = 2;
+    level.current_zone_target = randomint( 2 );
+    level.next_target_switch_time = gettime() + 90000;
+    level.next_time_switch_defusers = 0;
 }

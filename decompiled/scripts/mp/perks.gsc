@@ -4,12 +4,12 @@
 init()
 {
     level thread scripts\mp\perks\weaponpassives::weaponpassivesinit();
-    level._id_CA51 = [];
-    level._id_108D3["enemy"] = "tactical_insertion_marker_wm_dropmodel";
-    level._id_108D3["friendly"] = "tactical_insertion_marker_wm_dropmodel";
-    level._id_108D2["enemy"] = loadfx( "vfx/core/mp/core/vfx_flare_glow_en.vfx" );
-    level._id_108D2["friendly"] = loadfx( "vfx/core/mp/core/vfx_flare_glow_fr.vfx" );
-    level._id_10888 = loadfx( "vfx/props/barrelexp.vfx" );
+    level.perkfuncs = [];
+    level.spawnglowmodel["enemy"] = "tactical_insertion_marker_wm_dropmodel";
+    level.spawnglowmodel["friendly"] = "tactical_insertion_marker_wm_dropmodel";
+    level.spawnglow["enemy"] = loadfx( "vfx/core/mp/core/vfx_flare_glow_en.vfx" );
+    level.spawnglow["friendly"] = loadfx( "vfx/core/mp/core/vfx_flare_glow_fr.vfx" );
+    level.spawnfire = loadfx( "vfx/props/barrelexp.vfx" );
     level._effect["ricochet"] = loadfx( "vfx/core/impacts/large_metalhit_1" );
     level._effect["tracker_cloak_tag"] = loadfx( "vfx/iw7/_requests/mp/vfx_tesla_shock_sparks_tracker.vfx" );
     level.menuperks = [];
@@ -176,12 +176,12 @@ init()
     level.scriptperks["ammo_box_mp"] = 1;
     level.scriptperks["blackhat_mp"] = 1;
     level.scriptperks["flare_mp"] = 1;
-    var_0 = scripts\mp\passives::_id_8239();
+    var_0 = scripts\mp\passives::getweapontypepassives();
 
     foreach ( var_2 in var_0 )
     {
         level.scriptperks[var_2] = 1;
-        var_3 = scripts\mp\passives::getpassivemessage( var_2 );
+        var_3 = scripts\mp\passives::_id_804A( var_2 );
 
         if ( isdefined( var_3 ) )
             level.extraperkmap[var_2] = [ var_3 ];
@@ -221,7 +221,7 @@ init()
     level.perksetfuncs["specialty_marksman"] = scripts\mp\perks\perkfunctions::setmarksman;
     level.perkunsetfuncs["specialty_marksman"] = scripts\mp\perks\perkfunctions::unsetmarksman;
     level.perksetfuncs["specialty_rshieldradar"] = scripts\mp\perks\perkfunctions::setrshieldradar;
-    level.perkunsetfuncs["specialty_rshieldradar"] = scripts\mp\perks\perkfunctions::_id_12D1D;
+    level.perkunsetfuncs["specialty_rshieldradar"] = scripts\mp\perks\perkfunctions::unsetrshieldradar;
     level.perksetfuncs["specialty_rshieldscrambler"] = scripts\mp\perks\perkfunctions::setrshieldscrambler;
     level.perkunsetfuncs["specialty_rshieldscrambler"] = scripts\mp\perks\perkfunctions::unsetrshieldscrambler;
     level.perksetfuncs["specialty_double_load"] = scripts\mp\perks\perkfunctions::setdoubleload;
@@ -244,16 +244,16 @@ init()
     level.perkunsetfuncs["specialty_refill_ammo"] = scripts\mp\perks\perkfunctions::unsetrefillammo;
     level.perksetfuncs["specialty_combat_speed"] = scripts\mp\perks\perkfunctions::setcombatspeed;
     level.perkunsetfuncs["specialty_combat_speed"] = scripts\mp\perks\perkfunctions::unsetcombatspeed;
-    level.perksetfuncs["specialty_gambler"] = scripts\mp\perks\perkfunctions::_id_F71F;
-    level.perkunsetfuncs["specialty_gambler"] = scripts\mp\perks\perkfunctions::_id_12CC5;
+    level.perksetfuncs["specialty_gambler"] = scripts\mp\perks\perkfunctions::setgambler;
+    level.perkunsetfuncs["specialty_gambler"] = scripts\mp\perks\perkfunctions::unsetgambler;
     level.perksetfuncs["specialty_comexp"] = scripts\mp\perks\perkfunctions::setcomexp;
     level.perkunsetfuncs["specialty_comexp"] = scripts\mp\perks\perkfunctions::unsetcomexp;
-    level.perksetfuncs["specialty_gunsmith"] = scripts\mp\perks\perkfunctions::_id_F737;
-    level.perkunsetfuncs["specialty_gunsmith"] = scripts\mp\perks\perkfunctions::_id_12CCB;
+    level.perksetfuncs["specialty_gunsmith"] = scripts\mp\perks\perkfunctions::setgunsmith;
+    level.perkunsetfuncs["specialty_gunsmith"] = scripts\mp\perks\perkfunctions::unsetgunsmith;
     level.perksetfuncs["specialty_tagger"] = scripts\mp\perks\perkfunctions::settagger;
     level.perkunsetfuncs["specialty_tagger"] = scripts\mp\perks\perkfunctions::unsettagger;
     level.perksetfuncs["specialty_pitcher"] = scripts\mp\perks\perkfunctions::setpitcher;
-    level.perkunsetfuncs["specialty_pitcher"] = scripts\mp\perks\perkfunctions::_id_12D0C;
+    level.perkunsetfuncs["specialty_pitcher"] = scripts\mp\perks\perkfunctions::unsetpitcher;
     level.perksetfuncs["specialty_boom"] = scripts\mp\perks\perkfunctions::setboom;
     level.perkunsetfuncs["specialty_boom"] = scripts\mp\perks\perkfunctions::unsetboom;
     level.perksetfuncs["specialty_triggerhappy"] = scripts\mp\perks\perkfunctions::settriggerhappy;
@@ -288,7 +288,7 @@ init()
     level.perkunsetfuncs["specialty_toughenup"] = scripts\mp\perks\perkfunctions::unsettoughenup;
     level.perksetfuncs["specialty_scoutping"] = scripts\mp\perks\perkfunctions::setscoutping;
     level.perkunsetfuncs["specialty_scoutping"] = scripts\mp\perks\perkfunctions::unsetscoutping;
-    level.perksetfuncs["specialty_corpse_steal"] = scripts\mp\perks\perkfunctions::setphasespeed;
+    level.perksetfuncs["specialty_corpse_steal"] = scripts\mp\perks\perkfunctions::_id_F6A1;
     level.perkunsetfuncs["specialty_corpse_steal"] = scripts\mp\perks\perkfunctions::unsetcritchance;
     level.perksetfuncs["specialty_phase_speed"] = scripts\mp\perks\perkfunctions::setphasespeed;
     level.perkunsetfuncs["specialty_phase_speed"] = scripts\mp\perks\perkfunctions::unsetphasespeed;
@@ -324,16 +324,16 @@ init()
     level.perkunsetfuncs["specialty_extend_dodge"] = scripts\mp\perks\perkfunctions::_id_12CB1;
     level.perksetfuncs["specialty_aura_regen"] = scripts\mp\perks\perkfunctions::_id_F64E;
     level.perkunsetfuncs["specialty_aura_regen"] = scripts\mp\perks\perkfunctions::_id_12C74;
-    level.perksetfuncs["specialty_aura_quickswap"] = scripts\mp\perks\perkfunctions::_id_F64D;
+    level.perksetfuncs["specialty_aura_quickswap"] = scripts\mp\perks\perkfunctions::setauraquickswap;
     level.perkunsetfuncs["specialty_aura_quickswap"] = scripts\mp\perks\perkfunctions::_id_12C73;
     level.perksetfuncs["specialty_aura_speed"] = scripts\mp\perks\perkfunctions::_id_F64F;
     level.perkunsetfuncs["specialty_aura_speed"] = scripts\mp\perks\perkfunctions::_id_12C75;
     level.perksetfuncs["specialty_mark_targets"] = scripts\mp\perks\perkfunctions::_id_F790;
-    level.perkunsetfuncs["specialty_mark_targets"] = scripts\mp\perks\perkfunctions::_id_12CED;
+    level.perkunsetfuncs["specialty_mark_targets"] = scripts\mp\perks\perkfunctions::unsetmarktargets;
     level.perksetfuncs["specialty_batterypack"] = scripts\mp\perks\perkfunctions::_id_F65A;
-    level.perkunsetfuncs["specialty_batterypack"] = scripts\mp\perks\perkfunctions::_id_12C7A;
+    level.perkunsetfuncs["specialty_batterypack"] = scripts\mp\perks\perkfunctions::unsetbatterypack;
     level.perksetfuncs["specialty_camo_clone"] = scripts\mp\perks\perkfunctions::_id_F67A;
-    level.perkunsetfuncs["specialty_camo_clone"] = scripts\mp\perks\perkfunctions::_id_12C8B;
+    level.perkunsetfuncs["specialty_camo_clone"] = scripts\mp\perks\perkfunctions::unsetcamoclone;
     level.perksetfuncs["specialty_camo_elite"] = scripts\mp\perks\perkfunctions::setcamoelite;
     level.perkunsetfuncs["specialty_camo_elite"] = scripts\mp\perks\perkfunctions::unsetcamoelite;
     level.perksetfuncs["specialty_block_health_regen"] = scripts\mp\perks\perkfunctions::setblockhealthregen;
@@ -363,7 +363,7 @@ init()
     level.perksetfuncs["specialty_personal_trophy"] = scripts\mp\perks\perkfunctions::_id_F7DE;
     level.perkunsetfuncs["specialty_personal_trophy"] = scripts\mp\perks\perkfunctions::_id_12D04;
     level.perksetfuncs["specialty_disruptor_punch"] = scripts\mp\perks\perkfunctions::_id_F6CA;
-    level.perkunsetfuncs["specialty_disruptor_punch"] = scripts\mp\perks\perkfunctions::_id_12CA3;
+    level.perkunsetfuncs["specialty_disruptor_punch"] = scripts\mp\perks\perkfunctions::unsetdisruptorpunch;
     level.perksetfuncs["specialty_equipment_ping"] = scripts\mp\perks\perkfunctions::setequipmentping;
     level.perkunsetfuncs["specialty_equipment_ping"] = scripts\mp\perks\perkfunctions::unsetequipmentping;
     level.perksetfuncs["specialty_rugged_eqp"] = scripts\mp\perks\perkfunctions::setruggedeqp;
@@ -392,13 +392,13 @@ init()
     level.perkunsetfuncs["specialty_headgear"] = scripts\mp\perks\perkfunctions::unsetheadgear;
     level.perksetfuncs["specialty_ftlslide"] = scripts\mp\perks\perkfunctions::setftlslide;
     level.perkunsetfuncs["specialty_ftlslide"] = scripts\mp\perks\perkfunctions::unsetftlslide;
-    level.perksetfuncs["specialty_improved_prone"] = scripts\mp\perks\perkfunctions::_id_F753;
-    level.perkunsetfuncs["specialty_improved_prone"] = scripts\mp\perks\perkfunctions::_id_12CD6;
+    level.perksetfuncs["specialty_improved_prone"] = scripts\mp\perks\perkfunctions::setimprovedprone;
+    level.perkunsetfuncs["specialty_improved_prone"] = scripts\mp\perks\perkfunctions::unsetimprovedprone;
     level.perksetfuncs["specialty_ghost"] = scripts\mp\perks\perkfunctions::setghost;
     level.perkunsetfuncs["specialty_ghost"] = scripts\mp\perks\perkfunctions::unsetghost;
     level.perksetfuncs["specialty_support_killstreaks"] = scripts\mp\perks\perkfunctions::setsupportkillstreaks;
     level.perkunsetfuncs["specialty_support_killstreaks"] = scripts\mp\perks\perkfunctions::unsetsupportkillstreaks;
-    level.perksetfuncs["specialty_overrideweaponspeed"] = scripts\mp\perks\perkfunctions::_id_F7D2;
+    level.perksetfuncs["specialty_overrideweaponspeed"] = scripts\mp\perks\perkfunctions::setoverrideweaponspeed;
     level.perkunsetfuncs["specialty_overrideweaponspeed"] = scripts\mp\perks\perkfunctions::unsetoverrideweaponspeed;
     level.perksetfuncs["specialty_ballcarrier"] = scripts\mp\perks\perkfunctions::_id_F657;
     level.perkunsetfuncs["specialty_ballcarrier"] = scripts\mp\perks\perkfunctions::_id_12C77;
@@ -421,7 +421,7 @@ init()
     level.perksetfuncs["specialty_revenge"] = scripts\mp\perks\perkfunctions::setrevenge;
     level.perkunsetfuncs["specialty_revenge"] = scripts\mp\perks\perkfunctions::unsetrevenge;
     level.perksetfuncs["specialty_c4death"] = scripts\mp\perks\perkfunctions::_id_F678;
-    level.perkunsetfuncs["specialty_c4death"] = scripts\mp\perks\perkfunctions::_id_12C8A;
+    level.perkunsetfuncs["specialty_c4death"] = scripts\mp\perks\perkfunctions::unsetc4death;
     level.perksetfuncs["specialty_finalstand"] = scripts\mp\perks\perkfunctions::_id_F704;
     level.perkunsetfuncs["specialty_finalstand"] = scripts\mp\perks\perkfunctions::_id_12CBD;
     level.perksetfuncs["specialty_juiced"] = scripts\mp\perks\perkfunctions::setjuiced;
@@ -429,7 +429,7 @@ init()
     level.perksetfuncs["specialty_carepackage"] = scripts\mp\perks\perkfunctions::setcarepackage;
     level.perkunsetfuncs["specialty_carepackage"] = scripts\mp\perks\perkfunctions::unsetcarepackage;
     level.perksetfuncs["specialty_stopping_power"] = scripts\mp\perks\perkfunctions::_id_F864;
-    level.perkunsetfuncs["specialty_stopping_power"] = scripts\mp\perks\perkfunctions::_id_12D3A;
+    level.perkunsetfuncs["specialty_stopping_power"] = scripts\mp\perks\perkfunctions::unsetstoppingpower;
     level.perksetfuncs["specialty_uav"] = scripts\mp\perks\perkfunctions::setuav;
     level.perkunsetfuncs["specialty_uav"] = scripts\mp\perks\perkfunctions::unsetuav;
     level.perksetfuncs["specialty_viewkickoverride"] = scripts\mp\perks\perkfunctions::setviewkickoverride;
@@ -445,7 +445,7 @@ init()
     level.perksetfuncs["passive_scrambler"] = scripts\mp\perks\weaponpassives::_id_F82F;
     level.perkunsetfuncs["passive_scrambler"] = scripts\mp\perks\weaponpassives::_id_12D27;
     level.perksetfuncs["passive_last_shots_ammo"] = scripts\mp\perks\weaponpassives::_id_F77D;
-    level.perkunsetfuncs["passive_last_shots_ammo"] = scripts\mp\perks\weaponpassives::unsetkineticwave;
+    level.perkunsetfuncs["passive_last_shots_ammo"] = scripts\mp\perks\weaponpassives::_id_12CE2;
     level.perksetfuncs["passive_health_on_kill"] = scripts\mp\perks\weaponpassives::_id_F740;
     level.perkunsetfuncs["passive_health_on_kill"] = scripts\mp\perks\weaponpassives::_id_12CCF;
     level.perksetfuncs["passive_double_kill_reload"] = scripts\mp\perks\weaponpassives::_id_F6D6;
@@ -507,10 +507,10 @@ init()
     level.extraperkmap["specialty_marksman"] = [ "specialty_viewkickoverride" ];
     level.extraperkmap["specialty_tracker"] = [ "specialty_selectivehearing", "specialty_tracker_pro" ];
     level.extraperkmap["specialty_sprintfire"] = [ "specialty_fastsprintrecovery" ];
-    _id_98B0();
+    initperkdvars();
     menurigperkparsetable();
     menuperkparsetable();
-    _id_98B2();
+    initperktable();
     level thread onplayerconnect();
 }
 
@@ -570,12 +570,12 @@ menuperkparsetable()
     }
 }
 
-_id_98B2()
+initperktable()
 {
     if ( !isdefined( level.perksuseslot ) )
         level.perksuseslot = [];
 
-    level._id_CA5E = [];
+    level.perksbyid = [];
     var_0 = 0;
 
     for (;;)
@@ -593,12 +593,12 @@ _id_98B2()
         if ( !isdefined( level.perksuseslot[var_2] ) )
             level.perksuseslot[var_2] = var_3;
 
-        level._id_CA5E[var_3.id] = var_3.ref;
+        level.perksbyid[var_3.id] = var_3.ref;
         var_0++;
     }
 }
 
-_id_7DE8()
+getavailableperks()
 {
     var_0 = [];
 
@@ -613,7 +613,7 @@ _id_7DE8()
     return var_0;
 }
 
-_id_805C( var_0 )
+getperkslot( var_0 )
 {
     var_1 = level.menuperks[var_0];
 
@@ -623,7 +623,7 @@ _id_805C( var_0 )
     return int( var_1.slot );
 }
 
-_id_13144( var_0 )
+validateperk( var_0 )
 {
     if ( !scripts\mp\utility::perksenabled() )
         var_0 = "specialty_null";
@@ -701,50 +701,50 @@ onplayerspawned()
     self.perksblocked = [];
     self.trait = undefined;
     self.weaponlist = [];
-    self._id_C47E = 0;
+    self.omaclasschanged = 0;
 
     for (;;)
     {
         self waittill( "spawned_player" );
-        self._id_C47E = 0;
-        thread scripts\mp\killstreaks\portableaoegenerator::_id_7737();
+        self.omaclasschanged = 0;
+        thread scripts\mp\killstreaks\portableaoegenerator::generatoraoetracker();
     }
 }
 
-_id_98B0()
+initperkdvars()
 {
-    level._id_8488 = 0.08;
+    level.graceperiodgrenademod = 0.08;
     level._id_A4A7 = 0.08;
     level._id_A4A6 = 0.08;
     level.armorpiercingmod = 1.5;
     level.armorpiercingmodks = 1.25;
-    level._id_DE8A = scripts\mp\utility::getintproperty( "perk_fastRegenWaitMS", 800 ) / 1000;
+    level.regenfasterhealthmod = scripts\mp\utility::getintproperty( "perk_fastRegenWaitMS", 800 ) / 1000;
     level._id_DE89 = scripts\mp\utility::getintproperty( "perk_fastRegenRate", 2 );
     level._id_3245 = scripts\mp\utility::getintproperty( "perk_bulletDamage", 40 ) / 100;
-    level._id_69FE = scripts\mp\utility::getintproperty( "perk_explosiveDamage", 40 ) / 100;
-    level._id_2B68 = scripts\mp\utility::getintproperty( "perk_blastShieldScale", 65 ) / 100;
-    level._id_2B67 = scripts\mp\utility::getintproperty( "perk_blastShieldClampHP", 80 );
+    level.explosivedamagemod = scripts\mp\utility::getintproperty( "perk_explosiveDamage", 40 ) / 100;
+    level.blastshieldmod = scripts\mp\utility::getintproperty( "perk_blastShieldScale", 65 ) / 100;
+    level.blastshieldclamp = scripts\mp\utility::getintproperty( "perk_blastShieldClampHP", 80 );
     level._id_1177E = scripts\mp\utility::getintproperty( "weap_thermoDebuffMod", 185 ) / 100;
     level._id_E559 = scripts\mp\utility::getintproperty( "perk_riotShield", 100 ) / 100;
-    level._id_21A3 = scripts\mp\utility::getintproperty( "perk_armorVest", 75 ) / 100;
+    level.armorvestbulletdelta = scripts\mp\utility::getintproperty( "perk_armorVest", 75 ) / 100;
     level._id_8C74 = scripts\mp\utility::getintproperty( "perk_headgear", 55 ) / 100;
     level._id_848A = scripts\mp\utility::getintproperty( "perk_gpsjammer_graceperiods", 4 );
-    level._id_B7CB = scripts\mp\utility::getintproperty( "perk_gpsjammer_min_speed", 100 );
-    level._id_B75C = scripts\mp\utility::getintproperty( "perk_gpsjammer_min_distance", 10 );
+    level.minspeed = scripts\mp\utility::getintproperty( "perk_gpsjammer_min_speed", 100 );
+    level.mindistance = scripts\mp\utility::getintproperty( "perk_gpsjammer_min_distance", 10 );
     level.timeperiod = scripts\mp\utility::getintproperty( "perk_gpsjammer_time_period", 200 ) / 1000;
-    level.minspeedsq = level._id_B7CB * level._id_B7CB;
-    level._id_B75E = level._id_B75C * level._id_B75C;
+    level.minspeedsq = level.minspeed * level.minspeed;
+    level.mindistancesq = level.mindistance * level.mindistance;
 
     if ( isdefined( level.hardcoremode ) && level.hardcoremode )
     {
-        level._id_2B68 = scripts\mp\utility::getintproperty( "perk_blastShieldScale_HC", 20 ) / 100;
-        level._id_2B67 = scripts\mp\utility::getintproperty( "perk_blastShieldClampHP_HC", 20 );
+        level.blastshieldmod = scripts\mp\utility::getintproperty( "perk_blastShieldScale_HC", 20 ) / 100;
+        level.blastshieldclamp = scripts\mp\utility::getintproperty( "perk_blastShieldClampHP_HC", 20 );
     }
 
     if ( level.tactical )
     {
-        level._id_2B68 = 0.65;
-        level._id_2B67 = 50;
+        level.blastshieldmod = 0.65;
+        level.blastshieldclamp = 50;
     }
 }
 
@@ -755,7 +755,7 @@ giveperks( var_0, var_1 )
     foreach ( var_3 in var_0 )
     {
         if ( var_1 )
-            var_3 = _id_13144( var_3 );
+            var_3 = validateperk( var_3 );
 
         scripts\mp\utility::giveperk( var_3 );
     }
@@ -769,10 +769,10 @@ _setperk( var_0 )
         self.perks[var_0]++;
 
     if ( self.perks[var_0] == 1 && !isdefined( self.perksblocked[var_0] ) )
-        _id_13D2( var_0 );
+        _setperkinternal( var_0 );
 }
 
-_id_13D2( var_0 )
+_setperkinternal( var_0 )
 {
     var_1 = level.perksetfuncs[var_0];
 
@@ -796,7 +796,7 @@ _setextraperks( var_0 )
     }
 }
 
-_id_142F( var_0 )
+_unsetextraperks( var_0 )
 {
     foreach ( var_6, var_2 in level.extraperkmap )
     {
@@ -820,13 +820,13 @@ _unsetperk( var_0 )
     if ( self.perks[var_0] == 0 )
     {
         if ( !isdefined( self.perksblocked[var_0] ) )
-            _id_1431( var_0 );
+            _unsetperkinternal( var_0 );
 
         self.perks[var_0] = undefined;
     }
 }
 
-_id_1431( var_0 )
+_unsetperkinternal( var_0 )
 {
     if ( isdefined( level.perkunsetfuncs[var_0] ) )
         self thread [[ level.perkunsetfuncs[var_0] ]]();
@@ -847,13 +847,13 @@ _clearperks()
     self clearperks();
 }
 
-_id_E130( var_0 )
+removeinvalidperks( var_0 )
 {
     var_1 = [];
 
     foreach ( var_3 in var_0 )
     {
-        if ( _id_13144( var_3 ) != "specialty_null" )
+        if ( validateperk( var_3 ) != "specialty_null" )
             var_1[var_1.size] = var_3;
     }
 
@@ -875,7 +875,7 @@ giveperksafterspawn()
         wait 0.05;
     }
 
-    if ( scripts\mp\utility::_id_9EF0( self ) && isdefined( self.playerproxyagent ) && isalive( self.playerproxyagent ) )
+    if ( scripts\mp\utility::isplayerkillstreak( self ) && isdefined( self.playerproxyagent ) && isalive( self.playerproxyagent ) )
         return;
     else
     {
@@ -897,7 +897,7 @@ updateactiveperks( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 
     if ( var_13 && ( var_8 || var_12 || var_11 ) )
     {
-        thread scripts\mp\perks\weaponpassives::_id_12F61( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 );
+        thread scripts\mp\perks\weaponpassives::updateweaponpassivesonkill( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 );
 
         if ( var_1 scripts\mp\utility::_hasperk( "specialty_triggerhappy" ) )
             var_1 thread scripts\mp\perks\perkfunctions::settriggerhappyinternal();
@@ -906,7 +906,7 @@ updateactiveperks( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
             var_2 thread scripts\mp\perks\perkfunctions::setboominternal( var_1 );
 
         if ( var_1 scripts\mp\utility::_hasperk( "specialty_deadeye" ) )
-            var_1._id_4DF0++;
+            var_1.deadeyekillcount++;
 
         var_14 = var_1.pers["abilityRecharging"];
 
@@ -920,7 +920,7 @@ updateactiveperks( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
     }
 }
 
-_id_F7C5( var_0, var_1 )
+setomnvarsforperklist( var_0, var_1 )
 {
     var_2 = [];
 
@@ -929,7 +929,7 @@ _id_F7C5( var_0, var_1 )
         if ( !isdefined( level.perksuseslot[var_4] ) )
             continue;
 
-        var_5 = _id_805C( var_4 );
+        var_5 = getperkslot( var_4 );
 
         if ( !isdefined( var_5 ) )
             continue;
@@ -962,7 +962,7 @@ _id_F7C5( var_0, var_1 )
     }
 }
 
-_id_9EDF( var_0 )
+isperkinloadout( var_0 )
 {
     var_1 = self.pers["loadoutPerks"];
 
@@ -975,7 +975,7 @@ _id_9EDF( var_0 )
     return 0;
 }
 
-getequipmenttableinfo( var_0 )
+getperkid( var_0 )
 {
     if ( !isdefined( var_0 ) || !isdefined( level.perksuseslot[var_0] ) )
         return 0;

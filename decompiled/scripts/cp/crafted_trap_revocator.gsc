@@ -270,7 +270,7 @@ _id_E4B5( var_0 )
     self setcursorhint( "HINT_NOICON" );
     self sethintstring( level._id_47B1["crafted_revocator"].hintstring );
     self makeusable();
-    self _meth_84A7( "tag_fx" );
+    self sethinttag( "tag_fx" );
     self setusefov( 120 );
     self setuserange( 96 );
     thread _id_E4B1( self.owner );

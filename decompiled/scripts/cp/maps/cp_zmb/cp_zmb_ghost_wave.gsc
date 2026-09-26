@@ -1086,7 +1086,7 @@ delay_end_ghost( var_0 )
 {
     level notify( "delay_end_ghost" );
     level endon( "delay_end_ghost" );
-    _id_8E9F();
+    hide_players_entangler_hud();
     end_ghost_wave();
     show_ghost_arcade_scores( var_0 );
     stop_death_trigger_monitor();
@@ -1110,7 +1110,7 @@ delay_end_ghost( var_0 )
         [[ level.gns_end_func ]]();
 }
 
-_id_8E9F()
+hide_players_entangler_hud()
 {
     foreach ( var_1 in level.players )
         var_1 thread hide_entangler_hud( var_1 );

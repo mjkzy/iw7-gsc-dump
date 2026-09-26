@@ -10,7 +10,7 @@ main()
 
 setup_callbacks()
 {
-    level.bot_funcs["gametype_think"] = ::_id_2D12;
+    level.bot_funcs["gametype_think"] = ::bot_ball_think;
 }
 
 setup_bot_ball()
@@ -18,7 +18,7 @@ setup_bot_ball()
     scripts\mp\bots\bots_util::bot_waittill_bots_enabled( 1 );
     level.protect_radius = 600;
     level.bodyguard_radius = 400;
-    thread _id_2D11();
+    thread bot_ball_ai_director_update();
     level.bot_gametype_precaching_done = 1;
 }
 
@@ -99,7 +99,7 @@ bot_get_enemy_team()
     return "allies";
 }
 
-_id_2D12()
+bot_ball_think()
 {
     self notify( "bot_ball_think" );
     self endon( "bot_ball_think" );
@@ -355,7 +355,7 @@ initialize_ball_role()
     }
 }
 
-_id_2D11()
+bot_ball_ai_director_update()
 {
     level notify( "bot_ball_ai_director_update" );
     level endon( "bot_ball_ai_director_update" );

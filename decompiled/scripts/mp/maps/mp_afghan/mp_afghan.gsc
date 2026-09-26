@@ -20,7 +20,7 @@ main()
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
     thread _id_CDA4( "mp_afghan_screen" );
-    level._id_C7B3 = getentarray( "outofbounds", "targetname" );
+    level.outofboundstriggers = getentarray( "outofbounds", "targetname" );
     thread scripts\mp\animation_suite::animationsuite();
     level.modifiedspawnpoints["4194 2331 35"]["mp_tdm_spawn_axis_start"]["origin"] = ( 4207, 2328, 7 );
     level.modifiedspawnpoints["4194 2327 36"]["mp_koth_spawn_axis_start"]["origin"] = ( 4207, 2328, 7 );
@@ -47,8 +47,8 @@ spawn_oob_trigger()
     var_1 = spawn( "trigger_radius", ( 1704, 4299, 180 ), 0, 200, 50 );
     var_1.targetname = "outofbounds";
     var_1 hide();
-    level._id_C7B3[level._id_C7B3.size] = var_0;
-    level._id_C7B3[level._id_C7B3.size] = var_1;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_0;
+    level.outofboundstriggers[level.outofboundstriggers.size] = var_1;
 }
 
 fix_collision()

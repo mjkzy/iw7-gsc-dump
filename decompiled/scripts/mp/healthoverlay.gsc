@@ -62,10 +62,10 @@ playerhealthregen()
         self.regenspeed = level.playerhealth_regularregendelay;
 
         if ( scripts\mp\utility::_hasperk( "specialty_regenfaster" ) )
-            self.regenspeed = self.regenspeed * level._id_DE8A;
+            self.regenspeed = self.regenspeed * level.regenfasterhealthmod;
 
         if ( var_2 <= level.healthoverlaycutoff )
-            self._id_2410 = 1;
+            self.atbrinkofdeath = 1;
 
         thread healthregeneration( var_1, var_2 );
     }
@@ -118,7 +118,7 @@ healthregeneration( var_0, var_1 )
     }
 
     if ( !scripts\mp\utility::_hasperk( "specialty_adrenaline" ) )
-        scripts\mp\utility::_id_1359E( self.regenspeed, "force_regeneration" );
+        scripts\mp\utility::wait_endon( self.regenspeed, "force_regeneration" );
 
     if ( var_1 < 0.55 )
         var_2 = 1;
@@ -141,7 +141,7 @@ healthregeneration( var_0, var_1 )
         var_6 = 0;
 
         if ( scripts\mp\utility::_hasperk( "specialty_adrenaline" ) || scripts\mp\utility::_hasperk( "specialty_adrenaline_lite" ) )
-            var_6 = scripts\mp\equipment\adrenaline::_id_7EF5();
+            var_6 = scripts\mp\equipment\adrenaline::gethealthperframe();
         else if ( scripts\mp\utility::_hasperk( "specialty_regenfaster" ) )
             var_6 = var_3 * level._id_DE89;
         else
@@ -163,7 +163,7 @@ healthregeneration( var_0, var_1 )
             self.health = self.maxhealth;
 
             if ( var_7 && scripts\mp\utility::_hasperk( "specialty_regenfaster" ) )
-                scripts\mp\missions::_id_D991( "ch_trait_icu" );
+                scripts\mp\missions::processchallengedaily( "ch_trait_icu" );
 
             break;
         }
@@ -175,7 +175,7 @@ healthregeneration( var_0, var_1 )
     self setclientomnvar( "ui_health_regen_hud", 0 );
 }
 
-_id_135F0()
+wait_for_not_using_remote()
 {
     self notify( "waiting_to_stop_remote" );
     self endon( "waiting_to_stop_remote" );

@@ -4,7 +4,7 @@
 ratkinginit( var_0, var_1, var_2, var_3 )
 {
     scripts\asm\zombie\zombie::_id_13F9A( var_0, var_1, var_2, var_3 );
-    self._id_71D0 = scripts\mp\agents\ratking\ratking_agent::shouldratkingplaypainanim;
+    self.fnshouldplaypainanim = scripts\mp\agents\ratking\ratking_agent::shouldratkingplaypainanim;
     self._blackboard.requestedshieldstate = "equipped";
     self.asm.shieldstate = "equipped";
 }
@@ -53,22 +53,22 @@ shouldplayentranceanim( var_0, var_1, var_2, var_3 )
 playanimandlookatenemy( var_0, var_1, var_2, var_3 )
 {
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, scripts\mp\agents\ratking\ratking_agent::getenemy() );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 1 );
 }
 
 isanimdone( var_0, var_1, var_2, var_3 )
 {
-    if ( scripts\asm\asm::_id_232B( var_1, "end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "early_end" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "early_end" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "finish_early" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "finish_early" ) )
         return 1;
 
-    if ( scripts\asm\asm::_id_232B( var_1, "code_move" ) )
+    if ( scripts\asm\asm::asm_eventfired( var_1, "code_move" ) )
         return 1;
 
     return 0;
@@ -78,7 +78,7 @@ playtauntanim( var_0, var_1, var_2, var_3 )
 {
     self notify( "taunt" );
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, scripts\mp\agents\ratking\ratking_agent::getenemy() );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 dosummonspawn()
@@ -139,7 +139,7 @@ dostaffstomp( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, scripts\mp\agents\ratking\ratking_agent::getenemy() );
     self notify( "stomp" );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 summonnotehandler( var_0, var_1, var_2, var_3 )
@@ -247,7 +247,7 @@ doshieldthrowatspot( var_0, var_1, var_2, var_3 )
 
     scripts\mp\agents\ratking\ratking_agent::lookatspot();
     self notify( "shield_throw" );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
     self.lookposition = undefined;
 }
 
@@ -272,7 +272,7 @@ doshieldthrow( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     scripts\mp\agents\ratking\ratking_agent::lookatenemy();
     thread aimatenemy( var_1, scripts\mp\agents\ratking\ratking_agent::getenemy() );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
     self.lookposition = undefined;
 }
 
@@ -308,8 +308,8 @@ playanimwithplaybackrate( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     var_4 = var_3;
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, var_4 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, var_4 );
 }
 
 playblockanim( var_0, var_1, var_2, var_3 )
@@ -318,11 +318,11 @@ playblockanim( var_0, var_1, var_2, var_3 )
     var_4 = vectortoangles( self.damageaccumulator.lastdir * -1 );
     var_4 = ( 0, var_4[1], 0 );
     self scragentsetorientmode( "face angle abs", var_4 );
-    self _meth_8281( "anim deltas" );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    self scragentsetanimmode( "anim deltas" );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
-_id_BEA0( var_0, var_1, var_2, var_3 )
+needtoturn( var_0, var_1, var_2, var_3 )
 {
     var_4 = undefined;
     var_5 = scripts\mp\agents\ratking\ratking_agent::getenemy();
@@ -348,13 +348,13 @@ _id_BEA0( var_0, var_1, var_2, var_3 )
             var_6 = var_6 + asin( -3 / var_8 );
     }
 
-    if ( abs( angleclamp180( var_6 ) ) > self._id_129AF )
+    if ( abs( angleclamp180( var_6 ) ) > self.turnthreshold )
         return 1;
 
     return 0;
 }
 
-_id_81DE()
+getturndesiredyaw()
 {
     var_0 = 0.25;
     var_1 = undefined;
@@ -399,9 +399,9 @@ chooseshieldornoshieldanim( var_0, var_1, var_2 )
     return scripts\asm\asm::asm_lookupanimfromalias( var_1, "noshield" );
 }
 
-_id_3F0A( var_0, var_1, var_2 )
+chooseturnanim( var_0, var_1, var_2 )
 {
-    var_3 = _id_81DE();
+    var_3 = getturndesiredyaw();
 
     if ( var_3 < 0 )
         var_4 = "right";
@@ -422,23 +422,23 @@ _id_3F0A( var_0, var_1, var_2 )
 
     var_6 = var_4 + "_" + var_5;
     var_7 = scripts\asm\asm::asm_lookupanimfromalias( var_1, var_6 );
-    var_8 = self _meth_8101( var_1, var_7 );
+    var_8 = self getanimentryname( var_1, var_7 );
     return var_7;
 }
 
 _id_D56A( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self.pathgoalpos;
     self scragentsetorientmode( "face angle abs", self.angles );
-    self _meth_8281( "anim deltas" );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4 );
+    self scragentsetanimmode( "anim deltas" );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4 );
 
     if ( !isdefined( var_5 ) && isdefined( self.pathgoalpos ) )
         self clearpath();
 
-    scripts\asm\asm_mp::_id_237F( "face current" );
+    scripts\asm\asm_mp::asm_settransitionorientmode_legacy( "face current" );
     scripts\asm\asm_mp::_id_237E( "code_move" );
 }
 
@@ -446,9 +446,9 @@ playmeleeattack( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, self.curmeleetarget );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     self notify( "melee" );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4 );
 }
 
 choosemeleeattack( var_0, var_1, var_2 )
@@ -461,9 +461,9 @@ choosemeleeattack( var_0, var_1, var_2 )
     return var_3;
 }
 
-_id_3EE4( var_0, var_1, var_2 )
+choosepainanim_covercorner( var_0, var_1, var_2 )
 {
-    return _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+    return scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 }
 
 playmovingpainanim( var_0, var_1, var_2, var_3 )
@@ -472,15 +472,15 @@ playmovingpainanim( var_0, var_1, var_2, var_3 )
 
     if ( !isdefined( self.pathgoalpos ) || self pathdisttogoal() < scripts\mp\agents\ratking\ratking_tunedata::gettunedata().min_moving_pain_dist )
     {
-        var_4 = _id_3EE4( var_0, "pain_generic", var_3 );
+        var_4 = choosepainanim_covercorner( var_0, "pain_generic", var_3 );
         self scragentsetorientmode( "face angle abs", self.angles );
         self notify( "pain" );
-        scripts\asm\asm_mp::_id_2365( var_0, "pain_generic", var_2, var_4, 1 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, "pain_generic", var_2, var_4, 1 );
         return;
     }
 
     self notify( "pain" );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 playteleportin( var_0, var_1, var_2, var_3 )
@@ -510,7 +510,7 @@ playteleportout( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     self endon( "death" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = scripts\mp\agents\ratking\ratking_agent::getenemy();
     self.ishidden = 1;
     wait 0.1;
@@ -542,7 +542,7 @@ playteleportout( var_0, var_1, var_2, var_3 )
     if ( !scripts\engine\utility::is_true( self.btraversalteleport ) )
         scripts\mp\agents\ratking\ratking_agent::lookatenemy();
 
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 1 );
 
     if ( scripts\engine\utility::is_true( self.btraversalteleport ) )
     {
@@ -623,7 +623,7 @@ play_teleport_sound_to_players( var_0 )
 
 ontraversalteleport( var_0, var_1, var_2, var_3 )
 {
-    self.teleportpos = self _meth_8146();
+    self.teleportpos = self getnegotiationendpos();
     self.btraversalteleport = 1;
     return 1;
 }
@@ -648,14 +648,14 @@ playplatformidle( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     self clearpath();
     thread platformfaceenemy( var_1 );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 dostaffprojectile( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     thread scripts\asm\zombie\melee::_id_6A6A( var_1, scripts\mp\agents\ratking\ratking_agent::getenemy() );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 dostaffprojectiledamage( var_0, var_1, var_2, var_3 )
@@ -771,7 +771,7 @@ playshieldlostandfound( var_0, var_1, var_2, var_3 )
     }
 
     self.asm.shieldstate = self._blackboard.requestedshieldstate;
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 ratking_chooseanim_exit( var_0, var_1, var_2 )

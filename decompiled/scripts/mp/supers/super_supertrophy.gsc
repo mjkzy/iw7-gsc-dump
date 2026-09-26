@@ -5,11 +5,11 @@ _id_1127D()
 {
     var_0 = spawnstruct();
     var_0.trophies = [];
-    var_0._id_1141B = [];
-    var_0._id_1141B[0] = "fx_01_jnt";
-    var_0._id_1141B[1] = "fx_02_jnt";
-    var_0._id_1141B[2] = "fx_03_jnt";
-    var_0._id_1141B[3] = "fx_04_jnt";
+    var_0.tags = [];
+    var_0.tags[0] = "fx_01_jnt";
+    var_0.tags[1] = "fx_02_jnt";
+    var_0.tags[2] = "fx_03_jnt";
+    var_0.tags[3] = "fx_04_jnt";
     level.supertrophy = var_0;
 }
 
@@ -71,7 +71,7 @@ _id_11274()
         scripts\mp\utility::printgameaction( "supertrophy destroyed", self.owner );
 
     self setcandamage( 0 );
-    self _meth_854A();
+    self scriptmoverclearoutline();
     self setscriptablepartstate( "effects", "activeDestroyStart", 0 );
     wait 3;
     self setscriptablepartstate( "effects", "activeDestroyEnd", 0 );
@@ -118,7 +118,7 @@ _id_11279( var_0, var_1, var_2, var_3, var_4 )
     }
 
     if ( isdefined( var_0 ) && isplayer( var_0 ) && var_0 != self.owner )
-        var_0 scripts\mp\missions::_id_D991( "ch_killjoy_six_ability" );
+        var_0 scripts\mp\missions::processchallengedaily( "ch_killjoy_six_ability" );
 
     thread _id_11274();
 }
@@ -197,7 +197,7 @@ _id_1129C()
     self endon( "superTrophy_createTrophy" );
     self endon( "superTrophy_end" );
     level waittill( "game_ended" );
-    scripts\mp\supers::_id_DE3B( 9999000 );
+    scripts\mp\supers::reducesuperusepercent( 9999000 );
 }
 
 watcharbitraryup()
@@ -211,7 +211,7 @@ watcharbitraryup()
         scripts\engine\utility::waitframe();
 
     scripts\mp\supers::superdisabledinarbitraryupmessage();
-    scripts\mp\supers::_id_DE3B( 9999000 );
+    scripts\mp\supers::reducesuperusepercent( 9999000 );
 }
 
 _id_11272()
@@ -219,7 +219,7 @@ _id_11272()
     self._id_11277 = 1;
     scripts\engine\utility::allow_usability( 0 );
     scripts\mp\powers::_id_D729();
-    scripts\mp\utility::_id_1C47( 0 );
+    scripts\mp\utility::allow_gesture( 0 );
 }
 
 _id_11273( var_0 )
@@ -230,7 +230,7 @@ _id_11273( var_0 )
         {
             scripts\engine\utility::allow_usability( 1 );
             scripts\mp\powers::_id_D72F();
-            scripts\mp\utility::_id_1C47( 1 );
+            scripts\mp\utility::allow_gesture( 1 );
         }
     }
 
@@ -255,21 +255,21 @@ _id_11271( var_0, var_1, var_2 )
     var_3 setotherent( self );
     var_3 setmodel( "super_trophy_mp_wm" );
     var_3 setnodeploy( 1 );
-    var_3 _meth_8549();
-    var_3 _meth_8594();
+    var_3 scriptmoveroutline();
+    var_3 scriptmoverthermal();
     var_3.owner = self;
     var_3.team = var_3.owner.team;
     var_3.super = "super_supertrophy";
     var_3.weapon_name = "super_trophy_mp";
     var_3.planted = 1;
-    var_3.markeduioff = [];
-    var_3.markeduion = [];
-    var_3._id_1E2D = 10;
+    var_3._id_B373 = [];
+    var_3._id_B374 = [];
+    var_3.ammo = 10;
     supertrophy_addtoarrays( var_3, self );
     var_3 thread _id_1126D();
     var_3 thread _id_1126E();
     var_3.killcament = _id_1126F( var_3 );
-    var_3._id_69DA = supertrophy_createexplosion( var_3 );
+    var_3.explosion = supertrophy_createexplosion( var_3 );
     var_4 = scripts\mp\utility::_hasperk( "specialty_rugged_eqp" );
     var_5 = scripts\engine\utility::ter_op( var_4, 475, 399 );
     var_6 = scripts\engine\utility::ter_op( var_4, "hitequip", "" );
@@ -280,7 +280,7 @@ _id_11271( var_0, var_1, var_2 )
 
     var_3 thread _id_11299();
     self._id_11293 = undefined;
-    scripts\mp\supers::_id_DE3B( 9999000 );
+    scripts\mp\supers::reducesuperusepercent( 9999000 );
     level thread scripts\mp\battlechatter_mp::saytoself( self, "plr_perk_trophy", undefined, 0.75 );
     scripts\mp\utility::printgameaction( "supertrophy placed", self );
 }
@@ -346,7 +346,7 @@ _id_1129F()
     if ( !isdefined( level.mines ) )
         level.mines = [];
 
-    var_0 = scripts\mp\trophy_system::_id_12804();
+    var_0 = scripts\mp\trophy_system::trophy_castcontents();
 
     for (;;)
     {
@@ -388,9 +388,9 @@ _id_1129F()
                 self.objstruct thread supertrophy_setobjectivefiring();
 
             thread _id_1128E( var_5 );
-            self._id_1E2D--;
+            self.ammo--;
 
-            if ( self._id_1E2D <= 0 )
+            if ( self.ammo <= 0 )
             {
                 thread _id_11274();
                 return;
@@ -410,8 +410,8 @@ _id_1128E( var_0 )
     var_0 setcandamage( 0 );
     var_0.exploding = 1;
     var_0 stopsounds();
-    scripts\mp\trophy_system::_id_12821( var_0 );
-    scripts\mp\trophy_system::_id_12817( var_0, "super_trophy_mp", self.owner );
+    scripts\mp\trophy_system::trophy_startcooldownlist( var_0 );
+    scripts\mp\trophy_system::trophy_notifytrophytargetowner( var_0, "super_trophy_mp", self.owner );
     var_1 = var_0.origin;
     var_2 = var_0.angles;
 
@@ -425,7 +425,7 @@ _id_1128E( var_0 )
     var_3 = supertrophy_getbesttag( var_1 );
     var_4 = supertrophy_getpartbytag( var_3 );
     self setscriptablepartstate( var_4, "active", 0 );
-    self._id_69DA thread supertrophy_explode( var_1, var_2 );
+    self.explosion thread supertrophy_explode( var_1, var_2 );
 }
 
 _id_1129E()
@@ -436,9 +436,9 @@ _id_1129E()
 
     for (;;)
     {
-        var_1 = scripts\mp\utility::_id_807C( self.origin, 256, undefined );
+        var_1 = scripts\mp\utility::getplayersinradius( self.origin, 256, undefined );
 
-        foreach ( var_3 in self.markeduioff )
+        foreach ( var_3 in self._id_B373 )
         {
             if ( !_id_1127E( var_3 ) )
                 continue;
@@ -471,7 +471,7 @@ _id_1129E()
 
         var_1 = scripts\mp\weapons::getempdamageents( self.origin, 256 );
 
-        foreach ( var_3 in self.markeduioff )
+        foreach ( var_3 in self._id_B373 )
         {
             if ( _id_1127E( var_3 ) )
                 continue;
@@ -541,7 +541,7 @@ _id_11285( var_0, var_1 )
             if ( !var_0 scripts\mp\utility::_hasperk( "specialty_empimmune" ) )
             {
                 var_0 scripts\mp\killstreaks\emp_common::_id_20C3();
-                scripts\mp\gamescore::_id_11ACE( self.owner, var_0, "super_trophy_mp" );
+                scripts\mp\gamescore::trackdebuffassist( self.owner, var_0, "super_trophy_mp" );
                 var_1.empd = 1;
             }
         }
@@ -572,9 +572,9 @@ supertrophy_persempplayereffectsstun( var_0, var_1 )
 {
     var_0 endon( "death" );
     var_0 endon( "disconnect" );
-    var_0 scripts\mp\weapons::_id_F7FC();
+    var_0 scripts\mp\weapons::setplayerstunned();
     wait( var_1 );
-    var_0 scripts\mp\weapons::_id_F800();
+    var_0 scripts\mp\weapons::setplayerunstunned();
 }
 
 _id_11282( var_0 )
@@ -611,7 +611,7 @@ _id_11270()
 {
     var_0 = spawnstruct();
     var_0.owner = self.owner;
-    var_0._id_12802 = self;
+    var_0.trophy = self;
     var_0.id = scripts\mp\objidpoolmanager::requestminimapid( 1 );
 
     if ( var_0.id == -1 )
@@ -631,13 +631,13 @@ _id_11275()
 
 supertrophy_monitorobjective()
 {
-    self._id_12802 endon( "death" );
+    self.trophy endon( "death" );
     self.owner endon( "disconnect" );
     self endon( "returnMinimapID" );
     self notify( "superTrophy_monitorObjective" );
     self endon( "superTrophy_monitorObjective" );
 
-    while ( isdefined( self.owner ) && isdefined( self._id_12802 ) )
+    while ( isdefined( self.owner ) && isdefined( self.trophy ) )
     {
         if ( scripts\mp\utility::istrue( self.firingstate ) )
         {
@@ -744,7 +744,7 @@ _id_11286( var_0, var_1, var_2, var_3, var_4 )
 _id_11269( var_0 )
 {
     var_1 = var_0 getentitynumber();
-    self.markeduioff[var_1] = var_0;
+    self._id_B373[var_1] = var_0;
 }
 
 _id_11292( var_0, var_1 )
@@ -752,13 +752,13 @@ _id_11292( var_0, var_1 )
     if ( !isdefined( var_1 ) )
         var_1 = var_0 getentitynumber();
 
-    self.markeduioff[var_1] = undefined;
+    self._id_B373[var_1] = undefined;
 }
 
 _id_11295( var_0 )
 {
     var_1 = var_0 getentitynumber();
-    return isdefined( self.markeduioff[var_1] );
+    return isdefined( self._id_B373[var_1] );
 }
 
 supertrophy_checkignorelist( var_0 )
@@ -802,7 +802,7 @@ _id_1127E( var_0 )
     if ( scripts\mp\utility::_id_9F22( var_0 ) )
         return 0;
 
-    if ( scripts\mp\utility::_id_9F72( var_0 ) )
+    if ( scripts\mp\utility::isspidergrenade( var_0 ) )
         return 0;
 
     return 1;
@@ -810,7 +810,7 @@ _id_1127E( var_0 )
 
 supertrophy_getbesttag( var_0 )
 {
-    var_1 = level.supertrophy._id_1141B;
+    var_1 = level.supertrophy.tags;
     var_2 = undefined;
     var_3 = undefined;
 
@@ -833,7 +833,7 @@ supertrophy_getbesttag( var_0 )
 
 supertrophy_getpartbytag( var_0 )
 {
-    var_1 = level.supertrophy._id_1141B;
+    var_1 = level.supertrophy.tags;
 
     foreach ( var_4, var_3 in var_1 )
     {

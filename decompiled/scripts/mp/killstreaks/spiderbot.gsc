@@ -97,7 +97,7 @@ _id_13BB0( var_0, var_1 )
     self endon( "web_cut" );
     var_0 waittill( "explode", var_2 );
     var_3 = scripts\engine\utility::spawn_tag_origin();
-    var_3._id_1155F = _id_7F05( var_2, 50, 1, 50 );
+    var_3.targetent = _id_7F05( var_2, 50, 1, 50 );
     var_3.origin = var_2;
     var_4 = scripts\engine\utility::spawn_tag_origin();
     var_4.origin = var_1;
@@ -105,12 +105,12 @@ _id_13BB0( var_0, var_1 )
     self._id_AD32 = var_4;
     self playerlinktoblend( var_4, "tag_origin", 0.5 );
 
-    if ( isdefined( var_3._id_1155F ) && isplayer( var_3._id_1155F ) )
+    if ( isdefined( var_3.targetent ) && isplayer( var_3.targetent ) )
     {
-        var_3 linkto( var_3._id_1155F );
+        var_3 linkto( var_3.targetent );
         thread _id_13B79( var_3 );
 
-        for ( var_5 = 0.5; distance2dsquared( var_4.origin, var_3.origin ) > 400 || !isdefined( var_3._id_1155F ); var_5 = max( 0.05, var_5 ) )
+        for ( var_5 = 0.5; distance2dsquared( var_4.origin, var_3.origin ) > 400 || !isdefined( var_3.targetent ); var_5 = max( 0.05, var_5 ) )
         {
             var_4 rotateto( vectortoangles( var_3.origin - var_4.origin ), 0.3 );
             var_4 moveto( var_3.origin, var_5 );
@@ -131,8 +131,8 @@ _id_13B79( var_0 )
 {
     var_0 endon( "death" );
     self endon( "detonate_spiderbot" );
-    var_0._id_1155F scripts\engine\utility::waittill_any( "phase_shift_power_activated", "rewind_activated", "powers_teleport_used", "powers_transponder_used", "orbital_deployment_action", "death", "disconnect" );
-    var_0._id_1155F = undefined;
+    var_0.targetent scripts\engine\utility::waittill_any( "phase_shift_power_activated", "rewind_activated", "powers_teleport_used", "powers_transponder_used", "orbital_deployment_action", "death", "disconnect" );
+    var_0.targetent = undefined;
 }
 
 _id_13AD8( var_0, var_1 )
@@ -256,7 +256,7 @@ _id_38C1( var_0, var_1, var_2, var_3, var_4 )
 {
     var_5 = var_0.origin;
     var_6 = distance2dsquared( var_1, var_5 );
-    return var_6 < var_2 && ( !var_3 || scripts\mp\weapons::_id_13C7E( var_1, var_5, var_4, var_0 ) );
+    return var_6 < var_2 && ( !var_3 || scripts\mp\weapons::weapondamagetracepassed( var_1, var_5, var_4, var_0 ) );
 }
 
 _id_511C( var_0, var_1 )

@@ -8,7 +8,7 @@ flares_monitor( var_0 )
     thread ks_laserguidedmissile_handleincoming();
 }
 
-_id_6EAE( var_0 )
+flares_playfx( var_0 )
 {
     var_1 = "tag_origin";
 
@@ -27,18 +27,18 @@ _id_6EAE( var_0 )
     }
 }
 
-_id_6EA0()
+flares_deploy()
 {
     var_0 = spawn( "script_origin", self.origin + ( 0, 0, -256 ) );
     var_0.angles = self.angles;
     var_0 movegravity( ( 0, 0, -1 ), 5.0 );
     self.flareslive[self.flareslive.size] = var_0;
-    var_0 thread _id_6E9F( 5.0, 2.0, self );
+    var_0 thread flares_deleteaftertime( 5.0, 2.0, self );
     playsoundatpos( var_0.origin, "veh_helo_flares_npc" );
     return var_0;
 }
 
-_id_6E9F( var_0, var_1, var_2 )
+flares_deleteaftertime( var_0, var_1, var_2 )
 {
     if ( isdefined( var_1 ) && isdefined( var_2 ) )
     {
@@ -67,8 +67,8 @@ flares_areavailable( var_0 )
 flares_getflarereserve( var_0 )
 {
     var_0.flaresreservecount--;
-    var_0 thread _id_6EAE();
-    var_1 = var_0 _id_6EA0();
+    var_0 thread flares_playfx();
+    var_1 = var_0 flares_deploy();
     return var_1;
 }
 
@@ -143,7 +143,7 @@ ks_laserguidedmissile_monitorproximity( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_6EAA( var_0 )
+flares_handleincomingsam( var_0 )
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -164,11 +164,11 @@ _id_6EAA( var_0 )
             continue;
         }
 
-        level thread _id_6EB1( var_1, var_1.team, var_3, var_2 );
+        level thread flares_watchsamproximity( var_1, var_1.team, var_3, var_2 );
     }
 }
 
-_id_6EB1( var_0, var_1, var_2, var_3 )
+flares_watchsamproximity( var_0, var_1, var_2, var_3 )
 {
     level endon( "game_ended" );
     var_2 endon( "death" );
@@ -191,8 +191,8 @@ _id_6EB1( var_0, var_1, var_2, var_3 )
                 if ( var_5[var_6] < 4000 && var_2.flaresreservecount > 0 )
                 {
                     var_2.flaresreservecount--;
-                    var_2 thread _id_6EAE();
-                    var_7 = var_2 _id_6EA0();
+                    var_2 thread flares_playfx();
+                    var_7 = var_2 flares_deploy();
 
                     for ( var_8 = 0; var_8 < var_3.size; var_8++ )
                     {
@@ -212,7 +212,7 @@ _id_6EB1( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_6EAB( var_0, var_1 )
+flares_handleincomingstinger( var_0, var_1 )
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -233,11 +233,11 @@ _id_6EAB( var_0, var_1 )
             continue;
         }
 
-        var_3 thread _id_6EB2( var_2, var_2.team, var_4, var_1 );
+        var_3 thread flares_watchstingerproximity( var_2, var_2.team, var_4, var_1 );
     }
 }
 
-_id_6EB2( var_0, var_1, var_2, var_3 )
+flares_watchstingerproximity( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
 
@@ -252,8 +252,8 @@ _id_6EB2( var_0, var_1, var_2, var_3 )
         if ( var_5 < 4000 && var_2.flaresreservecount > 0 )
         {
             var_2.flaresreservecount--;
-            var_2 thread _id_6EAE( var_3 );
-            var_6 = var_2 _id_6EA0();
+            var_2 thread flares_playfx( var_3 );
+            var_6 = var_2 flares_deploy();
             self missile_settargetent( var_6 );
             self notify( "missile_pairedWithFlare" );
             return;
@@ -263,7 +263,7 @@ _id_6EB2( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_A730( var_0, var_1, var_2, var_3 )
+ks_setup_manual_flares( var_0, var_1, var_2, var_3 )
 {
     self.flaresreservecount = var_0;
     self.flareslive = [];
@@ -271,11 +271,11 @@ _id_A730( var_0, var_1, var_2, var_3 )
     if ( isdefined( var_2 ) )
         self.owner setclientomnvar( var_2, var_0 );
 
-    thread _id_A72F( var_1, var_2 );
-    thread _id_A72D( var_3 );
+    thread ks_manualflares_watchuse( var_1, var_2 );
+    thread ks_manualflares_handleincoming( var_3 );
 }
 
-_id_A72F( var_0, var_1 )
+ks_manualflares_watchuse( var_0, var_1 )
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -301,7 +301,7 @@ _id_A72F( var_0, var_1 )
     }
 }
 
-_id_A72D( var_0 )
+ks_manualflares_handleincoming( var_0 )
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -337,12 +337,12 @@ _id_A72D( var_0 )
         foreach ( var_7 in var_1 )
         {
             if ( isvalidmissile( var_7 ) )
-                thread _id_A72E( var_7 );
+                thread ks_manualflares_monitorproximity( var_7 );
         }
     }
 }
 
-_id_A72E( var_0 )
+ks_manualflares_monitorproximity( var_0 )
 {
     self endon( "death" );
     var_0 endon( "death" );

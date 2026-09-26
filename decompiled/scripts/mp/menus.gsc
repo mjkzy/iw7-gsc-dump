@@ -189,7 +189,7 @@ watchforclasschange()
                 preloadandqueueclass( var_3 );
 
                 if ( scripts\mp\class::shouldallowinstantclassswap() )
-                    scripts\mp\class::giveloadoutswap();
+                    scripts\mp\class::_id_837A();
                 else if ( isalive( self ) )
                     self iprintlnbold( game["strings"]["change_class"] );
             }
@@ -758,7 +758,7 @@ _id_13A6B()
                 {
                     var_2 = level.archetypes[self._id_E535.rigindex];
                     var_3 = level._id_11264[self._id_E535._id_11261];
-                    var_4 = level._id_CA5E[self._id_E535._id_11B2D];
+                    var_4 = level.perksbyid[self._id_E535._id_11B2D];
                     scripts\mp\class::changearchetype( var_2, var_3, var_4 );
                 }
                 else

@@ -21,7 +21,7 @@ init()
     level.balldronesettings["ball_drone_radar"].vodestroyed = "nowl_destroyed";
     level.balldronesettings["ball_drone_radar"].votimedout = "nowl_gone";
     level.balldronesettings["ball_drone_radar"].scorepopup = "destroyed_ball_drone_radar";
-    level.balldronesettings["ball_drone_radar"].playfxcallback = ::_id_DBD4;
+    level.balldronesettings["ball_drone_radar"].playfxcallback = ::radarbuddyplayfx;
     level.balldronesettings["ball_drone_radar"].fxid_light1 = [];
     level.balldronesettings["ball_drone_radar"].fxid_light2 = [];
     level.balldronesettings["ball_drone_radar"].fxid_light3 = [];
@@ -53,8 +53,8 @@ init()
     level.balldronesettings["ball_drone_backup"].votimedout = "ball_drone_backup_timeout";
     level.balldronesettings["ball_drone_backup"].scorepopup = "destroyed_ball_drone";
     level.balldronesettings["ball_drone_backup"].weaponinfo = "ball_drone_gun_mp";
-    level.balldronesettings["ball_drone_backup"]._id_13CA8 = "veh_mil_air_un_pocketdrone_gun_mp";
-    level.balldronesettings["ball_drone_backup"].weaponswitchendednuke = "tag_turret";
+    level.balldronesettings["ball_drone_backup"].weaponmodel = "veh_mil_air_un_pocketdrone_gun_mp";
+    level.balldronesettings["ball_drone_backup"].weapontag = "tag_turret";
     level.balldronesettings["ball_drone_backup"].sound_weapon = "weap_p99_fire_npc";
     level.balldronesettings["ball_drone_backup"].sound_targeting = "ball_drone_targeting";
     level.balldronesettings["ball_drone_backup"].sound_lockon = "ball_drone_lockon";
@@ -65,7 +65,7 @@ init()
     level.balldronesettings["ball_drone_backup"].pausemin = 0.3;
     level.balldronesettings["ball_drone_backup"].pausemax = 1.3;
     level.balldronesettings["ball_drone_backup"].lockontime = 0.075;
-    level.balldronesettings["ball_drone_backup"].playfxcallback = ::_id_273C;
+    level.balldronesettings["ball_drone_backup"].playfxcallback = ::backupbuddyplayfx;
     level.balldronesettings["ball_drone_backup"].fxid_light1 = [];
     level.balldronesettings["ball_drone_backup"].fxid_light1["enemy"] = loadfx( "vfx/core/mp/killstreaks/vfx_light_detonator_blink" );
     level.balldronesettings["ball_drone_backup"].fxid_light1["friendly"] = loadfx( "vfx/misc/light_mine_blink_friendly" );
@@ -158,7 +158,7 @@ useballdrone( var_0, var_1 )
 
     self.balldrone = var_3;
     thread startballdrone( var_3 );
-    self.balldrone thread _id_CA50();
+    self.balldrone thread perkengineer_manageminimap();
     var_4 = level.balldronesettings[var_0].teamsplash;
     var_5 = scripts\mp\killstreak_loot::getrarityforlootitem( var_1.variantid );
 
@@ -240,19 +240,19 @@ createballdrone( var_0, var_1 )
     var_14.team = self.team;
     var_14.balldronetype = var_0;
     var_14.combatmode = "ASSAULT";
-    var_14._id_4C08 = var_12;
+    var_14.currentstring = var_12;
     var_14.streakinfo = var_1;
     var_14 vehicle_setspeed( var_14.speed, 16, 16 );
     var_14 setyawspeed( 120, 90 );
     var_14 setneargoalnotifydist( 16 );
     var_14 sethoverparams( 30, 10, 5 );
-    var_14 _meth_856A( 50, 1.3, 30, 20 );
+    var_14 setdroneturnparams( 50, 1.3, 30, 20 );
     var_14 setotherent( self );
-    var_14 _meth_84E1( 1 );
-    var_14 _meth_84E0( 1 );
+    var_14 vehicle_invoketriggers( 1 );
+    var_14 vehicle_breakglass( 1 );
     var_14.useobj = spawn( "script_model", var_14.origin );
     var_14.useobj linkto( var_14, "tag_origin" );
-    var_14 scripts\mp\killstreaks\utility::_id_1843( var_14.balldronetype, "Killstreak_Ground", var_14.owner, 1 );
+    var_14 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_14.balldronetype, "Killstreak_Ground", var_14.owner, 1 );
 
     if ( level.teambased )
         var_14 scripts\mp\entityheadicons::setteamheadicon( var_14.team, ( 0, 0, 25 ) );
@@ -272,18 +272,18 @@ createballdrone( var_0, var_1 )
             var_17 makeportableradar( self );
             var_14.radar = var_17;
             var_14 thread radarmover();
-            var_14._id_1E2D = 99999;
-            var_14._id_37C5 = distance( var_14.origin, var_14 gettagorigin( "camera_jnt" ) );
-            var_14 thread scripts\mp\trophy_system::_id_1282B();
+            var_14.ammo = 99999;
+            var_14.cameraoffset = distance( var_14.origin, var_14 gettagorigin( "camera_jnt" ) );
+            var_14 thread scripts\mp\trophy_system::trophy_watchprotection();
             var_14 thread balldrone_handledamage();
             break;
         case "ball_drone_backup":
             var_14 setyawspeed( 150, 90 );
-            var_14 _meth_856A( 100, 1.3, 30, 20 );
+            var_14 setdroneturnparams( 100, 1.3, 30, 20 );
             var_14.followspeed = 140;
-            var_18 = spawnturret( "misc_turret", var_14 gettagorigin( level.balldronesettings[var_0].weaponswitchendednuke ), level.balldronesettings[var_0].weaponinfo );
-            var_18 linkto( var_14, level.balldronesettings[var_0].weaponswitchendednuke );
-            var_18 setmodel( level.balldronesettings[var_0]._id_13CA8 );
+            var_18 = spawnturret( "misc_turret", var_14 gettagorigin( level.balldronesettings[var_0].weapontag ), level.balldronesettings[var_0].weaponinfo );
+            var_18 linkto( var_14, level.balldronesettings[var_0].weapontag );
+            var_18 setmodel( level.balldronesettings[var_0].weaponmodel );
             var_18.angles = var_14.angles;
             var_18.owner = var_14.owner;
             var_18.team = self.team;
@@ -309,7 +309,7 @@ createballdrone( var_0, var_1 )
             var_18 setbottomarc( 50 );
             var_18 thread balldrone_attacktargets();
             var_18 setturretminimapvisible( 1, "buddy_turret" );
-            var_18 _meth_82C8( 0.8 );
+            var_18 setconvergenceheightpercent( 0.8 );
             var_20 = var_14.origin + ( anglestoforward( var_14.angles ) * -10 + anglestoright( var_14.angles ) * -10 ) + ( 0, 0, 6 );
             var_18.killcament = spawn( "script_model", var_20 );
             var_18.killcament setscriptmoverkillcam( "explosive" );
@@ -325,9 +325,9 @@ createballdrone( var_0, var_1 )
         case "alien_ball_drone_1":
         case "alien_ball_drone":
         case "ball_drone_eng_lethal":
-            var_18 = spawnturret( "misc_turret", var_14 gettagorigin( level.balldronesettings[var_0].weaponswitchendednuke ), level.balldronesettings[var_0].weaponinfo );
-            var_18 linkto( var_14, level.balldronesettings[var_0].weaponswitchendednuke );
-            var_18 setmodel( level.balldronesettings[var_0]._id_13CA8 );
+            var_18 = spawnturret( "misc_turret", var_14 gettagorigin( level.balldronesettings[var_0].weapontag ), level.balldronesettings[var_0].weaponinfo );
+            var_18 linkto( var_14, level.balldronesettings[var_0].weapontag );
+            var_18 setmodel( level.balldronesettings[var_0].weaponmodel );
             var_18.angles = var_14.angles;
             var_18.owner = var_14.owner;
             var_18.team = self.team;
@@ -352,7 +352,7 @@ createballdrone( var_0, var_1 )
             var_18 setbottomarc( 50 );
             var_18 thread balldrone_attacktargets();
             var_18 setturretminimapvisible( 1, "buddy_turret" );
-            var_18 _meth_82C8( 0.8 );
+            var_18 setconvergenceheightpercent( 0.8 );
             var_20 = var_14.origin + ( anglestoforward( var_14.angles ) * -10 + anglestoright( var_14.angles ) * -10 ) + ( 0, 0, 10 );
             var_18.killcament = spawn( "script_model", var_20 );
             var_18.killcament setscriptmoverkillcam( "explosive" );
@@ -386,7 +386,7 @@ createballdrone( var_0, var_1 )
     var_14 thread balldrone_watchroundend();
     var_14 thread _id_27E1();
     var_21 = spawnstruct();
-    var_21._id_13139 = 1;
+    var_21.validateaccuratetouching = 1;
     var_21.deathoverridecallback = ::balldrone_moving_platform_death;
     var_14 thread scripts\mp\movers::handle_moving_platforms( var_21 );
 
@@ -483,7 +483,7 @@ _id_27E1()
     self [[ var_0.playfxcallback ]]();
 }
 
-_id_273C( var_0, var_1 )
+backupbuddyplayfx( var_0, var_1 )
 {
     self setscriptablepartstate( "lights", "idle", 0 );
     self setscriptablepartstate( "dust", "active", 0 );
@@ -494,7 +494,7 @@ _id_151B( var_0, var_1 )
     self setscriptablepartstate( "lights", "idle", 0 );
 }
 
-_id_DBD4( var_0, var_1 )
+radarbuddyplayfx( var_0, var_1 )
 {
     self setscriptablepartstate( "lights", "idle", 0 );
 }
@@ -591,7 +591,7 @@ startballdrone( var_0 )
     }
 
     var_1 = balldrone_gettargetoffset( var_0, self );
-    var_0 _meth_85C6( self, var_1, 16, 10 );
+    var_0 setdronegoalent( self, var_1, 16, 10 );
     var_0 vehicle_setspeed( var_0.speed, 10, 10 );
 
     if ( var_0.balldronetype == "ball_drone_backup" )
@@ -646,7 +646,7 @@ balldrone_followplayer()
 
             self._id_A8F2 = var_0;
             var_1 = balldrone_gettargetoffset( self, self.owner );
-            self _meth_85C6( self.owner, var_1, 16, 10 );
+            self setdronegoalent( self.owner, var_1, 16, 10 );
         }
 
         wait 0.5;
@@ -688,7 +688,7 @@ balldrone_watchfornearbytargets()
         var_0 = self.turret getturrettarget( 1 );
         balldrone_guardlocation();
         var_1 = balldrone_gettargetoffset( self, var_0 );
-        self _meth_85C6( var_0, var_1, 16, 10 );
+        self setdronegoalent( var_0, var_1, 16, 10 );
         self._id_2525 = 1;
         thread _id_13B79( var_0, self.origin, 1 );
         self waittill( "disengage_target" );
@@ -710,7 +710,7 @@ getvalidenemylist()
         if ( !scripts\mp\utility::isreallyalive( var_2 ) )
             continue;
 
-        if ( var_2 _meth_8181( "specialty_blindeye" ) )
+        if ( var_2 hasperk( "specialty_blindeye" ) )
             continue;
 
         var_0[var_0.size] = var_2;
@@ -754,7 +754,7 @@ balldrone_patrollevel()
     for (;;)
     {
         var_2 = findnewpatrolpoint( level.balldronepathnodes );
-        self _meth_82D9( var_2 );
+        self setdronegoalpos( var_2 );
         self waittill( "near_goal" );
     }
 }
@@ -769,7 +769,7 @@ findnewpatrolpoint( var_0 )
 
     foreach ( var_10, var_6 in var_3 )
     {
-        if ( isdefined( self._id_4BF7 ) && var_6 == self._id_4BF7 )
+        if ( isdefined( self.currentnode ) && var_6 == self.currentnode )
             continue;
 
         if ( scripts\mp\utility::istrue( var_6.used ) && var_10 == var_3.size - 1 )
@@ -796,14 +796,14 @@ findnewpatrolpoint( var_0 )
 
     if ( scripts\mp\utility::istrue( var_2 ) )
     {
-        self._id_4BF7 = self.initialvalidnode;
+        self.currentnode = self.initialvalidnode;
         var_2 = 0;
     }
     else
-        self._id_4BF7 = var_12;
+        self.currentnode = var_12;
 
-    self._id_4BF7.used = 1;
-    return self._id_4BF7.origin + ( 0, 0, 80 );
+    self.currentnode.used = 1;
+    return self.currentnode.origin + ( 0, 0, 80 );
 }
 
 _id_27E7()
@@ -816,7 +816,7 @@ _id_27E7()
     for (;;)
     {
         self.owner waittill( "damage", var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13 );
-        var_9 = scripts\mp\utility::_id_13CA1( var_9, var_13 );
+        var_9 = scripts\mp\utility::weaponmap( var_9, var_13 );
 
         if ( scripts\mp\utility::istrue( self._id_2525 ) )
             continue;
@@ -836,7 +836,7 @@ _id_27E7()
         self notify( "player_defend" );
         self._id_A8F2 = undefined;
         var_14 = balldrone_gettargetoffset( self, var_1 );
-        self _meth_85C6( var_1, var_14, 16, 10 );
+        self setdronegoalent( var_1, var_14, 16, 10 );
         self._id_2525 = 1;
         thread _id_13B79( var_1, undefined, 1 );
         break;
@@ -872,7 +872,7 @@ _id_27EA()
         self notify( "target_assist" );
         self._id_A8F2 = undefined;
         var_10 = balldrone_gettargetoffset( self, var_0 );
-        self _meth_85C6( var_0, var_10, 16, 10 );
+        self setdronegoalent( var_0, var_10, 16, 10 );
         self._id_2525 = 1;
         thread _id_13B79( var_0, undefined, 1 );
         break;
@@ -942,7 +942,7 @@ _id_27E8()
 balldrone_guardlocation()
 {
     self.stoppedatlocation = 1;
-    self _meth_82D9( self.origin );
+    self setdronegoalpos( self.origin );
 }
 
 balldrone_seekclosesttarget()
@@ -960,7 +960,7 @@ balldrone_seekclosesttarget()
     if ( isdefined( var_1 ) && var_1.size > 0 )
     {
         var_2 = balldrone_gettargetoffset( self, var_1[0] );
-        self _meth_85C6( var_1[0], var_2, 16, 10 );
+        self setdronegoalent( var_1[0], var_2, 16, 10 );
         thread _id_13B79( var_1[0] );
         self waittill( "disengage_target" );
         balldrone_guardlocation();
@@ -976,7 +976,7 @@ balldrone_watchkamikazeinterrupt()
     for (;;)
     {
         self waittill( "damage", var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13, var_14 );
-        var_10 = scripts\mp\utility::_id_13CA1( var_10, var_14 );
+        var_10 = scripts\mp\utility::weaponmap( var_10, var_14 );
 
         if ( isdefined( var_2 ) )
         {
@@ -1022,7 +1022,7 @@ _id_27DF()
     self notify( "ballDrone_moveToPlayer" );
     self endon( "ballDrone_moveToPlayer" );
     var_0 = balldrone_gettargetoffset( self, self.owner );
-    self _meth_85C6( self.owner, var_0, 16, 10 );
+    self setdronegoalent( self.owner, var_0, 16, 10 );
     self.intransit = 1;
     thread balldrone_watchforgoal();
 }
@@ -1034,7 +1034,7 @@ balldrone_watchmodeswitch()
     self endon( "leaving" );
     self.owner endon( "disconnect" );
     self endon( "owner_gone" );
-    self.useobj scripts\mp\killstreaks\utility::_id_F774( self.owner, self._id_4C08, 360, 360, 30000, 30000, 3 );
+    self.useobj scripts\mp\killstreaks\utility::setkillstreakcontrolpriority( self.owner, self.currentstring, 360, 360, 30000, 30000, 3 );
 
     for (;;)
     {
@@ -1049,7 +1049,7 @@ balldrone_watchmodeswitch()
         if ( isdefined( self.owner.disabledusability ) && self.owner.disabledusability > 0 )
             continue;
 
-        if ( scripts\mp\utility::_id_9FAE( self.owner ) )
+        if ( scripts\mp\utility::istouchingboundstrigger( self.owner ) )
             continue;
 
         var_1 = 0;
@@ -1104,8 +1104,8 @@ balldrone_watchmodeswitch()
 
                 self.useobj makeunusable();
                 scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 1 );
-                self._id_4C08 = var_2;
-                self.useobj scripts\mp\killstreaks\utility::_id_F774( self.owner, self._id_4C08, 360, 360, 30000, 30000, 3 );
+                self.currentstring = var_2;
+                self.useobj scripts\mp\killstreaks\utility::setkillstreakcontrolpriority( self.owner, self.currentstring, 360, 360, 30000, 30000, 3 );
                 break;
             }
 
@@ -1189,14 +1189,14 @@ low_entries_watcher()
             while ( self istouching( var_2 ) || self.owner istouching( var_2 ) )
             {
                 if ( isdefined( var_2.script_parameters ) )
-                    self._id_B0C9 = float( var_2.script_parameters );
+                    self.low_entry = float( var_2.script_parameters );
                 else
-                    self._id_B0C9 = 0.5;
+                    self.low_entry = 0.5;
 
                 wait 0.1;
             }
 
-            self._id_B0C9 = undefined;
+            self.low_entry = undefined;
         }
 
         wait 0.1;
@@ -1274,10 +1274,10 @@ balldrone_leave()
     balldroneexplode();
 }
 
-_id_CA50()
+perkengineer_manageminimap()
 {
     var_0 = "icon_minimap_vulture_enemy";
-    self._id_6569 = createobjective_engineer( var_0, 1, 1 );
+    self.enemyobjid = createobjective_engineer( var_0, 1, 1 );
 
     foreach ( var_2 in level.players )
     {
@@ -1286,8 +1286,8 @@ _id_CA50()
 
         if ( var_2 scripts\mp\utility::_hasperk( "specialty_engineer" ) && var_2.team != self.team )
         {
-            if ( self._id_6569 != -1 )
-                scripts\mp\objidpoolmanager::minimap_objective_playermask_showto( self._id_6569, var_2 getentitynumber() );
+            if ( self.enemyobjid != -1 )
+                scripts\mp\objidpoolmanager::minimap_objective_playermask_showto( self.enemyobjid, var_2 getentitynumber() );
         }
     }
 }
@@ -1329,7 +1329,7 @@ balldrone_backup_handledamage()
     for (;;)
     {
         self waittill( "damage", var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13 );
-        var_9 = scripts\mp\utility::_id_13CA1( var_9, var_13 );
+        var_9 = scripts\mp\utility::weaponmap( var_9, var_13 );
 
         if ( scripts\mp\equipment\phase_shift::isentityphaseshifted( var_1 ) )
             continue;
@@ -1349,7 +1349,7 @@ balldrone_backup_turret_handledamage()
     for (;;)
     {
         self waittill( "damage", var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13 );
-        var_9 = scripts\mp\utility::_id_13CA1( var_9, var_13 );
+        var_9 = scripts\mp\utility::weaponmap( var_9, var_13 );
 
         if ( scripts\mp\equipment\phase_shift::isentityphaseshifted( var_1 ) )
             continue;
@@ -1411,7 +1411,7 @@ handledeathdamage( var_0, var_1, var_2, var_3 )
     if ( isdefined( var_1 ) && var_1 == "concussion_grenade_mp" )
     {
         if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
-            var_0 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+            var_0 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
     }
 }
 
@@ -1523,8 +1523,8 @@ removeballdrone()
         self.turret delete();
     }
 
-    if ( isdefined( self._id_6569 ) )
-        scripts\mp\objidpoolmanager::returnminimapid( self._id_6569 );
+    if ( isdefined( self.enemyobjid ) )
+        scripts\mp\objidpoolmanager::returnminimapid( self.enemyobjid );
 
     if ( isdefined( self.owner ) && isdefined( self.owner.balldrone ) )
         self.owner.balldrone = undefined;
@@ -1553,7 +1553,7 @@ balldrone_attacktargets()
         if ( self isfiringturret() && ( isdefined( self.vehicle.stunned ) && !self.vehicle.stunned ) && ( isdefined( self.vehicle.inactive ) && !self.vehicle.inactive ) )
         {
             self laseron();
-            balldrone_burstfirestop( level.balldronesettings[self.vehicle.balldronetype].lockontime );
+            dolockon( level.balldronesettings[self.vehicle.balldronetype].lockontime );
             thread balldrone_burstfirestart();
             continue;
         }
@@ -1616,7 +1616,7 @@ fire_rocket()
     }
 }
 
-balldrone_burstfirestop( var_0 )
+dolockon( var_0 )
 {
     while ( var_0 > 0 )
     {
@@ -1664,10 +1664,10 @@ canbetargeted( var_0 )
     if ( distancesquared( var_0.origin, self.origin ) > level.balldronesettings[self.vehicle.balldronetype].visual_range_sq )
         return 0;
 
-    if ( isplayer( var_0 ) && scripts\mp\utility::_id_C7A0( self gettagorigin( "tag_flash" ), var_0 geteye() ) )
+    if ( isplayer( var_0 ) && scripts\mp\utility::outlineoccluded( self gettagorigin( "tag_flash" ), var_0 geteye() ) )
         return 0;
 
-    if ( !isplayer( var_0 ) && scripts\mp\utility::_id_C7A0( self gettagorigin( "tag_flash" ), var_0.origin ) )
+    if ( !isplayer( var_0 ) && scripts\mp\utility::outlineoccluded( self gettagorigin( "tag_flash" ), var_0.origin ) )
         return 0;
 
     return var_1;
@@ -1687,8 +1687,8 @@ balldrone_gettargetoffset( var_0, var_1 )
     var_4 = var_2._id_101BA;
     var_5 = var_0 balldrone_movetoplayer( var_2 );
 
-    if ( isdefined( var_0._id_B0C9 ) )
-        var_5 = var_5 * var_0._id_B0C9;
+    if ( isdefined( var_0.low_entry ) )
+        var_5 = var_5 * var_0.low_entry;
 
     var_6 = ( var_4, var_3, var_5 );
     return var_6;

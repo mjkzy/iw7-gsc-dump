@@ -604,19 +604,19 @@ player_unresolved_collision_watch()
     if ( isagent( self ) )
         self endon( "death" );
 
-    self._id_12BE5 = 0;
+    self.unresolved_collision_count = 0;
 
     for (;;)
     {
         self waittill( "unresolved_collision", var_0 );
-        self._id_12BE5++;
-        thread _id_418E();
+        self.unresolved_collision_count++;
+        thread clear_unresolved_collision_count_next_frame();
         var_1 = 3;
 
         if ( isdefined( var_0 ) && isdefined( var_0.unresolved_collision_notify_min ) )
             var_1 = var_0.unresolved_collision_notify_min;
 
-        if ( self._id_12BE5 >= var_1 )
+        if ( self.unresolved_collision_count >= var_1 )
         {
             if ( isdefined( var_0 ) )
             {
@@ -630,18 +630,18 @@ player_unresolved_collision_watch()
             else
                 unresolved_collision_nearest_node( self );
 
-            self._id_12BE5 = 0;
+            self.unresolved_collision_count = 0;
         }
     }
 }
 
-_id_418E()
+clear_unresolved_collision_count_next_frame()
 {
     self endon( "unresolved_collision" );
     scripts\engine\utility::waitframe();
 
     if ( isdefined( self ) )
-        self._id_12BE5 = 0;
+        self.unresolved_collision_count = 0;
 }
 
 unresolved_collision_owner_damage( var_0 )
@@ -680,9 +680,9 @@ unresolved_collision_owner_damage( var_0 )
 
 unresolved_collision_nearest_node( var_0, var_1, var_2 )
 {
-    if ( isdefined( level._id_C81D ) )
+    if ( isdefined( level.override_unresolved_collision ) )
     {
-        self [[ level._id_C81D ]]( var_0, var_1 );
+        self [[ level.override_unresolved_collision ]]( var_0, var_1 );
         return;
     }
 
@@ -755,7 +755,7 @@ get_mover_ents( var_0 )
     return var_1;
 }
 
-_id_12BEE( var_0 )
+unresolved_collision_void( var_0 )
 {
 
 }
@@ -917,7 +917,7 @@ handle_moving_platform_touch( var_0 )
     {
         self waittill( "touching_platform", var_1 );
 
-        if ( isdefined( var_0._id_13139 ) && var_0._id_13139 )
+        if ( isdefined( var_0.validateaccuratetouching ) && var_0.validateaccuratetouching )
         {
             if ( !self istouching( var_1 ) )
             {

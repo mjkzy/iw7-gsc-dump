@@ -23,8 +23,8 @@ dotraverseanim_dlc( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
     self endon( "terminate_ai_threads" );
-    var_4 = self _meth_8148();
-    var_5 = self _meth_8146();
+    var_4 = self getnegotiationstartnode();
+    var_5 = self getnegotiationendpos();
     self.endnode_pos = var_5;
 
     if ( !isdefined( var_4 ) )
@@ -48,14 +48,14 @@ dotraverseanim_dlc( var_0, var_1, var_2, var_3 )
         return;
 
     self.is_traversing = 1;
-    var_7 = scripts\asm\asm_mp::asm_getanim( var_0, var_6 );
+    var_7 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_6 );
     var_8 = var_5 - var_4.origin;
     var_9 = ( var_8[0], var_8[1], 0 );
     var_10 = vectortoangles( var_9 );
     var_11 = issubstr( var_6, "jump_across" );
     var_12 = var_6 == "traverse_boost" && ( self.species == "humanoid" || self.species == "zombie" );
     self scragentsetorientmode( "face angle abs", var_10 );
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     var_13 = self getanimentry( var_6, var_7 );
     var_14 = "flex_height_up_start";
     var_15 = getnotetracktimes( var_13, var_14 );
@@ -116,14 +116,14 @@ dotraverseanim_dlc( var_0, var_1, var_2, var_3 )
     else
         var_27 = getmovedelta( var_13, 0, 1 );
 
-    var_28 = scripts\anim\notetracks_mp::_id_7DC9( var_8, var_27 );
+    var_28 = scripts\anim\notetracks_mp::getanimscalefactors( var_8, var_27 );
     var_29 = animhasnotetrack( var_13, "ignoreanimscaling" );
 
     if ( var_29 )
-        var_28._id_13E2B = 1.0;
+        var_28.xy = 1.0;
 
     self scragentsetphysicsmode( "noclip" );
-    var_30 = self _meth_8145();
+    var_30 = self getnegotiationendnode();
 
     if ( isdefined( var_30 ) && isdefined( var_30.target ) )
     {
@@ -132,50 +132,50 @@ dotraverseanim_dlc( var_0, var_1, var_2, var_3 )
 
         if ( var_19.size > 0 )
         {
-            scripts\anim\notetracks_mp::_id_5AC1( var_6, var_7, var_13, "traverse", var_14, var_18, 0, ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight( var_6, var_7, var_13, "traverse", var_14, var_18, 0, ::zombietraversenotetrackhandler_dlc );
             var_31 = scripts\engine\utility::getstruct( self.endnode.target, "targetname" );
 
             if ( isdefined( var_31.script_noteworthy ) && var_31.script_noteworthy == "continue_flex_height" )
-                scripts\anim\notetracks_mp::_id_5AC1( var_6, var_7, var_13, "traverse", var_18, var_16, 1, ::zombietraversenotetrackhandler_dlc );
+                scripts\anim\notetracks_mp::dotraversalwithflexibleheight( var_6, var_7, var_13, "traverse", var_18, var_16, 1, ::zombietraversenotetrackhandler_dlc );
 
             self scragentsetanimscale( 1.0, 1.0 );
-            scripts\anim\notetracks_mp::_id_CED5( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
         }
         else if ( var_21.size == 0 )
         {
-            scripts\anim\notetracks_mp::_id_5AC1( var_6, var_7, var_13, "traverse", var_14, var_16, 0, ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight( var_6, var_7, var_13, "traverse", var_14, var_16, 0, ::zombietraversenotetrackhandler_dlc );
             self scragentsetanimscale( 1.0, 1.0 );
-            scripts\anim\notetracks_mp::_id_CED5( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
         }
         else if ( var_15.size == 0 )
         {
-            scripts\anim\notetracks_mp::_id_CED5( var_6, var_7, "traverse", "flex_height_down_start", ::zombietraversenotetrackhandler_dlc );
-            scripts\anim\notetracks_mp::_id_5AC1( var_6, var_7, var_13, "traverse", var_20, var_22, 0, ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6, var_7, "traverse", "flex_height_down_start", ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight( var_6, var_7, var_13, "traverse", var_20, var_22, 0, ::zombietraversenotetrackhandler_dlc );
             self scragentsetanimscale( 1.0, 1.0 );
-            scripts\anim\notetracks_mp::_id_CED5( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
         }
         else
         {
             var_32 = scripts\engine\utility::getstruct( self.endnode.target, "targetname" );
             var_31 = var_32.origin;
             var_33 = var_17[0];
-            scripts\anim\notetracks_mp::_id_5AC2( var_6, var_7, "traverse", var_13, var_14, var_16, var_31, var_33, ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight_internal( var_6, var_7, "traverse", var_13, var_14, var_16, var_31, var_33, ::zombietraversenotetrackhandler_dlc );
             var_34 = getanimlength( var_13 );
 
             if ( var_21[0] - var_17[0] >= 0.05 / var_34 )
             {
                 self scragentsetanimscale( 1.0, 1.0 );
-                scripts\anim\notetracks_mp::_id_CED5( var_6, var_7, "traverse", var_20, ::zombietraversenotetrackhandler_dlc );
+                scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6, var_7, "traverse", var_20, ::zombietraversenotetrackhandler_dlc );
             }
 
             var_33 = var_23[0];
             var_35 = getmovedelta( var_13, var_33, 1 );
             var_31 = ( self.endnode.origin[0], self.endnode.origin[1], self.endnode.origin[2] - var_35[2] );
-            scripts\anim\notetracks_mp::_id_5AC2( var_6, var_7, "traverse", var_13, var_20, var_22, var_31, var_33, ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight_internal( var_6, var_7, "traverse", var_13, var_20, var_22, var_31, var_33, ::zombietraversenotetrackhandler_dlc );
             self scragentsetanimscale( 1.0, 1.0 );
 
             if ( var_25.size == 0 || !scripts\engine\utility::is_true( self.dismember_crawl ) )
-                scripts\anim\notetracks_mp::_id_CED5( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
+                scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
         }
 
         self.endnode = undefined;
@@ -183,7 +183,7 @@ dotraverseanim_dlc( var_0, var_1, var_2, var_3 )
     else if ( var_21.size > 0 && var_23.size > 0 && self.agent_type != "zombie_brute" )
     {
         self scragentsetanimscale( 1.0, 1.0 );
-        scripts\anim\notetracks_mp::_id_CED5( var_6, var_7, "traverse", var_20, ::zombietraversenotetrackhandler_dlc );
+        scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6, var_7, "traverse", var_20, ::zombietraversenotetrackhandler_dlc );
         var_33 = var_23[0];
 
         if ( !isdefined( var_30 ) )
@@ -193,10 +193,10 @@ dotraverseanim_dlc( var_0, var_1, var_2, var_3 )
 
         var_35 = getmovedelta( var_13, var_33, 1 );
         var_31 = ( var_31[0], var_31[1], var_31[2] - var_35[2] );
-        scripts\anim\notetracks_mp::_id_5AC2( var_6, var_7, "traverse", var_13, var_20, var_22, var_31, var_33, ::zombietraversenotetrackhandler_dlc );
+        scripts\anim\notetracks_mp::dotraversalwithflexibleheight_internal( var_6, var_7, "traverse", var_13, var_20, var_22, var_31, var_33, ::zombietraversenotetrackhandler_dlc );
 
         if ( var_25.size == 0 || !scripts\engine\utility::is_true( self.dismember_crawl ) )
-            scripts\anim\notetracks_mp::_id_CED5( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6, var_7, "traverse", "end", ::zombietraversenotetrackhandler_dlc );
     }
     else if ( var_11 && abs( var_8[2] ) < 64 )
     {
@@ -210,7 +210,7 @@ dotraverseanim_dlc( var_0, var_1, var_2, var_3 )
         var_36 = var_15[0] * var_34;
         var_37 = var_17[0] * var_34;
         self scragentsetanimscale( 1, 1 );
-        scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse", "flex_across_start" );
+        scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse", "flex_across_start" );
         var_38 = removezfromvec( getmovedelta( var_13, var_15[0], var_17[0] ) );
         var_39 = distance2d( self.origin, var_5 );
         var_40 = getmovedelta( var_13, var_15[0], 1 );
@@ -224,9 +224,9 @@ dotraverseanim_dlc( var_0, var_1, var_2, var_3 )
         var_44 = ( var_42 + var_43 ) / var_43;
         self scragentsetanimscale( var_44, 0 );
         childthread traverse_lerp_z_over_time_dlc( var_4.origin[2], var_5[2], ( var_37 - var_36 ) / self.traverseratescale );
-        scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse", "flex_across_end" );
+        scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse", "flex_across_end" );
         self scragentsetanimscale( 1, 1 );
-        scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse" );
+        scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse" );
     }
     else if ( var_8[2] > 16 )
     {
@@ -234,111 +234,111 @@ dotraverseanim_dlc( var_0, var_1, var_2, var_3 )
         {
             if ( var_12 )
             {
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
+                self scragentsetanimscale( var_28.xy, var_28.z );
                 var_45 = clamp( 2 / var_28.z, 0.5, 1 );
 
                 if ( var_17.size > 0 )
                 {
-                    scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, var_45 * self.traverseratescale, "traverse", var_16 );
+                    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, var_45 * self.traverseratescale, "traverse", var_16 );
                     scripts\anim\notetracks_mp::setstatelocked( 0, "DoTraverse" );
-                    scripts\anim\notetracks_mp::_id_F2B1( var_6, var_7, self.traverseratescale );
-                    scripts\anim\notetracks_mp::_id_1384D( "traverse", "code_move" );
+                    scripts\anim\notetracks_mp::set_anim_state( var_6, var_7, self.traverseratescale );
+                    scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "code_move" );
                 }
                 else
-                    scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse" );
+                    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse" );
 
                 self scragentsetanimscale( 1, 1 );
             }
             else if ( var_15.size > 0 )
             {
-                var_28._id_13E2B = 1;
+                var_28.xy = 1;
                 var_28.z = 1;
 
-                if ( !var_29 && length2dsquared( var_9 ) < 0.64 * length2dsquared( var_27 ) )
-                    var_28._id_13E2B = 0.4;
+                if ( !var_29 && length2dsquared( var_9 ) < 0.64000005 * length2dsquared( var_27 ) )
+                    var_28.xy = 0.4;
 
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
-                scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse", var_14 );
+                self scragentsetanimscale( var_28.xy, var_28.z );
+                scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse", var_14 );
                 var_46 = getmovedelta( var_13, 0, var_15[0] );
                 var_47 = getmovedelta( var_13, 0, var_17[0] );
-                var_28._id_13E2B = 1;
+                var_28.xy = 1;
                 var_28.z = 1;
                 var_48 = var_5 - self.origin;
                 var_49 = var_27 - var_46;
 
                 if ( !var_29 && length2dsquared( var_48 ) < 0.5625 * length2dsquared( var_49 ) )
-                    var_28._id_13E2B = 0.75;
+                    var_28.xy = 0.75;
 
                 var_50 = var_27 - var_47;
-                var_51 = ( var_50[0] * var_28._id_13E2B, var_50[1] * var_28._id_13E2B, var_50[2] * var_28.z );
+                var_51 = ( var_50[0] * var_28.xy, var_50[1] * var_28.xy, var_50[2] * var_28.z );
                 var_52 = rotatevector( var_51, var_10 );
                 var_53 = var_5 - var_52;
                 var_54 = var_47 - var_46;
                 var_55 = rotatevector( var_54, var_10 );
                 var_56 = var_53 - self.origin;
                 var_57 = var_28;
-                var_28 = scripts\anim\notetracks_mp::_id_7DC9( var_56, var_55, 1 );
+                var_28 = scripts\anim\notetracks_mp::getanimscalefactors( var_56, var_55, 1 );
 
                 if ( var_29 )
-                    var_28._id_13E2B = 1.0;
+                    var_28.xy = 1.0;
 
                 if ( var_56[2] <= 0 )
                     var_28.z = 0.0;
 
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
-                scripts\anim\notetracks_mp::_id_1384D( "traverse", var_16 );
+                self scragentsetanimscale( var_28.xy, var_28.z );
+                scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", var_16 );
                 scripts\anim\notetracks_mp::setstatelocked( 0, "DoTraverse" );
                 var_28 = var_57;
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
-                scripts\anim\notetracks_mp::_id_1384D( "traverse", "code_move" );
+                self scragentsetanimscale( var_28.xy, var_28.z );
+                scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "code_move" );
             }
             else
             {
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
-                scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse" );
+                self scragentsetanimscale( var_28.xy, var_28.z );
+                scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse" );
             }
         }
         else
-            scripts\anim\notetracks_mp::_id_5AC1( var_6, var_7, var_13, "traverse", "flex_height_start", "flex_height_end", 1, ::zombietraversenotetrackhandler_dlc );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight( var_6, var_7, var_13, "traverse", "flex_height_start", "flex_height_end", 1, ::zombietraversenotetrackhandler_dlc );
     }
     else if ( abs( var_8[2] ) < 16 || var_27[2] == 0 )
     {
-        self scragentsetanimscale( var_28._id_13E2B, var_28.z );
+        self scragentsetanimscale( var_28.xy, var_28.z );
         var_45 = clamp( 2 / var_28.z, 0.5, 1 );
 
         if ( var_17.size > 0 )
         {
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, var_45 * self.traverseratescale, "traverse", var_16 );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, var_45 * self.traverseratescale, "traverse", var_16 );
             scripts\anim\notetracks_mp::setstatelocked( 0, "DoTraverse" );
-            scripts\anim\notetracks_mp::_id_F2B1( var_6, var_7, self.traverseratescale );
-            scripts\anim\notetracks_mp::_id_1384D( "traverse", "code_move" );
+            scripts\anim\notetracks_mp::set_anim_state( var_6, var_7, self.traverseratescale );
+            scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "code_move" );
         }
         else
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse" );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse" );
 
         self scragentsetanimscale( 1, 1 );
     }
     else if ( var_27[2] < 0 )
     {
-        self scragentsetanimscale( var_28._id_13E2B, var_28.z );
+        self scragentsetanimscale( var_28.xy, var_28.z );
         var_45 = clamp( 2 / var_28.z, 0.5, 1 );
 
         if ( var_15.size > 0 )
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse", var_14 );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse", var_14 );
 
         if ( var_17.size > 0 )
         {
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, var_45 * 1.0, "traverse", var_16 );
-            scripts\anim\notetracks_mp::_id_F2B1( var_6, var_7, self.traverseratescale );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, var_45 * 1.0, "traverse", var_16 );
+            scripts\anim\notetracks_mp::set_anim_state( var_6, var_7, self.traverseratescale );
 
             if ( animhasnotetrack( var_13, "removestatelock" ) )
-                scripts\anim\notetracks_mp::_id_1384D( "traverse", "removestatelock" );
+                scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "removestatelock" );
 
             scripts\anim\notetracks_mp::setstatelocked( 0, "DoTraverse" );
-            scripts\anim\notetracks_mp::_id_1384D( "traverse", "code_move" );
+            scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "code_move" );
         }
         else
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, 1.0, "traverse" );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, 1.0, "traverse" );
 
         self scragentsetanimscale( 1, 1 );
     }
@@ -399,7 +399,7 @@ traverse_lerp_z_over_time_dlc( var_0, var_1, var_2 )
         if ( var_5 > 1.0 )
             break;
 
-        var_6 = scripts\mp\agents\zombie\zombie_util::_id_AB6F( var_5, var_0, var_1 );
+        var_6 = scripts\mp\agents\zombie\zombie_util::lerp( var_5, var_0, var_1 );
         self setorigin( ( self.origin[0], self.origin[1], var_6 ), 0 );
         wait 0.05;
     }
@@ -433,7 +433,7 @@ choosestandingdeathanim_dlc( var_0, var_1, var_2, var_3 )
             return scripts\asm\asm::asm_lookupanimfromalias( var_1, "electrocuted" );
     }
 
-    return _id_0C71::_id_3F00( var_0, var_1, var_2, var_3 );
+    return _id_0C71::choosestandingdeathanim( var_0, var_1, var_2, var_3 );
 }
 
 choosemovingdeathanim_dlc( var_0, var_1, var_2 )
@@ -529,7 +529,7 @@ isdismembermentdisabled( var_0, var_1, var_2, var_3 )
 
 shoulddosharpturn_dlc( var_0, var_1, var_2, var_3 )
 {
-    return _id_0F3B::_id_FFF8( var_0, var_1, var_2, var_3 );
+    return _id_0F3B::shoulddosharpturn( var_0, var_1, var_2, var_3 );
 }
 
 isdiscofeverdone( var_0, var_1, var_2, var_3 )

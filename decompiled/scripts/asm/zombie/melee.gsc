@@ -144,8 +144,8 @@ _id_D543( var_0, var_1, var_2, var_3 )
     else
         playsoundatpos( self gettagorigin( "tag_eye" ), "zmb_clown_pre_explo" );
 
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\anim\notetracks_mp::_id_CED2( var_1, var_4, 2.0, var_1, "explode" );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack( var_1, var_4, 2.0, var_1, "explode" );
 
     if ( isdefined( self.agent_type ) && self.agent_type != "skater" )
         playsoundatpos( self gettagorigin( "tag_eye" ), "zmb_vo_clown_death" );
@@ -162,8 +162,8 @@ _id_D553( var_0, var_1, var_2, var_3 )
     self endon( "terminate_ai_threads" );
     self endon( var_1 + "_finished" );
     self.should_play_transformation_anim = undefined;
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\anim\notetracks_mp::_id_CED5( var_1, var_4, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_1, var_4, var_1 );
 }
 
 _id_6A6A( var_0, var_1 )
@@ -199,7 +199,7 @@ _id_57E5( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     if ( !isdefined( var_7 ) )
         var_7 = 0;
 
-    var_9 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_9 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_10 = self getanimentry( var_1, var_9 );
     var_11 = getanimlength( var_10 );
     var_12 = getnotetracktimes( var_10, "hit" );
@@ -226,8 +226,8 @@ _id_57E5( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     else
         self scragentsetorientmode( "face angle abs", self.angles );
 
-    self _meth_8281( "anim deltas" );
-    scripts\anim\notetracks_mp::_id_F2B1( var_1, var_9, var_6 );
+    self scragentsetanimmode( "anim deltas" );
+    scripts\anim\notetracks_mp::set_anim_state( var_1, var_9, var_6 );
 
     if ( var_7 )
     {
@@ -246,17 +246,17 @@ _id_57E5( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
         {
             var_19 = var_3 - self.origin;
             var_20 = getmovedelta( var_10, var_17[0], var_12[0] );
-            var_21 = scripts\anim\notetracks_mp::_id_7DC9( var_19, var_20 );
-            var_6 = var_6 * clamp( 1 / var_21._id_13E2B, 0.5, 1 );
+            var_21 = scripts\anim\notetracks_mp::getanimscalefactors( var_19, var_20 );
+            var_6 = var_6 * clamp( 1 / var_21.xy, 0.5, 1 );
             var_13 = var_11 / var_6 * var_12[0] - var_11 / var_6 * var_17[0];
-            scripts\anim\notetracks_mp::_id_F2B1( var_1 + "_norestart", var_9, var_6 );
+            scripts\anim\notetracks_mp::set_anim_state( var_1 + "_norestart", var_9, var_6 );
         }
     }
 
     if ( var_4 )
     {
         self scragentsetanimscale( 0, 1 );
-        self _meth_827B( self.origin, var_3, var_13 );
+        self scragentdoanimlerp( self.origin, var_3, var_13 );
         childthread _id_12EC0( var_2, var_13, 1, self._id_B101 );
         scripts\anim\notetracks_mp::setstatelocked( 1, "DoAttack" );
     }
@@ -279,7 +279,7 @@ _id_57E5( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
             self scragentsetorientmode( "face angle abs", self.angles );
     }
 
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetanimscale( 1, 1 );
 
     if ( var_4 )
@@ -311,7 +311,7 @@ _id_57E5( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8 )
     var_23 = var_16 - var_13;
 
     if ( var_23 > 0 )
-        scripts\anim\notetracks_mp::_id_1384D( var_1, "end", var_23 );
+        scripts\anim\notetracks_mp::waituntilnotetrack_safe( var_1, "end", var_23 );
 
     self._id_A9B8 = gettime();
 }
@@ -398,7 +398,7 @@ _id_12EC0( var_0, var_1, var_2, var_3 )
             var_7 = var_4 + vectornormalize( var_9 ) * var_8;
 
         self scragentsetorientmode( "face enemy" );
-        self _meth_827B( self.origin, var_7, var_5 );
+        self scragentdoanimlerp( self.origin, var_7, var_5 );
     }
 }
 
@@ -409,7 +409,7 @@ _id_81F1( var_0, var_1 )
 
     if ( !var_1 )
     {
-        var_2 = scripts\anim\notetracks_mp::_id_5D51( var_0.origin );
+        var_2 = scripts\anim\notetracks_mp::droppostoground( var_0.origin );
         return var_2;
     }
     else

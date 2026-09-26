@@ -304,7 +304,7 @@ default_on_damage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8
     if ( is_friendly_damage( var_12, var_0 ) )
         return;
 
-    var_2 = scripts\cp\cp_damage::_id_F29B( var_4, var_5, var_2, var_1, var_3, var_6, var_7, var_8, var_9, var_0 );
+    var_2 = scripts\cp\cp_damage::set_alien_damage_by_weapon_type( var_4, var_5, var_2, var_1, var_3, var_6, var_7, var_8, var_9, var_0 );
 
     if ( isplayer( var_1 ) && !scripts\cp\utility::is_trap( var_0, var_5, var_12 ) )
     {
@@ -507,7 +507,7 @@ delaystartragdoll( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     if ( isdefined( var_0 ) )
     {
-        var_6 = var_0 _meth_8112();
+        var_6 = var_0 getcorpseanim();
 
         if ( animhasnotetrack( var_6, "ignore_ragdoll" ) )
             return;
@@ -530,7 +530,7 @@ delaystartragdoll( var_0, var_1, var_2, var_3, var_4, var_5 )
     if ( var_0 isragdoll() )
         return;
 
-    var_6 = var_0 _meth_8112();
+    var_6 = var_0 getcorpseanim();
     var_10 = 0.35;
 
     if ( animhasnotetrack( var_6, "start_ragdoll" ) )
@@ -561,7 +561,7 @@ deletepickupafterawhile()
 
 _id_179E( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
-    var_6 = _id_E08D( var_3 );
+    var_6 = remove_spawn_type( var_3 );
     var_7 = spawnnewagent( var_6, var_0, var_1, var_2 );
 
     if ( isdefined( var_7 ) )
@@ -570,7 +570,7 @@ _id_179E( var_0, var_1, var_2, var_3, var_4, var_5 )
     return var_7;
 }
 
-_id_E08D( var_0 )
+remove_spawn_type( var_0 )
 {
     var_1 = strtok( var_0, " " );
 

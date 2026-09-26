@@ -70,7 +70,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_koth_zoneLifetime", getmatchrulesdata( "kothData", "zoneLifetime" ) );
     setdynamicdvar( "scr_koth_zoneCaptureTime", getmatchrulesdata( "kothData", "zoneCaptureTime" ) );
     setdynamicdvar( "scr_koth_zoneActivationDelay", getmatchrulesdata( "kothData", "zoneActivationDelay" ) );
@@ -413,7 +413,7 @@ hpcaptureloop()
             continue;
 
         var_1 = level.zone.gameobject scripts\mp\gameobjects::getownerteam();
-        thread _id_12F03();
+        thread updaterespawntimer();
 
         if ( level.usehqrules && level.zoneduration > 0 )
             thread movezoneaftertime( level.zoneduration );
@@ -431,7 +431,7 @@ hpcaptureloop()
     }
 }
 
-_id_12F03()
+updaterespawntimer()
 {
     level endon( "game_ended" );
     level endon( "zone_moved" );
@@ -637,7 +637,7 @@ setupzones()
         level._id_13FC6[level._id_13FC6.size] = var_2;
     }
 
-    level._id_1BEB = level.zones;
+    level.all_heli_ents = level.zones;
     var_3 = scripts\mp\spawnlogic::getspawnpointarray( "mp_koth_spawn_axis_start" );
     var_4 = scripts\mp\spawnlogic::getspawnpointarray( "mp_koth_spawn_allies_start" );
     level.startpos["allies"] = var_4[0].origin;
@@ -821,8 +821,8 @@ getspawnpoint()
     }
     else
     {
-        var_1 = _id_E172( level.zone.spawnpoints );
-        var_3 = _id_E172( level.zone.fallbackspawnpoints );
+        var_1 = removespawnsinactivedz( level.zone.spawnpoints );
+        var_3 = removespawnsinactivedz( level.zone.fallbackspawnpoints );
         var_4 = getkothzonedeadzonedist();
         var_5 = [];
         var_5["activeKOTHZoneNumber"] = level.zone getentitynumber();
@@ -840,7 +840,7 @@ getkothzonedeadzonedist()
     return 1000;
 }
 
-_id_E172( var_0 )
+removespawnsinactivedz( var_0 )
 {
     var_1 = [];
 
@@ -914,7 +914,7 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
                 var_1 thread scripts\mp\utility::giveunifiedpoints( "capture_kill" );
 
             var_1 thread scripts\mp\awards::givemidmatchaward( "mode_x_assault" );
-            thread scripts\mp\matchdata::loginitialstats( var_9, "defending" );
+            thread scripts\mp\matchdata::logkillevent( var_9, "defending" );
         }
     }
     else if ( var_1 istouching( level.zone.gameobject.trigger ) )
@@ -923,7 +923,7 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
             var_1 thread scripts\mp\utility::giveunifiedpoints( "capture_kill" );
 
         var_1 thread scripts\mp\awards::givemidmatchaward( "mode_x_defend" );
-        var_1 scripts\mp\utility::incperstat( "defends", 1 );
+        var_1 scripts\mp\utility::incpersstat( "defends", 1 );
         var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
         var_1 scripts\mp\utility::setextrascore1( var_1.pers["defends"] );
     }
@@ -966,7 +966,7 @@ give_capture_credit( var_0, var_1, var_2, var_3 )
 
         if ( !isscoreboosting( var_7 ) )
         {
-            var_7 scripts\mp\utility::incperstat( "captures", 1 );
+            var_7 scripts\mp\utility::incpersstat( "captures", 1 );
             var_7 scripts\mp\persistence::statsetchild( "round", "captures", var_7.pers["captures"] );
         }
         else
@@ -1025,7 +1025,7 @@ awardcapturepoints()
 
             foreach ( var_5 in level.zone.gameobject.touchlist[var_3] )
             {
-                var_5.player scripts\mp\utility::incperstat( "objTime", 1 );
+                var_5.player scripts\mp\utility::incpersstat( "objTime", 1 );
 
                 if ( isdefined( var_5.player.timebyrotation[level.kothhillrotation] ) )
                     var_5.player.timebyrotation[level.kothhillrotation]++;

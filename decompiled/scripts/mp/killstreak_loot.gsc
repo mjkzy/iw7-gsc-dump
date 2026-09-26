@@ -9,7 +9,7 @@ init()
     level._id_110EC.costoverride = [];
     level._id_110EC.costoverridepersist = [];
     level._id_110EC.rarity = [];
-    level._id_110EC._id_E76D = [];
+    level._id_110EC.row = [];
     level._id_110EC.baseref = [];
     level._id_110EC.ref = [];
     level thread registerkillstreakvariantinfo();
@@ -27,7 +27,7 @@ registerkillstreakvariantinfo()
         level._id_110EC.costoverride[int( var_1 )] = int( tablelookup( "mp/loot/iw7_killstreak_loot_master.csv", 0, var_1, 17 ) );
         level._id_110EC.costoverridepersist[int( var_1 )] = int( tablelookup( "mp/loot/iw7_killstreak_loot_master.csv", 0, var_1, 18 ) );
         level._id_110EC.rarity[int( var_1 )] = int( tablelookup( "mp/loot/iw7_killstreak_loot_master.csv", 0, var_1, 2 ) );
-        level._id_110EC._id_E76D[int( var_1 )] = var_0;
+        level._id_110EC.row[int( var_1 )] = var_0;
         level._id_110EC.baseref[int( var_1 )] = tablelookup( "mp/loot/iw7_killstreak_loot_master.csv", 0, var_1, 6 );
         level._id_110EC.ref[int( var_1 )] = tablelookup( "mp/loot/iw7_killstreak_loot_master.csv", 0, var_1, 1 );
         var_0++;

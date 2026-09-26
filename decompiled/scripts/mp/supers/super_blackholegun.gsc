@@ -192,7 +192,7 @@ watchforincidentalplayerdamage( var_0 )
             if ( distancesquared( var_8.origin, self.origin ) > var_2 )
                 continue;
 
-            var_8 dodamage( 18.1818, self.origin, self.owner, self, "MOD_EXPLOSIVE", "iw7_blackholegun_mp" );
+            var_8 dodamage( 18.181818, self.origin, self.owner, self, "MOD_EXPLOSIVE", "iw7_blackholegun_mp" );
         }
 
         wait 0.2;
@@ -228,7 +228,7 @@ watchfordirectplayerdamage( var_0, var_1 )
 
         var_4 = var_3;
 
-        if ( scripts\mp\utility::_id_9F22( var_3 ) || scripts\mp\utility::_id_9F72( var_3 ) )
+        if ( scripts\mp\utility::_id_9F22( var_3 ) || scripts\mp\utility::isspidergrenade( var_3 ) )
             var_4 = var_3.owner;
 
         if ( !level.friendlyfire && var_4 != self.owner && !scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( var_4, self.owner ) ) )

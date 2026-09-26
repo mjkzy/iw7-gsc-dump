@@ -140,7 +140,7 @@ updatehitmarker( var_0, var_1, var_2, var_3, var_4 )
     self setclientomnvar( "damage_feedback_notify", gettime() );
 }
 
-_id_1118C( var_0, var_1, var_2 )
+stun_bolt_death( var_0, var_1, var_2 )
 {
     scripts\engine\utility::waitframe();
     playfxontag( level._effect["stun_attack"], var_0.stun_struct.attack_bolt, "TAG_ORIGIN" );
@@ -168,7 +168,7 @@ _id_1118C( var_0, var_1, var_2 )
             var_5 = self;
 
             if ( isdefined( self.agent_type ) && scripts\cp\cp_agent_utils::get_agent_type( self ) == "seeder_spore" )
-                var_5 = self._id_4353;
+                var_5 = self.coll_model;
 
             if ( isdefined( var_5 ) )
                 var_5 dodamage( var_4, self.origin, var_0, var_0.stun_struct.attack_bolt, var_2 );
@@ -178,7 +178,7 @@ _id_1118C( var_0, var_1, var_2 )
     stopfxontag( level._effect["stun_attack"], var_0.stun_struct.attack_bolt, "TAG_ORIGIN" );
 }
 
-_id_F29B( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
+set_alien_damage_by_weapon_type( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 {
     if ( isdefined( var_1 ) )
     {
@@ -202,7 +202,7 @@ _id_F29B( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 
 can_hypno( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 {
-    if ( isdefined( self._id_38E0 ) && self._id_38E0 )
+    if ( isdefined( self.cannothypno ) && self.cannothypno )
         return 0;
 
     switch ( self.agent_type )
@@ -228,15 +228,15 @@ scale_alien_damage_by_perks( var_0, var_1, var_2, var_3 )
 {
     var_4 = 1.05;
 
-    if ( scripts\engine\utility::isbulletdamage( var_2 ) && !_id_9D39( var_3 ) && !_id_9DB8( var_3 ) )
+    if ( scripts\engine\utility::isbulletdamage( var_2 ) && !isalienturret( var_3 ) && !_id_9DB8( var_3 ) )
     {
-        if ( !_id_9D39( var_3 ) )
+        if ( !isalienturret( var_3 ) )
             var_1 = int( var_1 * var_0 scripts\cp\perks\perk_utility::perk_getbulletdamagescalar() );
-        else if ( _id_9D38( var_3 ) )
-            var_1 = int( var_1 * var_0 scripts\cp\perks\perk_utility::_id_CA43() );
+        else if ( isalientrapturret( var_3 ) )
+            var_1 = int( var_1 * var_0 scripts\cp\perks\perk_utility::perk_gettrapdamagescalar() );
 
-        if ( isdefined( var_0._id_1517 ) )
-            var_1 = int( var_1 * var_0._id_1517 );
+        if ( isdefined( var_0.ability_scalar_bullet ) )
+            var_1 = int( var_1 * var_0.ability_scalar_bullet );
     }
 
     if ( var_2 == "MOD_EXPLOSIVE" )
@@ -249,8 +249,8 @@ scale_alien_damage_by_perks( var_0, var_1, var_2, var_3 )
 
         var_1 = int( var_1 * var_0 scripts\cp\perks\perk_utility::perk_getmeleescalar() );
 
-        if ( isdefined( var_0._id_1518 ) )
-            var_1 = int( var_1 * var_0._id_1518 );
+        if ( isdefined( var_0.ability_scalar_melee ) )
+            var_1 = int( var_1 * var_0.ability_scalar_melee );
     }
 
     if ( var_0 scripts\cp\utility::is_upgrade_enabled( "damage_booster_upgrade" ) )
@@ -267,7 +267,7 @@ should_play_melee_blood_vfx( var_0 )
     return 1;
 }
 
-_id_9D39( var_0 )
+isalienturret( var_0 )
 {
     if ( !isdefined( var_0 ) )
         return 0;
@@ -330,7 +330,7 @@ _id_9DB8( var_0 )
     return 0;
 }
 
-_id_9D38( var_0 )
+isalientrapturret( var_0 )
 {
     if ( !isdefined( var_0 ) )
         return 0;
@@ -353,7 +353,7 @@ _id_9D38( var_0 )
 scale_alien_damage_by_weapon_type( var_0, var_1, var_2, var_3, var_4 )
 {
     if ( isdefined( var_4 ) && var_4 != "none" )
-        var_1 = _id_3D84( self, var_1, var_0, var_3, var_2 );
+        var_1 = check_for_explosive_shotgun_damage( self, var_1, var_0, var_3, var_2 );
 
     if ( isdefined( var_2 ) && var_2 == "MOD_EXPLOSIVE_BULLET" && var_4 != "none" )
     {
@@ -378,7 +378,7 @@ scale_alien_damage_by_prestige( var_0, var_1 )
     return var_1;
 }
 
-_id_3D84( var_0, var_1, var_2, var_3, var_4 )
+check_for_explosive_shotgun_damage( var_0, var_1, var_2, var_3, var_4 )
 {
     var_5 = 500;
 
@@ -418,7 +418,7 @@ check_for_special_damage( var_0, var_1, var_2 )
             var_0 thread catch_alien_on_fire( self, undefined, undefined, 1 );
         else if ( var_1 == "iw5_alienriotshield4_mp" && self.fireshield == 1.0 )
             var_0 thread catch_alien_on_fire( self );
-        else if ( ( scripts\engine\utility::is_true( self._id_8B86 ) || scripts\engine\utility::is_true( self._id_8BAC ) ) && var_2 != "MOD_UNKNOWN" )
+        else if ( ( scripts\engine\utility::is_true( self.has_incendiary_ammo ) || scripts\engine\utility::is_true( self._id_8BAC ) ) && var_2 != "MOD_UNKNOWN" )
             var_0 thread catch_alien_on_fire( self, undefined, undefined, 1 );
 
         switch ( var_1 )
@@ -438,7 +438,9 @@ check_for_special_damage( var_0, var_1, var_2 )
         var_3 = scripts\cp\utility::getrawbaseweaponname( var_1 );
 
         if ( isdefined( self.special_ammocount ) && isdefined( self.special_ammocount[var_3] ) && self.special_ammocount[var_3] > 0 )
-            return;
+        {
+
+        }
     }
 }
 
@@ -544,7 +546,7 @@ alien_fire_off()
 
 update_damage_score( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 {
-    if ( !isdefined( level._id_24B8 ) || var_1 != level._id_24B8 )
+    if ( !isdefined( level.attack_heli ) || var_1 != level.attack_heli )
     {
         if ( isdefined( var_1 ) && isdefined( var_1.owner ) )
             scripts\cp\cp_agent_utils::store_attacker_info( var_1.owner, var_2 * 0.75 );
@@ -555,18 +557,18 @@ update_damage_score( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var
 
         if ( isdefined( var_1 ) && isdefined( var_5 ) )
         {
-            if ( isdefined( level._id_12D86 ) )
-                level thread [[ level._id_12D86 ]]( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, self );
+            if ( isdefined( level.update_alien_damage_challenge ) )
+                level thread [[ level.update_alien_damage_challenge ]]( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, self );
         }
     }
 
-    update_zombie_damage_challenge( var_1, var_2, var_4 );
+    update_alien_damage_performance( var_1, var_2, var_4 );
 }
 
-update_zombie_damage_challenge( var_0, var_1, var_2 )
+update_alien_damage_performance( var_0, var_1, var_2 )
 {
-    if ( isdefined( level.update_zombie_damage_challenge ) )
-        [[ level.update_zombie_damage_challenge ]]( var_0, var_1, var_2 );
+    if ( isdefined( level.update_alien_damage_performance ) )
+        [[ level.update_alien_damage_performance ]]( var_0, var_1, var_2 );
 }
 
 handlemissiledamage( var_0, var_1, var_2 )
@@ -696,7 +698,7 @@ handleempdamage( var_0, var_1, var_2 )
     return var_2;
 }
 
-_id_3343()
+c4damage()
 {
     self endon( "death" );
     self setcandamage( 1 );
@@ -811,25 +813,25 @@ resetc4explodethisframe()
     level.c4explodethisframe = 0;
 }
 
-_id_20B9()
+applyaliensnare()
 {
-    thread _id_20BA();
+    thread applyaliensnareinternal();
 }
 
-_id_20BA()
+applyaliensnareinternal()
 {
     self notify( "stop_applyAlienSnare" );
     self endon( "stop_applyAlienSnare" );
     self endon( "disconnect" );
     self endon( "death" );
-    self._id_1BD8++;
-    self._id_1BD9 = pow( 0.68, ( self._id_1BD8 + 1 ) * 0.35 );
-    self._id_1BD9 = max( 0.58, self._id_1BD9 );
-    scripts\cp\perks\perkfunctions::_id_12E78();
+    self.aliensnarecount++;
+    self.aliensnarespeedscalar = pow( 0.68, ( self.aliensnarecount + 1 ) * 0.35 );
+    self.aliensnarespeedscalar = max( 0.58, self.aliensnarespeedscalar );
+    scripts\cp\perks\perkfunctions::updatecombatspeedscalar();
     wait 0.8;
-    self._id_1BD8 = 0;
-    self._id_1BD9 = 1.0;
-    scripts\cp\perks\perkfunctions::_id_12E78();
+    self.aliensnarecount = 0;
+    self.aliensnarespeedscalar = 1.0;
+    scripts\cp\perks\perkfunctions::updatecombatspeedscalar();
 }
 
 _id_9BE5( var_0, var_1, var_2 )

@@ -38,7 +38,7 @@ gettweakabledvarvalue( var_0, var_1 )
     return var_3;
 }
 
-_id_81E4( var_0, var_1 )
+gettweakabledvar( var_0, var_1 )
 {
     switch ( var_0 )
     {
@@ -115,28 +115,28 @@ gettweakablelastvalue( var_0, var_1 )
     switch ( var_0 )
     {
         case "rule":
-            var_2 = level.rules[var_1]._id_AA40;
+            var_2 = level.rules[var_1].lastvalue;
             break;
         case "game":
-            var_2 = level.gametweaks[var_1]._id_AA40;
+            var_2 = level.gametweaks[var_1].lastvalue;
             break;
         case "team":
-            var_2 = level.teamtweaks[var_1]._id_AA40;
+            var_2 = level.teamtweaks[var_1].lastvalue;
             break;
         case "player":
-            var_2 = level.playertweaks[var_1]._id_AA40;
+            var_2 = level.playertweaks[var_1].lastvalue;
             break;
         case "class":
-            var_2 = level.classtweaks[var_1]._id_AA40;
+            var_2 = level.classtweaks[var_1].lastvalue;
             break;
         case "weapon":
-            var_2 = level.weapontweaks[var_1]._id_AA40;
+            var_2 = level.weapontweaks[var_1].lastvalue;
             break;
         case "hardpoint":
-            var_2 = level.hardpointtweaks[var_1]._id_AA40;
+            var_2 = level.hardpointtweaks[var_1].lastvalue;
             break;
         case "hud":
-            var_2 = level.hudtweaks[var_1]._id_AA40;
+            var_2 = level.hudtweaks[var_1].lastvalue;
             break;
         default:
             var_2 = undefined;
@@ -182,33 +182,33 @@ settweakabledvar( var_0, var_1, var_2 )
     setdvar( var_3, var_2 );
 }
 
-settweakablevalue( var_0, var_1, var_2 )
+settweakablelastvalue( var_0, var_1, var_2 )
 {
     switch ( var_0 )
     {
         case "rule":
-            level.rules[var_1]._id_AA40 = var_2;
+            level.rules[var_1].lastvalue = var_2;
             break;
         case "game":
-            level.gametweaks[var_1]._id_AA40 = var_2;
+            level.gametweaks[var_1].lastvalue = var_2;
             break;
         case "team":
-            level.teamtweaks[var_1]._id_AA40 = var_2;
+            level.teamtweaks[var_1].lastvalue = var_2;
             break;
         case "player":
-            level.playertweaks[var_1]._id_AA40 = var_2;
+            level.playertweaks[var_1].lastvalue = var_2;
             break;
         case "class":
-            level.classtweaks[var_1]._id_AA40 = var_2;
+            level.classtweaks[var_1].lastvalue = var_2;
             break;
         case "weapon":
-            level.weapontweaks[var_1]._id_AA40 = var_2;
+            level.weapontweaks[var_1].lastvalue = var_2;
             break;
         case "hardpoint":
-            level.hardpointtweaks[var_1]._id_AA40 = var_2;
+            level.hardpointtweaks[var_1].lastvalue = var_2;
             break;
         case "hud":
-            level.hudtweaks[var_1]._id_AA40 = var_2;
+            level.hudtweaks[var_1].lastvalue = var_2;
             break;
         default:
             break;
@@ -229,7 +229,7 @@ registertweakable( var_0, var_1, var_2, var_3 )
                 level.rules[var_1] = spawnstruct();
 
             level.rules[var_1].value = var_3;
-            level.rules[var_1]._id_AA40 = var_3;
+            level.rules[var_1].lastvalue = var_3;
             level.rules[var_1].dvar = var_2;
             break;
         case "game":
@@ -237,7 +237,7 @@ registertweakable( var_0, var_1, var_2, var_3 )
                 level.gametweaks[var_1] = spawnstruct();
 
             level.gametweaks[var_1].value = var_3;
-            level.gametweaks[var_1]._id_AA40 = var_3;
+            level.gametweaks[var_1].lastvalue = var_3;
             level.gametweaks[var_1].dvar = var_2;
             break;
         case "team":
@@ -245,7 +245,7 @@ registertweakable( var_0, var_1, var_2, var_3 )
                 level.teamtweaks[var_1] = spawnstruct();
 
             level.teamtweaks[var_1].value = var_3;
-            level.teamtweaks[var_1]._id_AA40 = var_3;
+            level.teamtweaks[var_1].lastvalue = var_3;
             level.teamtweaks[var_1].dvar = var_2;
             break;
         case "player":
@@ -253,7 +253,7 @@ registertweakable( var_0, var_1, var_2, var_3 )
                 level.playertweaks[var_1] = spawnstruct();
 
             level.playertweaks[var_1].value = var_3;
-            level.playertweaks[var_1]._id_AA40 = var_3;
+            level.playertweaks[var_1].lastvalue = var_3;
             level.playertweaks[var_1].dvar = var_2;
             break;
         case "class":
@@ -261,7 +261,7 @@ registertweakable( var_0, var_1, var_2, var_3 )
                 level.classtweaks[var_1] = spawnstruct();
 
             level.classtweaks[var_1].value = var_3;
-            level.classtweaks[var_1]._id_AA40 = var_3;
+            level.classtweaks[var_1].lastvalue = var_3;
             level.classtweaks[var_1].dvar = var_2;
             break;
         case "weapon":
@@ -269,7 +269,7 @@ registertweakable( var_0, var_1, var_2, var_3 )
                 level.weapontweaks[var_1] = spawnstruct();
 
             level.weapontweaks[var_1].value = var_3;
-            level.weapontweaks[var_1]._id_AA40 = var_3;
+            level.weapontweaks[var_1].lastvalue = var_3;
             level.weapontweaks[var_1].dvar = var_2;
             break;
         case "hardpoint":
@@ -277,7 +277,7 @@ registertweakable( var_0, var_1, var_2, var_3 )
                 level.hardpointtweaks[var_1] = spawnstruct();
 
             level.hardpointtweaks[var_1].value = var_3;
-            level.hardpointtweaks[var_1]._id_AA40 = var_3;
+            level.hardpointtweaks[var_1].lastvalue = var_3;
             level.hardpointtweaks[var_1].dvar = var_2;
             break;
         case "hud":
@@ -285,7 +285,7 @@ registertweakable( var_0, var_1, var_2, var_3 )
                 level.hudtweaks[var_1] = spawnstruct();
 
             level.hudtweaks[var_1].value = var_3;
-            level.hudtweaks[var_1]._id_AA40 = var_3;
+            level.hudtweaks[var_1].lastvalue = var_3;
             level.hudtweaks[var_1].dvar = var_2;
             break;
     }
@@ -293,8 +293,8 @@ registertweakable( var_0, var_1, var_2, var_3 )
 
 init()
 {
-    level._id_41F9 = [];
-    level._id_12AC9 = 1;
+    level.clienttweakables = [];
+    level.tweakablesinitialized = 1;
     level.rules = [];
     level.gametweaks = [];
     level.teamtweaks = [];
@@ -306,7 +306,7 @@ init()
 
     if ( level.console )
     {
-        if ( level._id_13E0E || level._id_DADC )
+        if ( level.xb3 || level.ps4 )
             registertweakable( "game", "graceperiod", "scr_game_graceperiod", 20 );
         else
             registertweakable( "game", "graceperiod", "scr_game_graceperiod", 15 );

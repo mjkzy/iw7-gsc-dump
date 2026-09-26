@@ -252,23 +252,23 @@ table_getextraperk( var_0, var_1, var_2 )
     return tablelookup( var_0, 0, "loadoutExtraPerk" + ( var_2 + 1 ), var_1 + 1 );
 }
 
-table_getpowerprimary_MAYBE( var_0, var_1 )
+_id_113BC( var_0, var_1 )
 {
     return tablelookup( var_0, 0, "loadoutPowerPrimary", var_1 + 1 );
 }
 
-table_getextrapowerprimary_MAYBE( var_0, var_1 )
+table_getextraequipmentprimary( var_0, var_1 )
 {
     var_2 = tablelookup( var_0, 0, "loadoutExtraPowerPrimary", var_1 + 1 );
     return isdefined( var_2 ) && var_2 == "TRUE";
 }
 
-table_getpowersecondary_MAYBE( var_0, var_1 )
+_id_113BD( var_0, var_1 )
 {
     return tablelookup( var_0, 0, "loadoutPowerSecondary", var_1 + 1 );
 }
 
-table_getextrapowersecondary_MAYBE( var_0, var_1 )
+table_getextraequipmentsecondary( var_0, var_1 )
 {
     var_2 = tablelookup( var_0, 0, "loadoutExtraPowerSecondary", var_1 + 1 );
     return isdefined( var_2 ) && var_2 == "TRUE";
@@ -346,11 +346,11 @@ loadout_getclassteam( var_0 )
 _id_AE23()
 {
     self.health = self.maxhealth;
-    thread scripts\mp\utility::_id_DDD9( scripts\mp\utility::isjuggernaut() );
+    thread scripts\mp\utility::recipeclassapplyjuggernaut( scripts\mp\utility::isjuggernaut() );
     self.isjuggernaut = 1;
 }
 
-loadout_removejugg_MAYBE()
+_id_AE3E()
 {
     self notify( "lost_juggernaut" );
     self.isjuggernaut = 0;
@@ -371,7 +371,7 @@ loadout_clearweapons()
     scripts\mp\archetypes\archcommon::removearchetype( self.loadoutarchetype );
     scripts\mp\perks::_clearperks();
     scripts\mp\perks\weaponpassives::forgetpassives();
-    scripts\mp\gestures::_id_41B2();
+    scripts\mp\gestures::cleargesture();
     resetactionslots();
     resetfunctionality();
 
@@ -402,18 +402,18 @@ loadout_getclassstruct()
 
     var_0.loadoutsecondarycamo = "none";
     var_0.loadoutsecondaryreticle = "none";
-    var_0._id_AE9E = 0;
-    var_0._id_AEA5 = -1;
+    var_0.loadoutsecondarylootitemid = 0;
+    var_0.loadoutsecondaryvariantid = -1;
     var_0.loadoutsecondarycosmeticattachment = "none";
     var_0.loadoutperksfromgamemode = 0;
     var_0.loadoutperks = [];
     var_0.loadoutstandardperks = [];
     var_0.loadoutextraperks = [];
     var_0.loadoutrigtrait = "specialty_null";
-    var_0._id_AE7B = "none";
+    var_0.loadoutpowerprimary = "none";
     var_0._id_AE7C = [];
     var_0.loadoutextrapowerprimary = 0;
-    var_0._id_AE7D = "none";
+    var_0.loadoutpowersecondary = "none";
     var_0._id_AE7E = [];
     var_0.loadoutextrapowersecondary = 0;
     var_0.loadoutsuper = "none";
@@ -458,9 +458,9 @@ loadout_updateclassteam( var_0, var_1, var_2 )
 
     var_0.loadoutsecondarycamo = scripts\mp\utility::getmatchrulesdatawithteamandindex( "defaultClasses", var_2, var_3, "class", "weaponSetups", 1, "camo" );
     var_0.loadoutsecondaryreticle = scripts\mp\utility::getmatchrulesdatawithteamandindex( "defaultClasses", var_2, var_3, "class", "weaponSetups", 1, "reticle" );
-    var_0._id_AE7B = "none";
+    var_0.loadoutpowerprimary = "none";
     var_0.loadoutextrapowerprimary = 0;
-    var_0._id_AE7D = "none";
+    var_0.loadoutpowersecondary = "none";
     var_0.loadoutextrapowersecondary = 0;
     var_0.loadoutsuper = "none";
     var_0.loadoutgesture = scripts\mp\utility::getmatchrulesdatawithteamandindex( "defaultClasses", var_2, var_3, "class", "gesture" );
@@ -480,7 +480,7 @@ loadout_updateclassteam( var_0, var_1, var_2 )
     if ( scripts\mp\utility::getmatchrulesdatawithteamandindex( "defaultClasses", var_2, var_3, "juggernaut" ) )
         _id_AE23();
     else if ( scripts\mp\utility::isjuggernaut() )
-        loadout_removejugg_MAYBE();
+        _id_AE3E();
 }
 
 loadout_updateclasscustom( var_0, var_1 )
@@ -505,13 +505,13 @@ loadout_updateclasscustom( var_0, var_1 )
 
     var_0.loadoutsecondarycamo = cac_getweaponcamo( var_2, 1 );
     var_0.loadoutsecondaryreticle = cac_getweaponreticle( var_2, 1 );
-    var_0._id_AE9E = cac_getweaponlootitemid( var_2, 1 );
-    var_0._id_AEA5 = cac_getweaponvariantid( var_2, 1 );
+    var_0.loadoutsecondarylootitemid = cac_getweaponlootitemid( var_2, 1 );
+    var_0.loadoutsecondaryvariantid = cac_getweaponvariantid( var_2, 1 );
     var_0.loadoutsecondarycosmeticattachment = cac_getweaponcosmeticattachment( var_2, 1 );
-    var_0._id_AE7B = cac_getpower( var_2 );
+    var_0.loadoutpowerprimary = cac_getpower( var_2 );
     var_0._id_AE7C = cac_getpowerid( var_2 );
     var_0.loadoutextrapowerprimary = cac_getextracharge( var_2 );
-    var_0._id_AE7D = cac_getpower2( var_2 );
+    var_0.loadoutpowersecondary = cac_getpower2( var_2 );
     var_0._id_AE7E = cac_getpower2id( var_2 );
     var_0.loadoutextrapowersecondary = cac_getextracharge2( var_2 );
     var_0.loadoutsuper = cac_getsuper();
@@ -592,7 +592,7 @@ loadout_updateclassgamemode( var_0, var_1 )
         var_0.loadoutperks = var_3["loadoutPerks"];
 
     if ( isdefined( var_3["loadoutPowerPrimary"] ) )
-        var_0._id_AE7B = var_3["loadoutPowerPrimary"];
+        var_0.loadoutpowerprimary = var_3["loadoutPowerPrimary"];
 
     if ( isdefined( var_3["loadoutExtraPowerPrimary"] ) )
         var_0.loadoutextrapowerprimary = var_3["loadoutExtraPowerPrimary"];
@@ -601,7 +601,7 @@ loadout_updateclassgamemode( var_0, var_1 )
         var_0._id_AE7C = var_3["loadoutPowerPrimaryPassives"];
 
     if ( isdefined( var_3["loadoutPowerSecondary"] ) )
-        var_0._id_AE7D = var_3["loadoutPowerSecondary"];
+        var_0.loadoutpowersecondary = var_3["loadoutPowerSecondary"];
 
     if ( isdefined( var_3["loadoutExtraPowerSecondary"] ) )
         var_0.loadoutextrapowersecondary = var_3["loadoutExtraPowerSecondary"];
@@ -642,7 +642,7 @@ loadout_updateclassgamemode( var_0, var_1 )
     if ( var_3["loadoutJuggernaut"] )
         _id_AE23();
     else if ( scripts\mp\utility::isjuggernaut() )
-        loadout_removejugg_MAYBE();
+        _id_AE3E();
 }
 
 _id_AE50( var_0 )
@@ -699,7 +699,7 @@ loadout_updateclasscallback( var_0 )
         var_0.loadoutsecondaryreticle = var_1["loadoutSecondaryReticle"];
 
     if ( isdefined( var_1["loadoutPowerPrimary"] ) )
-        var_0._id_AE7B = var_1["loadoutPowerPrimary"];
+        var_0.loadoutpowerprimary = var_1["loadoutPowerPrimary"];
 
     if ( isdefined( var_1["loadoutPowerPrimaryPassives"] ) )
         var_0._id_AE7C = var_1["loadoutPowerPrimaryPassives"];
@@ -708,7 +708,7 @@ loadout_updateclasscallback( var_0 )
         var_0.loadoutextrapowerprimary = var_1["loadoutExtraPowerPrimary"];
 
     if ( isdefined( var_1["loadoutPowerSecondary"] ) )
-        var_0._id_AE7D = var_1["loadoutPowerSecondary"];
+        var_0.loadoutpowersecondary = var_1["loadoutPowerSecondary"];
 
     if ( isdefined( var_1["loadoutPowerSecondaryPassives"] ) )
         var_0._id_AE7E = var_1["loadoutPowerSecondaryPassives"];
@@ -764,10 +764,10 @@ loadout_updateclassdefault( var_0, var_1 )
 
     var_0.loadoutsecondarycamo = table_getweaponcamo( level.classtablename, var_2, 1 );
     var_0.loadoutsecondaryreticle = table_getweaponreticle( level.classtablename, var_2, 1 );
-    var_0._id_AE7B = table_getpowerprimary_MAYBE( level.classtablename, var_2 );
-    var_0.loadoutextrapowerprimary = table_getextrapowerprimary_MAYBE( level.classtablename, var_2 );
-    var_0._id_AE7D = table_getpowersecondary_MAYBE( level.classtablename, var_2 );
-    var_0.loadoutextrapowersecondary = table_getextrapowersecondary_MAYBE( level.classtablename, var_2 );
+    var_0.loadoutpowerprimary = _id_113BC( level.classtablename, var_2 );
+    var_0.loadoutextrapowerprimary = table_getextraequipmentprimary( level.classtablename, var_2 );
+    var_0.loadoutpowersecondary = _id_113BD( level.classtablename, var_2 );
+    var_0.loadoutextrapowersecondary = table_getextraequipmentsecondary( level.classtablename, var_2 );
     var_0.loadoutgesture = table_getgesture( level.classtablename, var_2 );
     var_0.loadoutarchetype = cac_getcharacterarchetype();
     var_0.loadoutsuper = cac_getsuper();
@@ -1007,7 +1007,7 @@ loadout_updateplayerarchetype( var_0 )
 
     if ( level.tactical )
     {
-        var_10 = 133.333;
+        var_10 = 133.33333;
         var_11 = 1800;
     }
 
@@ -1067,7 +1067,7 @@ loadout_updateplayerarchetype( var_0 )
         var_1 = 0;
     }
 
-    self _meth_845E( 0 );
+    self setcamerathirdperson( 0 );
     self allowdoublejump( var_6 & var_1 );
     self allowslide( var_6 & var_2 );
     self allowwallrun( var_6 & var_3 );
@@ -1083,15 +1083,15 @@ loadout_updateplayerarchetype( var_0 )
     self energy_setrestorerate( 1, 10 );
     self energy_setresttimems( 1, scripts\engine\utility::ter_op( scripts\mp\utility::isanymlgmatch(), 2500, 0 ) );
 
-    if ( isdefined( level.supportdoublejump_MAYBE ) )
+    if ( isdefined( level.supportdoublejump ) )
     {
-        if ( !level.supportdoublejump_MAYBE )
+        if ( !level.supportdoublejump )
             scripts\engine\utility::allow_doublejump( 0 );
     }
 
-    if ( isdefined( level.supportwallrun_MAYBE ) )
+    if ( isdefined( level.supportwallrun ) )
     {
-        if ( !level.supportwallrun_MAYBE )
+        if ( !level.supportwallrun )
             scripts\engine\utility::allow_wallrun( 0 );
     }
 
@@ -1100,12 +1100,12 @@ loadout_updateplayerarchetype( var_0 )
 
     if ( isdefined( var_8 ) )
     {
-        self _meth_82C6( var_8 );
+        self setclothtype( var_8 );
 
         if ( var_8 == "c6servo" )
-            self _meth_8460( "clothtype", "c6servo" );
+            self setentitysoundcontext( "clothtype", "c6servo" );
         else
-            self _meth_8460( "clothtype", "" );
+            self setentitysoundcontext( "clothtype", "" );
 
         self._id_42B0 = var_8;
     }
@@ -1118,31 +1118,31 @@ loadout_updateclassfinalweapons( var_0 )
 {
     if ( isdefined( self.class_num ) )
     {
-        var_0._id_AE8B = self.class_num * 2 + 0;
-        var_0._id_AE9F = self.class_num * 2 + 1;
+        var_0.loadoutprimaryobject = self.class_num * 2 + 0;
+        var_0.loadoutsecondaryobject = self.class_num * 2 + 1;
     }
     else
     {
-        var_0._id_AE8B = -1;
-        var_0._id_AE9F = -1;
+        var_0.loadoutprimaryobject = -1;
+        var_0.loadoutsecondaryobject = -1;
     }
 
-    var_0.loadoutprimaryfullname = buildweaponname( var_0.loadoutprimary, var_0.loadoutprimaryattachments, var_0.loadoutprimarycamo, var_0.loadoutprimaryreticle, var_0.loadoutprimaryvariantid, self getentitynumber(), self.clientid, var_0._id_AE8B, var_0.loadoutprimarycosmeticattachment );
+    var_0.loadoutprimaryfullname = buildweaponname( var_0.loadoutprimary, var_0.loadoutprimaryattachments, var_0.loadoutprimarycamo, var_0.loadoutprimaryreticle, var_0.loadoutprimaryvariantid, self getentitynumber(), self.clientid, var_0.loadoutprimaryobject, var_0.loadoutprimarycosmeticattachment );
 
     if ( var_0.loadoutsecondary == "none" )
         var_0.loadoutsecondaryfullname = "none";
     else
-        var_0.loadoutsecondaryfullname = buildweaponname( var_0.loadoutsecondary, var_0.loadoutsecondaryattachments, var_0.loadoutsecondarycamo, var_0.loadoutsecondaryreticle, var_0._id_AEA5, self getentitynumber(), self.clientid, var_0._id_AE9F, var_0.loadoutsecondarycosmeticattachment );
+        var_0.loadoutsecondaryfullname = buildweaponname( var_0.loadoutsecondary, var_0.loadoutsecondaryattachments, var_0.loadoutsecondarycamo, var_0.loadoutsecondaryreticle, var_0.loadoutsecondaryvariantid, self getentitynumber(), self.clientid, var_0.loadoutsecondaryobject, var_0.loadoutsecondarycosmeticattachment );
 }
 
 loadout_updateplayerweapons( var_0, var_1, var_2 )
 {
-    if ( getdvarint( "scr_require_loot", 0 ) == 1 && !scripts\mp\utility::istrue( self._id_54BC ) )
+    if ( getdvarint( "scr_require_loot", 0 ) == 1 && !scripts\mp\utility::istrue( self.didinitiallog ) )
     {
-        if ( var_0.loadoutprimarylootitemid == 0 && var_0._id_AE9E == 0 )
+        if ( var_0.loadoutprimarylootitemid == 0 && var_0.loadoutsecondarylootitemid == 0 )
         {
             iprintlnbold( self.name + " is not using a loot weapon!" );
-            self._id_54BC = 1;
+            self.didinitiallog = 1;
         }
     }
 
@@ -1160,8 +1160,8 @@ loadout_updateplayerweapons( var_0, var_1, var_2 )
     self.loadoutsecondaryreticle = var_0.loadoutsecondaryreticle;
     self.loadoutprimarylootitemid = var_0.loadoutprimarylootitemid;
     self.loadoutprimaryvariantid = var_0.loadoutprimaryvariantid;
-    self._id_AE9E = var_0._id_AE9E;
-    self._id_AEA5 = var_0._id_AEA5;
+    self.loadoutsecondarylootitemid = var_0.loadoutsecondarylootitemid;
+    self.loadoutsecondaryvariantid = var_0.loadoutsecondaryvariantid;
     var_3 = scripts\mp\weapons::updatesavedaltstate( var_0.loadoutprimaryfullname );
     scripts\mp\utility::_giveweapon( var_3, undefined, undefined, getweaponbasename( var_3 ) == "iw7_fists_mp" );
     scripts\mp\weapons::updatetogglescopestate( var_0.loadoutprimaryfullname );
@@ -1202,7 +1202,7 @@ loadout_updateplayerweapons( var_0, var_1, var_2 )
     self.spawnweaponobj = var_5;
     self.pers["primaryWeapon"] = var_0.loadoutprimaryfullname;
     self.pers["secondaryWeapon"] = var_0.loadoutsecondaryfullname;
-    scripts\mp\teams::_id_FADC();
+    scripts\mp\teams::setupplayermodel();
     scripts\mp\weapons::updatemovespeedscale();
     thread scripts\mp\weapons::_id_13BA9();
 }
@@ -1220,19 +1220,19 @@ loadout_updateplayerperks( var_0 )
     self.pers["loadoutStandardPerks"] = var_0.loadoutstandardperks;
     self.pers["loadoutExtraPerks"] = var_0.loadoutextraperks;
     self.pers["loadoutRigTrait"] = var_0.loadoutrigtrait;
-    self setclientomnvar( "ui_trait_ref", scripts\mp\perks::getequipmenttableinfo( self.pers["loadoutRigTrait"] ) );
+    self setclientomnvar( "ui_trait_ref", scripts\mp\perks::getperkid( self.pers["loadoutRigTrait"] ) );
 
     if ( !scripts\mp\utility::isjuggernaut() && isdefined( self.avoidkillstreakonspawntimer ) && self.avoidkillstreakonspawntimer > 0 )
         thread scripts\mp\perks::giveperksafterspawn();
 }
 
-loadout_updateplayerpowers_MAYBE( var_0 )
+_id_AE59( var_0 )
 {
     self.powers = [];
-    self._id_AE7B = var_0._id_AE7B;
-    self._id_AE7D = var_0._id_AE7D;
-    scripts\mp\powers::givepower( var_0._id_AE7B, "primary", 0, var_0._id_AE7C, var_0.loadoutextrapowerprimary );
-    scripts\mp\powers::givepower( var_0._id_AE7D, "secondary", 0, var_0._id_AE7E, var_0.loadoutextrapowersecondary );
+    self.loadoutpowerprimary = var_0.loadoutpowerprimary;
+    self.loadoutpowersecondary = var_0.loadoutpowersecondary;
+    scripts\mp\powers::givepower( var_0.loadoutpowerprimary, "primary", 0, var_0._id_AE7C, var_0.loadoutextrapowerprimary );
+    scripts\mp\powers::givepower( var_0.loadoutpowersecondary, "secondary", 0, var_0._id_AE7E, var_0.loadoutextrapowersecondary );
 }
 
 loadout_updateplayersuper( var_0 )
@@ -1261,7 +1261,7 @@ loadout_updateplayersuper( var_0 )
         if ( var_2 != "specialty_null" )
         {
             scripts\mp\utility::giveperk( var_2 );
-            self setclientomnvar( "ui_trait_ref", scripts\mp\perks::getequipmenttableinfo( self.pers["loadoutRigTrait"] ) );
+            self setclientomnvar( "ui_trait_ref", scripts\mp\perks::getperkid( self.pers["loadoutRigTrait"] ) );
         }
     }
 
@@ -1284,12 +1284,12 @@ loadout_updateplayersuper( var_0 )
     else if ( level.allowsupers && isdefined( self.pers["gamemodeLoadout"] ) && isdefined( self.pers["gamemodeLoadout"]["loadoutSuper"] ) )
     {
         self.loadoutsuper = self.pers["gamemodeLoadout"]["loadoutSuper"];
-        scripts\mp\supers::_id_83A8( self.loadoutsuper, 1 );
+        scripts\mp\supers::givesuper( self.loadoutsuper, 1 );
     }
     else
     {
         self.loadoutsuper = var_1;
-        scripts\mp\supers::_id_83A8( var_1, 1 );
+        scripts\mp\supers::givesuper( var_1, 1 );
     }
 }
 
@@ -1324,11 +1324,11 @@ loadout_updateplayerkillstreaks( var_0, var_1 )
     self.streakvariantids[var_0.loadoutkillstreak2] = var_0.loadoutkillstreak2variantid;
     self.streakvariantids[var_0.loadoutkillstreak3] = var_0.loadoutkillstreak3variantid;
 
-    if ( var_0.loadoutstreaksfilled == 0 && isdefined( self._id_A6AB ) && self._id_A6AB.size > 0 && ( var_1 == "gamemode" || issubstr( var_1, "juggernaut" ) ) )
+    if ( var_0.loadoutstreaksfilled == 0 && isdefined( self.killstreaks ) && self.killstreaks.size > 0 && ( var_1 == "gamemode" || issubstr( var_1, "juggernaut" ) ) )
     {
         var_2 = 0;
 
-        foreach ( var_4 in self._id_A6AB )
+        foreach ( var_4 in self.killstreaks )
         {
             if ( var_2 == 0 )
             {
@@ -1364,20 +1364,20 @@ loadout_updateplayerkillstreaks( var_0, var_1 )
         self.pers["gamemodeLoadout"]["loadoutKillstreak3"] = var_0.loadoutkillstreak3;
     }
 
-    _id_F775( var_0.loadoutkillstreak1, var_0.loadoutkillstreak2, var_0.loadoutkillstreak3 );
+    setkillstreaks( var_0.loadoutkillstreak1, var_0.loadoutkillstreak2, var_0.loadoutkillstreak3 );
     var_6 = 0;
 
     if ( !isagent( self ) )
-        var_6 = scripts\mp\killstreaks\killstreaks::_id_213F( [ var_0.loadoutkillstreak1, var_0.loadoutkillstreak2, var_0.loadoutkillstreak3 ] );
+        var_6 = scripts\mp\killstreaks\killstreaks::arekillstreaksequipped( [ var_0.loadoutkillstreak1, var_0.loadoutkillstreak2, var_0.loadoutkillstreak3 ] );
 
     if ( !isagent( self ) && !var_6 )
     {
         self notify( "givingLoadout" );
-        var_7 = scripts\mp\killstreaks\killstreaks::_id_7ED6();
-        var_8 = scripts\mp\killstreaks\killstreaks::_id_7DE7();
+        var_7 = scripts\mp\killstreaks\killstreaks::getgimmeslotkillstreakstructs();
+        var_8 = scripts\mp\killstreaks\killstreaks::getavailableequippedkillstreakstructs();
 
-        if ( !scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) && !isdefined( self._id_5FBD ) )
-            scripts\mp\killstreaks\killstreaks::_id_41C0();
+        if ( !scripts\mp\utility::_hasperk( "specialty_support_killstreaks" ) && !isdefined( self.earnedmaxkillstreak ) )
+            scripts\mp\killstreaks\killstreaks::clearkillstreaks();
 
         if ( isdefined( var_0.loadoutkillstreak1 ) && var_0.loadoutkillstreak1 != "none" && var_0.loadoutkillstreak1 != "" )
             scripts\mp\killstreaks\killstreaks::_id_66B9( var_0.loadoutkillstreak1, var_0._id_AE6F, var_0.loadoutkillstreak1variantid );
@@ -1389,10 +1389,10 @@ loadout_updateplayerkillstreaks( var_0, var_1 )
             scripts\mp\killstreaks\killstreaks::_id_66BA( var_0.loadoutkillstreak3, var_0._id_AE73, var_0.loadoutkillstreak3variantid );
 
         for ( var_9 = var_7.size - 1; var_9 >= 0; var_9-- )
-            scripts\mp\killstreaks\killstreaks::_id_26D5( var_7[var_9] );
+            scripts\mp\killstreaks\killstreaks::awardkillstreakfromstruct( var_7[var_9] );
 
         for ( var_9 = 0; var_9 < var_8.size; var_9++ )
-            scripts\mp\killstreaks\killstreaks::_id_26D5( var_8[var_9] );
+            scripts\mp\killstreaks\killstreaks::awardkillstreakfromstruct( var_8[var_9] );
     }
 
     self notify( "equipKillstreaksFinished" );
@@ -1433,7 +1433,7 @@ loadout_updateplayer( var_0, var_1, var_2 )
     loadout_updateplayerarchetype( var_0 );
     loadout_updateplayerweapons( var_0, var_1, var_2 );
     loadout_updateplayerperks( var_0 );
-    loadout_updateplayerpowers_MAYBE( var_0 );
+    _id_AE59( var_0 );
     loadout_updateplayersuper( var_0 );
     loadout_updateplayergesture( var_0 );
     loadout_updateplayerkillstreaks( var_0, var_1 );
@@ -1458,11 +1458,11 @@ setmlgspectatorclientloadoutdata( var_0, var_1 )
     var_0 endon( "setMLGSpectatorClientLoadoutData()" );
     var_0 setclientweaponinfo( 0, var_1.loadoutprimaryfullname );
     var_0 setclientweaponinfo( 1, var_1.loadoutsecondaryfullname );
-    var_2 = scripts\mp\powers::_id_D738( var_1._id_AE7B );
+    var_2 = scripts\mp\powers::_id_D738( var_1.loadoutpowerprimary );
     var_0 setclientloadoutinfo( "primaryPower", var_2 );
-    var_3 = scripts\mp\powers::_id_D738( var_1._id_AE7D );
+    var_3 = scripts\mp\powers::_id_D738( var_1.loadoutpowersecondary );
     var_0 setclientloadoutinfo( "secondaryPower", var_3 );
-    var_4 = scripts\mp\supers::_id_8186( var_1.loadoutsuper );
+    var_4 = scripts\mp\supers::getsuperid( var_1.loadoutsuper );
     var_0 setclientloadoutinfo( "super", var_4 );
 
     if ( isai( var_0 ) )
@@ -1470,7 +1470,7 @@ setmlgspectatorclientloadoutdata( var_0, var_1 )
         for ( var_5 = 0; var_5 < var_1.loadoutperks.size; var_5++ )
         {
             var_6 = var_1.loadoutperks[var_5];
-            var_7 = scripts\mp\perks::getequipmenttableinfo( var_6 );
+            var_7 = scripts\mp\perks::getperkid( var_6 );
             var_0 setclientloadoutinfo( var_5 + 1 + "_perk", var_7 );
         }
     }
@@ -1482,20 +1482,20 @@ setmlgspectatorclientloadoutdata( var_0, var_1 )
         for ( var_5 = 0; var_5 < var_1.loadoutstandardperks.size; var_5++ )
         {
             var_6 = var_1.loadoutstandardperks[var_5];
-            var_7 = scripts\mp\perks::getequipmenttableinfo( var_6 );
+            var_7 = scripts\mp\perks::getperkid( var_6 );
             var_0 setclientloadoutinfo( var_5 + 1 + "_perk", var_7 );
         }
 
         for ( var_5 = 0; var_5 < var_1.loadoutextraperks.size; var_5++ )
         {
             var_6 = var_1.loadoutextraperks[var_5];
-            var_7 = scripts\mp\perks::getequipmenttableinfo( var_6 );
+            var_7 = scripts\mp\perks::getperkid( var_6 );
             var_0 setclientloadoutinfo( var_5 + 1 + "_extraPerk", var_7 );
         }
     }
 
     var_8 = var_1.loadoutrigtrait;
-    var_9 = scripts\mp\perks::getequipmenttableinfo( var_8 );
+    var_9 = scripts\mp\perks::getperkid( var_8 );
     var_0 setclientloadoutinfo( "rigTrait", var_9 );
     var_10 = scripts\mp\archetypes\archcommon::getrigindexfromarchetyperef( var_1.loadoutarchetype );
     var_0 setclientloadoutinfo( "archetype", var_10 );
@@ -1505,10 +1505,10 @@ setmlgspectatorclientloadoutdata( var_0, var_1 )
 
 shouldallowinstantclassswap()
 {
-    return level.ingraceperiod && level._id_8487 - level.ingraceperiod >= 0 && level._id_8487 - level.ingraceperiod < 5 && !self.hasdonecombat;
+    return level.ingraceperiod && level.graceperiod - level.ingraceperiod >= 0 && level.graceperiod - level.ingraceperiod < 5 && !self.hasdonecombat;
 }
 
-giveloadoutswap()
+_id_837A()
 {
     setclass( self.pers["class"] );
     self.tag_stowed_back = undefined;
@@ -1533,10 +1533,10 @@ giveloadout( var_0, var_1, var_2 )
     loadout_clearweapons();
     var_3 = undefined;
 
-    if ( scripts\engine\utility::is_true( self.classset ) )
+    if ( scripts\engine\utility::is_true( self._id_400F ) )
     {
         var_3 = self.classstruct;
-        self.classset = undefined;
+        self._id_400F = undefined;
     }
     else
     {
@@ -1547,7 +1547,7 @@ giveloadout( var_0, var_1, var_2 )
 
     loadout_giveextraweapons( var_3 );
     loadout_updateplayer( var_3, var_1, var_2 );
-    _id_AE38( var_3, var_1 );
+    loadout_lognewlygivenloadout( var_3, var_1 );
     self.gettingloadout = 0;
     self notify( "changed_kit" );
     self notify( "giveLoadout" );
@@ -1558,7 +1558,7 @@ loadout_giveextraweapons( var_0 )
 
 }
 
-_id_AE38( var_0, var_1 )
+loadout_lognewlygivenloadout( var_0, var_1 )
 {
     if ( !isplayer( self ) && !isalive( self ) )
         return;
@@ -1604,7 +1604,7 @@ _id_AE38( var_0, var_1 )
             setmatchdata( "players", self.clientid, "loadouts", var_7, "primaryWeaponSetup", "reticle", var_0.loadoutprimaryreticle );
             setmatchdata( "players", self.clientid, "loadouts", var_7, "primaryWeaponSetup", "lootItemID", var_0.loadoutprimarylootitemid );
             setmatchdata( "players", self.clientid, "loadouts", var_7, "primaryWeaponSetup", "variantID", var_0.loadoutprimaryvariantid );
-            setmatchdata( "players", self.clientid, "loadouts", var_7, "primaryWeaponSetup", "paintJobID", var_0._id_AE8B );
+            setmatchdata( "players", self.clientid, "loadouts", var_7, "primaryWeaponSetup", "paintJobID", var_0.loadoutprimaryobject );
             setmatchdata( "players", self.clientid, "loadouts", var_7, "primaryWeaponSetup", "cosmeticAttachment", var_0.loadoutprimarycosmeticattachment );
             setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "weapon", var_0.loadoutsecondary );
 
@@ -1613,13 +1613,13 @@ _id_AE38( var_0, var_1 )
 
             setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "camo", var_0.loadoutsecondarycamo );
             setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "reticle", var_0.loadoutsecondaryreticle );
-            setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "lootItemID", var_0._id_AE9E );
-            setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "variantID", var_0._id_AEA5 );
-            setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "paintJobID", var_0._id_AE9F );
+            setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "lootItemID", var_0.loadoutsecondarylootitemid );
+            setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "variantID", var_0.loadoutsecondaryvariantid );
+            setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "paintJobID", var_0.loadoutsecondaryobject );
             setmatchdata( "players", self.clientid, "loadouts", var_7, "secondaryWeaponSetup", "cosmeticAttachment", var_0.loadoutsecondarycosmeticattachment );
-            setmatchdata( "players", self.clientid, "loadouts", var_7, "powerSetups", 0, "power", var_0._id_AE7B );
+            setmatchdata( "players", self.clientid, "loadouts", var_7, "powerSetups", 0, "power", var_0.loadoutpowerprimary );
             setmatchdata( "players", self.clientid, "loadouts", var_7, "powerSetups", 0, "extraCharge", cac_getextracharge( var_2 ) );
-            setmatchdata( "players", self.clientid, "loadouts", var_7, "powerSetups", 1, "power", var_0._id_AE7D );
+            setmatchdata( "players", self.clientid, "loadouts", var_7, "powerSetups", 1, "power", var_0.loadoutpowersecondary );
             setmatchdata( "players", self.clientid, "loadouts", var_7, "powerSetups", 1, "extraCharge", cac_getextracharge2( var_2 ) );
             var_11 = var_0.loadoutstandardperks.size;
 
@@ -1643,7 +1643,7 @@ _id_AE38( var_0, var_1 )
 
             if ( var_6 == 0 )
             {
-                self _meth_859B( self.clientid, self.headmodel, self.model );
+                self logplayerendmatchdataheadbody( self.clientid, self.headmodel, self.model );
 
                 if ( isdefined( self.loadoutgesture ) )
                     self _meth_85AB( self.clientid, self.loadoutgesture );
@@ -1672,7 +1672,7 @@ _id_AE38( var_0, var_1 )
         setmatchdata( "lives", self.matchdatalifeindex, "loadoutIndex", var_6 );
     }
 
-    self._id_AE6D = var_6;
+    self.loadoutindex = var_6;
 }
 
 hasvalidationinfraction()
@@ -1700,7 +1700,7 @@ _detachall()
     self detachall();
 }
 
-_id_9EE1( var_0 )
+isperkupgraded( var_0 )
 {
     var_1 = tablelookup( "mp/perktable.csv", 1, var_0, 8 );
 
@@ -1713,7 +1713,7 @@ _id_9EE1( var_0 )
     return 1;
 }
 
-_id_805D( var_0 )
+getperkupgrade( var_0 )
 {
     var_1 = tablelookup( "mp/perktable.csv", 1, var_0, 8 );
 
@@ -1750,7 +1750,7 @@ trackriotshield_ontrophystow()
     }
 }
 
-_id_11B04()
+trackriotshield()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -2212,7 +2212,7 @@ filterattachments( var_0 )
 buildweaponassetname( var_0, var_1 )
 {
     if ( !isdefined( var_1 ) || var_1 < 0 )
-        return scripts\mp\utility::_id_13C75( var_0 );
+        return scripts\mp\utility::weaponassetnamemap( var_0 );
     else
     {
         var_2 = scripts\mp\loot::getweaponassetfromrootweapon( var_0, var_1 );
@@ -2365,9 +2365,9 @@ getweaponvariantattachments( var_0, var_1 )
     return var_2;
 }
 
-_id_F775( var_0, var_1, var_2 )
+setkillstreaks( var_0, var_1, var_2 )
 {
-    self._id_A6AB = [];
+    self.killstreaks = [];
     var_3 = [];
 
     if ( isdefined( var_0 ) && var_0 != "none" )
@@ -2402,11 +2402,11 @@ _id_F775( var_0, var_1, var_2 )
             continue;
 
         var_7 = var_3[var_8];
-        self._id_A6AB[var_8] = var_3[var_8];
+        self.killstreaks[var_8] = var_3[var_8];
     }
 }
 
-_id_E19F()
+replenishloadout()
 {
     var_0 = self.pers["team"];
     var_1 = self.pers["class"];
@@ -2443,17 +2443,17 @@ onplayerconnecting()
 
         var_0.class = var_0.pers["class"];
         var_0.lastclass = var_0.pers["lastClass"];
-        var_0._id_53AD = 0;
-        var_0._id_2C66 = [];
-        var_0._id_2C67 = [];
+        var_0.detectexplosives = 0;
+        var_0.bombsquadicons = [];
+        var_0.bombsquadids = [];
         var_0.changedarchetypeinfo = var_0.pers["changedArchetypeInfo"];
         var_0.lastarchetypeinfo = undefined;
 
         if ( !isai( var_0 ) && !scripts\engine\utility::is_true( var_0.btestclient ) )
         {
             var_0 setclientomnvar( "ui_selected_archetype", level.archetypeids[var_0 cac_getcharacterarchetype()] );
-            var_0 setclientomnvar( "ui_selected_super", scripts\mp\supers::_id_8186( var_0 cac_getsuper() ) );
-            var_0 setclientomnvar( "ui_selected_trait", scripts\mp\perks::getequipmenttableinfo( var_0 cac_getloadoutarchetypeperk() ) );
+            var_0 setclientomnvar( "ui_selected_super", scripts\mp\supers::getsuperid( var_0 cac_getsuper() ) );
+            var_0 setclientomnvar( "ui_selected_trait", scripts\mp\perks::getperkid( var_0 cac_getloadoutarchetypeperk() ) );
         }
 
         if ( !isdefined( var_0.pers["validationInfractions"] ) )
@@ -2562,7 +2562,7 @@ clearscriptable()
     scripts\mp\killstreaks\chill_common::chill_resetscriptable();
     scripts\mp\perks\weaponpassives::passivecolddamageresetscriptable( self );
     scripts\mp\archetypes\archscout::_id_B946();
-    scripts\mp\equipment\cloak::_id_E26A();
+    scripts\mp\equipment\cloak::resetscriptable();
 }
 
 changearchetype( var_0, var_1, var_2 )
@@ -2585,8 +2585,8 @@ changearchetype( var_0, var_1, var_2 )
     if ( !isai( self ) )
     {
         self setclientomnvar( "ui_selected_archetype", level.archetypeids[var_0] );
-        self setclientomnvar( "ui_selected_super", scripts\mp\supers::_id_8186( var_1 ) );
-        self setclientomnvar( "ui_selected_trait", scripts\mp\perks::getequipmenttableinfo( var_2 ) );
+        self setclientomnvar( "ui_selected_super", scripts\mp\supers::getsuperid( var_1 ) );
+        self setclientomnvar( "ui_selected_trait", scripts\mp\perks::getperkid( var_2 ) );
     }
 
     if ( isdefined( self.pers["class"] ) && self.pers["class"] != "" )
@@ -2594,7 +2594,7 @@ changearchetype( var_0, var_1, var_2 )
         scripts\mp\menus::preloadandqueueclass( self.pers["class"] );
 
         if ( shouldallowinstantclassswap() )
-            giveloadoutswap();
+            _id_837A();
         else if ( isalive( self ) )
             self iprintlnbold( game["strings"]["change_rig"] );
     }

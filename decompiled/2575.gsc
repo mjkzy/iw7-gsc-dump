@@ -4,7 +4,7 @@
 _id_9898( var_0 )
 {
     self.acceptablemeleefraction = 0.95;
-    self._id_B627 = 36;
+    self.meleemaxzdiff = 36;
     self.fnismeleevalid = ::ismeleevalid;
     self.fnmeleecharge_init = ::meleecharge_init_mp;
     self.fnmeleecharge_terminate = ::meleecharge_terminate_mp;
@@ -54,7 +54,7 @@ meleecharge_init_mp( var_0 )
 meleecharge_terminate_mp( var_0 )
 {
     self scragentsetscripted( 0 );
-    self _meth_8484();
+    self clearbtgoal();
 }
 
 meleevsplayer_init_mp( var_0 )
@@ -65,5 +65,5 @@ meleevsplayer_init_mp( var_0 )
 meleevsplayer_terminate_mp( var_0 )
 {
     self scragentsetscripted( 0 );
-    self _meth_8484();
+    self clearbtgoal();
 }

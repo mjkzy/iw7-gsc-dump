@@ -112,7 +112,7 @@ bot_infect_ai_director_update()
                     {
                         var_3.last_infected_hiding_time = gettime();
                         var_3.last_infected_hiding_loc = var_3.origin;
-                        var_3._id_118DA = 0;
+                        var_3.time_spent_hiding = 0;
                     }
 
                     if ( gettime() >= var_3.last_infected_hiding_time + 5000 )
@@ -123,9 +123,9 @@ bot_infect_ai_director_update()
 
                         if ( var_10 < 90000 )
                         {
-                            var_3._id_118DA = var_3._id_118DA + 5000;
+                            var_3.time_spent_hiding = var_3.time_spent_hiding + 5000;
 
-                            if ( var_3._id_118DA >= 20000 )
+                            if ( var_3.time_spent_hiding >= 20000 )
                             {
                                 var_11 = scripts\engine\utility::get_array_of_closest( var_3.origin, var_0 );
 
@@ -146,7 +146,7 @@ bot_infect_ai_director_update()
                         }
                         else
                         {
-                            var_3._id_118DA = 0;
+                            var_3.time_spent_hiding = 0;
                             var_3.last_infected_hiding_loc = var_3.origin;
                         }
                     }
@@ -221,7 +221,7 @@ bot_infect_retrieve_knife()
                             self.melee_self_node = var_4;
                         }
                         else if ( distancesquared( self.origin, self.melee_self_node.origin ) > 9216 )
-                            self._id_B5B0 = var_1;
+                            self.melee_self_at_same_node_time = var_1;
 
                         if ( self.can_melee_enemy_time + 3000 < var_1 )
                         {

@@ -25,7 +25,7 @@ onplayerconnect()
 
 onplayerspawned()
 {
-    self._id_1468 = [];
+    self._whizbyfxent = [];
 
     for (;;)
     {
@@ -61,7 +61,7 @@ _id_13D11()
 {
     scripts\engine\utility::waittill_any( "death", "disconnect" );
 
-    foreach ( var_1 in self._id_1468 )
+    foreach ( var_1 in self._whizbyfxent )
     {
         if ( isalive( var_1 ) )
             var_1 delete();
@@ -72,7 +72,7 @@ _id_13D17( var_0 )
 {
     var_1 = distance( var_0 geteye(), self geteye() ) * 0.9;
     var_2 = var_0 geteye();
-    var_3 = anglestoforward( var_0 _meth_857C() );
+    var_3 = anglestoforward( var_0 getgunangles() );
     var_4 = var_2 + var_3 * var_1;
     var_5 = self geteye();
     var_6 = 2;
@@ -94,19 +94,19 @@ _id_13D17( var_0 )
 
     var_13 = _id_13D15( var_6, var_8 );
 
-    if ( !isdefined( self._id_1468[var_13] ) )
+    if ( !isdefined( self._whizbyfxent[var_13] ) )
     {
         if ( isdefined( level._effect[var_13] ) )
-            self._id_1468[var_13] = spawnfxforclient( level._effect[var_13], self geteye(), self );
+            self._whizbyfxent[var_13] = spawnfxforclient( level._effect[var_13], self geteye(), self );
         else
         {
 
         }
     }
 
-    triggerfx( self._id_1468[var_13] );
-    self._id_1468[var_13] notify( "reset" );
-    self._id_1468[var_13] thread _id_13D19();
+    triggerfx( self._whizbyfxent[var_13] );
+    self._whizbyfxent[var_13] notify( "reset" );
+    self._whizbyfxent[var_13] thread _id_13D19();
 }
 
 _id_13D15( var_0, var_1 )

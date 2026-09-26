@@ -1844,7 +1844,7 @@ backstoryinteractionusefunc( var_0, var_1 )
 
     var_3 = scripts\cp\cp_vo::get_sound_length( var_1.chosenbackstoryvo );
     wait( var_3 );
-    scripts\cp\cp_vo::_id_12BE3( [ var_1 ] );
+    scripts\cp\cp_vo::unpause_vo_system( [ var_1 ] );
 }
 
 backstoryinteractionhintfunc( var_0, var_1 )
@@ -2529,19 +2529,19 @@ apply_slow_mo_on_trigger( var_0, var_1 )
 
 finalqueststepregistration( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
 {
-    if ( !isdefined( level._id_13F4D[var_0] ) )
-        level._id_13F4D[var_0] = [];
+    if ( !isdefined( level.zombie_quests[var_0] ) )
+        level.zombie_quests[var_0] = [];
 
-    if ( !isdefined( level._id_13F4C[var_0] ) )
-        level._id_13F4C[var_0] = -1;
+    if ( !isdefined( level.zombie_quest_complete_up_to_quest_step_index[var_0] ) )
+        level.zombie_quest_complete_up_to_quest_step_index[var_0] = -1;
 
     var_8 = spawnstruct();
     var_8.init_func = var_2;
-    var_8._id_DB5D = var_3;
-    var_8._id_446D = var_4;
-    var_8._id_4EB1 = var_5;
+    var_8.quest_step_func = var_3;
+    var_8.complete_func = var_4;
+    var_8.debug_beat_func = var_5;
     var_8.step_description = var_7;
-    level._id_13F4D[var_0][var_1] = var_8;
+    level.zombie_quests[var_0][var_1] = var_8;
 }
 
 spawn_egg_interaction_for_players( var_0 )
@@ -4399,7 +4399,7 @@ showhiddenfigurestoplayer( var_0, var_1, var_2, var_3 )
 
         if ( int( distance( var_0.origin, var_3.origin ) ) <= 120 )
         {
-            if ( var_3 _meth_843B() )
+            if ( var_3 crouchbuttonpressed() )
             {
                 if ( randomint( 100 ) > 50 )
                     var_3 dodamage( int( var_3.health / 4 ), var_3.origin );

@@ -6,9 +6,9 @@ _id_13F9A( var_0, var_1, var_2, var_3 )
     self.asm.footsteps = spawnstruct();
     self.asm.footsteps.foot = "invalid";
     self.asm.footsteps.time = 0;
-    self.asm._id_4C86 = spawnstruct();
-    self.asm._id_7360 = 0;
-    self._id_71D0 = ::_id_1004F;
+    self.asm.customdata = spawnstruct();
+    self.asm.frantic = 0;
+    self.fnshouldplaypainanim = ::_id_1004F;
     self._id_7198 = ::_id_38B2;
     self._id_BC09 = [];
     self.postsharpturnlookaheaddist = 64;
@@ -41,7 +41,7 @@ _id_3EFC( var_0, var_1, var_2 )
     }
 
     if ( !isdefined( var_2 ) )
-        return _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+        return scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 
     return scripts\asm\asm::asm_lookupanimfromalias( var_1, var_2 );
 }
@@ -73,7 +73,7 @@ _id_3EFB( var_0, var_1, var_2 )
     }
 
     if ( !isdefined( var_2 ) )
-        return _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+        return scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 
     return scripts\asm\asm::asm_lookupanimfromalias( var_1, var_2 );
 }
@@ -81,7 +81,7 @@ _id_3EFB( var_0, var_1, var_2 )
 _id_3EE0( var_0, var_1, var_2 )
 {
     if ( !isdefined( var_2 ) )
-        return _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+        return scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 
     return scripts\asm\asm::asm_lookupanimfromalias( var_1, var_2 );
 }
@@ -108,7 +108,7 @@ _id_3EE1( var_0, var_1, var_2 )
 _id_3EF1( var_0, var_1, var_2, var_3 )
 {
     var_4 = self getanimentrycount( var_1 );
-    var_5 = scripts\mp\agents\zombie\zombie_util::_id_4D52( self._id_4D62, self.damagedir );
+    var_5 = scripts\mp\agents\zombie\zombie_util::_id_4D52( self.damagepoint, self.damagedir );
     var_6 = angleclamp180( var_5 - self.angles[1] );
     var_7 = scripts\mp\agents\zombie\zombie_util::_id_8040( var_6, var_4 );
     return var_7;
@@ -118,11 +118,11 @@ _id_D4F5( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
     self endon( "terminate_ai_threads" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
 
     if ( isdefined( self.pathgoalpos ) )
     {
-        self _meth_8281( "code_move" );
+        self scragentsetanimmode( "code_move" );
         self scragentsetorientmode( "face motion" );
     }
 
@@ -135,8 +135,8 @@ _id_D4F5( var_0, var_1, var_2, var_3 )
 
     var_6 = var_6 * ( 1 / var_7 );
     self._id_BF9E = gettime() + var_6 * 0.75 * 1000;
-    scripts\anim\notetracks_mp::_id_CED3( var_1, var_4, self._id_C081, "pain_anim" );
-    _id_6CE0( var_0, var_1, var_3 );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_1, var_4, self._id_C081, "pain_anim" );
+    finishpain( var_0, var_1, var_3 );
 }
 
 _id_D4F3( var_0, var_1, var_2, var_3 )
@@ -147,10 +147,10 @@ _id_D4F3( var_0, var_1, var_2, var_3 )
     if ( scripts\asm\asm_mp::_id_2347( var_1, self.asm._id_BCD3 ) )
         var_4 = scripts\asm\asm_mp::_id_235A( var_1, self.asm._id_BCD3 );
     else
-        var_4 = _id_0F3C::_id_3EF4( var_0, var_1, var_3 );
+        var_4 = scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_3 );
 
-    var_5 = scripts\asm\asm::_id_2341( var_0, var_1 );
-    thread scripts\anim\notetracks_mp::_id_CED5( var_1, var_4, var_1, "end", var_5 );
+    var_5 = scripts\asm\asm::asm_getnotehandler( var_0, var_1 );
+    thread scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_1, var_4, var_1, "end", var_5 );
     self._id_BF9E = gettime() + 10000;
     wait 0.35;
     scripts\asm\asm::asm_fireevent( var_1, "end" );
@@ -183,12 +183,12 @@ _id_9DB1( var_0, var_1, var_2, var_3 )
 
 _id_4D41()
 {
-    var_0 = scripts\mp\agents\zombie\zombie_util::_id_4D52( self._id_4D62, self.damagedir );
+    var_0 = scripts\mp\agents\zombie\zombie_util::_id_4D52( self.damagepoint, self.damagedir );
     var_1 = angleclamp180( var_0 - self.angles[1] );
     return var_1;
 }
 
-_id_6CE0( var_0, var_1, var_2 )
+finishpain( var_0, var_1, var_2 )
 {
     self notify( "killanimscript" );
     var_3 = anim.asm[var_0].states[var_1];
@@ -442,9 +442,9 @@ _id_D532( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     self.scripted_mode = 1;
     self scragentsetphysicsmode( "noclip" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = 0.01;
-    thread scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, var_5 );
+    thread scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, var_5 );
 
     if ( isdefined( level.spawn_fx_func ) )
         self [[ level.spawn_fx_func ]]();
@@ -458,7 +458,7 @@ _id_D4DB( var_0, var_1, var_2, var_3 )
     self endon( var_1 + "_finished" );
     self.scripted_mode = 1;
     self scragentsetphysicsmode( "noclip" );
-    thread _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    thread scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
     wait 1;
     level thread [[ level.meleevignetteanimfunc ]]( self );
 }
@@ -477,11 +477,11 @@ _id_D571( var_0, var_1, var_2, var_3 )
     if ( isdefined( self.spawner ) && isdefined( self.spawner._id_ABA7 ) )
         thread _id_C3C6( var_0, var_1 );
 
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = 1.0;
     var_6 = self.do_immediate_ragdoll;
     self.do_immediate_ragdoll = 1;
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, var_5 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, var_5 );
     self.do_immediate_ragdoll = var_6;
     self scragentsetphysicsmode( "gravity" );
     self.scripted_mode = 0;
@@ -504,7 +504,7 @@ _id_11702( var_0, var_1, var_2 )
 _id_ABA5( var_0, var_1 )
 {
     self endon( var_1 + "_finished" );
-    var_2 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_2 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_3 = self getanimentry( var_1, var_2 );
     var_4 = getanimlength( var_3 );
     var_5 = getnotetracktimes( var_3, "fall" );
@@ -512,7 +512,7 @@ _id_ABA5( var_0, var_1 )
     var_7 = getmovedelta( var_3, var_5[0], var_6[0] );
     self scragentsetanimscale( 1.0, 1.0 );
     var_8 = 1;
-    scripts\anim\notetracks_mp::_id_CED3( var_1, var_2, var_8, var_1, "fall", undefined );
+    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_1, var_2, var_8, var_1, "fall", undefined );
 
     if ( var_7 == ( 0, 0, 0 ) )
     {
@@ -531,24 +531,24 @@ _id_ABA5( var_0, var_1 )
     {
         self scragentsetanimscale( 1, var_11 );
         var_8 = 1 / var_11;
-        scripts\anim\notetracks_mp::_id_CED3( var_1, var_2, var_8, var_1, "land", undefined );
+        scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_1, var_2, var_8, var_1, "land", undefined );
         var_8 = 1;
         self scragentsetphysicsmode( "gravity" );
         self scragentsetanimscale( 1, 1 );
-        scripts\anim\notetracks_mp::_id_CED3( var_1, var_2, var_8, var_1, "end", undefined );
+        scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_1, var_2, var_8, var_1, "end", undefined );
     }
 }
 
 _id_C3C6( var_0, var_1 )
 {
     self endon( var_1 + "_finished" );
-    var_2 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_2 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_3 = self getanimentry( var_1, var_2 );
     var_4 = getanimlength( var_3 );
     var_5 = getnotetracktimes( var_3, "fall" );
     var_6 = getnotetracktimes( var_3, "land" );
     var_7 = getmovedelta( var_3, var_5[0], var_6[0] );
-    scripts\anim\notetracks_mp::_id_1384C( var_1, "fall", var_1, var_2, undefined );
+    scripts\anim\notetracks_mp::waituntilnotetrack( var_1, "fall", var_1, var_2, undefined );
 
     if ( var_7 == ( 0, 0, 0 ) )
     {
@@ -566,7 +566,7 @@ _id_C3C6( var_0, var_1 )
     if ( var_10 >= 1 )
     {
         self scragentsetanimscale( 1, var_10 );
-        scripts\anim\notetracks_mp::_id_1384C( var_1, "land", var_1, var_2, undefined );
+        scripts\anim\notetracks_mp::waituntilnotetrack( var_1, "land", var_1, var_2, undefined );
         self scragentsetphysicsmode( "gravity" );
         self scragentsetanimscale( 1, 1 );
     }
@@ -583,7 +583,7 @@ playingburningfx( var_0, var_1, var_2, var_3 )
 _id_D544( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
     self._id_8C13 = 1;
 }
 
@@ -670,7 +670,7 @@ _id_10057( var_0, var_1, var_2, var_3 )
 
 _id_FFE7()
 {
-    if ( !_id_0F3A::_id_FFE6() )
+    if ( !_id_0F3A::shoulddoarrival() )
         return 0;
 
     if ( isdefined( self.curmeleetarget ) )
@@ -692,15 +692,15 @@ _id_10092( var_0, var_1, var_2, var_3 )
 
     var_4 = scripts\asm\asm::asm_getcurrentstate( var_0 );
 
-    if ( !scripts\asm\asm::_id_232B( var_4, "cover_approach" ) )
+    if ( !scripts\asm\asm::asm_eventfired( var_4, "cover_approach" ) )
         return 0;
 
-    if ( !isdefined( self._id_20EE ) )
+    if ( !isdefined( self.approachdir ) )
         return 0;
 
     if ( isdefined( self.isfrozen ) && self.isfrozen )
     {
-        self._id_20EE = undefined;
+        self.approachdir = undefined;
         return 0;
     }
 
@@ -709,12 +709,12 @@ _id_10092( var_0, var_1, var_2, var_3 )
     else
         var_5 = var_3[0];
 
-    if ( !_id_0F3A::_id_9D4C( var_0, var_1, var_2, var_5 ) )
+    if ( !_id_0F3A::isarrivaltype( var_0, var_1, var_2, var_5 ) )
         return 0;
 
-    self.asm._id_11068 = _id_3724( var_0, var_2, var_5 );
+    self.asm.stopdata = _id_3724( var_0, var_2, var_5 );
 
-    if ( !isdefined( self.asm._id_11068 ) )
+    if ( !isdefined( self.asm.stopdata ) )
         return 0;
 
     return 1;
@@ -722,15 +722,15 @@ _id_10092( var_0, var_1, var_2, var_3 )
 
 _id_3724( var_0, var_1, var_2 )
 {
-    var_3 = _id_0F3A::_id_7DD6();
+    var_3 = _id_0F3A::getarrivalnode();
 
     if ( isdefined( var_3 ) )
         var_4 = var_3.origin;
     else
         var_4 = self.pathgoalpos;
 
-    var_5 = _id_0F3A::_id_7E54();
-    var_6 = self._id_20EE;
+    var_5 = _id_0F3A::getcustomarrivalangles();
+    var_6 = self.approachdir;
     var_7 = vectortoangles( var_6 );
 
     if ( isdefined( var_5 ) )
@@ -745,7 +745,7 @@ _id_3724( var_0, var_1, var_2 )
     }
 
     var_11 = var_1;
-    var_12 = _id_0F3A::_id_8177();
+    var_12 = _id_0F3A::getstopdata();
     var_13 = var_4 - self.origin;
     var_14 = lengthsquared( var_13 );
     var_15 = 0;
@@ -763,12 +763,12 @@ _id_3724( var_0, var_1, var_2 )
     if ( var_14 < lengthsquared( var_17 ) )
         return undefined;
 
-    var_23 = _id_0F3A::_id_36D9( var_12.pos, var_12._id_0130[1], var_17, var_18 );
+    var_23 = _id_0F3A::calcanimstartpos( var_12.pos, var_12._id_0130[1], var_17, var_18 );
     var_24 = getclosestpointonnavmesh( var_12.pos, self );
-    var_25 = _id_0F3A::_id_36D9( var_24, var_12._id_0130[1], var_17, var_18 );
-    var_26 = self _meth_84AC();
+    var_25 = _id_0F3A::calcanimstartpos( var_24, var_12._id_0130[1], var_17, var_18 );
+    var_26 = self getnavposition();
     var_27 = navtrace( var_26, var_24, self, 1 );
-    var_28 = var_27["fraction"] >= 0.9 || _func_2AC( var_26, var_24, self );
+    var_28 = var_27["fraction"] >= 0.9 || navisstraightlinereachable( var_26, var_24, self );
 
     if ( !var_28 )
     {
@@ -797,11 +797,11 @@ _id_D563( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
     self endon( "terminate_ai_threads" );
-    var_4 = self _meth_8148();
-    var_5 = self _meth_8146();
+    var_4 = self getnegotiationstartnode();
+    var_5 = self getnegotiationendpos();
     self scragentsetphysicsmode( "noclip" );
     self scragentsetorientmode( "face angle abs", var_4.angles );
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetanimscale( 1.0, 1.0 );
     var_6 = var_5 - var_4.origin;
     var_7 = self getanimentry( var_1, 0 );
@@ -810,18 +810,18 @@ _id_D563( var_0, var_1, var_2, var_3 )
     var_10 = length( var_9 );
     var_11 = length( var_5 - self.origin );
     var_12 = var_8 * ( var_11 / var_10 );
-    self _meth_827B( self.origin, var_5, var_12 );
+    self scragentdoanimlerp( self.origin, var_5, var_12 );
     self setanimstate( var_1, 0 );
     wait( var_12 );
     self scragentsetphysicsmode( "gravity" );
     self notify( "traverse_end" );
-    _id_11701( var_0, var_1 );
+    terminatetraverse( var_0, var_1 );
 }
 
-_id_3F08( var_0, var_1, var_2 )
+choosetraverseanim_external( var_0, var_1, var_2 )
 {
     if ( !isdefined( var_2 ) )
-        return _id_0F3C::_id_3EF4( var_0, var_1, var_2 );
+        return scripts\asm\shared\mp\utility::_id_3EF4( var_0, var_1, var_2 );
 
     switch ( self._blackboard.movetype )
     {
@@ -858,8 +858,8 @@ _id_5AC4( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
     self endon( "terminate_ai_threads" );
-    var_4 = self _meth_8148();
-    var_5 = self _meth_8146();
+    var_4 = self getnegotiationstartnode();
+    var_5 = self getnegotiationendpos();
     self.endnode_pos = var_5;
 
     if ( !isdefined( var_4 ) )
@@ -883,14 +883,14 @@ _id_5AC4( var_0, var_1, var_2, var_3 )
         return;
 
     self.is_traversing = 1;
-    var_7 = scripts\asm\asm_mp::asm_getanim( var_0, var_6 );
+    var_7 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_6 );
     var_8 = var_5 - var_4.origin;
     var_9 = ( var_8[0], var_8[1], 0 );
     var_10 = vectortoangles( var_9 );
     var_11 = issubstr( var_6, "jump_across" );
     var_12 = var_6 == "traverse_boost" && ( self.species == "humanoid" || self.species == "zombie" );
     self scragentsetorientmode( "face angle abs", var_10 );
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     var_13 = self getanimentry( var_6, var_7 );
     var_14 = "flex_height_up_start";
     var_15 = getnotetracktimes( var_13, var_14 );
@@ -937,14 +937,14 @@ _id_5AC4( var_0, var_1, var_2, var_3 )
     else
         var_27 = getmovedelta( var_13, 0, 1 );
 
-    var_28 = scripts\anim\notetracks_mp::_id_7DC9( var_8, var_27 );
+    var_28 = scripts\anim\notetracks_mp::getanimscalefactors( var_8, var_27 );
     var_29 = animhasnotetrack( var_13, "ignoreanimscaling" );
 
     if ( var_29 )
-        var_28._id_13E2B = 1.0;
+        var_28.xy = 1.0;
 
     self scragentsetphysicsmode( "noclip" );
-    var_30 = self _meth_8145();
+    var_30 = self getnegotiationendnode();
 
     if ( isdefined( var_30 ) && isdefined( var_30.target ) )
     {
@@ -952,40 +952,40 @@ _id_5AC4( var_0, var_1, var_2, var_3 )
 
         if ( var_19.size > 0 )
         {
-            scripts\anim\notetracks_mp::_id_5AC1( var_6 + "_norestart", var_7, var_13, "traverse", var_14, var_18, 0, ::_id_13FAE );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight( var_6 + "_norestart", var_7, var_13, "traverse", var_14, var_18, 0, ::_id_13FAE );
             var_31 = scripts\engine\utility::getstruct( self.endnode.target, "targetname" );
 
             if ( isdefined( var_31.script_noteworthy ) && var_31.script_noteworthy == "continue_flex_height" )
-                scripts\anim\notetracks_mp::_id_5AC1( var_6 + "_norestart", var_7, var_13, "traverse", var_18, var_16, 1, ::_id_13FAE );
+                scripts\anim\notetracks_mp::dotraversalwithflexibleheight( var_6 + "_norestart", var_7, var_13, "traverse", var_18, var_16, 1, ::_id_13FAE );
 
             self scragentsetanimscale( 1.0, 1.0 );
-            scripts\anim\notetracks_mp::_id_CED5( var_6 + "_norestart", var_7, "traverse", "end", ::_id_13FAE );
+            scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6 + "_norestart", var_7, "traverse", "end", ::_id_13FAE );
         }
         else if ( var_21.size == 0 )
         {
-            scripts\anim\notetracks_mp::_id_5AC1( var_6 + "_norestart", var_7, var_13, "traverse", var_14, var_16, 0, ::_id_13FAE );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight( var_6 + "_norestart", var_7, var_13, "traverse", var_14, var_16, 0, ::_id_13FAE );
             self scragentsetanimscale( 1.0, 1.0 );
-            scripts\anim\notetracks_mp::_id_CED5( var_6 + "_norestart", var_7, "traverse", "end", ::_id_13FAE );
+            scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6 + "_norestart", var_7, "traverse", "end", ::_id_13FAE );
         }
         else
         {
             var_31 = scripts\engine\utility::getstruct( self.endnode.target, "targetname" );
             var_32 = var_21[0];
-            scripts\anim\notetracks_mp::_id_5AC2( var_6 + "_norestart", var_7, "traverse", var_13, var_14, var_16, var_31.origin, var_32, ::_id_13FAE );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight_internal( var_6 + "_norestart", var_7, "traverse", var_13, var_14, var_16, var_31.origin, var_32, ::_id_13FAE );
 
             if ( var_21[0] - var_17[0] > 0.02 )
             {
                 self scragentsetanimscale( 1.0, 1.0 );
-                scripts\anim\notetracks_mp::_id_CED5( var_6 + "_norestart", var_7, "traverse", var_20, ::_id_13FAE );
+                scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6 + "_norestart", var_7, "traverse", var_20, ::_id_13FAE );
             }
 
             var_31 = self.endnode;
             var_32 = var_23[0];
-            scripts\anim\notetracks_mp::_id_5AC2( var_6 + "_norestart", var_7, "traverse", var_13, var_20, var_22, var_31.origin, var_32, ::_id_13FAE );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight_internal( var_6 + "_norestart", var_7, "traverse", var_13, var_20, var_22, var_31.origin, var_32, ::_id_13FAE );
             self scragentsetanimscale( 1.0, 1.0 );
 
             if ( var_25.size == 0 || !scripts\engine\utility::is_true( self.dismember_crawl ) )
-                scripts\anim\notetracks_mp::_id_CED5( var_6 + "_norestart", var_7, "traverse", "end", ::_id_13FAE );
+                scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6 + "_norestart", var_7, "traverse", "end", ::_id_13FAE );
         }
 
         self.endnode = undefined;
@@ -993,7 +993,7 @@ _id_5AC4( var_0, var_1, var_2, var_3 )
     else if ( var_21.size > 0 && var_23.size > 0 && self.agent_type != "zombie_brute" )
     {
         self scragentsetanimscale( 1.0, 1.0 );
-        scripts\anim\notetracks_mp::_id_CED5( var_6 + "_norestart", var_7, "traverse", "end", ::_id_13FAE );
+        scripts\anim\notetracks_mp::playanimnuntilnotetrack( var_6 + "_norestart", var_7, "traverse", "end", ::_id_13FAE );
     }
     else if ( var_11 && abs( var_8[2] ) < 48 )
     {
@@ -1001,12 +1001,12 @@ _id_5AC4( var_0, var_1, var_2, var_3 )
         var_34 = var_15[0] * var_33;
         var_35 = var_17[0] * var_33;
         self scragentsetanimscale( 1, 1 );
-        scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse", var_14 );
+        scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse", var_14 );
         self scragentsetanimscale( 1, 0 );
         childthread _id_126D8( var_4.origin[2], var_5[2], ( var_35 - var_34 ) / self.traverseratescale );
-        scripts\anim\notetracks_mp::_id_CED3( var_6 + "_norestart", var_7, self.traverseratescale, "traverse", var_16 );
+        scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6 + "_norestart", var_7, self.traverseratescale, "traverse", var_16 );
         self scragentsetanimscale( 1, 1 );
-        scripts\anim\notetracks_mp::_id_CED3( var_6 + "_norestart", var_7, self.traverseratescale, "traverse" );
+        scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6 + "_norestart", var_7, self.traverseratescale, "traverse" );
     }
     else if ( var_8[2] > 16 )
     {
@@ -1014,117 +1014,117 @@ _id_5AC4( var_0, var_1, var_2, var_3 )
         {
             if ( var_12 )
             {
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
+                self scragentsetanimscale( var_28.xy, var_28.z );
                 var_36 = clamp( 2 / var_28.z, 0.5, 1 );
 
                 if ( var_17.size > 0 )
                 {
-                    scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, var_36 * self.traverseratescale, "traverse", var_16 );
+                    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, var_36 * self.traverseratescale, "traverse", var_16 );
                     scripts\anim\notetracks_mp::setstatelocked( 0, "DoTraverse" );
                     var_37 = var_6 + "_norestart";
-                    scripts\anim\notetracks_mp::_id_F2B1( var_37, var_7, self.traverseratescale );
-                    scripts\anim\notetracks_mp::_id_1384D( "traverse", "code_move" );
+                    scripts\anim\notetracks_mp::set_anim_state( var_37, var_7, self.traverseratescale );
+                    scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "code_move" );
                 }
                 else
-                    scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse" );
+                    scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse" );
 
                 self scragentsetanimscale( 1, 1 );
             }
             else if ( var_15.size > 0 )
             {
-                var_28._id_13E2B = 1;
+                var_28.xy = 1;
                 var_28.z = 1;
 
-                if ( !var_29 && length2dsquared( var_9 ) < 0.64 * length2dsquared( var_27 ) )
-                    var_28._id_13E2B = 0.4;
+                if ( !var_29 && length2dsquared( var_9 ) < 0.64000005 * length2dsquared( var_27 ) )
+                    var_28.xy = 0.4;
 
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
-                scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse", var_14 );
+                self scragentsetanimscale( var_28.xy, var_28.z );
+                scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse", var_14 );
                 var_38 = getmovedelta( var_13, 0, var_15[0] );
                 var_39 = getmovedelta( var_13, 0, var_17[0] );
-                var_28._id_13E2B = 1;
+                var_28.xy = 1;
                 var_28.z = 1;
                 var_40 = var_5 - self.origin;
                 var_41 = var_27 - var_38;
 
                 if ( !var_29 && length2dsquared( var_40 ) < 0.5625 * length2dsquared( var_41 ) )
-                    var_28._id_13E2B = 0.75;
+                    var_28.xy = 0.75;
 
                 var_42 = var_27 - var_39;
-                var_43 = ( var_42[0] * var_28._id_13E2B, var_42[1] * var_28._id_13E2B, var_42[2] * var_28.z );
+                var_43 = ( var_42[0] * var_28.xy, var_42[1] * var_28.xy, var_42[2] * var_28.z );
                 var_44 = rotatevector( var_43, var_10 );
                 var_45 = var_5 - var_44;
                 var_46 = var_39 - var_38;
                 var_47 = rotatevector( var_46, var_10 );
                 var_48 = var_45 - self.origin;
                 var_49 = var_28;
-                var_28 = scripts\anim\notetracks_mp::_id_7DC9( var_48, var_47, 1 );
+                var_28 = scripts\anim\notetracks_mp::getanimscalefactors( var_48, var_47, 1 );
 
                 if ( var_29 )
-                    var_28._id_13E2B = 1.0;
+                    var_28.xy = 1.0;
 
                 if ( var_48[2] <= 0 )
                     var_28.z = 0.0;
 
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
-                scripts\anim\notetracks_mp::_id_1384D( "traverse", var_16 );
+                self scragentsetanimscale( var_28.xy, var_28.z );
+                scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", var_16 );
                 scripts\anim\notetracks_mp::setstatelocked( 0, "DoTraverse" );
                 var_28 = var_49;
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
-                scripts\anim\notetracks_mp::_id_1384D( "traverse", "code_move" );
+                self scragentsetanimscale( var_28.xy, var_28.z );
+                scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "code_move" );
             }
             else
             {
-                self scragentsetanimscale( var_28._id_13E2B, var_28.z );
-                scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse" );
+                self scragentsetanimscale( var_28.xy, var_28.z );
+                scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse" );
             }
         }
         else
-            scripts\anim\notetracks_mp::_id_5AC1( var_6 + "_norestart", var_7, var_13, "traverse", "flex_height_start", "flex_height_end", 1, ::_id_13FAE );
+            scripts\anim\notetracks_mp::dotraversalwithflexibleheight( var_6 + "_norestart", var_7, var_13, "traverse", "flex_height_start", "flex_height_end", 1, ::_id_13FAE );
     }
     else if ( abs( var_8[2] ) < 16 || var_27[2] == 0 )
     {
-        self scragentsetanimscale( var_28._id_13E2B, var_28.z );
+        self scragentsetanimscale( var_28.xy, var_28.z );
         var_36 = clamp( 2 / var_28.z, 0.5, 1 );
 
         if ( var_17.size > 0 )
         {
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, var_36 * self.traverseratescale, "traverse", var_16 );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, var_36 * self.traverseratescale, "traverse", var_16 );
             scripts\anim\notetracks_mp::setstatelocked( 0, "DoTraverse" );
             var_37 = var_6 + "_norestart";
-            scripts\anim\notetracks_mp::_id_F2B1( var_37, var_7, self.traverseratescale );
-            scripts\anim\notetracks_mp::_id_1384D( "traverse", "code_move" );
+            scripts\anim\notetracks_mp::set_anim_state( var_37, var_7, self.traverseratescale );
+            scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "code_move" );
         }
         else
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse" );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse" );
 
         self scragentsetanimscale( 1, 1 );
     }
     else if ( var_27[2] < 0 )
     {
-        self scragentsetanimscale( var_28._id_13E2B, var_28.z );
+        self scragentsetanimscale( var_28.xy, var_28.z );
         var_36 = clamp( 2 / var_28.z, 0.5, 1 );
         var_51 = var_6 + "_norestart";
 
         if ( var_15.size > 0 )
         {
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, self.traverseratescale, "traverse", var_14 );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, self.traverseratescale, "traverse", var_14 );
             var_6 = var_51;
         }
 
         if ( var_17.size > 0 )
         {
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, var_36 * 1.0, "traverse", var_16 );
-            scripts\anim\notetracks_mp::_id_F2B1( var_51, var_7, self.traverseratescale );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, var_36 * 1.0, "traverse", var_16 );
+            scripts\anim\notetracks_mp::set_anim_state( var_51, var_7, self.traverseratescale );
 
             if ( animhasnotetrack( var_13, "removestatelock" ) )
-                scripts\anim\notetracks_mp::_id_1384D( "traverse", "removestatelock" );
+                scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "removestatelock" );
 
             scripts\anim\notetracks_mp::setstatelocked( 0, "DoTraverse" );
-            scripts\anim\notetracks_mp::_id_1384D( "traverse", "code_move" );
+            scripts\anim\notetracks_mp::waituntilnotetrack_safe( "traverse", "code_move" );
         }
         else
-            scripts\anim\notetracks_mp::_id_CED3( var_6, var_7, 1.0, "traverse" );
+            scripts\anim\notetracks_mp::playanimnatrateuntilnotetrack_safe( var_6, var_7, 1.0, "traverse" );
 
         self scragentsetanimscale( 1, 1 );
     }
@@ -1137,7 +1137,7 @@ _id_5AC4( var_0, var_1, var_2, var_3 )
     self scragentsetphysicsmode( "gravity" );
     self.is_traversing = undefined;
     self notify( "traverse_end" );
-    _id_11701( var_0, var_1 );
+    terminatetraverse( var_0, var_1 );
 }
 
 _id_126D8( var_0, var_1, var_2 )
@@ -1154,7 +1154,7 @@ _id_126D8( var_0, var_1, var_2 )
         if ( var_5 > 1.0 )
             break;
 
-        var_6 = scripts\mp\agents\zombie\zombie_util::_id_AB6F( var_5, var_0, var_1 );
+        var_6 = scripts\mp\agents\zombie\zombie_util::lerp( var_5, var_0, var_1 );
         self setorigin( ( self.origin[0], self.origin[1], var_6 ), 0 );
         wait 0.05;
     }
@@ -1184,7 +1184,7 @@ _id_11706( var_0, var_1, var_2 )
     self.is_traversing = undefined;
 }
 
-_id_11701( var_0, var_1 )
+terminatetraverse( var_0, var_1 )
 {
     var_2 = anim.asm[var_0].states[var_1];
     var_3 = undefined;
@@ -1205,10 +1205,10 @@ _id_11701( var_0, var_1 )
 _id_D4E3( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    scripts\asm\asm::_id_237B( self.moveratescale );
+    scripts\asm\asm::asm_setmoveplaybackrate( self.moveratescale );
     self.asm.cur_move_mode = var_3;
-    _id_0F3C::_id_D4DD( var_0, var_1, var_2, var_3 );
-    scripts\asm\asm::_id_237B( 1 );
+    scripts\asm\shared\mp\utility::playmoveloop_mp( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm::asm_setmoveplaybackrate( 1 );
 }
 
 _id_CEAE( var_0, var_1, var_2, var_3 )
@@ -1220,33 +1220,33 @@ _id_CEAE( var_0, var_1, var_2, var_3 )
 _id_CEB7( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    scripts\asm\asm::_id_237B( self.moveratescale );
-    _id_0F3B::_id_CEB5( var_0, var_1, var_2, var_3 );
-    scripts\asm\asm::_id_237B( 1 );
+    scripts\asm\asm::asm_setmoveplaybackrate( self.moveratescale );
+    _id_0F3B::playanim_exit( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm::asm_setmoveplaybackrate( 1 );
 }
 
 _id_D515( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    scripts\asm\asm::_id_237B( self.moveratescale );
+    scripts\asm\asm::asm_setmoveplaybackrate( self.moveratescale );
     _id_0F3B::_id_D514( var_0, var_1, var_2, var_3 );
-    scripts\asm\asm::_id_237B( self.moveratescale );
+    scripts\asm\asm::asm_setmoveplaybackrate( self.moveratescale );
 }
 
 _id_D538( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    scripts\asm\asm::_id_237B( self.moveratescale );
+    scripts\asm\asm::asm_setmoveplaybackrate( self.moveratescale );
 
     if ( scripts\mp\agents\zombie\zombie_util::_id_8252() < 2 )
     {
         var_4 = level._id_BCE6["run"][1];
         var_4 = var_4 + ( self.moveratescale - level._id_BCE6["sprint"][0] );
-        scripts\asm\asm::_id_237B( var_4 );
+        scripts\asm\asm::asm_setmoveplaybackrate( var_4 );
     }
 
     _id_0F3B::_id_D514( var_0, var_1, var_2, var_3 );
-    scripts\asm\asm::_id_237B( self.moveratescale );
+    scripts\asm\asm::asm_setmoveplaybackrate( self.moveratescale );
 }
 
 _id_13FAE( var_0, var_1, var_2, var_3 )
@@ -1265,14 +1265,14 @@ _id_7389( var_0, var_1, var_2, var_3 )
 {
     var_1 = self._id_7387;
     level thread [[ level.frozenzombiefunc ]]( self );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
 
     if ( scripts\engine\utility::is_true( self.activated_slomo_sphere ) )
-        scripts\asm\asm_mp::_id_2365( var_0, var_1, 0.1, var_4, 0.2 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, 0.1, var_4, 0.2 );
     else if ( scripts\engine\utility::is_true( self.activated_venomx_sphere ) )
-        scripts\asm\asm_mp::_id_2365( var_0, var_1, 0.1, var_4, 0.2 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, 0.1, var_4, 0.2 );
     else
-        scripts\asm\asm_mp::_id_2365( var_0, var_1, 0.1, var_4, 0.001 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, 0.1, var_4, 0.001 );
 }
 
 _id_3E12( var_0, var_1, var_2, var_3 )
@@ -1309,7 +1309,7 @@ _id_631D( var_0, var_1, var_2, var_3 )
 
 _id_A013()
 {
-    if ( self _meth_84B9( 200 ) )
+    if ( self isstuck( 200 ) )
         return 1;
 
     return 0;
@@ -1345,7 +1345,7 @@ _id_38B2( var_0, var_1, var_2 )
     var_11 = rotatevector( var_8, var_1 ) + var_10;
     var_12 = rotatevector( var_9, var_1 ) + var_10;
 
-    if ( !scripts\anim\notetracks_mp::_id_38D0( var_11, var_12, 0 ) )
+    if ( !scripts\anim\notetracks_mp::canmovepointtopoint( var_11, var_12, 0 ) )
         return 0;
 
     var_13 = self.radius;
@@ -1353,7 +1353,7 @@ _id_38B2( var_0, var_1, var_2 )
     if ( !var_2 )
         var_13 = self.radius / 2;
 
-    if ( !scripts\anim\notetracks_mp::_id_38D0( var_10, var_11, 0, var_13 ) )
+    if ( !scripts\anim\notetracks_mp::canmovepointtopoint( var_10, var_11, 0, var_13 ) )
         return 0;
 
     return 1;
@@ -1379,7 +1379,7 @@ isdoublejumpanimdone( var_0, var_1, var_2, var_3 )
 _id_CEF3( var_0, var_1, var_2, var_3 )
 {
     self scragentsetorientmode( "face angle abs", self.desired_dance_angles );
-    scripts\asm\asm_mp::_id_235F( var_0, var_1, var_2, 1, 0 );
+    scripts\asm\asm_mp::asm_loopanimstate( var_0, var_1, var_2, 1, 0 );
 }
 
 _id_3EBE( var_0, var_1, var_2 )
@@ -1642,20 +1642,20 @@ _id_CEE3( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     self scragentsetorientmode( "face angle abs", self.attack_spot.angles );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 _id_CF19( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
     self scragentsetorientmode( "face angle abs", self.attack_spot.angles );
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2, var_3 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2, var_3 );
 }
 
 _id_662E( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    self _meth_8281( "anim deltas" );
+    self scragentsetanimmode( "anim deltas" );
     self scragentsetorientmode( "face angle abs", self.attack_spot.angles );
     self scragentsetphysicsmode( "noclip" );
     self clearpath();
@@ -1672,7 +1672,7 @@ _id_662E( var_0, var_1, var_2, var_3 )
         self setorigin( self.origin + var_4, 0 );
     }
 
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, scripts\asm\asm_mp::asm_getanim( var_0, var_1 ), self.traverseratescale );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 ), self.traverseratescale );
     self.do_immediate_ragdoll = 0;
     self.full_gib = 0;
     self.nocorpse = undefined;
@@ -1711,7 +1711,7 @@ _id_BA3E()
     self.attack_spot = undefined;
 }
 
-_id_1305A( var_0, var_1, var_2, var_3 )
+usecustombc( var_0, var_1, var_2, var_3 )
 {
     if ( !isdefined( self.attack_spot.target ) )
         return 0;
@@ -1743,7 +1743,7 @@ _id_BA3D()
     self endon( "death" );
     self.noturnanims = 1;
     self.stopsoonnotifydist = 200;
-    self _meth_84BD();
+    self requeststopsoonnotify();
     self waittill( "stop_soon" );
     self.attack_spot = scripts\cp\zombies\zombie_entrances::get_open_attack_spot( self._id_6658 );
 
@@ -1857,7 +1857,7 @@ _id_FFC0( var_0, var_1, var_2, var_3 )
 
 _id_9FF5( var_0, var_1, var_2, var_3 )
 {
-    if ( scripts\engine\utility::is_true( level._id_2AAD ) )
+    if ( scripts\engine\utility::is_true( level.bgameover ) )
         return 1;
 
     if ( scripts\engine\utility::is_true( self._id_331F ) )
@@ -1866,7 +1866,7 @@ _id_9FF5( var_0, var_1, var_2, var_3 )
     return 0;
 }
 
-isdowned( var_0, var_1, var_2, var_3 )
+_id_9DC9( var_0, var_1, var_2, var_3 )
 {
     return !_id_9FF5( var_0, var_1, var_2, var_3 );
 }

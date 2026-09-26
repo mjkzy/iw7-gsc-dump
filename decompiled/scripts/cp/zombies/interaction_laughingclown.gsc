@@ -100,22 +100,22 @@ laughing_clown( var_0, var_1 )
                 var_1 playlocalsound( "mp_slot_machine_coins" );
                 wait 0.5;
                 _id_1285F( var_1, 50 );
-                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown_afterlife", 1, 50, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["laughingclown_afterlife"] );
+                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown_afterlife", 1, 50, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["laughingclown_afterlife"] );
                 break;
             case "slot1":
                 wait 0.5;
                 _id_1285F( var_1, 10 );
-                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown_afterlife", 1, 10, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["laughingclown_afterlife"] );
+                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown_afterlife", 1, 10, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["laughingclown_afterlife"] );
                 break;
             case "slot2":
                 wait 0.5;
                 _id_1285F( var_1, 5 );
-                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown_afterlife", 1, 5, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["laughingclown_afterlife"] );
+                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown_afterlife", 1, 5, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["laughingclown_afterlife"] );
                 break;
             case "slot3":
                 wait 0.5;
                 _id_1285F( var_1, 1 );
-                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown_afterlife", 1, 1, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["laughingclown_afterlife"] );
+                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown_afterlife", 1, 1, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["laughingclown_afterlife"] );
                 break;
         }
     }
@@ -132,25 +132,25 @@ laughing_clown( var_0, var_1 )
                 wait 0.5;
                 level notify( "update_arcade_game_performance", "black_hole", 50 );
                 scripts\cp\zombies\arcade_game_utility::give_player_tickets( var_1, 50 );
-                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown", 0, 50, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["laughingclown"] );
+                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown", 0, 50, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["laughingclown"] );
                 break;
             case "slot1":
                 var_1 notify( "hit_black_hole", 10 );
                 wait 0.5;
                 scripts\cp\zombies\arcade_game_utility::give_player_tickets( var_1, 10 );
-                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown", 0, 10, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["laughingclown"] );
+                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown", 0, 10, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["laughingclown"] );
                 break;
             case "slot2":
                 var_1 notify( "hit_black_hole", 5 );
                 wait 0.5;
                 scripts\cp\zombies\arcade_game_utility::give_player_tickets( var_1, 5 );
-                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown", 0, 5, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["laughingclown"] );
+                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown", 0, 5, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["laughingclown"] );
                 break;
             case "slot3":
                 var_1 notify( "hit_black_hole", 1 );
                 wait 0.5;
                 scripts\cp\zombies\arcade_game_utility::give_player_tickets( var_1, 1 );
-                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown", 0, 1, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["laughingclown"] );
+                scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "laughingclown", 0, 1, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["laughingclown"] );
                 break;
         }
     }

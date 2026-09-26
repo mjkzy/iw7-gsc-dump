@@ -22,7 +22,7 @@ setup_bot_ctf()
     var_1[0] = "flag_" + level.teamflags["allies"].label;
     var_0[1] = level.teamflags["axis"].curorigin;
     var_1[1] = "flag_" + level.teamflags["axis"].label;
-    scripts\mp\bots\bots_util::_id_2D18( var_0, var_1 );
+    scripts\mp\bots\bots_util::bot_cache_entrances( var_0, var_1 );
     var_2 = getzonenearest( level.teamflags["allies"].curorigin );
 
     if ( isdefined( var_2 ) )
@@ -81,21 +81,21 @@ bot_ctf_think()
         wait 0.05;
 
     init_bot_game_ctf();
-    self._id_BF69 = gettime();
-    self._id_BF3E = gettime();
+    self.next_time_hunt_carrier = gettime();
+    self.next_flag_hide_time = gettime();
     self botsetflag( "separation", 0 );
 
-    if ( !isdefined( level._id_BF3F ) )
-        level._id_BF3F = gettime() - 100;
+    if ( !isdefined( level.next_game_update_time ) )
+        level.next_game_update_time = gettime() - 100;
 
     for (;;)
     {
         wait 0.05;
 
-        if ( gettime() >= level._id_BF3F )
+        if ( gettime() >= level.next_game_update_time )
         {
             _id_12DC1();
-            level._id_BF3F = gettime() + 100;
+            level.next_game_update_time = gettime() + 100;
         }
 
         if ( self.health <= 0 )
@@ -108,14 +108,14 @@ bot_ctf_think()
         {
             clear_defend();
 
-            if ( !isdefined( level._id_6E28[level.otherteam[self.team]] ) || scripts\engine\utility::is_true( level.capturecondition ) )
+            if ( !isdefined( level.flag_carriers[level.otherteam[self.team]] ) || scripts\engine\utility::is_true( level.capturecondition ) )
                 self botsetscriptgoal( level.capzones[self.team].curorigin, 16, "critical" );
-            else if ( isdefined( level._id_6E28[level.otherteam[self.team]] ) && _id_46BE() == 0 )
+            else if ( isdefined( level.flag_carriers[level.otherteam[self.team]] ) && _id_46BE() == 0 )
             {
                 self botclearscriptgoal();
-                self botsetscriptgoal( level._id_6E28[level.otherteam[self.team]].origin, 256, "guard" );
+                self botsetscriptgoal( level.flag_carriers[level.otherteam[self.team]].origin, 256, "guard" );
             }
-            else if ( gettime() > self._id_BF3E )
+            else if ( gettime() > self.next_flag_hide_time )
             {
                 var_0 = getnodesinradius( level.capzones[self.team].curorigin, 900, 0, 300 );
                 var_1 = self botnodepick( var_0, var_0.size * 0.15, "node_hide" );
@@ -123,7 +123,7 @@ bot_ctf_think()
                 if ( isdefined( var_1 ) )
                     self botsetscriptgoalnode( var_1, "critical" );
 
-                self._id_BF3E = gettime() + 10000;
+                self.next_flag_hide_time = gettime() + 10000;
             }
 
             continue;
@@ -131,10 +131,10 @@ bot_ctf_think()
 
         if ( self.role == "attacker" )
         {
-            if ( isdefined( level._id_6E28[self.team] ) )
+            if ( isdefined( level.flag_carriers[self.team] ) )
             {
                 if ( !scripts\mp\bots\bots_util::bot_is_bodyguarding() )
-                    scripts\mp\bots\bots_strategy::bot_guard_player( level._id_6E28[self.team], 400 );
+                    scripts\mp\bots\bots_strategy::bot_guard_player( level.flag_carriers[self.team], 400 );
             }
             else
             {
@@ -147,20 +147,20 @@ bot_ctf_think()
 
         if ( !level.teamflags[self.team] scripts\mp\gameobjects::ishome() )
         {
-            if ( !isdefined( level._id_6E28[level.otherteam[self.team]] ) )
+            if ( !isdefined( level.flag_carriers[level.otherteam[self.team]] ) )
             {
                 clear_defend();
                 self botsetscriptgoal( level.teamflags[self.team].curorigin, 16, "critical" );
             }
             else
             {
-                var_2 = level._id_6E28[level.otherteam[self.team]];
+                var_2 = level.flag_carriers[level.otherteam[self.team]];
 
-                if ( gettime() > self._id_BF69 || self botcanseeentity( var_2 ) )
+                if ( gettime() > self.next_time_hunt_carrier || self botcanseeentity( var_2 ) )
                 {
                     clear_defend();
                     self botsetscriptgoal( var_2.origin, 16, "critical" );
-                    self._id_BF69 = gettime() + randomintrange( 4500, 5500 );
+                    self.next_time_hunt_carrier = gettime() + randomintrange( 4500, 5500 );
                 }
             }
 
@@ -205,18 +205,18 @@ init_bot_game_ctf()
     level.bots_gametype_initialized = 1;
     level._id_BF57["allies"] = "attacker";
     level._id_BF57["axis"] = "attacker";
-    level._id_6E28 = [];
+    level.flag_carriers = [];
 }
 
 _id_12DC1()
 {
-    level._id_6E28["allies"] = undefined;
-    level._id_6E28["axis"] = undefined;
+    level.flag_carriers["allies"] = undefined;
+    level.flag_carriers["axis"] = undefined;
 
     foreach ( var_1 in level.participants )
     {
         if ( isalive( var_1 ) && isdefined( var_1.carryflag ) )
-            level._id_6E28[var_1.team] = var_1;
+            level.flag_carriers[var_1.team] = var_1;
     }
 
     var_3 = [];

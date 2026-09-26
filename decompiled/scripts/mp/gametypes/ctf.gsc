@@ -64,7 +64,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_ctf_winRule", getmatchrulesdata( "ctfData", "winRule" ) );
     setdynamicdvar( "scr_ctf_showEnemyCarrier", getmatchrulesdata( "ctfData", "showEnemyCarrier" ) );
     setdynamicdvar( "scr_ctf_idleResetTime", getmatchrulesdata( "ctfData", "idleResetTime" ) );
@@ -245,7 +245,7 @@ assignteamspawns()
                 continue;
             }
 
-            if ( var_13 > 0.67 )
+            if ( var_13 > 0.66999996 )
             {
                 var_9.teambase = var_3.ownerteam;
                 level.teamspawnpoints[var_9.teambase][level.teamspawnpoints[var_9.teambase].size] = var_9;
@@ -576,46 +576,46 @@ createteamflag( var_0, var_1 )
         switch ( level.showenemycarrier )
         {
             case 0:
-                var_8.objidpingenemy = 1;
-                var_8.objidpingfriendly = 0;
+                var_8.objidpingfriendly = 1;
+                var_8.objidpingenemy = 0;
                 var_8.objpingdelay = 60.0;
                 break;
             case 1:
-                var_8.objidpingenemy = 0;
                 var_8.objidpingfriendly = 0;
+                var_8.objidpingenemy = 0;
                 var_8.objpingdelay = 0.05;
                 break;
             case 2:
-                var_8.objidpingenemy = 1;
-                var_8.objidpingfriendly = 0;
+                var_8.objidpingfriendly = 1;
+                var_8.objidpingenemy = 0;
                 var_8.objpingdelay = 1.0;
                 break;
             case 3:
-                var_8.objidpingenemy = 1;
-                var_8.objidpingfriendly = 0;
+                var_8.objidpingfriendly = 1;
+                var_8.objidpingenemy = 0;
                 var_8.objpingdelay = 1.5;
                 break;
             case 4:
-                var_8.objidpingenemy = 1;
-                var_8.objidpingfriendly = 0;
+                var_8.objidpingfriendly = 1;
+                var_8.objidpingenemy = 0;
                 var_8.objpingdelay = 2.0;
                 break;
             case 5:
-                var_8.objidpingenemy = 1;
-                var_8.objidpingfriendly = 0;
+                var_8.objidpingfriendly = 1;
+                var_8.objidpingenemy = 0;
                 var_8.objpingdelay = 3.0;
                 break;
             case 6:
-                var_8.objidpingenemy = 1;
-                var_8.objidpingfriendly = 0;
+                var_8.objidpingfriendly = 1;
+                var_8.objidpingenemy = 0;
                 var_8.objpingdelay = 4.0;
                 break;
         }
     }
     else
     {
-        var_8.objidpingenemy = 1;
-        var_8.objidpingfriendly = 0;
+        var_8.objidpingfriendly = 1;
+        var_8.objidpingenemy = 0;
         var_8.objpingdelay = 3.0;
     }
 
@@ -728,7 +728,7 @@ onpickup( var_0 )
         scripts\mp\utility::printandsoundoneveryone( var_1, scripts\mp\utility::getotherteam( var_1 ), &"MP_FLAG_RETURNED", &"MP_ENEMY_FLAG_RETURNED", "mp_obj_returned", "mp_obj_returned", var_0 );
         scripts\mp\utility::leaderdialog( "enemy_flag_returned", var_2, "status" );
         scripts\mp\utility::leaderdialog( "flag_returned", var_1, "status" );
-        var_0 scripts\mp\utility::incperstat( "returns", 1 );
+        var_0 scripts\mp\utility::incpersstat( "returns", 1 );
         var_0 scripts\mp\persistence::statsetchild( "round", "returns", var_0.pers["returns"] );
 
         if ( isplayer( var_0 ) )
@@ -794,7 +794,7 @@ onpickup( var_0 )
 returnflag()
 {
     scripts\mp\utility::setmlgannouncement( 11, scripts\mp\gameobjects::getownerteam() );
-    scripts\mp\gameobjects::returnobjectiveid();
+    scripts\mp\gameobjects::returnhome();
 }
 
 ondrop( var_0 )
@@ -870,7 +870,7 @@ returnaftertime()
     scripts\mp\utility::playsoundonplayers( "mp_war_objective_taken", var_1 );
     scripts\mp\utility::playsoundonplayers( "mp_war_objective_lost", var_2 );
     scripts\mp\utility::setmlgannouncement( 11, scripts\mp\gameobjects::getownerteam() );
-    scripts\mp\gameobjects::returnobjectiveid();
+    scripts\mp\gameobjects::returnhome();
 }
 
 onreset()
@@ -921,7 +921,7 @@ onuse( var_0 )
         if ( getdvarint( "com_codcasterEnabled", 0 ) == 1 )
             var_0 setgametypevip( 0 );
 
-        var_0 scripts\mp\utility::incperstat( "captures", 1 );
+        var_0 scripts\mp\utility::incpersstat( "captures", 1 );
         var_0 scripts\mp\persistence::statsetchild( "round", "captures", var_0.pers["captures"] );
 
         if ( isplayer( var_0 ) )
@@ -1155,9 +1155,9 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
 
             var_1 thread scripts\mp\awards::givemidmatchaward( "mode_ctf_kill_carrier" );
             scripts\mp\utility::setmlgannouncement( 10, var_1.team, var_1 getentitynumber() );
-            var_1 scripts\mp\utility::incperstat( "defends", 1 );
+            var_1 scripts\mp\utility::incpersstat( "defends", 1 );
             var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
-            thread scripts\mp\matchdata::loginitialstats( var_9, "carrying" );
+            thread scripts\mp\matchdata::logkillevent( var_9, "carrying" );
             var_10 = 1;
         }
 
@@ -1185,14 +1185,14 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
             if ( var_14 )
             {
                 var_1 thread scripts\mp\awards::givemidmatchaward( "mode_x_assault" );
-                thread scripts\mp\matchdata::loginitialstats( var_9, "defending" );
+                thread scripts\mp\matchdata::logkillevent( var_9, "defending" );
             }
             else if ( var_15 )
             {
                 var_1 thread scripts\mp\awards::givemidmatchaward( "mode_x_defend" );
-                var_1 scripts\mp\utility::incperstat( "defends", 1 );
+                var_1 scripts\mp\utility::incpersstat( "defends", 1 );
                 var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
-                thread scripts\mp\matchdata::loginitialstats( var_9, "assaulting" );
+                thread scripts\mp\matchdata::logkillevent( var_9, "assaulting" );
             }
         }
     }
@@ -1337,7 +1337,7 @@ placeflag()
             var_5 scripts\mp\gameobjects::set3dicon( "friendly", level.iconkill3d );
             var_5 scripts\mp\gameobjects::set2dicon( "enemy", level.iconescort2d );
             var_5 scripts\mp\gameobjects::set3dicon( "enemy", level.iconescort3d );
-            var_5.objidpingenemy = 1;
+            var_5.objidpingfriendly = 1;
             var_5.allowweapons = 1;
             var_5.onpickup = ::onpickup;
             var_5.onpickupfailed = ::onpickup;

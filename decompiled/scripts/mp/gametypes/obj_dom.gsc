@@ -19,7 +19,7 @@ _id_591D( var_0 )
     var_3 scripts\mp\gameobjects::cancontestclaim( 1 );
     var_3 scripts\mp\gameobjects::setusetime( level.flagcapturetime );
     var_3 scripts\mp\gameobjects::setusetext( &"MP_SECURING_POSITION" );
-    var_4 = var_3 scripts\mp\gameobjects::getlaserangles();
+    var_4 = var_3 scripts\mp\gameobjects::getlabel();
     var_3.label = var_4;
     var_3 scripts\mp\gameobjects::setzonestatusicons( level.icondefend + var_4, level.iconneutral + var_4 );
     var_3 scripts\mp\gameobjects::setvisibleteam( "any" );

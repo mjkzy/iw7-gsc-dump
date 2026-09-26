@@ -580,7 +580,7 @@ play_willard_elvira_exchange( var_0, var_1 )
     level.pause_nag_vo = 1;
 
     foreach ( var_3 in level.players )
-        scripts\cp\cp_vo::_id_C9CB( [ var_3 ] );
+        scripts\cp\cp_vo::pause_vo_system( [ var_3 ] );
 
     var_5 = level.elvira;
 
@@ -647,7 +647,7 @@ play_willard_elvira_exchange( var_0, var_1 )
     }
 
     foreach ( var_8 in level.players )
-        scripts\cp\cp_vo::_id_12BE3( [ var_8 ] );
+        scripts\cp\cp_vo::unpause_vo_system( [ var_8 ] );
 
     level.pause_nag_vo = 0;
     scripts\cp\cp_vo::set_vo_system_busy( 0 );
@@ -678,7 +678,7 @@ cp_town_event_end( var_0 )
 
 play_char_intro_music()
 {
-    if ( self issplitscreenplayer() && !self isreloading() )
+    if ( self issplitscreenplayer() && !self issplitscreenplayerprimary() )
         return;
 
     if ( scripts\cp\zombies\direct_boss_fight::should_directly_go_to_boss_fight() )

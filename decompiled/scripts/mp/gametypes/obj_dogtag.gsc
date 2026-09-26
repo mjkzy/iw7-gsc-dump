@@ -278,7 +278,7 @@ onuse( var_0 )
         if ( var_0.pers["team"] == self.victimteam )
         {
             self.trigger playsound( "mp_killconfirm_tags_deny" );
-            var_0 scripts\mp\utility::incperstat( "denied", 1 );
+            var_0 scripts\mp\utility::incpersstat( "denied", 1 );
             var_0 scripts\mp\persistence::statsetchild( "round", "denied", var_0.pers["denied"] );
 
             if ( level.numlifelimited )
@@ -295,7 +295,7 @@ onuse( var_0 )
 
             if ( level.gametype != "grind" )
             {
-                var_0 scripts\mp\utility::incperstat( "confirmed", 1 );
+                var_0 scripts\mp\utility::incpersstat( "confirmed", 1 );
                 var_0 scripts\mp\persistence::statsetchild( "round", "confirmed", var_0.pers["confirmed"] );
             }
 
@@ -485,11 +485,11 @@ respawn()
 {
     scripts\mp\playerlogic::incrementalivecount( self.team );
     self.alreadyaddedtoalivecount = 1;
-    thread _id_136F9();
-    _id_12E58();
+    thread waitillcanspawnclient();
+    updatealiveomnvars();
 }
 
-_id_136F9()
+waitillcanspawnclient()
 {
     for (;;)
     {
@@ -506,7 +506,7 @@ _id_136F9()
     }
 }
 
-_id_12E58()
+updatealiveomnvars()
 {
     if ( isdefined( level.alive_players["allies"] ) )
         setomnvar( "ui_allies_alive", level.alive_players["allies"].size );

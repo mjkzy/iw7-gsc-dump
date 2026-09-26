@@ -30,9 +30,9 @@ kineticpulse_use()
         var_7 = undefined;
 
         if ( level.teambased && !level.friendlyfire )
-            var_7 = scripts\mp\utility::_id_807C( var_5, var_3, scripts\mp\utility::getotherteam( self.team ), undefined );
+            var_7 = scripts\mp\utility::getplayersinradius( var_5, var_3, scripts\mp\utility::getotherteam( self.team ), undefined );
         else
-            var_7 = scripts\mp\utility::_id_807C( var_5, var_3, undefined, self );
+            var_7 = scripts\mp\utility::getplayersinradius( var_5, var_3, undefined, self );
 
         foreach ( var_9 in var_7 )
         {
@@ -105,7 +105,7 @@ kineticpulse_playereffects( var_0, var_1 )
 
 kineticpulse_playerconcuss( var_0 )
 {
-    scripts\mp\gamescore::_id_11ACE( self, var_0, "kineticpulse_concuss_mp" );
+    scripts\mp\gamescore::trackdebuffassist( self, var_0, "kineticpulse_concuss_mp" );
     var_1 = scripts\mp\perks\perkfunctions::applystunresistence( self, var_0, 5 );
     var_0 shellshock( "concussion_grenade_mp", var_1 );
     var_0 scripts\engine\utility::waittill_any_timeout_no_endon_death( var_1, "death", "disconnect" );
@@ -126,7 +126,7 @@ kineticpulse_playeremp( var_0 )
     }
     else
     {
-        scripts\mp\gamescore::_id_11ACE( self, var_0, "kineticpulse_emp_mp" );
+        scripts\mp\gamescore::trackdebuffassist( self, var_0, "kineticpulse_emp_mp" );
         var_0 scripts\mp\killstreaks\emp_common::_id_20C3();
         var_0 scripts\engine\utility::waittill_any_timeout_no_endon_death( 5, "death", "disconnect" );
 

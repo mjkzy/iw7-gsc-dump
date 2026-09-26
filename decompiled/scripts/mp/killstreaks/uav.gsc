@@ -22,7 +22,7 @@ init()
     level.uavsettings["uav"].streakname = "uav";
     level.uavsettings["uav"].modelbase = "veh_mil_air_un_uav";
     level.uavsettings["uav"].fxid_explode = loadfx( "vfx/iw7/core/mp/killstreaks/vfx_veh_exp_uav.vfx" );
-    level.uavsettings["uav"]._id_7631 = loadfx( "vfx/misc/jet_engine_ac130" );
+    level.uavsettings["uav"].fxid_leave = loadfx( "vfx/misc/jet_engine_ac130" );
     level.uavsettings["uav"]._id_7637 = loadfx( "vfx/core/mp/killstreaks/vfx_3d_world_ping_large" );
     level.uavsettings["uav"].fx_leave_tag = "tag_origin";
     level.uavsettings["uav"].fxid_contrail = undefined;
@@ -31,8 +31,8 @@ init()
     level.uavsettings["uav"].teamsplash = "used_uav";
     level.uavsettings["uav"].votimeout = "uav_timeout";
     level.uavsettings["uav"].calloutdestroyed = "callout_destroyed_uav";
-    level.uavsettings["uav"]._id_17C8 = ::_id_179A;
-    level.uavsettings["uav"]._id_E124 = ::_id_E0C1;
+    level.uavsettings["uav"].addfunc = ::addactiveuav;
+    level.uavsettings["uav"].removefunc = ::removeactiveuav;
     level.uavsettings["counter_uav"] = spawnstruct();
     level.uavsettings["counter_uav"].timeout = level.uavblocktime;
     level.uavsettings["counter_uav"].health = 999999;
@@ -40,7 +40,7 @@ init()
     level.uavsettings["counter_uav"].streakname = "counter_uav";
     level.uavsettings["counter_uav"].modelbase = "veh_mil_air_un_cuav";
     level.uavsettings["counter_uav"].fxid_explode = loadfx( "vfx/iw7/core/mp/killstreaks/vfx_veh_exp_uav.vfx" );
-    level.uavsettings["counter_uav"]._id_7631 = loadfx( "vfx/misc/jet_engine_ac130" );
+    level.uavsettings["counter_uav"].fxid_leave = loadfx( "vfx/misc/jet_engine_ac130" );
     level.uavsettings["counter_uav"].fx_leave_tag = "tag_origin";
     level.uavsettings["counter_uav"].fxid_contrail = undefined;
     level.uavsettings["counter_uav"]._id_7566 = undefined;
@@ -48,8 +48,8 @@ init()
     level.uavsettings["counter_uav"].votimeout = "counter_uav_timeout";
     level.uavsettings["counter_uav"].teamsplash = "used_counter_uav";
     level.uavsettings["counter_uav"].calloutdestroyed = "callout_destroyed_counter_uav";
-    level.uavsettings["counter_uav"]._id_17C8 = ::_id_1799;
-    level.uavsettings["counter_uav"]._id_E124 = ::_id_E0BF;
+    level.uavsettings["counter_uav"].addfunc = ::addactivecounteruav;
+    level.uavsettings["counter_uav"].removefunc = ::removeactivecounteruav;
     level.uavsettings["directional_uav"] = spawnstruct();
     level.uavsettings["directional_uav"].timeout = level.advradarviewtime;
     level.uavsettings["directional_uav"].health = 999999;
@@ -57,7 +57,7 @@ init()
     level.uavsettings["directional_uav"].streakname = "directional_uav";
     level.uavsettings["directional_uav"].modelbase = "veh_mil_air_un_auav";
     level.uavsettings["directional_uav"].fxid_explode = loadfx( "vfx/iw7/core/mp/killstreaks/vfx_veh_exp_uav.vfx" );
-    level.uavsettings["directional_uav"]._id_7631 = loadfx( "vfx/misc/jet_engine_ac130" );
+    level.uavsettings["directional_uav"].fxid_leave = loadfx( "vfx/misc/jet_engine_ac130" );
     level.uavsettings["directional_uav"].fx_leave_tag = "tag_origin";
     level.uavsettings["directional_uav"].fxid_contrail = undefined;
     level.uavsettings["directional_uav"]._id_7566 = "tag_jet_trail";
@@ -65,55 +65,55 @@ init()
     level.uavsettings["directional_uav"].votimeout = "directional_uav_timeout";
     level.uavsettings["directional_uav"].teamsplash = "used_directional_uav";
     level.uavsettings["directional_uav"].calloutdestroyed = "callout_destroyed_directional_uav";
-    level.uavsettings["directional_uav"]._id_17C8 = ::_id_179A;
-    level.uavsettings["directional_uav"]._id_E124 = ::_id_E0C1;
+    level.uavsettings["directional_uav"].addfunc = ::addactiveuav;
+    level.uavsettings["directional_uav"].removefunc = ::removeactiveuav;
     level.uavsettings["uav_3dping"] = spawnstruct();
     level.uavsettings["uav_3dping"].timeout = 63;
     level.uavsettings["uav_3dping"].streakname = "uav_3dping";
-    level.uavsettings["uav_3dping"]._id_8EF7 = 1.5;
-    level.uavsettings["uav_3dping"]._id_CB9A = 10.0;
-    level.uavsettings["uav_3dping"]._id_7636 = loadfx( "vfx/core/mp/killstreaks/vfx_3d_world_ping" );
-    level.uavsettings["uav_3dping"]._id_1046A = "oracle_radar_pulse_plr";
-    level.uavsettings["uav_3dping"]._id_10469 = "oracle_radar_pulse_npc";
+    level.uavsettings["uav_3dping"].highlightfadetime = 1.5;
+    level.uavsettings["uav_3dping"].pingtime = 10.0;
+    level.uavsettings["uav_3dping"].fxid_ping = loadfx( "vfx/core/mp/killstreaks/vfx_3d_world_ping" );
+    level.uavsettings["uav_3dping"].sound_ping_plr = "oracle_radar_pulse_plr";
+    level.uavsettings["uav_3dping"].sound_ping_npc = "oracle_radar_pulse_npc";
     level.uavsettings["uav_3dping"].votimeout = "oracle_gone";
     level.uavsettings["uav_3dping"].teamsplash = "used_uav_3dping";
     var_1 = getentarray( "minimap_corner", "targetname" );
 
     if ( var_1.size )
-        level._id_12AF6 = scripts\mp\spawnlogic::findboxcenter( var_1[0].origin, var_1[1].origin );
+        level.uavrotationorigin = scripts\mp\spawnlogic::findboxcenter( var_1[0].origin, var_1[1].origin );
     else
-        level._id_12AF6 = ( 0, 0, 0 );
+        level.uavrotationorigin = ( 0, 0, 0 );
 
-    level._id_12AF5 = spawn( "script_model", level._id_12AF6 );
-    level._id_12AF5 setmodel( "tag_origin" );
-    level._id_12AF5.angles = ( 0, 115, 0 );
-    level._id_12AF5 hide();
-    level._id_12AF5.targetname = "uavrig_script_model";
-    level._id_12AF5 thread _id_E734( 70 );
-    level.uavrigslow = spawn( "script_model", level._id_12AF6 );
+    level.uavrig = spawn( "script_model", level.uavrotationorigin );
+    level.uavrig setmodel( "tag_origin" );
+    level.uavrig.angles = ( 0, 115, 0 );
+    level.uavrig hide();
+    level.uavrig.targetname = "uavrig_script_model";
+    level.uavrig thread rotateuavrig( 70 );
+    level.uavrigslow = spawn( "script_model", level.uavrotationorigin );
     level.uavrigslow setmodel( "tag_origin" );
     level.uavrigslow.angles = ( 0, 115, 0 );
     level.uavrigslow hide();
     level.uavrigslow.targetname = "uavrig_script_model";
-    level.uavrigslow thread _id_E734( 90 );
-    level._id_46B8 = spawn( "script_model", level._id_12AF6 );
-    level._id_46B8 setmodel( "tag_origin" );
-    level._id_46B8.angles = ( 0, 115, 0 );
-    level._id_46B8 hide();
-    level._id_46B8.targetname = "counteruavrig_script_model";
-    level._id_46B8 thread _id_E734( 80 );
-    level._id_18D2 = spawn( "script_model", level._id_12AF6 );
-    level._id_18D2 setmodel( "tag_origin" );
-    level._id_18D2.angles = ( 0, 115, 0 );
-    level._id_18D2 hide();
-    level._id_18D2.targetname = "advanceduavrig_script_model";
-    level._id_18D2 thread _id_E734( 60 );
-    level.advanceduavrigslow = spawn( "script_model", level._id_12AF6 );
+    level.uavrigslow thread rotateuavrig( 90 );
+    level.counteruavrig = spawn( "script_model", level.uavrotationorigin );
+    level.counteruavrig setmodel( "tag_origin" );
+    level.counteruavrig.angles = ( 0, 115, 0 );
+    level.counteruavrig hide();
+    level.counteruavrig.targetname = "counteruavrig_script_model";
+    level.counteruavrig thread rotateuavrig( 80 );
+    level.advanceduavrig = spawn( "script_model", level.uavrotationorigin );
+    level.advanceduavrig setmodel( "tag_origin" );
+    level.advanceduavrig.angles = ( 0, 115, 0 );
+    level.advanceduavrig hide();
+    level.advanceduavrig.targetname = "advanceduavrig_script_model";
+    level.advanceduavrig thread rotateuavrig( 60 );
+    level.advanceduavrigslow = spawn( "script_model", level.uavrotationorigin );
     level.advanceduavrigslow setmodel( "tag_origin" );
     level.advanceduavrigslow.angles = ( 0, 115, 0 );
     level.advanceduavrigslow hide();
     level.advanceduavrigslow.targetname = "advanceduavrig_script_model";
-    level.advanceduavrigslow thread _id_E734( 80 );
+    level.advanceduavrigslow thread rotateuavrig( 80 );
     var_2 = getuavstrengthlevelneutral();
 
     if ( level.multiteambased )
@@ -122,7 +122,7 @@ init()
         {
             level.radarmode[level.teamnamelist[var_3]] = "normal_radar";
             level.activeuavs[level.teamnamelist[var_3]] = 0;
-            level._id_164F[level.teamnamelist[var_3]] = 0;
+            level.activecounteruavs[level.teamnamelist[var_3]] = 0;
             level.activeadvanceduavs[level.teamnamelist[var_3]] = 0;
             level.uavmodels[level.teamnamelist[var_3]] = [];
         }
@@ -133,8 +133,8 @@ init()
         level.radarmode["axis"] = "normal_radar";
         level.activeuavs["allies"] = 0;
         level.activeuavs["axis"] = 0;
-        level._id_164F["allies"] = 0;
-        level._id_164F["axis"] = 0;
+        level.activecounteruavs["allies"] = 0;
+        level.activecounteruavs["axis"] = 0;
         level.activeadvanceduavs["allies"] = 0;
         level.activeadvanceduavs["axis"] = 0;
         level.uavmodels["allies"] = [];
@@ -144,13 +144,13 @@ init()
     {
         level.radarmode = [];
         level.activeuavs = [];
-        level._id_164F = [];
+        level.activecounteruavs = [];
         level.activeadvanceduavs = [];
         level.uavmodels = [];
     }
 
     level thread onplayerconnect();
-    level thread _id_12AF9();
+    level thread uavtracker();
 }
 
 onplayerconnect()
@@ -160,10 +160,10 @@ onplayerconnect()
     for (;;)
     {
         level waittill( "connected", var_1 );
-        scripts\mp\killstreaks\utility::_id_12F51();
+        scripts\mp\killstreaks\utility::updateuavstatus();
         level.activeuavs[var_1.guid] = 0;
         level.activeuavs[var_1.guid + "_radarStrength"] = var_0;
-        level._id_164F[var_1.guid] = 0;
+        level.activecounteruavs[var_1.guid] = 0;
         level.radarmode[var_1.guid] = "normal_radar";
         var_1.radarstrength = var_0;
         var_1 thread monitorplayerupdate();
@@ -181,7 +181,7 @@ monitorplayerupdate()
     }
 }
 
-_id_E734( var_0, var_1, var_2 )
+rotateuavrig( var_0, var_1, var_2 )
 {
     if ( isdefined( var_2 ) )
         self endon( var_2 );
@@ -207,8 +207,8 @@ _id_1290B( var_0 )
 _id_128B2( var_0 )
 {
     var_1 = "uav_3dping";
-    thread _id_13920( var_1 );
-    thread _id_13921( var_1 );
+    thread watch3dping( var_1 );
+    thread watch3dpingtimeout( var_1 );
     level thread scripts\mp\utility::teamplayercardsplash( level.uavsettings[var_1].teamsplash, self );
     return 1;
 }
@@ -252,7 +252,7 @@ _id_130F4( var_0, var_1 )
                 var_7 = _getradarstrength( var_2 );
 
                 if ( var_7 >= getuavstrengthlevelshowenemyfastsweep() )
-                    scripts\mp\missions::_id_D991( "ch_uav_doubleup" );
+                    scripts\mp\missions::processchallengedaily( "ch_uav_doubleup" );
             }
 
             self._id_12AF8["uav"] = 1;
@@ -262,7 +262,7 @@ _id_130F4( var_0, var_1 )
     if ( self._id_12AF8.size == 3 )
     {
         self._id_12AF8 = [];
-        scripts\mp\missions::_id_D991( "ch_uav_combo" );
+        scripts\mp\missions::processchallengedaily( "ch_uav_combo" );
     }
 
     return 1;
@@ -271,7 +271,7 @@ _id_130F4( var_0, var_1 )
 launchuav( var_0, var_1, var_2 )
 {
     var_3 = var_0.team;
-    var_4 = _id_81E8( var_1, var_2 );
+    var_4 = getuavrig( var_1, var_2 );
     var_5 = spawn( "script_model", var_4 gettagorigin( "tag_origin" ) + ( 0, 0, 5000 ) );
     var_6 = level.uavsettings[var_1].modelbase;
     var_7 = level.uavsettings[var_1].timeout;
@@ -324,20 +324,20 @@ launchuav( var_0, var_1, var_2 )
     var_5 setmodel( var_6 );
     var_5.team = var_3;
     var_5.owner = var_0;
-    var_5._id_11938 = 0;
+    var_5.timetoadd = 0;
     var_5.uavtype = var_1;
     var_5.health = level.uavsettings[var_1].health;
     var_5.maxhealth = var_8;
     var_5.streakinfo = var_2;
     var_5 setotherent( var_0 );
-    var_5 _meth_8549();
-    var_5 _meth_8594();
-    var_5 scripts\mp\killstreaks\utility::_id_1843( var_1, "Killstreak_Air", var_0 );
+    var_5 scriptmoveroutline();
+    var_5 scriptmoverthermal();
+    var_5 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_1, "Killstreak_Air", var_0 );
     var_5 thread damagetracker();
-    var_5 thread _id_89B7();
-    var_5 thread _id_CA50();
+    var_5 thread handleincomingstinger();
+    var_5 thread perkengineer_manageminimap();
     var_5 thread monitorowner();
-    var_5 thread _id_E2E4();
+    var_5 thread restorestrengthafterhostmigration();
     var_5 setscriptablepartstate( "lights", "on", 0 );
 
     if ( scripts\mp\killstreaks\utility::_id_A69F( var_2, "passive_stealth_vehicle" ) )
@@ -348,7 +348,7 @@ launchuav( var_0, var_1, var_2 )
     if ( isdefined( level.spawnpoints ) )
         var_12 = level.spawnpoints;
     else
-        var_12 = level._id_10DF1;
+        var_12 = level.startspawnpoints;
 
     var_13 = var_12[0];
 
@@ -379,8 +379,8 @@ launchuav( var_0, var_1, var_2 )
     var_24 = vectornormalize( ( var_22, var_23, var_11 ) );
     var_24 = var_24 * var_11;
     var_5 linkto( var_4, "tag_origin", var_24, ( 0, var_20 - 90, 0 ) );
-    var_5 thread _id_12F50();
-    var_5 [[ level.uavsettings[var_1]._id_17C8 ]]();
+    var_5 thread updateuavmodelvisibility();
+    var_5 [[ level.uavsettings[var_1].addfunc ]]();
 
     if ( isdefined( level.activeuavs[var_3] ) )
     {
@@ -389,8 +389,8 @@ launchuav( var_0, var_1, var_2 )
             if ( var_26 == var_5 )
                 continue;
 
-            if ( isdefined( var_26._id_11938 ) )
-                var_26._id_11938 = var_26._id_11938 + 5;
+            if ( isdefined( var_26.timetoadd ) )
+                var_26.timetoadd = var_26.timetoadd + 5;
         }
     }
 
@@ -411,8 +411,8 @@ launchuav( var_0, var_1, var_2 )
         var_28 = var_5.origin + anglestoforward( var_5.angles ) * 20000;
         var_5 moveto( var_28, 60 );
 
-        if ( isdefined( level.uavsettings[var_1]._id_7631 ) && isdefined( level.uavsettings[var_1].fx_leave_tag ) )
-            playfxontag( level.uavsettings[var_1]._id_7631, var_5, level.uavsettings[var_1].fx_leave_tag );
+        if ( isdefined( level.uavsettings[var_1].fxid_leave ) && isdefined( level.uavsettings[var_1].fx_leave_tag ) )
+            playfxontag( level.uavsettings[var_1].fxid_leave, var_5, level.uavsettings[var_1].fx_leave_tag );
 
         var_5 scripts\mp\hostmigration::waittill_notify_or_timeout_hostmigration_pause( "death", 3 );
 
@@ -424,14 +424,14 @@ launchuav( var_0, var_1, var_2 )
             var_5 moveto( var_28, 4, 4, 0.0 );
         }
 
-        var_5 scripts\mp\hostmigration::waittill_notify_or_timeout_hostmigration_pause( "death", 4 + var_5._id_11938 );
+        var_5 scripts\mp\hostmigration::waittill_notify_or_timeout_hostmigration_pause( "death", 4 + var_5.timetoadd );
     }
 
-    var_5 [[ level.uavsettings[var_1]._id_E124 ]]();
+    var_5 [[ level.uavsettings[var_1].removefunc ]]();
 
-    if ( isdefined( var_5._id_6569 ) )
+    if ( isdefined( var_5.enemyobjid ) )
     {
-        scripts\mp\objidpoolmanager::returnminimapid( var_5._id_6569 );
+        scripts\mp\objidpoolmanager::returnminimapid( var_5.enemyobjid );
         var_5 notify( "uav_deleteObjective" );
     }
 
@@ -467,7 +467,7 @@ monitorowner()
     self notify( "death" );
 }
 
-_id_E2E4()
+restorestrengthafterhostmigration()
 {
     self endon( "death" );
 
@@ -485,7 +485,7 @@ _id_E2E4()
     }
 }
 
-_id_12F50()
+updateuavmodelvisibility()
 {
     self endon( "death" );
 
@@ -521,7 +521,7 @@ damagetracker()
     for (;;)
     {
         self waittill( "damage", var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13 );
-        var_9 = scripts\mp\utility::_id_13CA1( var_9, var_13 );
+        var_9 = scripts\mp\utility::weaponmap( var_9, var_13 );
 
         if ( !isplayer( var_1 ) )
         {
@@ -605,8 +605,8 @@ damagetracker()
 
                     scripts\mp\damage::onkillstreakkilled( self.uavtype, var_1, var_9, var_4, var_0, "destroyed_" + self.uavtype, self.uavtype + "_destroyed", var_19 );
 
-                    if ( isdefined( self._id_12AF4 ) && self._id_12AF4 != var_1 )
-                        self._id_12AF4 thread scripts\mp\killstreaks\remoteuav::remoteuav_processtaggedassist();
+                    if ( isdefined( self.uavremotemarkedby ) && self.uavremotemarkedby != var_1 )
+                        self.uavremotemarkedby thread scripts\mp\killstreaks\remoteuav::remoteuav_processtaggedassist();
                 }
 
                 self hide();
@@ -619,7 +619,7 @@ damagetracker()
     }
 }
 
-_id_12AF9()
+uavtracker()
 {
     level endon( "game_ended" );
 
@@ -630,20 +630,20 @@ _id_12AF9()
         if ( level.multiteambased )
         {
             for ( var_0 = 0; var_0 < level.teamnamelist.size; var_0++ )
-                _id_12F3F( level.teamnamelist[var_0] );
+                updateteamuavstatus( level.teamnamelist[var_0] );
 
             continue;
         }
 
         if ( level.teambased )
         {
-            _id_12F3F( "allies" );
-            _id_12F3F( "axis" );
-            scripts\mp\killstreaks\utility::_id_12F51();
+            updateteamuavstatus( "allies" );
+            updateteamuavstatus( "axis" );
+            scripts\mp\killstreaks\utility::updateuavstatus();
             continue;
         }
 
-        _id_12EF2();
+        updateplayersuavstatus();
     }
 }
 
@@ -760,10 +760,10 @@ _getradarstrength( var_0 )
 
 _setteamradarstrength( var_0, var_1 )
 {
-    _id_12F3F( var_0, var_1 );
+    updateteamuavstatus( var_0, var_1 );
 }
 
-_id_12F3F( var_0, var_1 )
+updateteamuavstatus( var_0, var_1 )
 {
     var_2 = getuavstrengthmin();
     var_3 = getuavstrengthmax();
@@ -828,7 +828,7 @@ _id_12F3F( var_0, var_1 )
     }
 }
 
-_id_12EF2()
+updateplayersuavstatus()
 {
     var_0 = getuavstrengthmin();
     var_1 = getuavstrengthmax();
@@ -844,7 +844,7 @@ _id_12EF2()
             if ( var_8 == var_5 )
                 continue;
 
-            var_9 = level._id_164F[var_8.guid];
+            var_9 = level.activecounteruavs[var_8.guid];
 
             if ( var_9 > 0 && !var_5 scripts\mp\utility::_hasperk( "specialty_empimmune" ) )
             {
@@ -920,7 +920,7 @@ setradarmode( var_0, var_1, var_2 )
     }
 }
 
-_id_2BBC()
+blockplayeruav()
 {
     self endon( "disconnect" );
     self notify( "blockPlayerUAV" );
@@ -930,7 +930,7 @@ _id_2BBC()
     self.isradarblocked = 0;
 }
 
-_id_12F40( var_0 )
+updateteamuavtype( var_0 )
 {
     var_1 = _getradarstrength( var_0 ) >= getuavstrengthlevelshowenemydirectional();
 
@@ -963,13 +963,13 @@ useplayeruav( var_0, var_1 )
     self.hasradar = 0;
 }
 
-_id_F87B( var_0, var_1 )
+setteamradarwrapper( var_0, var_1 )
 {
     setteamradar( var_0, var_1 );
     level notify( "radar_status_change", var_0 );
 }
 
-_id_89B7()
+handleincomingstinger()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -981,11 +981,11 @@ _id_89B7()
         if ( !isdefined( var_2 ) || var_2 != self )
             continue;
 
-        var_1 thread _id_10FA8( var_2, var_0 );
+        var_1 thread stingerproximitydetonate( var_2, var_0 );
     }
 }
 
-_id_10FA8( var_0, var_1 )
+stingerproximitydetonate( var_0, var_1 )
 {
     self endon( "death" );
     var_2 = distance( self.origin, var_0 getpointinbounds( 0, 0, 0 ) );
@@ -1010,7 +1010,7 @@ _id_10FA8( var_0, var_1 )
                 return;
 
             radiusdamage( self.origin, 1536, 600, 600, var_1, "MOD_EXPLOSIVE", "iw7_lockon_mp" );
-            playfx( level._id_10FA1, self.origin );
+            playfx( level.stingerfxid, self.origin );
             self hide();
             self notify( "deleted" );
             wait 0.05;
@@ -1022,7 +1022,7 @@ _id_10FA8( var_0, var_1 )
     }
 }
 
-_id_1867()
+adduavmodel()
 {
     if ( level.teambased )
         level.uavmodels[self.team][level.uavmodels[self.team].size] = self;
@@ -1030,7 +1030,7 @@ _id_1867()
         level.uavmodels[self.owner.guid + "_" + gettime()] = self;
 }
 
-_id_E182()
+removeuavmodel()
 {
     var_0 = [];
 
@@ -1062,7 +1062,7 @@ _id_E182()
     }
 }
 
-_id_179A()
+addactiveuav()
 {
     if ( level.teambased )
     {
@@ -1088,15 +1088,15 @@ _id_179A()
     }
 }
 
-_id_1799()
+addactivecounteruav()
 {
     if ( level.teambased )
-        level._id_164F[self.team]++;
+        level.activecounteruavs[self.team]++;
     else
-        level._id_164F[self.owner.guid]++;
+        level.activecounteruavs[self.owner.guid]++;
 }
 
-_id_E0C1()
+removeactiveuav()
 {
     if ( level.teambased )
     {
@@ -1118,12 +1118,12 @@ _id_E0C1()
     }
 }
 
-_id_E0BF()
+removeactivecounteruav()
 {
     if ( level.teambased )
-        level._id_164F[self.team]--;
+        level.activecounteruavs[self.team]--;
     else if ( isdefined( self.owner ) )
-        level._id_164F[self.owner.guid]--;
+        level.activecounteruavs[self.owner.guid]--;
 }
 
 spawnfxdelay( var_0, var_1 )
@@ -1134,7 +1134,7 @@ spawnfxdelay( var_0, var_1 )
     playfxontag( var_0, self, var_1 );
 }
 
-_id_13920( var_0, var_1 )
+watch3dping( var_0, var_1 )
 {
     if ( isdefined( var_1 ) )
         var_1 endon( "death" );
@@ -1143,7 +1143,7 @@ _id_13920( var_0, var_1 )
     self endon( "killstreak_disowned" );
     level endon( "game_ended" );
     var_2 = level.uavsettings[var_0];
-    var_3 = var_2._id_CB9A;
+    var_3 = var_2.pingtime;
 
     if ( level.teambased )
         level.activeuavs[self.team]++;
@@ -1152,9 +1152,9 @@ _id_13920( var_0, var_1 )
 
     for (;;)
     {
-        playfx( var_2._id_7636, self.origin );
-        self playlocalsound( var_2._id_1046A );
-        playsoundatpos( self.origin + ( 0, 0, 5 ), var_2._id_10469 );
+        playfx( var_2.fxid_ping, self.origin );
+        self playlocalsound( var_2.sound_ping_plr );
+        playsoundatpos( self.origin + ( 0, 0, 5 ), var_2.sound_ping_npc );
 
         foreach ( var_5 in level.participants )
         {
@@ -1184,8 +1184,8 @@ _id_13920( var_0, var_1 )
                 }
 
                 var_8 = scripts\mp\utility::outlineenableforplayer( var_5, "orange", var_7, 0, 0, "killstreak" );
-                var_9 = var_2._id_8EF7;
-                var_7 thread _id_13AA0( var_8, var_5, var_9, var_1 );
+                var_9 = var_2.highlightfadetime;
+                var_7 thread watchhighlightfadetime( var_8, var_5, var_9, var_1 );
             }
         }
 
@@ -1193,7 +1193,7 @@ _id_13920( var_0, var_1 )
     }
 }
 
-_id_13921( var_0 )
+watch3dpingtimeout( var_0 )
 {
     self endon( "killstreak_disowned" );
     level endon( "game_ended" );
@@ -1204,21 +1204,21 @@ _id_13921( var_0 )
     if ( level.teambased )
         var_3 = self.team;
 
-    thread _id_13922( var_3 );
+    thread watch_3dping_killstreakdisowned( var_3 );
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( var_2 );
     scripts\mp\utility::leaderdialogonplayer( var_1.votimeout );
     self notify( "leave" );
-    _id_4044( var_3 );
+    cleanup3dping( var_3 );
 }
 
-_id_13922( var_0 )
+watch_3dping_killstreakdisowned( var_0 )
 {
     self endon( "leave" );
     self waittill( "killstreak_disowned" );
-    _id_4044( var_0 );
+    cleanup3dping( var_0 );
 }
 
-_id_4044( var_0 )
+cleanup3dping( var_0 )
 {
     level.activeuavs[var_0]--;
 
@@ -1226,7 +1226,7 @@ _id_4044( var_0 )
         level.activeuavs[var_0] = 0;
 }
 
-_id_13AA0( var_0, var_1, var_2, var_3 )
+watchhighlightfadetime( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( var_3 ) )
         var_3 endon( "death" );
@@ -1239,20 +1239,20 @@ _id_13AA0( var_0, var_1, var_2, var_3 )
         scripts\mp\utility::outlinedisable( var_0, var_1 );
 }
 
-_id_81E8( var_0, var_1 )
+getuavrig( var_0, var_1 )
 {
     var_2 = undefined;
 
     switch ( var_0 )
     {
         case "uav":
-            var_2 = level._id_12AF5;
+            var_2 = level.uavrig;
             break;
         case "counter_uav":
-            var_2 = level._id_46B8;
+            var_2 = level.counteruavrig;
             break;
         case "directional_uav":
-            var_2 = level._id_18D2;
+            var_2 = level.advanceduavrig;
 
             if ( scripts\mp\killstreaks\utility::_id_A69F( var_1, "passive_stealth_vehicle" ) )
                 var_2 = level.advanceduavrigslow;
@@ -1265,7 +1265,7 @@ _id_81E8( var_0, var_1 )
     return var_2;
 }
 
-_id_CA50()
+perkengineer_manageminimap()
 {
     self.owner endon( "disconnect" );
     self endon( "uav_deleteObjective" );
@@ -1285,7 +1285,7 @@ _id_CA50()
             var_0 = "icon_minimap_uav_enemy";
     }
 
-    self._id_6569 = scripts\mp\killstreaks\airdrop::createobjective_engineer( var_0, 1, 1 );
+    self.enemyobjid = scripts\mp\killstreaks\airdrop::createobjective_engineer( var_0, 1, 1 );
 
     for (;;)
     {
@@ -1297,15 +1297,15 @@ _id_CA50()
             if ( !isplayer( var_2 ) )
                 continue;
 
-            if ( self._id_6569 != -1 )
+            if ( self.enemyobjid != -1 )
             {
                 if ( var_2 scripts\mp\utility::_hasperk( "specialty_engineer" ) && scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( var_2, self.owner ) ) )
                 {
-                    scripts\mp\objidpoolmanager::minimap_objective_playermask_showto( self._id_6569, var_2 getentitynumber() );
+                    scripts\mp\objidpoolmanager::minimap_objective_playermask_showto( self.enemyobjid, var_2 getentitynumber() );
                     continue;
                 }
 
-                scripts\mp\objidpoolmanager::minimap_objective_playermask_hidefrom( self._id_6569, var_2 getentitynumber() );
+                scripts\mp\objidpoolmanager::minimap_objective_playermask_hidefrom( self.enemyobjid, var_2 getentitynumber() );
             }
         }
 
@@ -1350,10 +1350,10 @@ shutdownenemysystem( var_0 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
-    self _meth_85C7( 1 );
+    self setuavjammed( 1 );
     self playlocalsound( "counter_uav_jam_sfx" );
     var_0 waittill( "death" );
-    self _meth_85C7( 0 );
+    self setuavjammed( 0 );
     self playlocalsound( "counter_uav_jam_reboot_sfx" );
 }
 
@@ -1414,7 +1414,7 @@ startemppulse()
         var_1 thread applyuavshellshock( var_3, var_2 );
     }
 
-    _id_52C5( scripts\mp\utility::getotherteam( self.team ), self.owner );
+    destroyactiveobjects( scripts\mp\utility::getotherteam( self.team ), self.owner );
 }
 
 applyuavshellshock( var_0, var_1 )
@@ -1458,11 +1458,11 @@ applyuavshellshockvisionset()
     visionsetnaked( "", 0.5 );
 }
 
-_id_52C5( var_0, var_1 )
+destroyactiveobjects( var_0, var_1 )
 {
     var_2 = "nuke_mp";
-    var_3 = level._id_1655;
-    var_4 = scripts\mp\perks\perkfunctions::_id_7D96();
+    var_3 = level.activekillstreaks;
+    var_4 = scripts\mp\perks\perkfunctions::getactiveequipmentarray();
     var_5 = undefined;
 
     if ( isdefined( var_3 ) && isdefined( var_4 ) )

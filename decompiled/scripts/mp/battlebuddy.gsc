@@ -5,8 +5,8 @@ init()
 {
     if ( level.teambased && !isdefined( level.nobuddyspawns ) )
     {
-        if ( !isdefined( level._id_28CE ) )
-            level._id_28CE = [];
+        if ( !isdefined( level.battlebuddywaitlist ) )
+            level.battlebuddywaitlist = [];
 
         level thread onplayerspawned();
         level thread onplayerconnect();
@@ -18,7 +18,7 @@ onplayerconnect()
     for (;;)
     {
         level waittill( "connected", var_0 );
-        var_0 thread onbegincarrying();
+        var_0 thread onbattlebuddymenuselection();
         var_0 thread ondisconnect();
     }
 }
@@ -44,23 +44,23 @@ onplayerspawned()
                 }
             }
 
-            if ( var_0 _id_138DE() )
+            if ( var_0 wantsbattlebuddy() )
             {
-                if ( !var_0 _id_8BD4() )
+                if ( !var_0 hasbattlebuddy() )
                 {
                     var_0.firstspawn = 0;
-                    var_0 finalkillcam_victim();
+                    var_0 findbattlebuddy();
                 }
 
                 continue;
             }
 
-            var_0 _id_AB2B();
+            var_0 leavebattlebuddysystem();
         }
     }
 }
 
-onbegincarrying()
+onbattlebuddymenuselection()
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
@@ -71,21 +71,21 @@ onbegincarrying()
 
         if ( var_0 == "battlebuddy_update" )
         {
-            var_2 = !_id_138DE();
+            var_2 = !wantsbattlebuddy();
             self setplayerdata( "common", "enableBattleBuddy", var_2 );
 
             if ( var_2 )
-                finalkillcam_victim();
+                findbattlebuddy();
             else
-                _id_AB2B();
+                leavebattlebuddysystem();
 
             continue;
         }
 
         if ( var_0 == "team_select" && self.hasspawned )
         {
-            var_3 = _id_138DE();
-            _id_AB2B();
+            var_3 = wantsbattlebuddy();
+            leavebattlebuddysystem();
             self setplayerdata( "common", "enableBattleBuddy", var_3 );
         }
     }
@@ -94,20 +94,20 @@ onbegincarrying()
 ondisconnect()
 {
     self waittill( "disconnect" );
-    _id_AB2C();
+    leavebattlebuddysystemdisconnect();
 }
 
-_id_136D6()
+waitforplayerrespawnchoice()
 {
     scripts\mp\utility::updatesessionstate( "spectator" );
     self.forcespectatorclient = self.battlebuddy getentitynumber();
     self forcethirdpersonwhenfollowing();
     self setclientomnvar( "cam_scene_name", "over_shoulder" );
     self setclientomnvar( "cam_scene_lead", self.battlebuddy getentitynumber() );
-    _id_136AE();
+    waitforbuddyspawntimer();
 }
 
-_id_13A5F()
+watchforrandomspawnbutton()
 {
     self endon( "disconnect" );
     self endon( "abort_battlebuddy_spawn" );
@@ -120,27 +120,27 @@ _id_13A5F()
     self waittill( "respawn_random" );
     self setclientomnvar( "ui_battlebuddy_timer_ms", 0 );
     self setclientomnvar( "ui_battlebuddy_showButtonPrompt", 0 );
-    _id_FAAF();
+    setupforrandomspawn();
 }
 
-_id_FAAF()
+setupforrandomspawn()
 {
-    _id_419E();
+    clearbuddymessage();
     self.isspawningonbattlebuddy = undefined;
     self notify( "randomSpawnPressed" );
     cleanupbuddyspawn();
 }
 
-_id_136AE()
+waitforbuddyspawntimer()
 {
     self endon( "randomSpawnPressed" );
     level endon( "game_ended" );
     self.isspawningonbattlebuddy = undefined;
-    thread _id_13A5F();
+    thread watchforrandomspawnbutton();
 
-    if ( isdefined( self._id_28CD ) )
+    if ( isdefined( self.battlebuddyrespawntimestamp ) )
     {
-        var_0 = 4000 - ( gettime() - self._id_28CD );
+        var_0 = 4000 - ( gettime() - self.battlebuddyrespawntimestamp );
 
         if ( var_0 < 2000 )
             var_0 = 2000;
@@ -157,7 +157,7 @@ _id_136AE()
     else
         self.battlebuddy setclientomnvar( "ui_battlebuddy_status", "err_pos" );
 
-    _id_12F43( var_0 );
+    updatetimer( var_0 );
 
     for ( var_1 = checkbuddyspawn(); var_1.status != 0; var_1 = checkbuddyspawn() )
     {
@@ -181,12 +181,12 @@ _id_136AE()
     }
 
     self.isspawningonbattlebuddy = 1;
-    thread _id_56D5();
+    thread displaybuddyspawnsuccessful();
     self playlocalsound( "copycat_steal_class" );
     self notify( "teamSpawnPressed" );
 }
 
-_id_419E()
+clearbuddymessage()
 {
     self setclientomnvar( "ui_battlebuddy_status", "none" );
     self setclientomnvar( "ui_battlebuddy_showButtonPrompt", 0 );
@@ -195,14 +195,14 @@ _id_419E()
         self.battlebuddy setclientomnvar( "ui_battlebuddy_status", "none" );
 }
 
-_id_56D6( var_0 )
+displaybuddystatusmessage( var_0 )
 {
     scripts\mp\utility::setlowermessage( "waiting_info", var_0, undefined, undefined, undefined, undefined, undefined, undefined, 1 );
 }
 
-_id_56D5()
+displaybuddyspawnsuccessful()
 {
-    _id_419E();
+    clearbuddymessage();
 
     if ( isdefined( self.battlebuddy ) )
     {
@@ -232,11 +232,11 @@ cleanupbuddyspawn()
     scripts\mp\utility::updatesessionstate( "dead" );
     self disableforcethirdpersonwhenfollowing();
     self setclientomnvar( "cam_scene_name", "unknown" );
-    _id_419E();
+    clearbuddymessage();
     self notify( "abort_battlebuddy_spawn" );
 }
 
-_id_12F43( var_0 )
+updatetimer( var_0 )
 {
     self endon( "disconnect" );
     self endon( "abort_battlebuddy_spawn" );
@@ -247,131 +247,133 @@ _id_12F43( var_0 )
     self setclientomnvar( "ui_battlebuddy_timer_ms", 0 );
 }
 
-_id_138DE()
+wantsbattlebuddy()
 {
     return self getrankedplayerdata( "common", "enableBattleBuddy" );
 }
 
-_id_8BD4()
+hasbattlebuddy()
 {
     return isdefined( self.battlebuddy );
 }
 
-_id_BE8E()
+needsbattlebuddy()
 {
-    return _id_138DE() && !_id_8BD4();
+    return wantsbattlebuddy() && !hasbattlebuddy();
 }
 
-_id_9FD1( var_0 )
+isvalidbattlebuddy( var_0 )
 {
-    return self != var_0 && self.team == var_0.team && var_0 _id_BE8E();
+    return self != var_0 && self.team == var_0.team && var_0 needsbattlebuddy();
 }
 
-_id_3876()
+canbuddyspawn()
 {
-    return _id_8BD4() && scripts\mp\utility::isreallyalive( self.battlebuddy );
+    return hasbattlebuddy() && scripts\mp\utility::isreallyalive( self.battlebuddy );
 }
 
-_id_C88C( var_0 )
+pairbattlebuddy( var_0 )
 {
-    _id_E103( var_0 );
+    removefrombattlebuddywaitlist( var_0 );
     self.battlebuddy = var_0;
     var_0.battlebuddy = self;
     self setclientomnvar( "ui_battlebuddy_idx", var_0 getentitynumber() );
     var_0 setclientomnvar( "ui_battlebuddy_idx", self getentitynumber() );
 }
 
-_id_8209()
+getwaitingbattlebuddy()
 {
-    return level._id_28CE[self.team];
+    return level.battlebuddywaitlist[self.team];
 }
 
-_id_1848( var_0 )
+addtobattlebuddywaitlist( var_0 )
 {
-    if ( !isdefined( level._id_28CE[var_0.team] ) )
-        level._id_28CE[var_0.team] = var_0;
-    else if ( level._id_28CE[var_0.team] != var_0 )
-        return;
+    if ( !isdefined( level.battlebuddywaitlist[var_0.team] ) )
+        level.battlebuddywaitlist[var_0.team] = var_0;
+    else if ( level.battlebuddywaitlist[var_0.team] != var_0 )
+    {
+
+    }
 }
 
-_id_E103( var_0 )
+removefrombattlebuddywaitlist( var_0 )
 {
-    if ( isdefined( var_0.team ) && isdefined( level._id_28CE[var_0.team] ) && var_0 == level._id_28CE[var_0.team] )
-        level._id_28CE[var_0.team] = undefined;
+    if ( isdefined( var_0.team ) && isdefined( level.battlebuddywaitlist[var_0.team] ) && var_0 == level.battlebuddywaitlist[var_0.team] )
+        level.battlebuddywaitlist[var_0.team] = undefined;
 }
 
-finalkillcam_victim()
+findbattlebuddy()
 {
     if ( level.onlinegame )
     {
-        self._id_6D95 = self getfireteammembers();
+        self.fireteammembers = self getfireteammembers();
 
-        if ( self._id_6D95.size >= 1 )
+        if ( self.fireteammembers.size >= 1 )
         {
-            foreach ( var_1 in self._id_6D95 )
+            foreach ( var_1 in self.fireteammembers )
             {
-                if ( _id_9FD1( var_1 ) )
-                    _id_C88C( var_1 );
+                if ( isvalidbattlebuddy( var_1 ) )
+                    pairbattlebuddy( var_1 );
             }
         }
     }
 
-    if ( !_id_8BD4() )
+    if ( !hasbattlebuddy() )
     {
-        var_1 = _id_8209();
+        var_1 = getwaitingbattlebuddy();
 
-        if ( isdefined( var_1 ) && _id_9FD1( var_1 ) )
-            _id_C88C( var_1 );
+        if ( isdefined( var_1 ) && isvalidbattlebuddy( var_1 ) )
+            pairbattlebuddy( var_1 );
         else
         {
-            _id_1848( self );
+            addtobattlebuddywaitlist( self );
             self setclientomnvar( "ui_battlebuddy_idx", -1 );
         }
     }
 }
 
-_id_419D()
+clearbattlebuddy()
 {
     if ( !isalive( self ) )
-        _id_FAAF();
+        setupforrandomspawn();
 
     self setclientomnvar( "ui_battlebuddy_idx", -1 );
     self.battlebuddy = undefined;
 }
 
-_id_AB2B()
+leavebattlebuddysystem()
 {
-    if ( _id_8BD4() )
+    if ( hasbattlebuddy() )
     {
         var_0 = self.battlebuddy;
-        _id_419D();
+        clearbattlebuddy();
         self setplayerdata( "common", "enableBattleBuddy", 0 );
-        var_0 _id_419D();
-        var_0 finalkillcam_victim();
+        var_0 clearbattlebuddy();
+        var_0 findbattlebuddy();
     }
     else
     {
-        _id_E103( self );
+        removefrombattlebuddywaitlist( self );
         self setclientomnvar( "ui_battlebuddy_idx", -1 );
     }
 }
 
-_id_AB2C()
+leavebattlebuddysystemdisconnect()
 {
-    if ( _id_8BD4() )
+    if ( hasbattlebuddy() )
     {
         var_0 = self.battlebuddy;
-        var_0 _id_419D();
-        var_0 finalkillcam_victim();
-        var_0 _id_419E();
+        var_0 clearbattlebuddy();
+        var_0 findbattlebuddy();
+        var_0 clearbuddymessage();
     }
     else
     {
-        foreach ( var_3, var_2 in level._id_28CE )
+        foreach ( var_3, var_2 in level.battlebuddywaitlist )
         {
             if ( var_2 == self )
             {
-                level._id_28CE[var_3] = undefined;
+                level.battlebuddywaitlist[var_3] = undefined;
                 break;
             }
         }

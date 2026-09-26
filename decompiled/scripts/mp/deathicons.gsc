@@ -14,7 +14,7 @@ onplayerconnect()
     for (;;)
     {
         level waittill( "connected", var_0 );
-        var_0._id_F1E9 = [];
+        var_0.selfdeathicons = [];
     }
 }
 
@@ -23,7 +23,7 @@ _id_12E86()
 
 }
 
-_id_17C1( var_0, var_1, var_2, var_3 )
+adddeathicon( var_0, var_1, var_2, var_3 )
 {
     if ( !level.teambased )
         return;
@@ -32,7 +32,7 @@ _id_17C1( var_0, var_1, var_2, var_3 )
     var_1 endon( "spawned_player" );
     var_1 endon( "disconnect" );
     wait 0.05;
-    scripts\mp\utility::_id_13842();
+    scripts\mp\utility::waittillslowprocessallowed();
 
     if ( getdvar( "ui_hud_showdeathicons" ) == "0" )
         return;
@@ -58,10 +58,10 @@ _id_17C1( var_0, var_1, var_2, var_3 )
 
     var_5 setwaypoint( 0 );
     self.lastdeathicon = var_5;
-    var_5 thread _id_5323( var_3 );
+    var_5 thread destroyslowly( var_3 );
 }
 
-_id_5323( var_0 )
+destroyslowly( var_0 )
 {
     self endon( "death" );
     wait( var_0 );

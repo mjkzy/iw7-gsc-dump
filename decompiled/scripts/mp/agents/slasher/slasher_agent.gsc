@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\slasher::_id_DEE8();
-    scripts\asm\slasher\mp\states::_id_2371();
+    behaviortree\slasher::registerbehaviortree();
+    scripts\asm\slasher\mp\states::asm_register();
     scripts\mp\agents\slasher\slasher_tunedata::setuptunedata();
     thread _id_FAB0();
 }
@@ -67,7 +67,7 @@ setupzombiegametypevars()
     self.trap_killed_by = undefined;
     self.hastraversed = 0;
     self.attackent = undefined;
-    self._id_9342 = 1;
+    self.immune_against_repulsor = 1;
     self.aistate = "idle";
     self.movemode = "walk";
     self.sharpturnnotifydist = 100;
@@ -111,7 +111,7 @@ setupzombiegametypevars()
     self.is_cop = undefined;
     self.highlyawareradius = 200;
     self.deathmethod = undefined;
-    self._id_10A57 = undefined;
+    self.spooned = undefined;
     self.gib_fx_override = undefined;
     self._id_CE65 = undefined;
     self._id_29D2 = 1;
@@ -126,8 +126,8 @@ setupzombiegametypevars()
 setupagent()
 {
     setupzombiegametypevars();
-    self.height = self._id_18F4;
-    self.radius = self._id_18F9;
+    self.height = self.agent_height;
+    self.radius = self.agent_radius;
     self.immune_against_nuke = 1;
     self._id_B62D = 70;
     self._id_B62E = 70;
@@ -139,8 +139,8 @@ setupagent()
     self.meleeattackchance["melee_spin"] = 10;
     self.meleeattackchance["ground_pound"] = 30;
     self.meleeattackchance["swipe_attack"] = 100;
-    self._id_504E = 55;
-    self._id_129AF = 55;
+    self.defaultturnthreshold = 55;
+    self.turnthreshold = 55;
     self.upaimlimit = -60;
     self.downaimlimit = 60;
     self.grenadeweapon = "slasher_grenade_zm";
@@ -149,7 +149,7 @@ setupagent()
     self.footstepdetectdist = 2500;
     self.footstepdetectdistwalk = 2500;
     self.footstepdetectdistsprint = 2500;
-    self._id_71D0 = ::shouldslasherplaypainanim;
+    self.fnshouldplaypainanim = ::shouldslasherplaypainanim;
     self.ignoreall = 1;
     var_0 = getdvar( "ui_mapname" );
 
@@ -311,7 +311,7 @@ slasher_on_damage_finished( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var
     self.damagedir = var_7;
     self.damagetaken = var_2;
     self.damageweapon = var_5;
-    self._id_4D62 = var_6;
+    self.damagepoint = var_6;
 
     if ( var_2 >= self.health )
     {

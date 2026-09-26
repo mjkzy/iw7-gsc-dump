@@ -1509,7 +1509,7 @@ weapon_replaced_monitor( var_0 )
         self waittill( "weapon_purchased" );
         var_1 = self getweaponslistprimaries();
 
-        if ( !scripts\engine\utility::exist_in_array_MAYBE( var_1, var_0 ) )
+        if ( !scripts\engine\utility::_id_693B( var_1, var_0 ) )
         {
             self notify( "player_lost_weapon_" + var_0 );
             self.wait_on_reload = scripts\engine\utility::array_remove( self.wait_on_reload, var_0 );

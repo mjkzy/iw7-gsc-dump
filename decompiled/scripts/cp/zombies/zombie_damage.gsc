@@ -266,7 +266,7 @@ play_pain_photo( var_0 )
     scripts\cp\zombies\zombies_loadout::set_player_photo_status( var_0, "healthy" );
 }
 
-_id_50F9( var_0 )
+delayed_stun_damage( var_0 )
 {
     self endon( "death" );
     var_0 endon( "death" );
@@ -441,7 +441,7 @@ shouldtakedamage( var_0, var_1, var_2, var_3 )
     return 1;
 }
 
-_id_F29B( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
+set_alien_damage_by_weapon_type( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 {
     if ( isdefined( var_1 ) )
     {
@@ -475,7 +475,7 @@ update_damage_score( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var
     if ( isdefined( var_1 ) && isdefined( var_5 ) )
         level thread update_zombie_damage_challenge( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, self );
 
-    update_zombie_damage_challenge( var_1, var_2, var_4 );
+    update_alien_damage_performance( var_1, var_2, var_4 );
 }
 
 update_zombie_damage_challenge( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10 )
@@ -488,17 +488,17 @@ update_zombie_damage_challenge( var_0, var_1, var_2, var_3, var_4, var_5, var_6,
 
     if ( isdefined( var_1 ) && isplayer( var_1 ) )
     {
-        var_11 = self [[ level._id_4C44 ]]( var_0, var_1, var_2, var_4, var_5, var_7, var_8, var_9, var_10 );
+        var_11 = self [[ level.custom_damage_challenge_func ]]( var_0, var_1, var_2, var_4, var_5, var_7, var_8, var_9, var_10 );
 
         if ( !scripts\engine\utility::is_true( var_11 ) )
             return;
     }
 }
 
-update_zombie_damage_challenge( var_0, var_1, var_2 )
+update_alien_damage_performance( var_0, var_1, var_2 )
 {
-    if ( isdefined( level.update_zombie_damage_challenge ) )
-        [[ level.update_zombie_damage_challenge ]]( var_0, var_1, var_2 );
+    if ( isdefined( level.update_alien_damage_performance ) )
+        [[ level.update_alien_damage_performance ]]( var_0, var_1, var_2 );
     else
         update_performance_zombie_damage( var_0, var_1, var_2 );
 }
@@ -522,7 +522,7 @@ update_performance_zombie_damage( var_0, var_1, var_2 )
         var_0.owner scripts\cp\cp_gamescore::update_personal_encounter_performance( "personal", "damage_done_on_alien", var_1 );
 }
 
-_id_2189( var_0, var_1, var_2 )
+armormitigation( var_0, var_1, var_2 )
 {
     return 1.0;
 }
@@ -580,7 +580,7 @@ stun_zap( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
                 if ( scripts\engine\utility::is_true( var_5 ) )
                     var_15.shockmelee = 1;
 
-                var_15 _id_1118C( self, var_2, var_3, var_0 );
+                var_15 stun_bolt_death( self, var_2, var_3, var_0 );
                 var_9++;
 
                 if ( var_9 >= var_10 )
@@ -604,7 +604,7 @@ stun_zap( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     return var_8;
 }
 
-_id_1118C( var_0, var_1, var_2, var_3 )
+stun_bolt_death( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
     scripts\engine\utility::waitframe();

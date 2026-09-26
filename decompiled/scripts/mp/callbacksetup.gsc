@@ -57,7 +57,7 @@ _id_00B5( var_0, var_1 )
         var_0 = [[ level.weaponmapfunc ]]( var_0 );
 }
 
-codecallback_playerfinishweaponchange( var_0, var_1, var_2, var_3 )
+_id_00B6( var_0, var_1, var_2, var_3 )
 {
     self endon( "disconnect" );
 

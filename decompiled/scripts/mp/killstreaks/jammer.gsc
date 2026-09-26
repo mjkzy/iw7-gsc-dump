@@ -6,9 +6,9 @@ init()
     level.teamemped["allies"] = 0;
     level.teamemped["axis"] = 0;
     level.empplayer = undefined;
-    level.empstuntime = 10.0;
-    level.emptriggerholdonuse = int( level.empstuntime );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "jammer", ::_id_618B );
+    level.emptimeout = 10.0;
+    level.emptimeremaining = int( level.emptimeout );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "jammer", ::emp_use );
     level._id_A434["air_patrol"] = spawnstruct();
     level._id_A434["air_patrol"]._id_AC75 = 60;
     level._id_A434["air_patrol"].health = 99999;
@@ -17,9 +17,9 @@ init()
     level._id_A434["air_patrol"].vehicleinfo = "veh_jammer_drone_mp";
     level._id_A434["air_patrol"].sentrymodeoff = "sentry_offline";
     level._id_A434["air_patrol"].modelbase = "veh_jammer_drone_model";
-    level._id_A434["air_patrol"]._id_A84D = "killstreak_remote_tank_laptop_mp";
-    level._id_A434["air_patrol"].remotedetonatethink = "killstreak_remote_tank_remote_mp";
-    level._id_A434["air_patrol"]._id_12A72 = "sentry_shock_mp";
+    level._id_A434["air_patrol"].laptopinfo = "killstreak_remote_tank_laptop_mp";
+    level._id_A434["air_patrol"].remoteinfo = "killstreak_remote_tank_remote_mp";
+    level._id_A434["air_patrol"].turretinfo = "sentry_shock_mp";
     level._effect["jammer_drone_explode"] = loadfx( "vfx/iw7/_requests/mp/vfx_jammer_drone_explosion" );
     level._effect["jammer_drone_spark"] = loadfx( "vfx/core/impacts/large_metal_painted_hit" );
     level._effect["jammer_drone_pulse"] = loadfx( "vfx/iw7/_requests/mp/vfx_jammer_drone_emp_pulse" );
@@ -39,10 +39,10 @@ _id_F765()
     level._id_A432 = scripts\engine\utility::getstructarray( "jammer_drone_emp", "script_noteworthy" );
 }
 
-_id_618B( var_0 )
+emp_use( var_0 )
 {
     var_1 = 1;
-    var_2 = _id_7E37( self.origin );
+    var_2 = getcloseststartnode( self.origin );
     var_3 = _id_6CBF( var_2 );
     var_4 = vectortoangles( var_3.origin - var_2.origin );
 
@@ -84,21 +84,21 @@ _id_49DE( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     var_11.health = level._id_A434[var_4].health;
     var_11.maxhealth = level._id_A434[var_4].maxhealth;
     var_11.damagetaken = 0;
-    var_11._id_10955 = ::_id_3758;
+    var_11.specialdamagecallback = ::callback_vehicledamage;
     var_11.lifeid = var_6;
     var_11.speed = 200;
     var_11.owner = var_0;
     var_11.team = var_0.team;
-    var_11._id_52D0 = 0;
+    var_11.destroyed = 0;
     var_11._id_A436 = var_4;
     var_11.streakname = var_5;
     var_11.empgrenaded = 0;
     var_11.forward = var_9;
-    var_11._id_C973 = var_10;
-    var_11._id_C96C = var_8;
-    var_11._id_4BF7 = var_2;
+    var_11.pathstart = var_10;
+    var_11.pathgoal = var_8;
+    var_11.currentnode = var_2;
     var_11._id_A435 = 0;
-    var_11 scripts\mp\killstreaks\utility::_id_1843( var_5, "Killstreak_Air", var_0, 1 );
+    var_11 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_5, "Killstreak_Air", var_0, 1 );
     var_11 vehicle_setspeed( var_11.speed, 70, 50 );
     var_11 setyawspeed( 120, 90 );
     var_11 setneargoalnotifydist( 150 );
@@ -137,10 +137,10 @@ _id_376F( var_0 )
             var_2 = undefined;
         }
 
-        var_0 setvehgoalpos( var_0._id_C96C, var_1 );
+        var_0 setvehgoalpos( var_0.pathgoal, var_1 );
         var_0 waittill( "near_goal" );
 
-        if ( _id_9DD5( var_0._id_4BF7 ) && !var_0._id_A435 )
+        if ( _id_9DD5( var_0.currentnode ) && !var_0._id_A435 )
             var_0 waittill( "goal" );
 
         if ( !isdefined( var_0._id_DD1C ) )
@@ -149,16 +149,16 @@ _id_376F( var_0 )
             var_0._id_DD1C = 1;
         }
 
-        if ( _id_9DD5( var_0._id_4BF7 ) && !var_0._id_A435 )
+        if ( _id_9DD5( var_0.currentnode ) && !var_0._id_A435 )
         {
             var_0 thread _id_5C83( self );
             var_0 waittill( "finished_emp_pulse" );
         }
 
-        var_0._id_4BF7 = _id_6CBF( var_0._id_4BF7 );
-        var_0._id_C96C = var_0._id_4BF7.origin;
+        var_0.currentnode = _id_6CBF( var_0.currentnode );
+        var_0.pathgoal = var_0.currentnode.origin;
 
-        if ( _id_9DD5( var_0._id_4BF7 ) && !var_0._id_A435 )
+        if ( _id_9DD5( var_0.currentnode ) && !var_0._id_A435 )
         {
             var_1 = 1;
             continue;
@@ -191,11 +191,11 @@ _id_6CBF( var_0 )
     return var_2;
 }
 
-_id_3758( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
+callback_vehicledamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11 )
 {
     var_12 = self;
 
-    if ( isdefined( var_12._id_1D41 ) && var_12._id_1D41 )
+    if ( isdefined( var_12.alreadydead ) && var_12.alreadydead )
         return;
 
     if ( !scripts\mp\weapons::friendlyfirecheck( var_12.owner, var_1 ) )
@@ -284,7 +284,7 @@ _id_3758( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, 
     {
         if ( isplayer( var_1 ) && ( !isdefined( var_12.owner ) || var_1 != var_12.owner ) )
         {
-            var_12._id_1D41 = 1;
+            var_12.alreadydead = 1;
             var_12 scripts\mp\damage::onkillstreakkilled( "jammer", var_1, var_5, var_4, var_2, "destroyed_" + var_12.streakname, var_12.streakname + "_destroyed", "callout_destroyed_" + var_12.streakname, 1 );
         }
 
@@ -330,8 +330,8 @@ _id_5C27()
     {
         self waittill( "damage", var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 );
 
-        if ( isdefined( self._id_10955 ) )
-            self [[ self._id_10955 ]]( undefined, var_1, var_0, var_8, var_4, var_9, var_3, var_2, undefined, undefined, var_5, var_7 );
+        if ( isdefined( self.specialdamagecallback ) )
+            self [[ self.specialdamagecallback ]]( undefined, var_1, var_0, var_8, var_4, var_9, var_3, var_2, undefined, undefined, var_5, var_7 );
     }
 }
 
@@ -355,23 +355,23 @@ _id_5C83( var_0 )
     stopfxontag( scripts\engine\utility::getfx( "jammer_drone_charge" ), self, "tag_origin" );
     playfxontag( scripts\engine\utility::getfx( "jammer_drone_shockwave" ), self, "tag_origin" );
     self playsound( "jammer_drone_shockwave" );
-    thread empremovecallback();
+    thread _id_61AF();
     var_1 = var_0.pers["team"];
 
     if ( level.teambased )
     {
         var_2 = scripts\mp\utility::getotherteam( var_1 );
-        thread _id_6165( var_2, var_0 );
+        thread emp_jamteam( var_2, var_0 );
     }
     else
-        thread _id_6164( var_0 );
+        thread emp_jamplayers( var_0 );
 
     var_0 scripts\mp\matchdata::logkillstreakevent( "jammer", self.origin );
     level notify( "emp_used" );
     self notify( "finished_emp_pulse" );
 }
 
-empremovecallback()
+_id_61AF()
 {
     self endon( "death" );
     level waittill( "player_spawned", var_0 );
@@ -382,18 +382,18 @@ empremovecallback()
         {
             var_0 scripts\mp\killstreaks\emp_common::_id_20C3();
             var_0 shellshock( "flashbang_mp", 0.5 );
-            var_0 thread remotedefusecallback( self );
+            var_0 thread _id_DF77( self );
         }
     }
     else if ( var_0 scripts\mp\killstreaks\emp_common::_id_FFC5() && var_0 != self.owner )
     {
         var_0 scripts\mp\killstreaks\emp_common::_id_20C3();
         var_0 shellshock( "flashbang_mp", 0.5 );
-        var_0 thread remotedefusecallback( self );
+        var_0 thread _id_DF77( self );
     }
 }
 
-_id_6165( var_0, var_1 )
+emp_jamteam( var_0, var_1 )
 {
     level endon( "game_ended" );
     wait 0.5;
@@ -406,13 +406,13 @@ _id_6165( var_0, var_1 )
         {
             var_3 scripts\mp\killstreaks\emp_common::_id_20C3();
             var_3 shellshock( "flashbang_mp", 0.5 );
-            var_3 thread remotedefusecallback( self );
+            var_3 thread _id_DF77( self );
         }
     }
 
-    level thread scripts\mp\killstreaks\emp_common::_id_20CD();
+    level thread scripts\mp\killstreaks\emp_common::applyglobalempeffects();
     level notify( "emp_update" );
-    level _id_52C5( var_1, var_0 );
+    level destroyactiveobjects( var_1, var_0 );
     level.teamemped[var_0] = 1;
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 60 );
     level.teamemped[var_0] = 0;
@@ -423,7 +423,7 @@ _id_6165( var_0, var_1 )
     level notify( "emp_update" );
 }
 
-_id_6164( var_0 )
+emp_jamplayers( var_0 )
 {
     level notify( "EMP_JamPlayers" );
     level endon( "EMP_JamPlayers" );
@@ -440,14 +440,14 @@ _id_6164( var_0 )
         {
             var_2 scripts\mp\killstreaks\emp_common::_id_20C3();
             var_2 shellshock( "flashbang_mp", 0.5 );
-            var_2 thread remotedefusecallback( self );
+            var_2 thread _id_DF77( self );
         }
     }
 
-    level thread scripts\mp\killstreaks\emp_common::_id_20CD();
+    level thread scripts\mp\killstreaks\emp_common::applyglobalempeffects();
     level notify( "emp_update" );
-    level.empplayer thread empradarwatcher();
-    level _id_52C5( var_0 );
+    level.empplayer thread empplayerffadisconnect();
+    level destroyactiveobjects( var_0 );
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 60 );
 
     if ( isdefined( self ) )
@@ -457,17 +457,17 @@ _id_6164( var_0 )
     level notify( "emp_ended" );
 }
 
-_id_A577()
+keepemptimeremaining()
 {
     level notify( "keepEMPTimeRemaining" );
     level endon( "keepEMPTimeRemaining" );
     level endon( "emp_ended" );
 
-    for ( level.emptriggerholdonuse = int( level.empstuntime ); level.emptriggerholdonuse; level.emptriggerholdonuse-- )
+    for ( level.emptimeremaining = int( level.emptimeout ); level.emptimeremaining; level.emptimeremaining-- )
         wait 1.0;
 }
 
-empradarwatcher()
+empplayerffadisconnect()
 {
     level endon( "EMP_JamPlayers" );
     level endon( "emp_ended" );
@@ -482,27 +482,27 @@ _id_531D( var_0, var_1, var_2 )
     if ( isdefined( var_2 ) )
         var_3 = var_2;
 
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level.turrets );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level.placedims );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level.balldrones );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level.mines );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level.turrets );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level.placedims );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level.balldrones );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level.mines );
 }
 
-_id_52CA( var_0, var_1, var_2 )
+destroyactivevehicles( var_0, var_1, var_2 )
 {
     var_3 = "aamissile_projectile_mp";
 
     if ( isdefined( var_2 ) )
         var_3 = var_2;
 
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level.helis );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level.littlebirds );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level.remote_uav );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level.planes );
-    scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level._id_105EA );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level.helis );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level.littlebirds );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level.remote_uav );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level.planes );
+    scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level._id_105EA );
 
     if ( isdefined( var_1 ) )
-        scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, level.uavmodels[var_1] );
+        scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, level.uavmodels[var_1] );
     else
     {
         var_4 = [];
@@ -515,7 +515,7 @@ _id_52CA( var_0, var_1, var_2 )
             var_4[var_4.size] = var_6;
         }
 
-        scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, var_4 );
+        scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, var_4 );
     }
 
     var_8 = [];
@@ -527,21 +527,21 @@ _id_52CA( var_0, var_1, var_2 )
             if ( var_10.team == var_0.team )
                 continue;
 
-            if ( scripts\mp\utility::_id_9EF0( var_10 ) )
+            if ( scripts\mp\utility::isplayerkillstreak( var_10 ) )
                 var_8[var_8.size] = var_10;
         }
 
-        scripts\mp\killstreaks\killstreaks::_id_532A( var_0, var_1, var_3, var_8 );
+        scripts\mp\killstreaks\killstreaks::destroytargetarray( var_0, var_1, var_3, var_8 );
     }
 }
 
-_id_52C5( var_0, var_1, var_2 )
+destroyactiveobjects( var_0, var_1, var_2 )
 {
     level _id_531D( var_0, var_1, var_2 );
-    level _id_52CA( var_0, var_1, var_2 );
+    level destroyactivevehicles( var_0, var_1, var_2 );
 }
 
-_id_7E37( var_0 )
+getcloseststartnode( var_0 )
 {
     var_1 = undefined;
     var_2 = 999999;
@@ -560,7 +560,7 @@ _id_7E37( var_0 )
     return var_1;
 }
 
-remotedefusecallback( var_0 )
+_id_DF77( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );

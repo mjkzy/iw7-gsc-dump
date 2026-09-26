@@ -89,7 +89,7 @@ _id_12A53( var_0 )
     thread scripts\mp\weapons::doblinkinglight( self._id_45C3.settings.lightfxtag );
     _id_12A8E();
     self setturretminimapvisible( 1, "sentry" );
-    _id_1862( self getentitynumber() );
+    addtoturretlist( self getentitynumber() );
 }
 
 _id_12A5D()
@@ -101,7 +101,7 @@ _id_12A5D()
     self.owner = undefined;
     self.team = undefined;
     var_0 = self getentitynumber();
-    _id_E11F( var_0 );
+    removefromturretlist( var_0 );
     self setturretminimapvisible( 0, "sentry" );
     _id_12A6F();
     scripts\mp\weapons::stopblinkinglight();
@@ -307,7 +307,7 @@ _id_12A6B()
     self setdefaultdroppitch( 40 );
 
     if ( isdefined( self.inuseby ) )
-        self _meth_83D3( self.inuseby );
+        self useby( self.inuseby );
 
     self playsound( "sentry_explode" );
 
@@ -381,12 +381,12 @@ playheatfx()
     }
 }
 
-_id_1862( var_0 )
+addtoturretlist( var_0 )
 {
     level.turrets[var_0] = self;
 }
 
-_id_E11F( var_0 )
+removefromturretlist( var_0 )
 {
     level.turrets[var_0] = undefined;
 }

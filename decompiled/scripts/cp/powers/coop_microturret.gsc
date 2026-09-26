@@ -86,7 +86,7 @@ microturret_use( var_0 )
     var_3 maketurretinoperable();
     var_3 makeunusable();
     self.vehicle = var_3;
-    var_3._id_1E2D = 100;
+    var_3.ammo = 100;
 
     if ( level.teambased )
         var_3 setturretteam( self.team );
@@ -98,9 +98,9 @@ microturret_use( var_0 )
     var_3 setrightarc( 180 );
     var_3 setbottomarc( 90 );
     var_3 settoparc( 45 );
-    var_3 _meth_82C9( 0.3, "pitch" );
-    var_3 _meth_82C9( 0.3, "yaw" );
-    var_3 _meth_82C8( 0.65 );
+    var_3 setconvergencetime( 0.3, "pitch" );
+    var_3 setconvergencetime( 0.3, "yaw" );
+    var_3 setconvergenceheightpercent( 0.65 );
     var_3 thread _id_B6EA();
     var_3 setotherent( self );
 
@@ -204,7 +204,7 @@ sentry_handledeath()
     }
 
     if ( isdefined( self ) )
-        thread _id_F23F();
+        thread sentry_deleteturret();
 }
 
 sentry_setinactive()
@@ -218,7 +218,7 @@ sentry_setinactive()
         case "gl_turret":
             break;
         default:
-            _id_E11F( var_0 );
+            removefromturretlist( var_0 );
             break;
     }
 
@@ -228,12 +228,12 @@ sentry_setinactive()
         scripts\cp\utility::setplayerheadicon( undefined, ( 0, 0, 0 ) );
 }
 
-_id_E11F( var_0 )
+removefromturretlist( var_0 )
 {
     level.turrets[var_0] = undefined;
 }
 
-_id_F23F()
+sentry_deleteturret()
 {
     self notify( "sentry_delete_turret" );
     self endon( "sentry_delete_turret" );
@@ -243,7 +243,7 @@ _id_F23F()
         self.inuseby restoreperks();
         self.inuseby restoreweapons();
         self notify( "deleting" );
-        self _meth_83D3( self.inuseby );
+        self useby( self.inuseby );
         wait 1.0;
     }
     else
@@ -317,7 +317,7 @@ _id_B6EA()
 {
     self endon( "death" );
     level endon( "game_ended" );
-    self._id_1E2D = 100;
+    self.ammo = 100;
     wait 1;
 
     for (;;)
@@ -540,7 +540,7 @@ _id_B6EC()
     {
         if ( _id_B701() )
         {
-            var_1 = self _meth_8161( 0 );
+            var_1 = self gettargetentity( 0 );
 
             if ( !isdefined( self._id_1A4A ) )
                 self settargetentity( self._id_1A4A );
@@ -548,9 +548,9 @@ _id_B6EC()
             if ( _id_B715() )
             {
                 self shootturret();
-                self._id_1E2D--;
+                self.ammo--;
 
-                if ( self._id_1E2D <= 0 )
+                if ( self.ammo <= 0 )
                     self.owner thread _id_B6F4( self );
             }
 
@@ -682,10 +682,10 @@ _id_B6EE( var_0 )
     var_3 = weaponfiretime( "micro_turret_gun_zm" );
     var_4 = 0.01;
 
-    while ( self._id_1E2D > 0 )
+    while ( self.ammo > 0 )
     {
-        if ( self._id_1E2D <= 20 )
-            var_5 = self._id_1E2D;
+        if ( self.ammo <= 20 )
+            var_5 = self.ammo;
         else
             var_5 = randomintrange( 10, 20 );
 
@@ -700,12 +700,12 @@ _id_B6EE( var_0 )
             {
                 self shootturret();
                 wait( var_3 );
-                self._id_1E2D--;
+                self.ammo--;
 
-                if ( self._id_1E2D < 0 )
-                    self._id_1E2D = 0;
+                if ( self.ammo < 0 )
+                    self.ammo = 0;
 
-                var_0 notify( "microTurret_update", self._id_1E2D * var_4 );
+                var_0 notify( "microTurret_update", self.ammo * var_4 );
 
                 if ( isdefined( var_0._id_38D8 ) )
                     var_0._id_38D8 delete();
@@ -715,7 +715,7 @@ _id_B6EE( var_0 )
         wait( randomfloatrange( 0.5, 0.75 ) );
     }
 
-    if ( self._id_1E2D <= 0 )
+    if ( self.ammo <= 0 )
     {
         waittillframeend;
         var_0 notify( "turret_deleted" );
@@ -723,7 +723,7 @@ _id_B6EE( var_0 )
     }
 }
 
-balldrone_burstfirestop( var_0, var_1 )
+dolockon( var_0, var_1 )
 {
     var_2 = level._effect["shoulder_cannon_charge"];
     playfxontag( var_2, self, "tag_flash" );

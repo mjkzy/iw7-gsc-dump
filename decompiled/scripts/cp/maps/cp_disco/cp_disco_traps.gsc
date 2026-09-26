@@ -33,7 +33,7 @@ use_buffer_trap( var_0, var_1 )
     var_1 thread scripts\cp\cp_vo::try_to_play_vo( "activate_trap_generic", "zmb_comment_vo", "low", 10, 0, 1, 0, 40 );
     var_2 = getent( var_0.target, "targetname" );
 
-    if ( !isdefined( var_2._id_127C9 ) )
+    if ( !isdefined( var_2.triggers ) )
     {
         var_3 = [];
 
@@ -46,7 +46,7 @@ use_buffer_trap( var_0, var_1 )
             var_8 linkto( var_2 );
         }
 
-        var_2._id_127C9 = var_3;
+        var_2.triggers = var_3;
     }
 
     playfxontag( level._effect["buffer_smoke"], var_2, "tag_origin" );
@@ -77,7 +77,7 @@ use_buffer_trap( var_0, var_1 )
         wait 0.2;
     }
 
-    foreach ( var_8 in var_2._id_127C9 )
+    foreach ( var_8 in var_2.triggers )
         var_2 thread kill_zombies( var_8, var_1, var_0 );
 
     var_2 thread buffer_move();

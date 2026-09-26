@@ -44,7 +44,7 @@ _id_219C()
     self endon( "disconnect" );
     self endon( "armorUp_end" );
     level waittill( "game_ended" );
-    scripts\mp\supers::_id_DE3B( 9999 );
+    scripts\mp\supers::reducesuperusepercent( 9999 );
 }
 
 _id_2199()
@@ -52,7 +52,7 @@ _id_2199()
     self endon( "disconnect" );
     self endon( "armorUp_end" );
     self waittill( "heavyArmor_broken" );
-    scripts\mp\supers::_id_DE3B( 9999 );
+    scripts\mp\supers::reducesuperusepercent( 9999 );
 }
 
 _id_2196()

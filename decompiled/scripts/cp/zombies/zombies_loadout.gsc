@@ -19,7 +19,7 @@ _id_50C9()
 givedefaultloadout( var_0, var_1 )
 {
     if ( !isdefined( level.perksetfuncs ) )
-        _id_958F();
+        init_core_mp_perks();
 
     var_2 = self;
     var_2.changingweapon = undefined;
@@ -42,8 +42,8 @@ givedefaultloadout( var_0, var_1 )
 
     var_2 thread setmodelfromcustomization( var_3 );
     var_4 = getplayermodelindex();
-    var_5 = var_2 _id_8070( var_4 );
-    var_2 _meth_82C6( var_5 );
+    var_5 = var_2 getplayerfoleytype( var_4 );
+    var_2 setclothtype( var_5 );
     scripts\engine\utility::flag_wait( "introscreen_over" );
 
     if ( isdefined( level.move_speed_scale ) )
@@ -93,14 +93,14 @@ givedefaultloadout( var_0, var_1 )
     var_2 scripts\cp\utility::_giveweapon( var_2.default_starting_pistol, undefined, undefined, 1 );
     var_2 [[ level.move_speed_scale ]]();
     var_9 = spawnstruct();
-    var_9.lvl = _id_785A( var_2, var_8 );
+    var_9.lvl = get_baseweapon_pap_level( var_2, var_8 );
     var_2.pap[var_8] = var_9;
     var_2 giveweapon( "super_default_zm" );
     var_2 assignweaponoffhandspecial( "super_default_zm" );
     var_2.specialoffhandgrenade = "super_default_zm";
 
     if ( issplitscreen() )
-        var_2 thread _id_1358A( var_2.default_starting_pistol );
+        var_2 thread wait_and_force_weapon_switch( var_2.default_starting_pistol );
     else
         var_2 setspawnweapon( var_2.default_starting_pistol, 1 );
 
@@ -158,13 +158,13 @@ delayreturningperks( var_0 )
 
 release_character_number( var_0 )
 {
-    var_1 = var_0._id_CFC4;
+    var_1 = var_0.player_character_num;
 
     if ( !scripts\engine\utility::array_contains( level.available_player_characters, var_1 ) && var_1 != 5 && var_1 != 6 )
         level.available_player_characters = scripts\engine\utility::array_add( level.available_player_characters, var_1 );
 }
 
-_id_785A( var_0, var_1 )
+get_baseweapon_pap_level( var_0, var_1 )
 {
     if ( isdefined( var_0.pap[var_1] ) )
         return var_0.pap[var_1].lvl;
@@ -198,8 +198,8 @@ get_player_character_num()
 {
     var_1 = getdvar( "ui_mapname" );
 
-    if ( isdefined( self._id_CFC4 ) )
-        return self._id_CFC4;
+    if ( isdefined( self.player_character_num ) )
+        return self.player_character_num;
 
     var_2 = scripts\engine\utility::random( level.available_player_characters );
 
@@ -253,7 +253,7 @@ get_player_character_num()
             level.available_player_characters = scripts\engine\utility::array_remove( level.available_player_characters, var_2 );
     }
 
-    self._id_CFC4 = var_2;
+    self.player_character_num = var_2;
     return var_2;
 }
 
@@ -265,126 +265,126 @@ setplayerinside( var_0, var_1 )
     if ( var_2 == 4 )
         var_2 = 0;
 
-    var_0._id_2B17 = _id_786B( var_2 );
+    var_0.bit_position = get_bit_position( var_2 );
     var_0.player_character_index = var_1;
     wait 5.0;
-    _id_F53E( var_0, "zm_player_character", _id_789E( var_1 ) );
+    set_player_photo_option( var_0, "zm_player_character", get_character_bit_value( var_1 ) );
     set_player_photo_status( var_0, "healthy" );
 }
 
 set_player_photo_status( var_0, var_1 )
 {
-    _id_F53E( var_0, "zm_player_status", _id_7CAB( var_1 ) );
+    set_player_photo_option( var_0, "zm_player_status", get_status_bit_value( var_1 ) );
 }
 
-_id_F53E( var_0, var_1, var_2 )
+set_player_photo_option( var_0, var_1, var_2 )
 {
-    if ( isdefined( var_0._id_2B17 ) )
+    if ( isdefined( var_0.bit_position ) )
     {
-        setomnvarbit( var_1, var_0._id_2B17._id_2B16, var_2._id_2B16 );
-        setomnvarbit( var_1, var_0._id_2B17._id_2B15, var_2._id_2B15 );
-        setomnvarbit( var_1, var_0._id_2B17._id_2B14, var_2._id_2B14 );
+        setomnvarbit( var_1, var_0.bit_position.bit_3, var_2.bit_3 );
+        setomnvarbit( var_1, var_0.bit_position.bit_2, var_2.bit_2 );
+        setomnvarbit( var_1, var_0.bit_position.bit_1, var_2.bit_1 );
         var_0.photosetup = 1;
     }
 }
 
-_id_786B( var_0 )
+get_bit_position( var_0 )
 {
     var_1 = spawnstruct();
 
     switch ( var_0 )
     {
         case 3:
-            var_1._id_2B16 = 11;
-            var_1._id_2B15 = 10;
-            var_1._id_2B14 = 9;
+            var_1.bit_3 = 11;
+            var_1.bit_2 = 10;
+            var_1.bit_1 = 9;
             break;
         case 2:
-            var_1._id_2B16 = 8;
-            var_1._id_2B15 = 7;
-            var_1._id_2B14 = 6;
+            var_1.bit_3 = 8;
+            var_1.bit_2 = 7;
+            var_1.bit_1 = 6;
             break;
         case 1:
-            var_1._id_2B16 = 5;
-            var_1._id_2B15 = 4;
-            var_1._id_2B14 = 3;
+            var_1.bit_3 = 5;
+            var_1.bit_2 = 4;
+            var_1.bit_1 = 3;
             break;
         case 0:
-            var_1._id_2B16 = 2;
-            var_1._id_2B15 = 1;
-            var_1._id_2B14 = 0;
+            var_1.bit_3 = 2;
+            var_1.bit_2 = 1;
+            var_1.bit_1 = 0;
             break;
     }
 
     return var_1;
 }
 
-_id_789E( var_0 )
+get_character_bit_value( var_0 )
 {
     var_1 = spawnstruct();
 
     switch ( var_0 )
     {
         case 0:
-            var_1._id_2B16 = 0;
-            var_1._id_2B15 = 0;
-            var_1._id_2B14 = 0;
+            var_1.bit_3 = 0;
+            var_1.bit_2 = 0;
+            var_1.bit_1 = 0;
             break;
         case 1:
-            var_1._id_2B16 = 0;
-            var_1._id_2B15 = 0;
-            var_1._id_2B14 = 1;
+            var_1.bit_3 = 0;
+            var_1.bit_2 = 0;
+            var_1.bit_1 = 1;
             break;
         case 2:
-            var_1._id_2B16 = 0;
-            var_1._id_2B15 = 1;
-            var_1._id_2B14 = 0;
+            var_1.bit_3 = 0;
+            var_1.bit_2 = 1;
+            var_1.bit_1 = 0;
             break;
         case 3:
-            var_1._id_2B16 = 0;
-            var_1._id_2B15 = 1;
-            var_1._id_2B14 = 1;
+            var_1.bit_3 = 0;
+            var_1.bit_2 = 1;
+            var_1.bit_1 = 1;
             break;
         case 4:
-            var_1._id_2B16 = 1;
-            var_1._id_2B15 = 0;
-            var_1._id_2B14 = 0;
+            var_1.bit_3 = 1;
+            var_1.bit_2 = 0;
+            var_1.bit_1 = 0;
             break;
         case 5:
-            var_1._id_2B16 = 1;
-            var_1._id_2B15 = 0;
-            var_1._id_2B14 = 1;
+            var_1.bit_3 = 1;
+            var_1.bit_2 = 0;
+            var_1.bit_1 = 1;
             break;
     }
 
     return var_1;
 }
 
-_id_7CAB( var_0 )
+get_status_bit_value( var_0 )
 {
     var_1 = spawnstruct();
 
     switch ( var_0 )
     {
         case "healthy":
-            var_1._id_2B16 = 0;
-            var_1._id_2B15 = 0;
-            var_1._id_2B14 = 0;
+            var_1.bit_3 = 0;
+            var_1.bit_2 = 0;
+            var_1.bit_1 = 0;
             break;
         case "damaged":
-            var_1._id_2B16 = 0;
-            var_1._id_2B15 = 0;
-            var_1._id_2B14 = 1;
+            var_1.bit_3 = 0;
+            var_1.bit_2 = 0;
+            var_1.bit_1 = 1;
             break;
         case "laststand":
-            var_1._id_2B16 = 0;
-            var_1._id_2B15 = 1;
-            var_1._id_2B14 = 0;
+            var_1.bit_3 = 0;
+            var_1.bit_2 = 1;
+            var_1.bit_1 = 0;
             break;
         case "afterlife":
-            var_1._id_2B16 = 0;
-            var_1._id_2B15 = 1;
-            var_1._id_2B14 = 1;
+            var_1.bit_3 = 0;
+            var_1.bit_2 = 1;
+            var_1.bit_1 = 1;
             break;
     }
 
@@ -396,7 +396,7 @@ setcharactermodels( var_0, var_1, var_2, var_3 )
     if ( isdefined( self.headmodel ) )
         self detach( self.headmodel );
 
-    self._id_2C14 = var_0;
+    self.bodymodel = var_0;
     self setmodel( var_0 );
     self setviewmodel( var_2 );
 
@@ -409,7 +409,7 @@ setcharactermodels( var_0, var_1, var_2, var_3 )
     if ( isdefined( var_3 ) )
     {
         self attach( var_3, "", 1 );
-        self._id_8862 = var_3;
+        self.hairmodel = var_3;
     }
 }
 
@@ -418,7 +418,7 @@ getplayermodelindex()
     return 0;
 }
 
-_id_8070( var_0 )
+getplayerfoleytype( var_0 )
 {
     return tablelookup( "mp/cac/bodies.csv", 0, var_0, 5 );
 }
@@ -487,7 +487,7 @@ getplayerspeedbyweapon( var_0 )
         var_2 = self getcurrentweapon();
 
         if ( scripts\cp\utility::issuperweapon( var_2 ) )
-            var_1 = level.superweapons[var_2]._id_BCEF;
+            var_1 = level.superweapons[var_2].movespeed;
         else
         {
             var_3 = weaponinventorytype( var_2 );
@@ -501,9 +501,9 @@ getplayerspeedbyweapon( var_0 )
             }
 
             if ( !isdefined( var_2 ) || !self hasweapon( var_2 ) )
-                var_1 = _id_8237();
+                var_1 = getweaponspeedslowest();
             else
-                var_1 = _id_8236( var_2 );
+                var_1 = getweaponspeed( var_2 );
         }
     }
 
@@ -511,14 +511,14 @@ getplayerspeedbyweapon( var_0 )
     return var_1;
 }
 
-_id_8236( var_0 )
+getweaponspeed( var_0 )
 {
     var_1 = scripts\cp\utility::getbaseweaponname( var_0 );
     var_2 = level.weaponmap_tospeed[var_1];
     return var_2;
 }
 
-_id_8237()
+getweaponspeedslowest()
 {
     var_0 = 2.0;
     self.weaponlist = self getweaponslistprimaries();
@@ -527,7 +527,7 @@ _id_8237()
     {
         foreach ( var_2 in self.weaponlist )
         {
-            var_3 = _id_8236( var_2 );
+            var_3 = getweaponspeed( var_2 );
 
             if ( var_3 == 0 )
                 continue;
@@ -548,7 +548,7 @@ clampweaponspeed( var_0 )
     return clamp( var_0, 0.0, 1.0 );
 }
 
-_id_8226()
+getweaponheaviestvalue()
 {
     var_0 = 1000;
     self.weaponlist = self getweaponslistprimaries();
@@ -557,7 +557,7 @@ _id_8226()
     {
         foreach ( var_2 in self.weaponlist )
         {
-            var_3 = getweaponvarianttablename( var_2 );
+            var_3 = getweaponweight( var_2 );
 
             if ( var_3 == 0 )
                 continue;
@@ -569,11 +569,11 @@ _id_8226()
     else
         var_0 = 8;
 
-    var_0 = _id_4003( var_0 );
+    var_0 = clampweaponweightvalue( var_0 );
     return var_0;
 }
 
-getweaponvarianttablename( var_0 )
+getweaponweight( var_0 )
 {
     var_1 = undefined;
     var_2 = scripts\cp\utility::getbaseweaponname( var_0 );
@@ -588,12 +588,12 @@ getweaponvarianttablename( var_0 )
     return var_1;
 }
 
-_id_4003( var_0 )
+clampweaponweightvalue( var_0 )
 {
     return clamp( var_0, 0.0, 11.0 );
 }
 
-_id_EBA1( var_0 )
+scale_ammo_based_on_nerf( var_0 )
 {
     var_1 = _id_3D8F();
 
@@ -609,7 +609,7 @@ _id_3D8F()
     return scripts\cp\perks\prestige::prestige_getminammo();
 }
 
-_id_1358A( var_0 )
+wait_and_force_weapon_switch( var_0 )
 {
     self endon( "disconnect" );
     self endon( "death" );
@@ -622,7 +622,7 @@ _id_1358A( var_0 )
     self setspawnweapon( var_0 );
 }
 
-_id_958F()
+init_core_mp_perks()
 {
     level.perksetfuncs = [];
     level.scriptperks = [];
@@ -639,10 +639,10 @@ _id_958F()
 
 setmomentum()
 {
-    thread _id_E863();
+    thread runmomentum();
 }
 
-_id_E863()
+runmomentum()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -652,7 +652,7 @@ _id_E863()
     {
         if ( self issprinting() )
         {
-            _id_848B();
+            graduallyincreasespeed();
             self.movespeedscaler = 1;
             updatemovespeedscale();
         }
@@ -661,14 +661,14 @@ _id_E863()
     }
 }
 
-_id_848B()
+graduallyincreasespeed()
 {
     self endon( "death" );
     self endon( "disconnect" );
     self endon( "momentum_reset" );
     self endon( "momentum_unset" );
-    thread _id_B944();
-    thread _id_B943();
+    thread momentum_monitormovement();
+    thread momentum_monitordamage();
 
     for ( var_0 = 0; var_0 < 0.08; var_0 = var_0 + 0.01 )
     {
@@ -690,7 +690,7 @@ momentum_endaftermax()
     self playlocalsound( "ftl_phase_out" );
 }
 
-_id_B944()
+momentum_monitormovement()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -713,7 +713,7 @@ _id_B944()
     }
 }
 
-_id_B943()
+momentum_monitordamage()
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -820,7 +820,7 @@ _id_7AA8( var_0 )
     return "power_frag";
 }
 
-_id_23C6()
+assign_door_ents()
 {
     self.class = "none";
 }

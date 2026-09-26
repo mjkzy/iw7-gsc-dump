@@ -3,37 +3,37 @@
 
 init()
 {
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "littlebird_support", ::_id_128EE );
-    level.heliheight = [];
-    level.heliheight["littlebird_support"] = spawnstruct();
-    level.heliheight["littlebird_support"].timeout = 60.0;
-    level.heliheight["littlebird_support"].health = 999999;
-    level.heliheight["littlebird_support"].maxhealth = 2000;
-    level.heliheight["littlebird_support"].streakname = "littlebird_support";
-    level.heliheight["littlebird_support"].vehicleinfo = "attack_littlebird_mp";
-    level.heliheight["littlebird_support"].weaponinfo = "littlebird_guard_minigun_mp";
-    level.heliheight["littlebird_support"]._id_13CA9 = "vehicle_little_bird_minigun_left";
-    level.heliheight["littlebird_support"]._id_13CAA = "vehicle_little_bird_minigun_right";
-    level.heliheight["littlebird_support"].weaponswitchendedsupportbox = "tag_flash";
-    level.heliheight["littlebird_support"].weaponswitchendedtomastrike = "tag_flash_2";
-    level.heliheight["littlebird_support"].sentrymode = "auto_nonai";
-    level.heliheight["littlebird_support"].modelbase = "vehicle_aas_72x_killstreak";
-    level.heliheight["littlebird_support"].teamsplash = "used_littlebird_support";
-    _id_AADA();
-    _id_AAD8();
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "littlebird_support", ::tryuselbsupport );
+    level.heliguardsettings = [];
+    level.heliguardsettings["littlebird_support"] = spawnstruct();
+    level.heliguardsettings["littlebird_support"].timeout = 60.0;
+    level.heliguardsettings["littlebird_support"].health = 999999;
+    level.heliguardsettings["littlebird_support"].maxhealth = 2000;
+    level.heliguardsettings["littlebird_support"].streakname = "littlebird_support";
+    level.heliguardsettings["littlebird_support"].vehicleinfo = "attack_littlebird_mp";
+    level.heliguardsettings["littlebird_support"].weaponinfo = "littlebird_guard_minigun_mp";
+    level.heliguardsettings["littlebird_support"].weaponmodelleft = "vehicle_little_bird_minigun_left";
+    level.heliguardsettings["littlebird_support"].weaponmodelright = "vehicle_little_bird_minigun_right";
+    level.heliguardsettings["littlebird_support"].weapontagleft = "tag_flash";
+    level.heliguardsettings["littlebird_support"].weapontagright = "tag_flash_2";
+    level.heliguardsettings["littlebird_support"].sentrymode = "auto_nonai";
+    level.heliguardsettings["littlebird_support"].modelbase = "vehicle_aas_72x_killstreak";
+    level.heliguardsettings["littlebird_support"].teamsplash = "used_littlebird_support";
+    lbsupport_setairstartnodes();
+    lbsupport_setairnodemesh();
 }
 
-_id_128EE( var_0, var_1 )
+tryuselbsupport( var_0, var_1 )
 {
     var_2 = "littlebird_support";
     var_3 = 1;
 
-    if ( isdefined( level._id_AD89 ) || scripts\mp\killstreaks\helicopter::exceededmaxlittlebirds( var_2 ) )
+    if ( isdefined( level.littlebirdguard ) || scripts\mp\killstreaks\helicopter::exceededmaxlittlebirds( var_2 ) )
     {
         self iprintlnbold( &"KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
         return 0;
     }
-    else if ( !level._id_1A66.size )
+    else if ( !level.air_node_mesh.size )
     {
         self iprintlnbold( &"KILLSTREAKS_UNAVAILABLE_IN_LEVEL" );
         return 0;
@@ -45,7 +45,7 @@ _id_128EE( var_0, var_1 )
     }
 
     scripts\mp\utility::incrementfauxvehiclecount();
-    var_4 = _id_49E1( var_2 );
+    var_4 = createlbguard( var_2 );
 
     if ( !isdefined( var_4 ) )
     {
@@ -53,14 +53,14 @@ _id_128EE( var_0, var_1 )
         return 0;
     }
 
-    thread _id_10DBE( var_4 );
-    level thread scripts\mp\utility::teamplayercardsplash( level.heliheight[var_2].teamsplash, self, self.team );
+    thread startlbsupport( var_4 );
+    level thread scripts\mp\utility::teamplayercardsplash( level.heliguardsettings[var_2].teamsplash, self, self.team );
     return 1;
 }
 
-_id_49E1( var_0 )
+createlbguard( var_0 )
 {
-    var_1 = _id_AAD2( self.origin );
+    var_1 = lbsupport_getcloseststartnode( self.origin );
 
     if ( isdefined( var_1.angles ) )
         var_2 = var_1.angles;
@@ -68,19 +68,19 @@ _id_49E1( var_0 )
         var_2 = ( 0, 0, 0 );
 
     var_3 = scripts\mp\killstreaks\airdrop::getflyheightoffset( self.origin );
-    var_4 = _id_AAD1( self.origin );
+    var_4 = lbsupport_getclosestnode( self.origin );
     var_5 = anglestoforward( self.angles );
     var_6 = var_4.origin * ( 1, 1, 0 ) + ( 0, 0, 1 ) * var_3 + var_5 * -100;
     var_7 = var_1.origin;
-    var_8 = spawnhelicopter( self, var_7, var_2, level.heliheight[var_0].vehicleinfo, level.heliheight[var_0].modelbase );
+    var_8 = spawnhelicopter( self, var_7, var_2, level.heliguardsettings[var_0].vehicleinfo, level.heliguardsettings[var_0].modelbase );
 
     if ( !isdefined( var_8 ) )
         return;
 
     var_8 scripts\mp\killstreaks\helicopter::addtolittlebirdlist();
-    var_8 thread scripts\mp\killstreaks\helicopter::_id_E111();
-    var_8.health = level.heliheight[var_0].health;
-    var_8.maxhealth = level.heliheight[var_0].maxhealth;
+    var_8 thread scripts\mp\killstreaks\helicopter::removefromlittlebirdlistondeath();
+    var_8.health = level.heliguardsettings[var_0].health;
+    var_8.maxhealth = level.heliguardsettings[var_0].maxhealth;
     var_8.damagetaken = 0;
     var_8.speed = 100;
     var_8.followspeed = 40;
@@ -91,16 +91,16 @@ _id_49E1( var_0 )
     var_8 vehicle_setspeed( var_8.speed, 100, 40 );
     var_8 setyawspeed( 120, 60 );
     var_8 setneargoalnotifydist( 512 );
-    var_8._id_A644 = 0;
+    var_8.killcount = 0;
     var_8.helitype = "littlebird";
-    var_8.heliheightoffset = "littlebird_support";
-    var_8._id_11587 = 2000;
+    var_8.heliguardtype = "littlebird_support";
+    var_8.targettingradius = 2000;
     var_8 scripts\mp\sentientpoolmanager::registersentient( "Killstreak_Air", self );
     var_8.targetpos = var_6;
-    var_8._id_4BF7 = var_4;
-    var_9 = spawnturret( "misc_turret", var_8.origin, level.heliheight[var_0].weaponinfo );
-    var_9 linkto( var_8, level.heliheight[var_0].weaponswitchendedsupportbox, ( 0, 0, 0 ), ( 0, 0, 0 ) );
-    var_9 setmodel( level.heliheight[var_0]._id_13CA9 );
+    var_8.currentnode = var_4;
+    var_9 = spawnturret( "misc_turret", var_8.origin, level.heliguardsettings[var_0].weaponinfo );
+    var_9 linkto( var_8, level.heliguardsettings[var_0].weapontagleft, ( 0, 0, 0 ), ( 0, 0, 0 ) );
+    var_9 setmodel( level.heliguardsettings[var_0].weaponmodelleft );
     var_9.angles = var_8.angles;
     var_9.owner = var_8.owner;
     var_9.team = self.team;
@@ -112,9 +112,9 @@ _id_49E1( var_0 )
     var_9.killcament = spawn( "script_model", var_10 );
     var_9.killcament setscriptmoverkillcam( "explosive" );
     var_9.killcament linkto( var_8, "tag_origin" );
-    var_9 = spawnturret( "misc_turret", var_8.origin, level.heliheight[var_0].weaponinfo );
-    var_9 linkto( var_8, level.heliheight[var_0].weaponswitchendedtomastrike, ( 0, 0, 0 ), ( 0, 0, 0 ) );
-    var_9 setmodel( level.heliheight[var_0]._id_13CAA );
+    var_9 = spawnturret( "misc_turret", var_8.origin, level.heliguardsettings[var_0].weaponinfo );
+    var_9 linkto( var_8, level.heliguardsettings[var_0].weapontagright, ( 0, 0, 0 ), ( 0, 0, 0 ) );
+    var_9 setmodel( level.heliguardsettings[var_0].weaponmodelright );
     var_9.angles = var_8.angles;
     var_9.owner = var_8.owner;
     var_9.team = self.team;
@@ -133,30 +133,30 @@ _id_49E1( var_0 )
         var_8.mgturretright setturretteam( self.team );
     }
 
-    var_8.mgturretleft setmode( level.heliheight[var_0].sentrymode );
-    var_8.mgturretright setmode( level.heliheight[var_0].sentrymode );
+    var_8.mgturretleft setmode( level.heliguardsettings[var_0].sentrymode );
+    var_8.mgturretright setmode( level.heliguardsettings[var_0].sentrymode );
     var_8.mgturretleft setsentryowner( self );
     var_8.mgturretright setsentryowner( self );
-    var_8.mgturretleft thread _id_AACB();
-    var_8.mgturretright thread _id_AACB();
+    var_8.mgturretleft thread lbsupport_attacktargets();
+    var_8.mgturretright thread lbsupport_attacktargets();
     var_8.attract_strength = 10000;
     var_8.attract_range = 150;
     var_8.attractor = missile_createattractorent( var_8, var_8.attract_strength, var_8.attract_range );
     var_8.hasdodged = 0;
     var_8.empgrenaded = 0;
-    var_8 thread _id_AAD4();
-    var_8 thread _id_AADB();
-    var_8 thread _id_AAE1();
-    var_8 thread _id_AADD();
-    var_8 thread _id_AADC();
-    var_8 thread _id_AADE();
-    var_8 thread _id_AAD6();
-    level._id_AD89 = var_8;
-    var_8.owner scripts\mp\matchdata::logkillstreakevent( level.heliheight[var_8.heliheightoffset].streakname, var_8.targetpos );
+    var_8 thread lbsupport_handledamage();
+    var_8 thread lbsupport_watchdeath();
+    var_8 thread lbsupport_watchtimeout();
+    var_8 thread lbsupport_watchownerloss();
+    var_8 thread lbsupport_watchownerdamage();
+    var_8 thread lbsupport_watchroundend();
+    var_8 thread lbsupport_lightfx();
+    level.littlebirdguard = var_8;
+    var_8.owner scripts\mp\matchdata::logkillstreakevent( level.heliguardsettings[var_8.heliguardtype].streakname, var_8.targetpos );
     return var_8;
 }
 
-_id_AAD6()
+lbsupport_lightfx()
 {
     playfxontag( level.chopper_fx["light"]["left"], self, "tag_light_nose" );
     wait 0.05;
@@ -167,7 +167,7 @@ _id_AAD6()
     playfxontag( level.chopper_fx["light"]["tail"], self, "tag_light_tail2" );
 }
 
-_id_10DBE( var_0 )
+startlbsupport( var_0 )
 {
     level endon( "game_ended" );
     var_0 endon( "death" );
@@ -176,14 +176,14 @@ _id_10DBE( var_0 )
     var_0 waittill( "near_goal" );
     var_0 vehicle_setspeed( var_0.speed, 60, 30 );
     var_0 waittill( "goal" );
-    var_0 setvehgoalpos( var_0._id_4BF7.origin, 1 );
+    var_0 setvehgoalpos( var_0.currentnode.origin, 1 );
     var_0 waittill( "goal" );
-    var_0 thread _id_AACF();
-    var_0 thread scripts\mp\killstreaks\flares::_id_6EAA( ::_id_AADF );
-    var_0 thread scripts\mp\killstreaks\flares::_id_6EAB( ::_id_AAE0 );
+    var_0 thread lbsupport_followplayer();
+    var_0 thread scripts\mp\killstreaks\flares::flares_handleincomingsam( ::lbsupport_watchsamproximity );
+    var_0 thread scripts\mp\killstreaks\flares::flares_handleincomingstinger( ::lbsupport_watchstingerproximity );
 }
 
-_id_AACF()
+lbsupport_followplayer()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -191,7 +191,7 @@ _id_AACF()
 
     if ( !isdefined( self.owner ) )
     {
-        thread _id_AAD5();
+        thread lbsupport_leave();
         return;
     }
 
@@ -203,12 +203,12 @@ _id_AACF()
     {
         if ( isdefined( self.owner ) && isalive( self.owner ) )
         {
-            var_0 = _id_AAD0( self.owner.origin );
+            var_0 = lbsupport_getclosestlinkednode( self.owner.origin );
 
-            if ( isdefined( var_0 ) && var_0 != self._id_4BF7 )
+            if ( isdefined( var_0 ) && var_0 != self.currentnode )
             {
-                self._id_4BF7 = var_0;
-                _id_AAD7();
+                self.currentnode = var_0;
+                lbsupport_movetoplayer();
                 continue;
             }
         }
@@ -217,7 +217,7 @@ _id_AACF()
     }
 }
 
-_id_AAD7()
+lbsupport_movetoplayer()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -228,13 +228,13 @@ _id_AAD7()
     self notify( "lbSupport_moveToPlayer" );
     self endon( "lbSupport_moveToPlayer" );
     self.intransit = 1;
-    self setvehgoalpos( self._id_4BF7.origin + ( 0, 0, 100 ), 1 );
+    self setvehgoalpos( self.currentnode.origin + ( 0, 0, 100 ), 1 );
     self waittill( "goal" );
     self.intransit = 0;
     self notify( "hit_goal" );
 }
 
-_id_AADB()
+lbsupport_watchdeath()
 {
     level endon( "game_ended" );
     self endon( "gone" );
@@ -242,28 +242,28 @@ _id_AADB()
     thread scripts\mp\killstreaks\helicopter::lbonkilled();
 }
 
-_id_AAE1()
+lbsupport_watchtimeout()
 {
     level endon( "game_ended" );
     self endon( "death" );
     self.owner endon( "disconnect" );
     self endon( "owner_gone" );
-    var_0 = level.heliheight[self.heliheightoffset].timeout;
+    var_0 = level.heliguardsettings[self.heliguardtype].timeout;
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( var_0 );
-    thread _id_AAD5();
+    thread lbsupport_leave();
 }
 
-_id_AADD()
+lbsupport_watchownerloss()
 {
     level endon( "game_ended" );
     self endon( "death" );
     self endon( "leaving" );
     self.owner waittill( "killstreak_disowned" );
     self notify( "owner_gone" );
-    thread _id_AAD5();
+    thread lbsupport_leave();
 }
 
-_id_AADC()
+lbsupport_watchownerdamage()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -274,11 +274,11 @@ _id_AADC()
     for (;;)
     {
         self.owner waittill( "damage", var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13 );
-        var_9 = scripts\mp\utility::_id_13CA1( var_9, var_13 );
+        var_9 = scripts\mp\utility::weaponmap( var_9, var_13 );
 
         if ( isplayer( var_1 ) )
         {
-            if ( var_1 != self.owner && distance2d( var_1.origin, self.origin ) <= self._id_11587 && !var_1 scripts\mp\utility::_hasperk( "specialty_blindeye" ) && !( level.hardcoremode && level.teambased && var_1.team == self.team ) )
+            if ( var_1 != self.owner && distance2d( var_1.origin, self.origin ) <= self.targettingradius && !var_1 scripts\mp\utility::_hasperk( "specialty_blindeye" ) && !( level.hardcoremode && level.teambased && var_1.team == self.team ) )
             {
                 self setlookatent( var_1 );
 
@@ -292,21 +292,21 @@ _id_AADC()
     }
 }
 
-_id_AADE()
+lbsupport_watchroundend()
 {
     self endon( "death" );
     self endon( "leaving" );
     self.owner endon( "disconnect" );
     self endon( "owner_gone" );
     level scripts\engine\utility::waittill_any( "round_end_finished", "game_ended" );
-    thread _id_AAD5();
+    thread lbsupport_leave();
 }
 
-_id_AAD5()
+lbsupport_leave()
 {
     self endon( "death" );
     self notify( "leaving" );
-    level._id_AD89 = undefined;
+    level.littlebirdguard = undefined;
     self clearlookatent();
     var_0 = scripts\mp\killstreaks\airdrop::getflyheightoffset( self.origin );
     var_1 = self.origin + ( 0, 0, var_0 );
@@ -337,7 +337,7 @@ wait_and_delete( var_0 )
     self delete();
 }
 
-_id_AAD4()
+lbsupport_handledamage()
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -346,7 +346,7 @@ _id_AAD4()
     for (;;)
     {
         self waittill( "damage", var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13 );
-        var_9 = scripts\mp\utility::_id_13CA1( var_9, var_13 );
+        var_9 = scripts\mp\utility::weaponmap( var_9, var_13 );
 
         if ( !scripts\mp\weapons::friendlyfirecheck( self.owner, var_1 ) )
             continue;
@@ -365,7 +365,7 @@ _id_AAD4()
 
         if ( isplayer( var_1 ) )
         {
-            if ( var_1 != self.owner && distance2d( var_1.origin, self.origin ) <= self._id_11587 && !var_1 scripts\mp\utility::_hasperk( "specialty_blindeye" ) && !( level.hardcoremode && level.teambased && var_1.team == self.team ) )
+            if ( var_1 != self.owner && distance2d( var_1.origin, self.origin ) <= self.targettingradius && !var_1 scripts\mp\utility::_hasperk( "specialty_blindeye" ) && !( level.hardcoremode && level.teambased && var_1.team == self.team ) )
             {
                 self setlookatent( var_1 );
 
@@ -407,7 +407,7 @@ _id_AAD4()
                     break;
                 case "emp_grenade_mp":
                     var_14 = 0;
-                    thread _id_AACE();
+                    thread lbsupport_empgrenaded();
                     break;
                 case "osprey_player_minigun_mp":
                     self.largeprojectiledamage = 0;
@@ -440,7 +440,7 @@ _id_AAD4()
     }
 }
 
-_id_AACE()
+lbsupport_empgrenaded()
 {
     self notify( "lbSupport_EMPGrenaded" );
     self endon( "lbSupport_EMPGrenaded" );
@@ -474,7 +474,7 @@ _id_AACE()
         self.mgturretleft notify( "turretstatechange" );
 }
 
-_id_AADF( var_0, var_1, var_2, var_3 )
+lbsupport_watchsamproximity( var_0, var_1, var_2, var_3 )
 {
     level endon( "game_ended" );
     var_2 endon( "death" );
@@ -487,7 +487,7 @@ _id_AADF( var_0, var_1, var_2, var_3 )
             var_5 = spawn( "script_origin", var_2.origin );
             var_5.angles = var_2.angles;
             var_5 movegravity( anglestoright( var_3[var_4].angles ) * -1000, 0.05 );
-            var_5 thread scripts\mp\killstreaks\flares::_id_6E9F( 5.0 );
+            var_5 thread scripts\mp\killstreaks\flares::flares_deleteaftertime( 5.0 );
 
             for ( var_6 = 0; var_6 < var_3.size; var_6++ )
             {
@@ -505,7 +505,7 @@ _id_AADF( var_0, var_1, var_2, var_3 )
     }
 }
 
-_id_AAE0( var_0, var_1, var_2 )
+lbsupport_watchstingerproximity( var_0, var_1, var_2 )
 {
     level endon( "game_ended" );
     var_2 endon( "death" );
@@ -516,7 +516,7 @@ _id_AAE0( var_0, var_1, var_2 )
         var_3 = spawn( "script_origin", var_2.origin );
         var_3.angles = var_2.angles;
         var_3 movegravity( anglestoright( self.angles ) * -1000, 0.05 );
-        var_3 thread scripts\mp\killstreaks\flares::_id_6E9F( 5.0 );
+        var_3 thread scripts\mp\killstreaks\flares::flares_deleteaftertime( 5.0 );
         self missile_settargetent( var_3 );
         var_4 = var_2.origin + anglestoright( self.angles ) * 200;
         var_2 vehicle_setspeed( var_2.speed, 100, 40 );
@@ -526,7 +526,7 @@ _id_AAE0( var_0, var_1, var_2 )
     }
 }
 
-_id_AAD2( var_0 )
+lbsupport_getcloseststartnode( var_0 )
 {
     var_1 = undefined;
     var_2 = 999999;
@@ -545,12 +545,12 @@ _id_AAD2( var_0 )
     return var_1;
 }
 
-_id_AAD1( var_0 )
+lbsupport_getclosestnode( var_0 )
 {
     var_1 = undefined;
     var_2 = 999999;
 
-    foreach ( var_4 in level._id_1A66 )
+    foreach ( var_4 in level.air_node_mesh )
     {
         var_5 = distance( var_4.origin, var_0 );
 
@@ -564,13 +564,13 @@ _id_AAD1( var_0 )
     return var_1;
 }
 
-_id_AAD0( var_0 )
+lbsupport_getclosestlinkednode( var_0 )
 {
     var_1 = undefined;
-    var_2 = distance2d( self._id_4BF7.origin, var_0 );
+    var_2 = distance2d( self.currentnode.origin, var_0 );
     var_3 = var_2;
 
-    foreach ( var_5 in self._id_4BF7.neighbors )
+    foreach ( var_5 in self.currentnode.neighbors )
     {
         var_6 = distance2d( var_5.origin, var_0 );
 
@@ -584,7 +584,7 @@ _id_AAD0( var_0 )
     return var_1;
 }
 
-_id_AACA( var_0, var_1 )
+lbsupport_arraycontains( var_0, var_1 )
 {
     if ( var_0.size <= 0 )
         return 0;
@@ -598,7 +598,7 @@ _id_AACA( var_0, var_1 )
     return 0;
 }
 
-_id_AAD3()
+lbsupport_getlinkedstructs()
 {
     var_0 = [];
 
@@ -618,12 +618,12 @@ _id_AAD3()
     return var_0;
 }
 
-_id_AADA()
+lbsupport_setairstartnodes()
 {
     level.air_start_nodes = scripts\engine\utility::getstructarray( "chopper_boss_path_start", "targetname" );
 
     foreach ( var_1 in level.air_start_nodes )
-        var_1.neighbors = var_1 _id_AAD3();
+        var_1.neighbors = var_1 lbsupport_getlinkedstructs();
 }
 
 _id_AAD9()
@@ -631,29 +631,29 @@ _id_AAD9()
     level._id_1A67 = scripts\engine\utility::getstructarray( "chopper_boss_path", "targetname" );
 
     foreach ( var_1 in level._id_1A67 )
-        var_1.neighbors = var_1 _id_AAD3();
+        var_1.neighbors = var_1 lbsupport_getlinkedstructs();
 }
 
-_id_AAD8()
+lbsupport_setairnodemesh()
 {
-    level._id_1A66 = scripts\engine\utility::getstructarray( "so_chopper_boss_path_struct", "script_noteworthy" );
+    level.air_node_mesh = scripts\engine\utility::getstructarray( "so_chopper_boss_path_struct", "script_noteworthy" );
 
-    foreach ( var_1 in level._id_1A66 )
+    foreach ( var_1 in level.air_node_mesh )
     {
-        var_1.neighbors = var_1 _id_AAD3();
+        var_1.neighbors = var_1 lbsupport_getlinkedstructs();
 
-        foreach ( var_3 in level._id_1A66 )
+        foreach ( var_3 in level.air_node_mesh )
         {
             if ( var_1 == var_3 )
                 continue;
 
-            if ( !_id_AACA( var_1.neighbors, var_3 ) && _id_AACA( var_3 _id_AAD3(), var_1 ) )
+            if ( !lbsupport_arraycontains( var_1.neighbors, var_3 ) && lbsupport_arraycontains( var_3 lbsupport_getlinkedstructs(), var_1 ) )
                 var_1.neighbors[var_1.neighbors.size] = var_3;
         }
     }
 }
 
-_id_AACB()
+lbsupport_attacktargets()
 {
     self.vehicle endon( "death" );
     level endon( "game_ended" );
@@ -664,15 +664,15 @@ _id_AACB()
 
         if ( self isfiringturret() && !self.vehicle.empgrenaded )
         {
-            thread _id_AACC();
+            thread lbsupport_burstfirestart();
             continue;
         }
 
-        thread _id_AACD();
+        thread lbsupport_burstfirestop();
     }
 }
 
-_id_AACC()
+lbsupport_burstfirestart()
 {
     self.vehicle endon( "death" );
     self.vehicle endon( "leaving" );
@@ -705,7 +705,7 @@ _id_AACC()
     }
 }
 
-_id_AACD()
+lbsupport_burstfirestop()
 {
     self notify( "stop_shooting" );
 

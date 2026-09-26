@@ -3,23 +3,23 @@
 
 init_zombie_scoring()
 {
-    _id_95CA( [ "money_earned" ] );
-    _id_95C7( [ "money_earned" ] );
-    _id_F450();
-    _id_F44F();
+    init_eog_score_components( [ "money_earned" ] );
+    init_encounter_score_components( [ "money_earned" ] );
+    set_level_score_data();
+    set_level_score_callback_func();
 }
 
-_id_F450()
+set_level_score_data()
 {
     level.cycle_score_scalar = 1;
 }
 
-_id_F44F()
+set_level_score_callback_func()
 {
-    level.endgameencounterscorefunc = ::_id_13FA1;
+    level.endgameencounterscorefunc = ::zombies_endgameencounterscorefunc;
 }
 
-_id_95CA( var_0 )
+init_eog_score_components( var_0 )
 {
     foreach ( var_2 in var_0 )
     {
@@ -42,7 +42,7 @@ _id_95CA( var_0 )
     }
 }
 
-_id_95C7( var_0 )
+init_encounter_score_components( var_0 )
 {
     level.encounter_score_components = [];
 
@@ -51,124 +51,124 @@ _id_95C7( var_0 )
         switch ( var_2 )
         {
             case "damage":
-                _id_95A0();
+                init_damage_score_component();
                 break;
             case "money_earned":
-                _id_9683();
+                init_money_earned_score_component();
                 break;
             case "tickets_earned":
-                _id_9784();
+                init_tickets_earned_score_component();
                 break;
             case "consumables_earned":
-                _id_958B();
+                init_consumables_earned_score_component();
                 break;
             default:
         }
     }
 }
 
-_id_95A0()
+init_damage_score_component()
 {
-    scripts\cp\cp_gamescore::register_encounter_score_component( "damage", ::_id_959F, ::_id_E22D, ::_id_E214, ::_id_36E5, 29, "damage" );
+    scripts\cp\cp_gamescore::register_encounter_score_component( "damage", ::init_damage_score, ::reset_team_damage_performance, ::reset_player_damage_performance, ::calculate_damage_score, 29, "damage" );
 }
 
-_id_9683()
+init_money_earned_score_component()
 {
-    scripts\cp\cp_gamescore::register_encounter_score_component( "money_earned", ::_id_9682, ::_id_E230, ::_id_E218, ::_id_36F8, 30, "money_earned" );
+    scripts\cp\cp_gamescore::register_encounter_score_component( "money_earned", ::init_money_earned_score, ::reset_team_money_earned_performance, ::reset_player_money_earned_performance, ::calculate_money_earned_score, 30, "money_earned" );
 }
 
-_id_9784()
+init_tickets_earned_score_component()
 {
-    scripts\cp\cp_gamescore::register_encounter_score_component( "tickets_earned", ::_id_9783, ::_id_E233, ::_id_E220, ::_id_3707, 31, "tickets_earned" );
+    scripts\cp\cp_gamescore::register_encounter_score_component( "tickets_earned", ::init_tickets_earned_score, ::reset_team_tickets_earned_performance, ::reset_player_tickets_earned_performance, ::calculate_tickets_earned_score, 31, "tickets_earned" );
 }
 
-_id_958B()
+init_consumables_earned_score_component()
 {
-    scripts\cp\cp_gamescore::register_encounter_score_component( "consumables_earned", ::_id_958A, ::_id_E22C, ::_id_E213, ::_id_36E3, 32, "consumables_earned" );
+    scripts\cp\cp_gamescore::register_encounter_score_component( "consumables_earned", ::init_consumables_earned_score, ::reset_team_consumables_earned_performance, ::reset_player_consumables_earned_performance, ::calculate_consumables_earned_score, 32, "consumables_earned" );
 }
 
-_id_958A( var_0 )
-{
-    return var_0;
-}
-
-_id_E22C( var_0 )
+init_consumables_earned_score( var_0 )
 {
     return var_0;
 }
 
-_id_E213( var_0 )
+reset_team_consumables_earned_performance( var_0 )
+{
+    return var_0;
+}
+
+reset_player_consumables_earned_performance( var_0 )
 {
     var_0.encounter_performance["total_consumables_earned"] = 0;
 }
 
-_id_36E3( var_0, var_1 )
+calculate_consumables_earned_score( var_0, var_1 )
 {
     var_2 = scripts\cp\cp_gamescore::get_player_encounter_performance( var_0, "total_consumables_earned" );
     var_3 = min( 50000, var_2 * 10000 );
     return int( var_3 );
 }
 
-_id_9783( var_0 )
+init_tickets_earned_score( var_0 )
 {
     return var_0;
 }
 
-_id_E233( var_0 )
+reset_team_tickets_earned_performance( var_0 )
 {
     return var_0;
 }
 
-_id_E220( var_0 )
+reset_player_tickets_earned_performance( var_0 )
 {
     var_0.encounter_performance["total_tickets_earned"] = 0;
 }
 
-_id_3707( var_0, var_1 )
+calculate_tickets_earned_score( var_0, var_1 )
 {
     var_2 = scripts\cp\cp_gamescore::get_player_encounter_performance( var_0, "total_tickets_earned" );
     var_3 = min( 999999, var_2 * 1 );
     return int( var_3 );
 }
 
-_id_9682( var_0 )
+init_money_earned_score( var_0 )
 {
     return var_0;
 }
 
-_id_E230( var_0 )
+reset_team_money_earned_performance( var_0 )
 {
     return var_0;
 }
 
-_id_E218( var_0 )
+reset_player_money_earned_performance( var_0 )
 {
     var_0.encounter_performance["total_money_earned"] = 0;
 }
 
-_id_36F8( var_0, var_1 )
+calculate_money_earned_score( var_0, var_1 )
 {
     var_2 = scripts\cp\cp_gamescore::get_player_encounter_performance( var_0, "total_money_earned" );
     var_3 = min( 999999, var_2 * 1 );
     return int( var_3 );
 }
 
-_id_959F( var_0 )
+init_damage_score( var_0 )
 {
     return var_0;
 }
 
-_id_E22D( var_0 )
+reset_team_damage_performance( var_0 )
 {
     return var_0;
 }
 
-_id_E214( var_0 )
+reset_player_damage_performance( var_0 )
 {
     var_0.encounter_performance["damage_done_on_agent"] = 0;
 }
 
-_id_36E5( var_0, var_1 )
+calculate_damage_score( var_0, var_1 )
 {
     var_2 = scripts\cp\cp_gamescore::get_player_encounter_performance( var_0, "damage_done_on_agent" );
     var_3 = min( 999999, var_2 * 0.2 );
@@ -199,7 +199,7 @@ update_tickets_earned_performance( var_0, var_1 )
     var_0 scripts\cp\cp_gamescore::update_personal_encounter_performance( "tickets_earned", "total_tickets_earned", var_1 );
 }
 
-_id_13FA1( var_0 )
+zombies_endgameencounterscorefunc( var_0 )
 {
     scripts\cp\cp_gamescore::calculate_encounter_scores( level.players, [ "money_earned" ], var_0 );
 }

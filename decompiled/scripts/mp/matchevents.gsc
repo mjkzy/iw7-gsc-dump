@@ -3,13 +3,13 @@
 
 init()
 {
-    level._id_B3DA["smoke"] = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
-    level._id_B3DA["tracer"] = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
-    level._id_B3DA["explosion"] = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
-    level._id_B3E6["mortar"] = ::_id_5915;
-    level._id_B3E6["smoke"] = ::_id_5AAF;
-    level._id_B3E6["airstrike"] = ::_id_57DD;
-    level._id_B3E6["pavelow"] = ::_id_5A5C;
+    level.match_events_fx["smoke"] = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
+    level.match_events_fx["tracer"] = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
+    level.match_events_fx["explosion"] = loadfx( "vfx/iw7/_requests/mp/vfx_debug_warning.vfx" );
+    level.matchevents["mortar"] = ::domortar;
+    level.matchevents["smoke"] = ::dosmoke;
+    level.matchevents["airstrike"] = ::doairstrike;
+    level.matchevents["pavelow"] = ::dopavelow;
 }
 
 onplayerconnect()
@@ -36,7 +36,7 @@ onplayerspawned()
     _id_BBF2( self );
 }
 
-_id_7F8A()
+getmapcenter()
 {
     if ( isdefined( level.mapcenter ) )
         return level.mapcenter;
@@ -55,7 +55,7 @@ _id_7F8A()
     return ( 0, 0, 0 );
 }
 
-_id_8168()
+getstartspawns()
 {
     var_0 = getspawnarray( "mp_tdm_spawn_allies_start" );
     var_1 = getspawnarray( "mp_tdm_spawn_axis_start" );
@@ -117,7 +117,7 @@ _id_FAC7( var_0, var_1, var_2 )
         }
     }
 
-    var_5 = _id_8168();
+    var_5 = getstartspawns();
     var_6 = 1200;
     var_7 = 1200;
     var_8 = 1000;
@@ -170,9 +170,9 @@ _id_FAC7( var_0, var_1, var_2 )
     var_14 delete();
 }
 
-_id_5915()
+domortar()
 {
-    var_0 = _id_7F8A();
+    var_0 = getmapcenter();
     var_1 = 1;
 
     for ( var_2 = 0; var_2 < 5; var_2++ )
@@ -182,10 +182,10 @@ _id_5915()
 
         if ( isdefined( var_4["position"] ) )
         {
-            playfx( level._id_B3DA["tracer"], var_3 );
+            playfx( level.match_events_fx["tracer"], var_3 );
             thread scripts\mp\utility::playsoundinspace( "fast_artillery_round", var_3 );
             wait( randomfloatrange( 0.5, 1.5 ) );
-            playfx( level._id_B3DA["explosion"], var_3 );
+            playfx( level.match_events_fx["explosion"], var_3 );
             playrumbleonposition( "grenade_rumble", var_3 );
             earthquake( 1.0, 0.6, var_3, 2000 );
             thread scripts\mp\utility::playsoundinspace( "exp_suitcase_bomb_main", var_3 );
@@ -195,25 +195,25 @@ _id_5915()
     }
 }
 
-_id_5AAF()
+dosmoke()
 {
-    var_0 = _id_7F8A();
+    var_0 = getmapcenter();
     var_1 = 1;
 
     for ( var_2 = 0; var_2 < 3; var_2++ )
     {
         var_3 = var_0 + ( randomintrange( 100, 600 ) * var_1, randomintrange( 100, 600 ) * var_1, 0 );
-        playfx( level._id_B3DA["smoke"], var_3 );
+        playfx( level.match_events_fx["smoke"], var_3 );
         var_1 = var_1 * -1;
         wait 2;
     }
 }
 
-_id_57DD()
+doairstrike()
 {
     level endon( "game_ended" );
     var_0 = 1;
-    var_1 = _id_7F8A();
+    var_1 = getmapcenter();
 
     for ( var_2 = 0; var_2 < 3; var_2++ )
     {
@@ -222,14 +222,14 @@ _id_57DD()
 
         if ( isdefined( var_4["position"] ) )
         {
-            thread _id_57DE( var_4["position"] );
+            thread doairstrikeflyby( var_4["position"] );
             var_0 = var_0 * -1;
             wait( randomintrange( 2, 4 ) );
         }
     }
 }
 
-_id_57DE( var_0 )
+doairstrikeflyby( var_0 )
 {
     var_1 = randomint( level.spawnpoints.size - 1 );
     var_2 = level.spawnpoints[var_1].origin * ( 1, 1, 0 );
@@ -284,9 +284,9 @@ playplanefx()
     playfxontag( level.fx_airstrike_contrail, self, "tag_left_wingtip" );
 }
 
-_id_5A5C()
+dopavelow()
 {
-    var_0 = _id_7F8A();
+    var_0 = getmapcenter();
     var_1 = bullettrace( var_0 + ( 0, 0, 500 ), var_0 - ( 0, 0, 500 ), 0 );
 
     if ( isdefined( var_1["position"] ) )
@@ -302,8 +302,8 @@ _id_5A5C()
             return;
 
         var_3.team = self.pers["team"];
-        var_3._id_8DA0 = level._id_8DA1[var_2];
-        var_3 thread [[ level.lightfxfunc[level._id_8DA1[var_2]] ]]();
+        var_3.heli_type = level.heli_types[var_2];
+        var_3 thread [[ level.lightfxfunc[level.heli_types[var_2]] ]]();
         var_3.zoffset = ( 0, 0, var_3 gettagorigin( "tag_origin" )[2] - var_3 gettagorigin( "tag_ground" )[2] );
         wait 1;
         playfxontag( level.chopper_fx["damage"]["on_fire"], var_3, "tag_engine_left" );
@@ -311,9 +311,9 @@ _id_5A5C()
     }
 }
 
-_id_5A59()
+doospreyinsertion()
 {
-    var_0 = _id_8168();
+    var_0 = getstartspawns();
 
     if ( isdefined( var_0 ) )
     {
@@ -339,10 +339,10 @@ _id_5A59()
             return;
         }
 
-        var_7 thread scripts\mp\killstreaks\escort_airdrop::_id_1AEE();
-        var_11 thread scripts\mp\killstreaks\escort_airdrop::_id_1AEE();
-        var_7 thread scripts\mp\killstreaks\escort_airdrop::_id_1AEB();
-        var_11 thread scripts\mp\killstreaks\escort_airdrop::_id_1AEB();
+        var_7 thread scripts\mp\killstreaks\escort_airdrop::airshippitchpropsup();
+        var_11 thread scripts\mp\killstreaks\escort_airdrop::airshippitchpropsup();
+        var_7 thread scripts\mp\killstreaks\escort_airdrop::airshippitchhatchdown();
+        var_11 thread scripts\mp\killstreaks\escort_airdrop::airshippitchhatchdown();
         var_7 vehicle_setspeed( 20, 10 );
         var_7 setyawspeed( 3, 3, 3, 0.3 );
         var_7 setvehgoalpos( var_6 + ( 0, 0, var_2 ), 1 );
@@ -350,8 +350,8 @@ _id_5A59()
         var_11 setyawspeed( 3, 3, 3, 0.3 );
         var_11 setvehgoalpos( var_10 + ( 0, 0, var_2 ), 1 );
         var_7 waittill( "goal" );
-        var_7 thread scripts\mp\killstreaks\escort_airdrop::_id_1AEC();
-        var_11 thread scripts\mp\killstreaks\escort_airdrop::_id_1AEC();
+        var_7 thread scripts\mp\killstreaks\escort_airdrop::airshippitchhatchup();
+        var_11 thread scripts\mp\killstreaks\escort_airdrop::airshippitchhatchup();
         wait 2;
         var_7 vehicle_setspeed( 80, 60 );
         var_7 setyawspeed( 30, 15, 15, 0.3 );
@@ -360,8 +360,8 @@ _id_5A59()
         var_11 setyawspeed( 30, 15, 15, 0.3 );
         var_11 setvehgoalpos( var_10 + ( 0, 0, var_3 ), 1 );
         var_7 waittill( "goal" );
-        var_7 thread scripts\mp\killstreaks\escort_airdrop::_id_1AED();
-        var_11 thread scripts\mp\killstreaks\escort_airdrop::_id_1AED();
+        var_7 thread scripts\mp\killstreaks\escort_airdrop::airshippitchpropsdown();
+        var_11 thread scripts\mp\killstreaks\escort_airdrop::airshippitchpropsdown();
         var_7 vehicle_setspeed( 120, 120 );
         var_7 setyawspeed( 100, 100, 40, 0.3 );
         var_7 setvehgoalpos( var_6 + ( 0, 0, var_3 ) + var_4 * -20, 1 );

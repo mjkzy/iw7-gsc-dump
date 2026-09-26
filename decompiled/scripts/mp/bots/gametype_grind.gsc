@@ -45,7 +45,7 @@ bot_grind_extra_think()
 
             var_1 = undefined;
 
-            foreach ( var_3 in level._id_13FC1 )
+            foreach ( var_3 in level.zonelist )
             {
                 var_4 = distancesquared( self.origin, var_3.origin );
 
@@ -99,7 +99,7 @@ bot_grind_extra_think()
             var_0 = undefined;
             var_1 = undefined;
 
-            foreach ( var_3 in level._id_13FC1 )
+            foreach ( var_3 in level.zonelist )
             {
                 var_4 = distancesquared( self.origin, var_3.origin );
 

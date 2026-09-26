@@ -78,11 +78,11 @@ _id_1288B( var_0 )
     var_9.owner = self;
     var_9.health = 99999;
     var_9.maxhealth = var_5;
-    var_9._id_EDD7 = var_5;
+    var_9.script_health = var_5;
     var_9.streakname = var_0.streakname;
     var_9._id_AC75 = var_4;
     var_9.spawnpos = var_2;
-    var_9.nullownerdamagefunc = scripts\mp\killstreaks\utility::_id_C1D3;
+    var_9.nullownerdamagefunc = scripts\mp\killstreaks\utility::nulldamagecheck;
     var_9.weapon_name = "venomproj_mp";
     var_9.streakinfo = var_0;
     var_9 _meth_8491( "fly" );
@@ -117,7 +117,7 @@ _id_1288B( var_0 )
     self _meth_8490( "disable_guns", 1 );
     self _meth_8490( "disable_boost", 1 );
     thread _id_F673();
-    var_9 scripts\mp\killstreaks\utility::_id_1843( var_0.streakname, "Killstreak_Ground", var_9.owner, 1 );
+    var_9 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_0.streakname, "Killstreak_Ground", var_9.owner, 1 );
     var_9 scripts\mp\killstreaks\utility::_id_FAE4( "venom_end" );
     var_9 thread _id_13285();
     var_9 thread _id_1327E();
@@ -153,7 +153,7 @@ _id_5130( var_0, var_1 )
     scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 0.1 );
     self setclientomnvar( "ui_venom_controls", 1 );
     self setclientomnvar( "ui_killstreak_countdown", gettime() + int( var_1 * 1000 ) );
-    self setclientomnvar( "ui_killstreak_health", var_0._id_EDD7 / 10 );
+    self setclientomnvar( "ui_killstreak_health", var_0.script_health / 10 );
     self thermalvisionfofoverlayon();
 }
 
@@ -278,7 +278,7 @@ _id_1327B()
             var_1 = distancesquared( self.spawnpos, self.origin );
 
             if ( var_1 >= 5760000 )
-                var_0 scripts\mp\missions::_id_D991( "ch_venom_distance" );
+                var_0 scripts\mp\missions::processchallengedaily( "ch_venom_distance" );
 
             self notify( "venom_end", self.origin );
         }
@@ -291,7 +291,7 @@ _id_0118( var_0, var_1 )
 {
     if ( isdefined( var_0 ) )
     {
-        self _meth_8593();
+        self clearscriptabledamageowner();
         self setscriptablepartstate( "Explosion", "explode", 0 );
     }
 }
@@ -306,7 +306,7 @@ _id_13279()
     for (;;)
     {
         self waittill( "damage", var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13, var_14 );
-        var_10 = scripts\mp\utility::_id_13CA1( var_10, var_14 );
+        var_10 = scripts\mp\utility::weaponmap( var_10, var_14 );
 
         if ( isdefined( var_2 ) && var_2.classname != "trigger_hurt" )
         {
@@ -323,12 +323,12 @@ _id_13279()
         if ( isdefined( var_10 ) )
             var_1 = scripts\mp\killstreaks\utility::getmodifiedantikillstreakdamage( var_2, var_10, var_5, var_1, self.maxhealth, 1, 1, 1 );
 
-        self._id_EDD7 = self._id_EDD7 - var_1;
+        self.script_health = self.script_health - var_1;
 
-        if ( self._id_EDD7 < 0 )
-            self._id_EDD7 = 0;
+        if ( self.script_health < 0 )
+            self.script_health = 0;
 
-        var_0 setclientomnvar( "ui_killstreak_health", self._id_EDD7 / 10 );
+        var_0 setclientomnvar( "ui_killstreak_health", self.script_health / 10 );
 
         if ( isplayer( var_2 ) )
         {
@@ -337,12 +337,12 @@ _id_13279()
             if ( isdefined( var_10 ) && var_10 == "concussion_grenade_mp" )
             {
                 if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_2 ) ) )
-                    var_2 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+                    var_2 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
             }
 
             var_2 scripts\mp\damagefeedback::updatedamagefeedback( "" );
 
-            if ( self._id_EDD7 <= 0 )
+            if ( self.script_health <= 0 )
             {
                 var_2 notify( "destroyed_killstreak", var_10 );
                 var_15 = scripts\mp\killstreak_loot::getrarityforlootitem( self.streakinfo.variantid );
@@ -358,7 +358,7 @@ _id_13279()
             continue;
         }
 
-        if ( self._id_EDD7 <= 0 )
+        if ( self.script_health <= 0 )
             self notify( "venom_end", self.origin, 1 );
     }
 }
@@ -480,7 +480,7 @@ _id_13275()
         if ( var_2.team == var_0.team && var_2 != var_0 )
             continue;
 
-        scripts\mp\killstreaks\utility::_id_20CF( var_2, "venom_end" );
+        scripts\mp\killstreaks\utility::applykillstreakplayeroutline( var_2, "venom_end" );
     }
 }
 
@@ -499,7 +499,7 @@ _id_13276( var_0 )
         if ( var_0.team == var_1.team )
             break;
 
-        scripts\mp\killstreaks\utility::_id_20CF( var_0, "venom_end" );
+        scripts\mp\killstreaks\utility::applykillstreakplayeroutline( var_0, "venom_end" );
     }
 }
 

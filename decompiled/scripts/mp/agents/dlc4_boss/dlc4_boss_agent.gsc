@@ -4,8 +4,8 @@
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\dlc4_boss::_id_DEE8();
-    scripts\asm\dlc4_boss\mp\states::_id_2371();
+    behaviortree\dlc4_boss::registerbehaviortree();
+    scripts\asm\dlc4_boss\mp\states::asm_register();
     scripts\mp\agents\dlc4_boss\dlc4_boss_tunedata::setuptunedata();
     _id_AEB0();
     thread _id_FAB0();
@@ -65,7 +65,7 @@ setupzombiegametypevars()
     self.trap_killed_by = undefined;
     self.hastraversed = 0;
     self.attackent = undefined;
-    self._id_9342 = 1;
+    self.immune_against_repulsor = 1;
     self.aistate = "idle";
     self.movemode = "walk";
     self.sharpturnnotifydist = 100;
@@ -109,7 +109,7 @@ setupzombiegametypevars()
     self.is_cop = undefined;
     self.highlyawareradius = 200;
     self.deathmethod = undefined;
-    self._id_10A57 = undefined;
+    self.spooned = undefined;
     self.gib_fx_override = undefined;
     self._id_CE65 = undefined;
     self._id_29D2 = 1;
@@ -124,8 +124,8 @@ setupzombiegametypevars()
 setupagent()
 {
     setupzombiegametypevars();
-    self.height = self._id_18F4;
-    self.radius = self._id_18F9;
+    self.height = self.agent_height;
+    self.radius = self.agent_radius;
     self.immune_against_nuke = 1;
     self._id_B62D = 70;
     self._id_B62E = 70;
@@ -134,8 +134,8 @@ setupagent()
     self.defaultgoalradius = self.radius + 1;
     self.meleedot = 0.5;
     self._id_B601 = 45;
-    self._id_504E = 55;
-    self._id_129AF = 55;
+    self.defaultturnthreshold = 55;
+    self.turnthreshold = 55;
     self.upaimlimit = -60;
     self.downaimlimit = 60;
     self.ignoreall = 1;

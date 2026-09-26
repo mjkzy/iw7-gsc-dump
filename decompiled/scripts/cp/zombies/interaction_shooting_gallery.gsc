@@ -732,13 +732,13 @@ _id_832F( var_0, var_1 )
         if ( scripts\engine\utility::is_true( var_1.in_afterlife_arcade ) )
         {
             var_1 scripts\cp\zombies\zombie_afterlife_arcade::give_soul_power( var_1, var_1._id_FEBA );
-            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "shooting_gallery_afterlife", 1, var_1._id_FEBA, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["shooting_gallery_afterlife"] );
+            scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "shooting_gallery_afterlife", 1, var_1._id_FEBA, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["shooting_gallery_afterlife"] );
         }
     }
     else
     {
         var_1 scripts\cp\zombies\arcade_game_utility::give_player_tickets( var_1, var_1._id_FEBA );
-        scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "shooting_gallery", 0, var_1._id_FEBA, var_1.pers["timesPerWave"]._id_11930[level.wave_num_at_start_of_game]["shooting_gallery"] );
+        scripts\cp\zombies\zombie_analytics::log_finished_mini_game( 1, var_1, level.wave_num_at_start_of_game, "shooting_gallery", 0, var_1._id_FEBA, var_1.pers["timesPerWave"].timesperwave[level.wave_num_at_start_of_game]["shooting_gallery"] );
     }
 }
 

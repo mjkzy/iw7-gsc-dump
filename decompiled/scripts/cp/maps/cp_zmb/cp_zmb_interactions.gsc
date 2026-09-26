@@ -134,7 +134,7 @@ register_interactions()
     scripts\cp\cp_interaction::register_interaction( "debris_750", "door_buy", 1, undefined, scripts\cp\zombies\interaction_openareas::clear_debris, 750 );
     scripts\cp\cp_interaction::register_interaction( "team_door_switch", "team_door_buy", 1, undefined, scripts\cp\zombies\interaction_openareas::use_team_door_switch, 1000 );
     scripts\cp\cp_interaction::register_interaction( "zfreeze_semtex_mp", "ticket_weapon", undefined, scripts\cp\zombies\interaction_small_ticket_counter::ticket_counter_slot_hint_func, ::give_player_cryobomb, 350, 0, ::init_cryobomb );
-    scripts\cp\cp_interaction::register_interaction( "iw7_forgefreeze_zm", "ticket_weapon", undefined, scripts\cp\zombies\interaction_small_ticket_counter::ticket_counter_slot_hint_func, scripts\cp\zombies\coop_wall_buys::interaction_purchase_weapon, 500, 0, ::init_cryobomb );
+    scripts\cp\cp_interaction::register_interaction( "iw7_forgefreeze_zm", "ticket_weapon", undefined, scripts\cp\zombies\interaction_small_ticket_counter::ticket_counter_slot_hint_func, scripts\cp\zombies\coop_wall_buys::interaction_purchase_weapon, 500, 0, ::init_forgefreeze );
     scripts\cp\cp_interaction::register_interaction( "gold_teeth", "ticket_prize", undefined, scripts\cp\maps\cp_zmb\cp_zmb::gold_teeth_hint_func, scripts\cp\maps\cp_zmb\cp_zmb::gold_teeth_pickup, 300, 1, scripts\cp\maps\cp_zmb\cp_zmb::gator_tooth_init );
     scripts\cp\cp_interaction::register_interaction( "gator_teeth_placement", "quest", undefined, scripts\cp\maps\cp_zmb\cp_zmb::gator_mouth_hint_func, scripts\cp\maps\cp_zmb\cp_zmb::gator_mouth_activation_func, 0, 0, scripts\cp\maps\cp_zmb\cp_zmb::gator_tooth_placement_init );
     scripts\cp\cp_interaction::register_interaction( "iw7_m8_zm", "wall_buy", 1, scripts\cp\zombies\coop_wall_buys::get_wall_buy_hint_func, scripts\cp\zombies\coop_wall_buys::interaction_purchase_weapon, 1000 );
@@ -239,7 +239,7 @@ init_cryobomb()
     var_0.item.hint_string = level.interaction_hintstrings["zfreeze_semtex_mp"];
 }
 
-init_cryobomb()
+init_forgefreeze()
 {
     var_0 = scripts\engine\utility::getstruct( "iw7_forgefreeze_zm+forgefreezealtfire", "script_noteworthy" );
     var_0.item = var_0.trigger;

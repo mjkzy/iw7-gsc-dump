@@ -76,7 +76,7 @@ main()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_tdef_scoringTime", getmatchrulesdata( "tdefData", "scoringTime" ) );
     setdynamicdvar( "scr_tdef_scorePerTick", getmatchrulesdata( "tdefData", "scorePerTick" ) );
     setdynamicdvar( "scr_tdef_carrierBonusTime", getmatchrulesdata( "tdefData", "carrierBonusTime" ) );
@@ -282,7 +282,7 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
             else if ( isdefined( var_10.ball_carried ) )
             {
                 var_1 thread scripts\mp\awards::givemidmatchaward( "mode_uplink_kill_carrier" );
-                thread scripts\mp\matchdata::loginitialstats( var_9, "carrying" );
+                thread scripts\mp\matchdata::logkillevent( var_9, "carrying" );
                 scripts\mp\gametypes\obj_ball::updatetimers( "neutral", 1, 0 );
             }
 
@@ -293,10 +293,10 @@ onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, v
                 if ( var_13 < 90000 )
                 {
                     var_1 thread scripts\mp\awards::givemidmatchaward( "mode_x_defend" );
-                    var_1 scripts\mp\utility::incperstat( "defends", 1 );
+                    var_1 scripts\mp\utility::incpersstat( "defends", 1 );
                     var_1 scripts\mp\persistence::statsetchild( "round", "defends", var_1.pers["defends"] );
                     var_1 scripts\mp\utility::setextrascore1( var_1.pers["defends"] );
-                    thread scripts\mp\matchdata::loginitialstats( var_9, "defending" );
+                    thread scripts\mp\matchdata::logkillevent( var_9, "defending" );
                 }
             }
         }
@@ -325,7 +325,7 @@ awardcapturepoints( var_0 )
         if ( !level.gameended )
         {
             scripts\mp\gamescore::giveteamscoreforobjective( var_0, var_2, 0 );
-            level.ball.carrier scripts\mp\utility::incperstat( "objTime", 1 );
+            level.ball.carrier scripts\mp\utility::incpersstat( "objTime", 1 );
             level.ball.carrier scripts\mp\persistence::statsetchild( "round", "objTime", level.ball.carrier.pers["objTime"] );
             level.ball.carrier scripts\mp\utility::setextrascore0( level.ball.carrier.pers["objTime"] );
             level.ball.carrier scripts\mp\gamescore::giveplayerscore( "tdef_hold_obj", 10 );
@@ -364,7 +364,7 @@ watchforendgame()
             else
                 var_1 = int( var_0 / 100 / 60 );
 
-            scripts\mp\utility::incperstat( "destructions", var_1 );
+            scripts\mp\utility::incpersstat( "destructions", var_1 );
             scripts\mp\persistence::statsetchild( "round", "destructions", self.pers["destructions"] );
         }
     }

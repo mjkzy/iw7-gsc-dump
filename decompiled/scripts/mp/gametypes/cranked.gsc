@@ -80,7 +80,7 @@ onplayerspawned()
 
 initializematchrules()
 {
-    scripts\mp\utility::setcommonrulesfrommatchdata();
+    scripts\mp\utility::setcommonrulesfrommatchrulesdata();
     setdynamicdvar( "scr_cranked_roundswitch", 0 );
     scripts\mp\utility::registerroundswitchdvar( "cranked", 0, 0, 9 );
     setdynamicdvar( "scr_cranked_roundlimit", 1 );

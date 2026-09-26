@@ -489,7 +489,7 @@ getplayerassets( var_0, var_1 )
     var_2 = scripts\mp\class::loadout_updateclass( var_2, var_1 );
     scripts\mp\class::loadout_updateclassfinalweapons( var_2 );
     self.classstruct = var_2;
-    self.classset = 1;
+    self._id_400F = 1;
 
     if ( var_2.loadoutprimaryfullname != "none" )
         var_0.primaryweapon = var_2.loadoutprimaryfullname;
@@ -702,7 +702,7 @@ spawnplayer( var_0 )
 
     setspawnvariables();
     var_15 = self.hasspawned;
-    self.fauxdeath = undefined;
+    self.fauxdead = undefined;
 
     if ( !var_0 )
     {
@@ -723,9 +723,9 @@ spawnplayer( var_0 )
         self.killstreakscaler = 1;
         self.objectivescaler = 1;
         self.clampedhealth = undefined;
-        self._id_FC96 = 0;
+        self.shielddamage = 0;
         self._id_FC97 = 0;
-        self._id_FC95 = 0;
+        self.shieldbullethits = 0;
         self.recentshieldxp = 0;
         self._id_AA43 = undefined;
         self.lifeid = 0;
@@ -877,7 +877,7 @@ spawnplayer( var_0 )
 
     if ( scripts\mp\utility::getintproperty( "scr_showperksonspawn", 1 ) == 1 && game["state"] != "postgame" )
     {
-        scripts\mp\perks::_id_F7C5( "ui_spawn_perk_", self.pers["loadoutPerks"] );
+        scripts\mp\perks::setomnvarsforperklist( "ui_spawn_perk_", self.pers["loadoutPerks"] );
         self setclientomnvar( "ui_spawn_abilities_show", 1 );
     }
 
@@ -933,10 +933,10 @@ _id_DDED()
             if ( !isdefined( var_0 ) )
                 var_0 = -1;
 
-            var_1 = scripts\mp\utility::_id_9EE8();
+            var_1 = scripts\mp\utility::isplayerads();
             var_2 = scripts\mp\matchdata::gettimefrommatchstart( gettime() );
             var_3 = var_2 / 1000;
-            self _meth_8571( var_3, var_0, var_1 );
+            self recordbreadcrumbdataforplayer( var_3, var_0, var_1 );
             wait 2.0;
         }
     }
@@ -1060,7 +1060,7 @@ spawnspectatormapcam( var_0 )
         return;
     }
 
-    if ( self issplitscreenplayer() && self isreloading() )
+    if ( self issplitscreenplayer() && self issplitscreenplayerprimary() )
     {
         var_8 = self getothersplitscreenplayer();
         var_8 notify( "versus_menu_done" );
@@ -1643,7 +1643,7 @@ callback_playerdisconnect( var_0 )
     if ( isdefined( self.team ) )
         removefromteamcount();
 
-    if ( self.sessionstate == "playing" && !( isdefined( self.fauxdeath ) && self.fauxdeath ) )
+    if ( self.sessionstate == "playing" && !( isdefined( self.fauxdead ) && self.fauxdead ) )
         removefromalivecount( 1 );
     else if ( self.sessionstate == "spectator" || self.sessionstate == "dead" )
         level thread scripts\mp\gamelogic::updategameevents();
@@ -1963,7 +1963,7 @@ callback_playerconnect()
         self.pers["matchdataScoreEventCounts"] = [];
         self.pers["xpAtLastDeath"] = 0;
         self.pers["scoreAtLastDeath"] = 0;
-        self _meth_8596( self.pers["clientid"] );
+        self setc8obstacleflag( self.pers["clientid"] );
         setmatchdata( "players", self.pers["clientid"], "joinType", self getjointype() );
         setmatchdata( "players", self.pers["clientid"], "isTrialVersion", self istrialversion() );
     }
@@ -2007,7 +2007,7 @@ callback_playerconnect()
             setmatchdata( "players", self.clientid, "utcConnectTimeSeconds", getsystemtime() );
 
         if ( scripts\mp\utility::rankingenabled() )
-            scripts\mp\matchdata::loginitialspawnposition();
+            scripts\mp\matchdata::loginitialstats();
 
         if ( isdefined( self.pers["isBot"] ) && self.pers["isBot"] || isai( self ) )
         {
@@ -2811,11 +2811,11 @@ watchforslide()
         self waittill( "sprint_slide_begin" );
 }
 
-_id_13B76()
+watchtargethealth()
 {
     self endon( "death" );
     self endon( "disconnect" );
-    self._id_11563 = [];
+    self.targethealthinfo = [];
 
     for (;;)
     {
@@ -2829,22 +2829,22 @@ _id_13B76()
         if ( isdefined( var_5 ) && isplayer( var_5 ) && var_5.team != self.team && scripts\mp\equipment\phase_shift::areentitiesinphase( self, var_5 ) )
         {
             if ( isdefined( var_5 ) )
-                _id_12F36( "ui_target_health", var_5.health );
+                updatetargethealthvariable( "ui_target_health", var_5.health );
 
             if ( isdefined( var_5 ) )
-                _id_12F36( "ui_target_max_health", var_5.maxhealth );
+                updatetargethealthvariable( "ui_target_max_health", var_5.maxhealth );
 
             if ( isdefined( var_5 ) )
-                _id_12F36( "ui_target_entity_num", var_5 getentitynumber() );
+                updatetargethealthvariable( "ui_target_entity_num", var_5 getentitynumber() );
         }
         else
-            _id_12F36( "ui_target_entity_num", -1 );
+            updatetargethealthvariable( "ui_target_entity_num", -1 );
 
         wait 0.1;
     }
 }
 
-_id_12F36( var_0, var_1 )
+updatetargethealthvariable( var_0, var_1 )
 {
     scripts\engine\utility::waitframe();
 
@@ -2854,9 +2854,9 @@ _id_12F36( var_0, var_1 )
     if ( !isdefined( var_1 ) )
         return;
 
-    if ( !isdefined( self._id_11563[var_0] ) || var_1 != self._id_11563[var_0] )
+    if ( !isdefined( self.targethealthinfo[var_0] ) || var_1 != self.targethealthinfo[var_0] )
     {
         self setclientomnvar( var_0, var_1 );
-        self._id_11563[var_0] = var_1;
+        self.targethealthinfo[var_0] = var_1;
     }
 }

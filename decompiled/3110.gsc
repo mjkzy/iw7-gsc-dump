@@ -3,7 +3,7 @@
 
 _id_98CB( var_0 )
 {
-    if ( !isdefined( self._id_9F46 ) )
+    if ( !isdefined( self.issetup ) )
         return anim.running;
 
     self.nocorpse = 1;
@@ -72,13 +72,13 @@ _id_136D0( var_0 )
 
     if ( var_1 >= 40000 )
     {
-        if ( !isdefined( self._id_CB49 ) )
-            self._id_CB49 = gettime();
-        else if ( gettime() - self._id_CB49 > 100 )
+        if ( !isdefined( self.pickuptimeout ) )
+            self.pickuptimeout = gettime();
+        else if ( gettime() - self.pickuptimeout > 100 )
             return anim.failure;
     }
     else
-        self._id_CB49 = undefined;
+        self.pickuptimeout = undefined;
 
     return anim.running;
 }
@@ -201,7 +201,7 @@ _id_7FDB()
 
         if ( isplayer( var_3 ) || isagent( var_3 ) )
         {
-            if ( scripts\mp\utility::_id_9F72( var_3 ) )
+            if ( scripts\mp\utility::isspidergrenade( var_3 ) )
                 continue;
 
             if ( !scripts\mp\utility::isreallyalive( var_3 ) )

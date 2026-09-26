@@ -3,7 +3,7 @@
 
 init()
 {
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "heli_pilot", ::_id_128E7 );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "heli_pilot", ::tryusehelipilot );
     level.heli_pilot = [];
     level.helipilotsettings = [];
     level.helipilotsettings["heli_pilot"] = spawnstruct();
@@ -32,14 +32,14 @@ init()
     level.heliconfigs["heli_pilot"] = var_0;
 }
 
-_id_128E7( var_0, var_1 )
+tryusehelipilot( var_0, var_1 )
 {
     var_2 = "heli_pilot";
     var_3 = 1;
 
     if ( isdefined( self.underwater ) && self.underwater )
         return 0;
-    else if ( _id_68C1( self.team ) )
+    else if ( exceededmaxhelipilots( self.team ) )
     {
         self iprintlnbold( &"KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
         return 0;
@@ -51,7 +51,7 @@ _id_128E7( var_0, var_1 )
     }
 
     scripts\mp\utility::incrementfauxvehiclecount();
-    var_4 = _id_49D2( var_2 );
+    var_4 = createhelipilot( var_2 );
 
     if ( !isdefined( var_4 ) )
     {
@@ -60,7 +60,7 @@ _id_128E7( var_0, var_1 )
     }
 
     level.heli_pilot[self.team] = var_4;
-    var_5 = _id_10DA3( var_4 );
+    var_5 = starthelipilot( var_4 );
 
     if ( !isdefined( var_5 ) )
         var_5 = 0;
@@ -68,7 +68,7 @@ _id_128E7( var_0, var_1 )
     return var_5;
 }
 
-_id_68C1( var_0 )
+exceededmaxhelipilots( var_0 )
 {
     if ( level.gametype == "dm" )
     {
@@ -97,7 +97,7 @@ watchhostmigrationfinishedinit( var_0 )
     }
 }
 
-_id_49D2( var_0 )
+createhelipilot( var_0 )
 {
     var_1 = helipilot_getcloseststartnode( self.origin );
     var_2 = helipilot_getlinkedstruct( var_1 );
@@ -112,7 +112,7 @@ _id_49D2( var_0 )
 
     var_7 makevehiclesolidcapsule( 18, -9, 18 );
     var_7 scripts\mp\killstreaks\helicopter::addtolittlebirdlist();
-    var_7 thread scripts\mp\killstreaks\helicopter::_id_E111();
+    var_7 thread scripts\mp\killstreaks\helicopter::removefromlittlebirdlistondeath();
     var_7.maxhealth = level.helipilotsettings[var_0].maxhealth;
     var_7.speed = 40;
     var_7.owner = self;
@@ -127,7 +127,7 @@ _id_49D2( var_0 )
     var_7 sethoverparams( 100, 100, 100 );
     var_7 scripts\mp\sentientpoolmanager::registersentient( "Killstreak_Air", self );
     var_7.targetpos = var_5;
-    var_7._id_4BF7 = var_2;
+    var_7.currentnode = var_2;
     var_7.attract_strength = 10000;
     var_7.attract_range = 150;
     var_7.attractor = missile_createattractorent( var_7, var_7.attract_strength, var_7.attract_range );
@@ -154,7 +154,7 @@ helipilot_lightfx()
     playfxontag( level.chopper_fx["light"]["tail"], self, "tag_light_tail2" );
 }
 
-_id_10DA3( var_0 )
+starthelipilot( var_0 )
 {
     level endon( "game_ended" );
     var_0 endon( "death" );
@@ -164,7 +164,7 @@ _id_10DA3( var_0 )
         scripts\mp\utility::setthirdpersondof( 0 );
 
     self.restoreangles = self.angles;
-    var_0 thread scripts\mp\killstreaks\flares::_id_A730( 2, "+smoke", "ui_heli_pilot_flare_ammo", "ui_heli_pilot_warn" );
+    var_0 thread scripts\mp\killstreaks\flares::ks_setup_manual_flares( 2, "+smoke", "ui_heli_pilot_flare_ammo", "ui_heli_pilot_warn" );
     thread watchintrocleared( var_0 );
     scripts\mp\utility::freezecontrolswrapper( 1 );
     var_1 = scripts\mp\killstreaks\killstreaks::initridekillstreak( var_0.helipilottype );
@@ -180,8 +180,8 @@ _id_10DA3( var_0 )
 
     scripts\mp\utility::freezecontrolswrapper( 0 );
     var_2 = scripts\mp\utility::gethelipilottraceoffset();
-    var_3 = var_0._id_4BF7.origin + ( scripts\mp\utility::gethelipilotmeshoffset() + var_2 );
-    var_4 = var_0._id_4BF7.origin + ( scripts\mp\utility::gethelipilotmeshoffset() - var_2 );
+    var_3 = var_0.currentnode.origin + ( scripts\mp\utility::gethelipilotmeshoffset() + var_2 );
+    var_4 = var_0.currentnode.origin + ( scripts\mp\utility::gethelipilotmeshoffset() - var_2 );
     var_5 = bullettrace( var_3, var_4, 0, undefined, 0, 0, 1 );
 
     if ( !isdefined( var_5["entity"] ) )

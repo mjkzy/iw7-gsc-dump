@@ -43,7 +43,7 @@ jumpattack_end( var_0 )
     scripts\asm\dlc4\dlc4_asm::clearasmaction();
 }
 
-_id_7A7A( var_0, var_1, var_2, var_3 )
+get_leap_end_pos( var_0, var_1, var_2, var_3 )
 {
     var_4 = self.origin - var_2.origin;
     var_4 = var_4 * ( 1, 1, 0 );
@@ -107,7 +107,7 @@ tryjumpattack( var_0, var_1 )
         return 0;
 
     self.nextjumpattack = gettime() + 150;
-    var_9 = scripts\anim\notetracks_mp::_id_5D51( var_9, var_2.max_leap_melee_drop_distance );
+    var_9 = scripts\anim\notetracks_mp::droppostoground( var_9, var_2.max_leap_melee_drop_distance );
 
     if ( !isdefined( var_9 ) )
         return 0;
@@ -141,7 +141,7 @@ tryjumpattack( var_0, var_1 )
     if ( !self _meth_85CA( self.origin, var_9 ) )
         return 0;
 
-    if ( var_13 && !trajectorycanattemptaccuratejump( self.origin, anglestoup( self.angles ), var_9, anglestoup( var_1.angles ), level._id_1B73, 1.01 * level._id_1B74 ) )
+    if ( var_13 && !trajectorycanattemptaccuratejump( self.origin, anglestoup( self.angles ), var_9, anglestoup( var_1.angles ), level.alien_jump_melee_gravity, 1.01 * level.alien_jump_melee_speed ) )
         return 0;
 
     var_15 = getclosestpointonnavmesh( var_9, self );

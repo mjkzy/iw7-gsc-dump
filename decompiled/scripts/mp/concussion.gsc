@@ -11,7 +11,7 @@ _id_13A20()
     var_0 = scripts\engine\utility::spawn_tag_origin();
     var_0 linkto( self );
     self.killcament = var_0;
-    thread _id_A639( var_0 );
+    thread killcamcleanup( var_0 );
     thread scripts\mp\utility::notifyafterframeend( "death", "end_explode" );
     self endon( "end_explode" );
     var_1 = self.owner;
@@ -68,11 +68,11 @@ _id_20BF( var_0, var_1 )
 
     var_5 = var_2 + var_3 * var_4;
     var_5 = scripts\mp\perks\perkfunctions::applystunresistence( var_1, self, var_5 );
-    thread scripts\mp\gamescore::_id_11ACF( var_1, self, "concussion_grenade_mp", var_5 );
+    thread scripts\mp\gamescore::trackdebuffassistfortime( var_1, self, "concussion_grenade_mp", var_5 );
     var_1 notify( "stun_hit" );
     self notify( "concussed", var_1 );
-    scripts\mp\weapons::_id_F7FC();
-    thread scripts\mp\weapons::_id_40EA( var_5 );
+    scripts\mp\weapons::setplayerstunned();
+    thread scripts\mp\weapons::cleanupconcussionstun( var_5 );
     self shellshock( "concussion_grenade_mp", var_5 );
     self.concussionendtime = gettime() + var_5 * 1000;
 }
@@ -93,10 +93,10 @@ _id_20C3( var_0, var_1 )
         var_2 = 1;
 
     scripts\mp\killstreaks\emp_common::_id_20C7( var_2 );
-    thread scripts\mp\gamescore::_id_11ACF( var_1, self, "emp_grenade_mp", var_2 );
+    thread scripts\mp\gamescore::trackdebuffassistfortime( var_1, self, "emp_grenade_mp", var_2 );
 }
 
-_id_A639( var_0 )
+killcamcleanup( var_0 )
 {
     var_0 endon( "death" );
     self waittill( "death" );

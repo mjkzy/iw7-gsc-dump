@@ -41,7 +41,7 @@ _id_10222( var_0 )
     var_0 endon( "disconnect" );
     var_1 = scripts\mp\utility::outlineenableforplayer( var_0, "red", self, 0, 0, "level_script" );
     var_0 scripts\mp\hud_message::showmiscmessage( "spotted" );
-    thread _id_13AA0( var_1, var_0, 2 );
+    thread watchhighlightfadetime( var_1, var_0, 2 );
     wait 2;
 }
 
@@ -87,7 +87,7 @@ _id_37D4()
 
     for (;;)
     {
-        if ( ( self issprinting() || self iswallrunning() ) && !self ismeleeing() && !scripts\mp\killstreaks\emp_common::isemped() && !self ismantling() && !self usebuttonpressed() && !self adsbuttonpressed() && !isdefined( self._id_9FF6 ) && !isdefined( self._id_6F43 ) )
+        if ( ( self issprinting() || self iswallrunning() ) && !self ismeleeing() && !scripts\mp\killstreaks\emp_common::isemped() && !self ismantling() && !self usebuttonpressed() && !self adsbuttonpressed() && !isdefined( self._id_9FF6 ) && !isdefined( self.floating ) )
             _id_37DA();
         else
         {
@@ -180,7 +180,7 @@ _id_37E0()
 
     for (;;)
     {
-        if ( !self issprinting() && !self iswallrunning() && !self isjumping() && !self ismantling() || isdefined( self._id_9FF6 ) || isdefined( self._id_6F43 ) )
+        if ( !self issprinting() && !self iswallrunning() && !self isjumping() && !self ismantling() || isdefined( self._id_9FF6 ) || isdefined( self.floating ) )
         {
             self notify( "camo_off" );
             self waittill( "camo_on" );
@@ -512,7 +512,7 @@ _id_1608()
     self endon( "unlinked" );
     self endon( "removeArchetype" );
     level endon( "game_ended" );
-    self._id_6F43 = 1;
+    self.floating = 1;
     self._id_1D42 = 1;
     self._id_AD33.origin = self.origin;
     self playerlinkto( self._id_AD33 );
@@ -568,7 +568,7 @@ playflyoveraudioline( var_0 )
 
 _id_10358()
 {
-    self._id_6F43 = undefined;
+    self.floating = undefined;
     self._id_5FF1 hide();
     stopfxontag( level._effect["heavyThrustFr"], self._id_5FF1, "tag_origin" );
     self energy_setrestorerate( 0, self._id_5039 );
@@ -611,7 +611,7 @@ _id_BCB9( var_0 )
         var_1 = self getnormalizedmovement();
 
         if ( var_1[0] >= 0.15 || var_1[1] >= 0.15 || var_1[0] <= -0.15 || var_1[1] <= -0.15 )
-            thread _id_B31F( var_0, var_1 );
+            thread manualmove( var_0, var_1 );
         else
             thread _id_DCBD( var_0, var_1 );
 
@@ -620,7 +620,7 @@ _id_BCB9( var_0 )
     }
 }
 
-_id_B31F( var_0, var_1 )
+manualmove( var_0, var_1 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -766,7 +766,7 @@ marktarget_execute( var_0 )
     var_0.healthregendisabled = undefined;
 }
 
-_id_13AA0( var_0, var_1, var_2 )
+watchhighlightfadetime( var_0, var_1, var_2 )
 {
     self endon( "disconnect" );
     level endon( "game_ended" );
@@ -795,7 +795,7 @@ runequipmentping( var_0 )
                 if ( var_4 scripts\mp\utility::_hasperk( "specialty_engineer" ) || var_4 scripts\mp\utility::_hasperk( "specialty_noscopeoutline" ) )
                     continue;
 
-                if ( isdefined( var_4._id_C78B ) )
+                if ( isdefined( var_4.outlined ) )
                     continue;
 
                 var_5 = scripts\engine\utility::array_add( level.players, self );
@@ -805,8 +805,8 @@ runequipmentping( var_0 )
 
                 if ( distance2d( var_4.origin, self.origin ) < 300 && scripts\common\trace::ray_trace_passed( self.origin, var_4 gettagorigin( "j_head" ), var_5 ) )
                 {
-                    playfxontagforclients( var_2._id_7636, self, "tag_origin", var_1 );
-                    playsoundatpos( self.origin + ( 0, 0, 5 ), var_2._id_10469 );
+                    playfxontagforclients( var_2.fxid_ping, self, "tag_origin", var_1 );
+                    playsoundatpos( self.origin + ( 0, 0, 5 ), var_2.sound_ping_npc );
                     var_4 scripts\mp\hud_message::showmiscmessage( "spotted" );
                     var_1 scripts\mp\damagefeedback::hudicontype( "eqp_ping" );
                     var_1 thread markdangerzoneonminimap( var_4, self );
@@ -855,10 +855,10 @@ _id_C7A6( var_0 )
     var_0 endon( "disconnect" );
     var_1 = scripts\mp\utility::outlineenableforplayer( var_0, "orange", self, 0, 0, "level_script" );
     var_0 scripts\mp\hud_message::showmiscmessage( "spotted" );
-    var_0._id_C78B = 1;
-    _id_13AA0( var_1, var_0, 0.35 );
+    var_0.outlined = 1;
+    watchhighlightfadetime( var_1, var_0, 0.35 );
     wait 3;
-    var_0._id_C78B = undefined;
+    var_0.outlined = undefined;
 }
 
 _id_E7FE()

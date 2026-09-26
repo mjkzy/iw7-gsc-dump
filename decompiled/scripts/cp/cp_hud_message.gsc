@@ -277,11 +277,11 @@ showmiscmessage( var_0 )
 
     self setclientomnvar( "ui_misc_message_id", var_1 );
 
-    if ( !isdefined( self._id_B7D7 ) )
-        self._id_B7D7 = 0;
+    if ( !isdefined( self.miscmessagebitflipper ) )
+        self.miscmessagebitflipper = 0;
 
-    self._id_B7D7 = !self._id_B7D7;
-    self setclientomnvar( "ui_misc_message_trigger", scripts\engine\utility::ter_op( self._id_B7D7, 1, 0 ) );
+    self.miscmessagebitflipper = !self.miscmessagebitflipper;
+    self setclientomnvar( "ui_misc_message_trigger", scripts\engine\utility::ter_op( self.miscmessagebitflipper, 1, 0 ) );
 }
 
 hintmessagedeaththink()

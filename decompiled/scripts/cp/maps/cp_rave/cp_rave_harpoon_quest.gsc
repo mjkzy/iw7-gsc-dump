@@ -73,7 +73,7 @@ play_signal_if_bait_nearby()
 
         foreach ( var_3 in level.players )
         {
-            if ( var_3 scripts\cp\powers\coop_powers::hasequipment( "power_bait" ) )
+            if ( var_3 scripts\cp\powers\coop_powers::haspower( "power_bait" ) )
             {
                 if ( distancesquared( var_3.origin, self.origin ) < var_0 )
                 {
@@ -105,7 +105,7 @@ fly_off_the_handle()
     self moveto( var_1.origin, 2 );
     self waittill( "movedone" );
     self makeusable();
-    self rotateby( ( 100000, 100000, 0 ), 10000 );
+    self rotateby( ( 100000.0, 100000.0, 0 ), 10000 );
     self waittill( "trigger", var_2 );
     var_2.symbol_picked_up = 1;
     level.harpoon_locks++;

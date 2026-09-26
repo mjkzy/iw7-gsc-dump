@@ -50,10 +50,10 @@ onbeginuse( var_0 )
 
 onuse( var_0 )
 {
-    var_0 thread _id_13EFA( self );
+    var_0 thread zip( self );
 }
 
-_id_13EFA( var_0 )
+zip( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -64,8 +64,8 @@ _id_13EFA( var_0 )
     var_1.angles = self.angles;
     var_1 setmodel( "tag_player" );
     self playerlinktodelta( var_1, "tag_player", 1, 180, 180, 180, 180 );
-    thread _id_139E8( var_1 );
-    thread _id_13A06( var_1 );
+    thread watchdeath( var_1 );
+    thread watchdrop( var_1 );
     var_2 = var_0.targets;
 
     for ( var_3 = 0; var_3 < var_2.size; var_3++ )
@@ -89,7 +89,7 @@ _id_13EFA( var_0 )
     var_1 delete();
 }
 
-_id_13A06( var_0 )
+watchdrop( var_0 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -101,7 +101,7 @@ _id_13A06( var_0 )
     var_0 delete();
 }
 
-_id_139E8( var_0 )
+watchdeath( var_0 )
 {
     self endon( "disconnect" );
     self endon( "destination" );

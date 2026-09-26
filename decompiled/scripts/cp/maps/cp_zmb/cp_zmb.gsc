@@ -1173,7 +1173,7 @@ check_for_movement()
 
 add_to_kick_queue( var_0 )
 {
-    if ( !scripts\engine\utility::exist_in_array_MAYBE( level.kick_player_queue, var_0 ) )
+    if ( !scripts\engine\utility::_id_693B( level.kick_player_queue, var_0 ) )
         level.kick_player_queue = scripts\engine\utility::add_to_array( level.kick_player_queue, var_0 );
 }
 
@@ -2654,7 +2654,7 @@ cp_zmb_should_do_damage_check_func( var_0, var_1, var_2, var_3, var_4, var_5 )
 
 play_char_intro_music()
 {
-    if ( self issplitscreenplayer() && !self isreloading() )
+    if ( self issplitscreenplayer() && !self issplitscreenplayerprimary() )
         return;
 
     if ( scripts\cp\zombies\direct_boss_fight::should_directly_go_to_boss_fight() )

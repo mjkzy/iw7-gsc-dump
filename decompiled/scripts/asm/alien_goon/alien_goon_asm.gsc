@@ -34,12 +34,12 @@ shouldplayentranceanim( var_0, var_1, var_2, var_3 )
 
 playstumble( var_0, var_1, var_2, var_3 )
 {
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
 
     if ( scripts\engine\utility::is_true( self.activated_venomx_sphere ) )
-        scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 0.2 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 0.2 );
     else
-        scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, self._id_C081 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, self._id_C081 );
 }
 
 playpostattackmanuever( var_0, var_1, var_2, var_3 )
@@ -50,12 +50,12 @@ playpostattackmanuever( var_0, var_1, var_2, var_3 )
     if ( isdefined( var_4 ) )
         thread scripts\asm\zombie\melee::_id_6A6A( var_1, var_4 );
 
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
 
     if ( scripts\engine\utility::is_true( self.activated_venomx_sphere ) )
-        scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, 0.2 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, 0.2 );
     else
-        scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5, self._id_C081 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5, self._id_C081 );
 }
 
 wantstododge( var_0, var_1, var_2, var_3 )
@@ -65,7 +65,7 @@ wantstododge( var_0, var_1, var_2, var_3 )
 
 playdodgeanim( var_0, var_1, var_2, var_3 )
 {
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
 
     if ( scripts\engine\utility::is_true( self.activated_venomx_sphere ) )
         self scragentsetanimscale( 0.2, 0.2 );
@@ -76,9 +76,9 @@ playdodgeanim( var_0, var_1, var_2, var_3 )
     self._blackboard.requested_dodge_scale = undefined;
 
     if ( scripts\engine\utility::is_true( self.activated_venomx_sphere ) )
-        scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 0.2 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 0.2 );
     else
-        scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, self._id_C081 );
+        scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, self._id_C081 );
 }
 
 terminate_rundodge( var_0, var_1, var_2 )

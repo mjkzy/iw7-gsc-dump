@@ -495,7 +495,7 @@ sentryhandledeathdamage( var_0, var_1, var_2, var_3 )
         if ( isdefined( var_1 ) && var_1 == "concussion_grenade_mp" )
         {
             if ( scripts\mp\utility::istrue( scripts\mp\utility::playersareenemies( self.owner, var_0 ) ) )
-                var_0 scripts\mp\missions::_id_D991( "ch_tactical_emp_eqp" );
+                var_0 scripts\mp\missions::processchallengedaily( "ch_tactical_emp_eqp" );
         }
 
         var_5 = var_4.destroyedsplash;
@@ -607,7 +607,7 @@ sentry_handledeath()
     self setsentryowner( undefined );
 
     if ( isdefined( self.inuseby ) )
-        self _meth_83D3( self.inuseby );
+        self useby( self.inuseby );
 
     self setturretminimapvisible( 0 );
 
@@ -899,7 +899,7 @@ sentry_setplaced( var_0 )
 
     self setmodel( var_2 );
 
-    if ( self _meth_813D() == "manual" )
+    if ( self getmode() == "manual" )
         self setmode( level.sentrysettings[self.sentrytype].sentrymodeoff );
 
     if ( self.sentrytype == "sentry_shock" )
@@ -1058,7 +1058,7 @@ updatesentryplacement( var_0 )
         var_0.angles = var_2["angles"];
         var_3 = scripts\engine\utility::array_combine( level.turrets, level.microturrets, level.supertrophy.trophies, level.mines );
         var_4 = var_0 getistouchingentities( var_3 );
-        var_0.canbeplaced = self isonground() && var_2["result"] && abs( var_0.origin[2] - self.origin[2] ) < 30 && !scripts\mp\utility::_id_9FAE( self ) && var_4.size == 0;
+        var_0.canbeplaced = self isonground() && var_2["result"] && abs( var_0.origin[2] - self.origin[2] ) < 30 && !scripts\mp\utility::istouchingboundstrigger( self ) && var_4.size == 0;
 
         if ( isdefined( var_2["entity"] ) )
             var_0.moving_platform = var_2["entity"];
@@ -1153,7 +1153,7 @@ sentry_setactive( var_0 )
 
                 break;
             default:
-                scripts\mp\killstreaks\utility::_id_1843( self.sentrytype, "Killstreak_Ground", self.owner, 1, "carried" );
+                scripts\mp\killstreaks\utility::addtoactivekillstreaklist( self.sentrytype, "Killstreak_Ground", self.owner, 1, "carried" );
 
                 if ( var_2 == self.owner && var_0 )
                     self enableplayeruse( var_2 );
@@ -2218,7 +2218,7 @@ shocktarget( var_0 )
     level thread scripts\mp\battlechatter_mp::saytoself( var_0, "plr_killstreak_target" );
     var_1 = weaponfiretime( level.sentrysettings[self.sentrytype].weaponinfo );
 
-    while ( isdefined( var_0 ) && scripts\mp\utility::isreallyalive( var_0 ) && isdefined( self getturrettarget( 1 ) ) && self getturrettarget( 1 ) == var_0 && !scripts\mp\utility::_id_C7A0( self gettagorigin( "tag_flash" ), var_0 geteye() ) )
+    while ( isdefined( var_0 ) && scripts\mp\utility::isreallyalive( var_0 ) && isdefined( self getturrettarget( 1 ) ) && self getturrettarget( 1 ) == var_0 && !scripts\mp\utility::outlineoccluded( self gettagorigin( "tag_flash" ), var_0 geteye() ) )
     {
         if ( scripts\mp\killstreaks\utility::_id_A69F( self.streakinfo, "passive_mini_explosives" ) )
         {

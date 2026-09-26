@@ -22,7 +22,7 @@ _id_13A6E( var_0 )
     var_1 = anglestoup( var_0.angles );
     var_2 = _id_10856( var_0 );
     var_2 scripts\mp\equipment\blackhat::_id_2B2A();
-    var_2 thread _id_13A3B();
+    var_2 thread watchforempapply();
     thread _id_13B19( var_2 );
 }
 
@@ -81,7 +81,7 @@ _id_10856( var_0 )
     return var_1;
 }
 
-_id_13A3B()
+watchforempapply()
 {
     scripts\mp\damage::monitordamage( 50, "pulseGrenade", ::_id_612B, ::_id_612C, 0 );
 }
@@ -90,7 +90,7 @@ _id_612B( var_0, var_1, var_2, var_3 )
 {
     if ( isdefined( self.owner ) && var_0 != self.owner )
     {
-        var_0 scripts\mp\killstreaks\killstreaks::_id_83A0();
+        var_0 scripts\mp\killstreaks\killstreaks::givescoreforequipment();
         var_0 notify( "destroyed_equipment" );
     }
 

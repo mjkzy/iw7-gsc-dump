@@ -98,27 +98,27 @@ _id_A5AC()
 
 _id_53EE()
 {
-    level._id_D788 = getdvarint( "scr_power_short_cooldown", 0 );
+    level.powershortcooldown = getdvarint( "scr_power_short_cooldown", 0 );
 
     for (;;)
     {
         var_0 = getdvarint( "scr_power_short_cooldown", 0 );
 
-        if ( var_0 != level._id_D788 )
+        if ( var_0 != level.powershortcooldown )
         {
-            level._id_D788 = var_0;
+            level.powershortcooldown = var_0;
 
             foreach ( var_2 in level.players )
             {
                 if ( isbot( var_2 ) )
                     continue;
 
-                var_3 = var_2 scripts\mp\powers::getcurrentequipment( "primary" );
+                var_3 = var_2 scripts\mp\powers::getpower( "primary" );
 
                 if ( isdefined( var_3 ) )
                     _id_53E4( var_3, "primary" );
 
-                var_3 = var_2 scripts\mp\powers::getcurrentequipment( "secondary" );
+                var_3 = var_2 scripts\mp\powers::getpower( "secondary" );
 
                 if ( isdefined( var_3 ) )
                     _id_53E4( var_3, "secondary" );
@@ -146,12 +146,12 @@ _id_53ED()
                 if ( isbot( var_2 ) )
                     continue;
 
-                var_3 = var_2 scripts\mp\powers::getcurrentequipment( "primary" );
+                var_3 = var_2 scripts\mp\powers::getpower( "primary" );
 
                 if ( isdefined( var_3 ) )
                     _id_53E4( var_3, "primary" );
 
-                var_3 = var_2 scripts\mp\powers::getcurrentequipment( "secondary" );
+                var_3 = var_2 scripts\mp\powers::getpower( "secondary" );
 
                 if ( isdefined( var_3 ) )
                     _id_53E4( var_3, "secondary" );
@@ -179,12 +179,12 @@ _id_53EC()
                 if ( isbot( var_2 ) )
                     continue;
 
-                var_3 = var_2 scripts\mp\powers::getcurrentequipment( "primary" );
+                var_3 = var_2 scripts\mp\powers::getpower( "primary" );
 
                 if ( isdefined( var_3 ) )
                     _id_53E4( var_3, "primary" );
 
-                var_3 = var_2 scripts\mp\powers::getcurrentequipment( "secondary" );
+                var_3 = var_2 scripts\mp\powers::getpower( "secondary" );
 
                 if ( isdefined( var_3 ) )
                     _id_53E4( var_3, "secondary" );
@@ -220,7 +220,7 @@ _id_53E4( var_0, var_1 )
         if ( isbot( var_3 ) )
             continue;
 
-        var_4 = var_3 scripts\mp\powers::getcurrentequipment( var_1 );
+        var_4 = var_3 scripts\mp\powers::getpower( var_1 );
 
         if ( isdefined( var_4 ) )
             var_3 scripts\mp\powers::removepower( var_4 );
@@ -296,7 +296,7 @@ _id_53E6()
         if ( var_1 != "" )
         {
             var_2 = devfindhost();
-            var_2 scripts\mp\supers::_id_83A8( var_1 );
+            var_2 scripts\mp\supers::givesuper( var_1 );
         }
 
         if ( getdvarint( "scr_super_short_cooldown", 0 ) != 0 )
@@ -311,7 +311,7 @@ _id_53E6()
                         continue;
 
                     if ( var_4 scripts\mp\supers::issupercharging() )
-                        var_4 scripts\mp\supers::_id_E276();
+                        var_4 scripts\mp\supers::resetsuperusepercent();
                 }
             }
         }
@@ -325,7 +325,7 @@ _id_53E6()
                     continue;
 
                 if ( var_4 scripts\mp\supers::issupercharging() )
-                    var_4 scripts\mp\supers::_id_E276();
+                    var_4 scripts\mp\supers::resetsuperusepercent();
             }
         }
 

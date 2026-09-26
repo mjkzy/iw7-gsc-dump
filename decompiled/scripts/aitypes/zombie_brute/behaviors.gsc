@@ -248,7 +248,7 @@ terminate_rangeattack( var_0 )
     self.nextthrowtime = gettime() + randomintrange( 5000, 6000 );
 }
 
-canseethroughfoliage( var_0 )
+_id_390C( var_0 )
 {
     if ( !( isdefined( self.helmetlocation ) && self.helmetlocation == "head" ) )
         return anim.failure;
@@ -319,7 +319,7 @@ canseethroughfoliage( var_0 )
     if ( isdefined( self.helmet ) )
         var_6[var_6.size] = self.helmet;
 
-    var_10 = self.enemy _meth_810C();
+    var_10 = self.enemy getcentroid();
     var_11 = physics_spherecast( self gettagorigin( "tag_eye" ), var_10, 10, var_4, var_6, "physicsquery_closest" );
 
     if ( isdefined( var_11 ) && var_11.size > 0 )

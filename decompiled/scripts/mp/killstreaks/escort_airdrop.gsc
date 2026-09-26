@@ -3,37 +3,37 @@
 
 init()
 {
-    level._id_C73F = [];
-    level._id_C73F["escort_airdrop"] = spawnstruct();
-    level._id_C73F["escort_airdrop"].vehicle = "osprey_mp";
-    level._id_C73F["escort_airdrop"].modelbase = "vehicle_v22_osprey_body_mp";
-    level._id_C73F["escort_airdrop"]._id_B91B = "vehicle_v22_osprey_blades_mp";
-    level._id_C73F["escort_airdrop"]._id_11415 = "tag_le_door_attach";
-    level._id_C73F["escort_airdrop"]._id_11416 = "tag_ri_door_attach";
-    level._id_C73F["escort_airdrop"]._id_113F0 = "tag_turret_attach";
-    level._id_C73F["escort_airdrop"]._id_DA71 = &"KILLSTREAKS_DEFEND_AIRDROP_PACKAGES";
-    level._id_C73F["escort_airdrop"].name = &"KILLSTREAKS_ESCORT_AIRDROP";
-    level._id_C73F["escort_airdrop"].weaponinfo = "osprey_minigun_mp";
-    level._id_C73F["escort_airdrop"].helitype = "osprey";
-    level._id_C73F["escort_airdrop"].droptype = "airdrop_escort";
-    level._id_C73F["escort_airdrop"].maxhealth = level._id_8D73 * 2;
-    level._id_C73F["escort_airdrop"].timeout = 60.0;
-    level._id_C73F["osprey_gunner"] = spawnstruct();
-    level._id_C73F["osprey_gunner"].vehicle = "osprey_player_mp";
-    level._id_C73F["osprey_gunner"].modelbase = "vehicle_v22_osprey_body_mp";
-    level._id_C73F["osprey_gunner"]._id_B91B = "vehicle_v22_osprey_blades_mp";
-    level._id_C73F["osprey_gunner"]._id_11415 = "tag_le_door_attach";
-    level._id_C73F["osprey_gunner"]._id_11416 = "tag_ri_door_attach";
-    level._id_C73F["osprey_gunner"]._id_113F0 = "tag_turret_attach";
-    level._id_C73F["osprey_gunner"]._id_DA71 = &"KILLSTREAKS_DEFEND_AIRDROP_PACKAGES";
-    level._id_C73F["osprey_gunner"].name = &"KILLSTREAKS_OSPREY_GUNNER";
-    level._id_C73F["osprey_gunner"].weaponinfo = "osprey_player_minigun_mp";
-    level._id_C73F["osprey_gunner"].helitype = "osprey_gunner";
-    level._id_C73F["osprey_gunner"].droptype = "airdrop_osprey_gunner";
-    level._id_C73F["osprey_gunner"].maxhealth = level._id_8D73 * 2;
-    level._id_C73F["osprey_gunner"].timeout = 75.0;
+    level.ospreysettings = [];
+    level.ospreysettings["escort_airdrop"] = spawnstruct();
+    level.ospreysettings["escort_airdrop"].vehicle = "osprey_mp";
+    level.ospreysettings["escort_airdrop"].modelbase = "vehicle_v22_osprey_body_mp";
+    level.ospreysettings["escort_airdrop"].modelblades = "vehicle_v22_osprey_blades_mp";
+    level.ospreysettings["escort_airdrop"].taghatchl = "tag_le_door_attach";
+    level.ospreysettings["escort_airdrop"].taghatchr = "tag_ri_door_attach";
+    level.ospreysettings["escort_airdrop"].tagdropcrates = "tag_turret_attach";
+    level.ospreysettings["escort_airdrop"].prompt = &"KILLSTREAKS_DEFEND_AIRDROP_PACKAGES";
+    level.ospreysettings["escort_airdrop"].name = &"KILLSTREAKS_ESCORT_AIRDROP";
+    level.ospreysettings["escort_airdrop"].weaponinfo = "osprey_minigun_mp";
+    level.ospreysettings["escort_airdrop"].helitype = "osprey";
+    level.ospreysettings["escort_airdrop"].droptype = "airdrop_escort";
+    level.ospreysettings["escort_airdrop"].maxhealth = level.heli_maxhealth * 2;
+    level.ospreysettings["escort_airdrop"].timeout = 60.0;
+    level.ospreysettings["osprey_gunner"] = spawnstruct();
+    level.ospreysettings["osprey_gunner"].vehicle = "osprey_player_mp";
+    level.ospreysettings["osprey_gunner"].modelbase = "vehicle_v22_osprey_body_mp";
+    level.ospreysettings["osprey_gunner"].modelblades = "vehicle_v22_osprey_blades_mp";
+    level.ospreysettings["osprey_gunner"].taghatchl = "tag_le_door_attach";
+    level.ospreysettings["osprey_gunner"].taghatchr = "tag_ri_door_attach";
+    level.ospreysettings["osprey_gunner"].tagdropcrates = "tag_turret_attach";
+    level.ospreysettings["osprey_gunner"].prompt = &"KILLSTREAKS_DEFEND_AIRDROP_PACKAGES";
+    level.ospreysettings["osprey_gunner"].name = &"KILLSTREAKS_OSPREY_GUNNER";
+    level.ospreysettings["osprey_gunner"].weaponinfo = "osprey_player_minigun_mp";
+    level.ospreysettings["osprey_gunner"].helitype = "osprey_gunner";
+    level.ospreysettings["osprey_gunner"].droptype = "airdrop_osprey_gunner";
+    level.ospreysettings["osprey_gunner"].maxhealth = level.heli_maxhealth * 2;
+    level.ospreysettings["osprey_gunner"].timeout = 75.0;
 
-    foreach ( var_1 in level._id_C73F )
+    foreach ( var_1 in level.ospreysettings )
     {
         level.chopper_fx["explode"]["death"][var_1.modelbase] = loadfx( "vfx/core/expl/helicopter_explosion_osprey" );
         level.chopper_fx["explode"]["air_death"][var_1.modelbase] = loadfx( "vfx/core/expl/helicopter_explosion_osprey_air_mp" );
@@ -51,9 +51,9 @@ init()
         level.chopper_fx["anim"]["hatch_right_anim_up"][var_1.modelbase] = loadfx( "vfx/props/osprey_bottom_door_right_anim_close" );
     }
 
-    level._id_1A6F = [];
+    level.air_support_locs = [];
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "escort_airdrop", ::tryuseescortairdrop );
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "osprey_gunner", ::_id_128F3 );
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "osprey_gunner", ::tryuseospreygunner );
 }
 
 tryuseescortairdrop( var_0, var_1 )
@@ -79,7 +79,7 @@ tryuseescortairdrop( var_0, var_1 )
     return 1;
 }
 
-_id_128F3( var_0, var_1 )
+tryuseospreygunner( var_0, var_1 )
 {
     var_2 = 1;
 
@@ -96,7 +96,7 @@ _id_128F3( var_0, var_1 )
     }
 
     scripts\mp\utility::incrementfauxvehiclecount();
-    var_4 = _id_F1AD( var_0, "osprey_gunner", "compass_objpoint_osprey_friendly", "compass_objpoint_osprey_enemy", &"KILLSTREAKS_SELECT_MOBILE_MORTAR_LOCATION" );
+    var_4 = selectdroplocation( var_0, "osprey_gunner", "compass_objpoint_osprey_friendly", "compass_objpoint_osprey_enemy", &"KILLSTREAKS_SELECT_MOBILE_MORTAR_LOCATION" );
 
     if ( !isdefined( var_4 ) || !var_4 )
     {
@@ -108,44 +108,44 @@ _id_128F3( var_0, var_1 )
     return 1;
 }
 
-_id_6CE4( var_0, var_1, var_2, var_3 )
+finishsupportescortusage( var_0, var_1, var_2, var_3 )
 {
     self notify( "used" );
     var_4 = ( 0, var_2, 0 );
     var_5 = 12000;
     var_6 = getent( "airstrikeheight", "targetname" );
     var_7 = var_6.origin[2];
-    var_8 = level._id_8D96[randomint( level._id_8D96.size )];
+    var_8 = level.heli_start_nodes[randomint( level.heli_start_nodes.size )];
     var_9 = var_8.origin;
     var_10 = ( var_1[0], var_1[1], var_7 );
     var_11 = var_1 + anglestoforward( var_4 ) * var_5;
     var_12 = vectortoangles( var_10 - var_9 );
     var_13 = var_1;
     var_1 = ( var_1[0], var_1[1], var_7 );
-    var_14 = _id_4983( self, var_0, var_9, var_12, var_1, var_3 );
+    var_14 = createairship( self, var_0, var_9, var_12, var_1, var_3 );
     var_9 = var_8;
-    _id_130E3( var_0, var_14, var_9, var_10, var_11, var_7, var_13 );
+    usesupportescortairdrop( var_0, var_14, var_9, var_10, var_11, var_7, var_13 );
 }
 
-_id_6CDF( var_0, var_1, var_2, var_3 )
+finishospreygunnerusage( var_0, var_1, var_2, var_3 )
 {
     self notify( "used" );
     var_4 = ( 0, var_2, 0 );
     var_5 = 12000;
     var_6 = getent( "airstrikeheight", "targetname" );
     var_7 = var_6.origin[2];
-    var_8 = level._id_8D96[randomint( level._id_8D96.size )];
+    var_8 = level.heli_start_nodes[randomint( level.heli_start_nodes.size )];
     var_9 = var_8.origin;
     var_10 = ( var_1[0], var_1[1], var_7 );
     var_11 = var_1 + anglestoforward( var_4 ) * var_5;
     var_12 = vectortoangles( var_10 - var_9 );
     var_1 = ( var_1[0], var_1[1], var_7 );
-    var_13 = _id_4983( self, var_0, var_9, var_12, var_1, var_3 );
+    var_13 = createairship( self, var_0, var_9, var_12, var_1, var_3 );
     var_9 = var_8;
-    _id_130B6( var_0, var_13, var_9, var_10, var_11, var_7 );
+    useospreygunner( var_0, var_13, var_9, var_10, var_11, var_7 );
 }
 
-_id_11089()
+stopselectionwatcher()
 {
     self waittill( "stop_location_selection", var_0 );
 
@@ -161,7 +161,7 @@ _id_11089()
     }
 }
 
-_id_F1AD( var_0, var_1, var_2, var_3, var_4 )
+selectdroplocation( var_0, var_1, var_2, var_3, var_4 )
 {
     self endon( "customCancelLocation" );
     var_5 = undefined;
@@ -171,9 +171,9 @@ _id_F1AD( var_0, var_1, var_2, var_3, var_4 )
         var_6 = var_6 * 1.5;
 
     scripts\mp\utility::_beginlocationselection( var_1, "map_artillery_selector", 0, 500 );
-    thread _id_11089();
+    thread stopselectionwatcher();
     self waittill( "confirm_location", var_7, var_8 );
-    scripts\mp\utility::_id_11079( 0 );
+    scripts\mp\utility::stoplocationselection( 0 );
     scripts\mp\utility::setusingremote( var_1 );
     var_9 = scripts\mp\killstreaks\killstreaks::initridekillstreak( var_1 );
 
@@ -198,11 +198,11 @@ _id_F1AD( var_0, var_1, var_2, var_3, var_4 )
         return 0;
     }
 
-    thread _id_6CDF( var_0, var_7, var_8, var_1 );
+    thread finishospreygunnerusage( var_0, var_7, var_8, var_1 );
     return 1;
 }
 
-_id_1012E( var_0, var_1, var_2, var_3 )
+showicons( var_0, var_1, var_2, var_3 )
 {
     var_4 = scripts\mp\hud_util::createfontstring( "bigfixed", 0.5 );
     var_4 scripts\mp\hud_util::setpoint( "CENTER", "CENTER", 0, -150 );
@@ -216,11 +216,11 @@ _id_1012E( var_0, var_1, var_2, var_3 )
         if ( self.locationobjectives[var_5] != -1 )
         {
             scripts\mp\objidpoolmanager::minimap_objective_add( self.locationobjectives[var_5], "invisible", ( 0, 0, 0 ) );
-            scripts\mp\objidpoolmanager::minimap_objective_position( self.locationobjectives[var_5], level._id_1A6F[level.script][var_5]["origin"] );
+            scripts\mp\objidpoolmanager::minimap_objective_position( self.locationobjectives[var_5], level.air_support_locs[level.script][var_5]["origin"] );
             scripts\mp\objidpoolmanager::minimap_objective_state( self.locationobjectives[var_5], "active" );
             scripts\mp\objidpoolmanager::minimap_objective_player( self.locationobjectives[var_5], self getentitynumber() );
 
-            if ( level._id_1A6F[level.script][var_5]["in_use"] == 1 )
+            if ( level.air_support_locs[level.script][var_5]["in_use"] == 1 )
             {
                 scripts\mp\objidpoolmanager::minimap_objective_icon( self.locationobjectives[var_5], var_1 );
                 continue;
@@ -237,44 +237,44 @@ _id_1012E( var_0, var_1, var_2, var_3 )
         scripts\mp\objidpoolmanager::returnminimapid( self.locationobjectives[var_5] );
 }
 
-_id_4983( var_0, var_1, var_2, var_3, var_4, var_5 )
+createairship( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
-    var_6 = spawnhelicopter( var_0, var_2, var_3, level._id_C73F[var_5].vehicle, level._id_C73F[var_5].modelbase );
+    var_6 = spawnhelicopter( var_0, var_2, var_3, level.ospreysettings[var_5].vehicle, level.ospreysettings[var_5].modelbase );
 
     if ( !isdefined( var_6 ) )
         return undefined;
 
-    var_6._id_C740 = var_5;
-    var_6._id_8DA0 = level._id_C73F[var_5].modelbase;
-    var_6.helitype = level._id_C73F[var_5].helitype;
-    var_6.attractor = missile_createattractorent( var_6, level._id_8D2E, level._id_8D2D );
+    var_6.ospreytype = var_5;
+    var_6.heli_type = level.ospreysettings[var_5].modelbase;
+    var_6.helitype = level.ospreysettings[var_5].helitype;
+    var_6.attractor = missile_createattractorent( var_6, level.heli_attract_strength, level.heli_attract_range );
     var_6.lifeid = var_1;
     var_6.team = var_0.pers["team"];
     var_6.pers["team"] = var_0.pers["team"];
     var_6.owner = var_0;
     var_6 setotherent( var_0 );
-    var_6.maxhealth = level._id_C73F[var_5].maxhealth;
+    var_6.maxhealth = level.ospreysettings[var_5].maxhealth;
     var_6.zoffset = ( 0, 0, 0 );
-    var_6._id_11568 = level._id_8D9A;
+    var_6.targeting_delay = level.heli_targeting_delay;
     var_6.primarytarget = undefined;
     var_6.secondarytarget = undefined;
     var_6.attacker = undefined;
     var_6.currentstate = "ok";
-    var_6.droptype = level._id_C73F[var_5].droptype;
+    var_6.droptype = level.ospreysettings[var_5].droptype;
     var_6 scripts\mp\sentientpoolmanager::registersentient( "Killstreak_Air", var_0 );
     level.chopper = var_6;
-    var_6 scripts\mp\killstreaks\helicopter::_id_184E();
+    var_6 scripts\mp\killstreaks\helicopter::addtohelilist();
     var_6 thread scripts\mp\killstreaks\flares::flares_monitor( 2 );
     var_6 thread scripts\mp\killstreaks\helicopter::heli_leave_on_disconnect( var_0 );
     var_6 thread scripts\mp\killstreaks\helicopter::heli_leave_on_changeteams( var_0 );
     var_6 thread scripts\mp\killstreaks\helicopter::heli_leave_on_gameended( var_0 );
-    var_7 = level._id_C73F[var_5].timeout;
+    var_7 = level.ospreysettings[var_5].timeout;
     var_6 thread scripts\mp\killstreaks\helicopter::heli_leave_on_timeout( var_7 );
     var_6 thread scripts\mp\killstreaks\helicopter::heli_damage_monitor( var_5, 0 );
     var_6 thread scripts\mp\killstreaks\helicopter::heli_health();
-    var_6 thread scripts\mp\killstreaks\helicopter::_id_8D49();
-    var_6 thread _id_1AE8();
-    var_6 thread _id_1AEA();
+    var_6 thread scripts\mp\killstreaks\helicopter::heli_existance();
+    var_6 thread airshipfx();
+    var_6 thread airshipfxonconnect();
 
     if ( var_5 == "escort_airdrop" )
     {
@@ -287,7 +287,7 @@ _id_4983( var_0, var_1, var_2, var_3, var_4, var_5 )
     return var_6;
 }
 
-_id_1AE8()
+airshipfx()
 {
     self endon( "death" );
     wait 0.05;
@@ -295,14 +295,14 @@ _id_1AE8()
     wait 0.05;
     playfxontag( level.chopper_fx["light"]["belly"], self, "tag_light_belly" );
     wait 0.05;
-    playfxontag( level.chopper_fx["anim"]["blades_static_down"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH" );
+    playfxontag( level.chopper_fx["anim"]["blades_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH" );
     wait 0.05;
-    playfxontag( level.chopper_fx["anim"]["hatch_left_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415 );
+    playfxontag( level.chopper_fx["anim"]["hatch_left_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl );
     wait 0.05;
-    playfxontag( level.chopper_fx["anim"]["hatch_right_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416 );
+    playfxontag( level.chopper_fx["anim"]["hatch_right_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr );
 }
 
-_id_1AEA()
+airshipfxonconnect()
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -310,11 +310,11 @@ _id_1AEA()
     for (;;)
     {
         level waittill( "connected", var_0 );
-        thread _id_1AE9( var_0 );
+        thread airshipfxonclient( var_0 );
     }
 }
 
-_id_1AE9( var_0 )
+airshipfxonclient( var_0 )
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -324,63 +324,63 @@ _id_1AE9( var_0 )
     wait 0.05;
     playfxontagforclients( level.chopper_fx["light"]["belly"], self, "tag_light_belly", var_0 );
 
-    if ( isdefined( self._id_DA9F ) )
+    if ( isdefined( self.propsstate ) )
     {
-        if ( self._id_DA9F == "up" )
+        if ( self.propsstate == "up" )
         {
             wait 0.05;
-            playfxontagforclients( level.chopper_fx["anim"]["blades_static_up"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH", var_0 );
+            playfxontagforclients( level.chopper_fx["anim"]["blades_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH", var_0 );
         }
         else
         {
             wait 0.05;
-            playfxontagforclients( level.chopper_fx["anim"]["blades_static_down"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH", var_0 );
+            playfxontagforclients( level.chopper_fx["anim"]["blades_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH", var_0 );
         }
     }
     else
     {
         wait 0.05;
-        playfxontagforclients( level.chopper_fx["anim"]["blades_static_down"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH", var_0 );
+        playfxontagforclients( level.chopper_fx["anim"]["blades_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH", var_0 );
     }
 
-    if ( isdefined( self._id_8C42 ) )
+    if ( isdefined( self.hatchstate ) )
     {
-        if ( self._id_8C42 == "down" )
+        if ( self.hatchstate == "down" )
         {
             wait 0.05;
-            playfxontagforclients( level.chopper_fx["anim"]["hatch_left_static_down"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415, var_0 );
+            playfxontagforclients( level.chopper_fx["anim"]["hatch_left_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl, var_0 );
             wait 0.05;
-            playfxontagforclients( level.chopper_fx["anim"]["hatch_right_static_down"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416, var_0 );
+            playfxontagforclients( level.chopper_fx["anim"]["hatch_right_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr, var_0 );
         }
         else
         {
             wait 0.05;
-            playfxontagforclients( level.chopper_fx["anim"]["hatch_left_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415, var_0 );
+            playfxontagforclients( level.chopper_fx["anim"]["hatch_left_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl, var_0 );
             wait 0.05;
-            playfxontagforclients( level.chopper_fx["anim"]["hatch_right_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416, var_0 );
+            playfxontagforclients( level.chopper_fx["anim"]["hatch_right_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr, var_0 );
         }
     }
     else
     {
         wait 0.05;
-        playfxontagforclients( level.chopper_fx["anim"]["hatch_left_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415, var_0 );
+        playfxontagforclients( level.chopper_fx["anim"]["hatch_left_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl, var_0 );
         wait 0.05;
-        playfxontagforclients( level.chopper_fx["anim"]["hatch_right_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416, var_0 );
+        playfxontagforclients( level.chopper_fx["anim"]["hatch_right_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr, var_0 );
     }
 }
 
-_id_130E3( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
+usesupportescortairdrop( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 {
-    var_1 thread _id_1AE6( self, var_2, var_3, var_4, var_5, var_6 );
+    var_1 thread airshipflydefense( self, var_2, var_3, var_4, var_5, var_6 );
 }
 
-_id_130B6( var_0, var_1, var_2, var_3, var_4, var_5 )
+useospreygunner( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
-    thread _id_E4F8( var_0, var_1 );
-    var_1 thread _id_1AE7( self, var_2, var_3, var_4, var_5 );
+    thread ridegunner( var_0, var_1 );
+    var_1 thread airshipflygunner( self, var_2, var_3, var_4, var_5 );
 }
 
-_id_E4F8( var_0, var_1 )
+ridegunner( var_0, var_1 )
 {
     self endon( "disconnect" );
     var_1 endon( "helicopter_done" );
@@ -391,13 +391,13 @@ _id_E4F8( var_0, var_1 )
     if ( getdvarint( "camera_thirdPerson" ) )
         scripts\mp\utility::setthirdpersondof( 0 );
 
-    var_1 _meth_83ED( self );
+    var_1 vehicleturretcontrolon( self );
     self playerlinkweaponviewtodelta( var_1, "tag_player", 1.0, 0, 0, 0, 0, 1 );
     self setplayerangles( var_1 gettagangles( "tag_player" ) );
     var_1 thread scripts\mp\killstreaks\helicopter::heli_targeting();
     var_1.gunner = self;
-    self._id_8DD2 = var_0;
-    thread _id_6381( var_1 );
+    self.heliridelifeid = var_0;
+    thread endrideonairshipdone( var_1 );
     thread waitsetthermal( 1.0, var_1 );
     thread scripts\mp\utility::reinitializethermal( var_1 );
 
@@ -423,88 +423,88 @@ waitsetthermal( var_0, var_1 )
     self thermalvisionfofoverlayon();
 }
 
-_id_1011E( var_0 )
+showdefendprompt( var_0 )
 {
     self endon( "disconnect" );
     var_0 endon( "helicopter_done" );
-    self._id_6741 = scripts\mp\hud_util::createfontstring( "bigfixed", 1.5 );
-    self._id_6741 scripts\mp\hud_util::setpoint( "CENTER", "CENTER", 0, -150 );
-    self._id_6741 settext( level._id_C73F[var_0._id_C740]._id_DA71 );
+    self.escort_prompt = scripts\mp\hud_util::createfontstring( "bigfixed", 1.5 );
+    self.escort_prompt scripts\mp\hud_util::setpoint( "CENTER", "CENTER", 0, -150 );
+    self.escort_prompt settext( level.ospreysettings[var_0.ospreytype].prompt );
     wait 6;
 
-    if ( isdefined( self._id_6741 ) )
-        self._id_6741 scripts\mp\hud_util::destroyelem();
+    if ( isdefined( self.escort_prompt ) )
+        self.escort_prompt scripts\mp\hud_util::destroyelem();
 }
 
-_id_1AEE()
+airshippitchpropsup()
 {
     self endon( "crashing" );
     self endon( "death" );
-    stopfxontag( level.chopper_fx["anim"]["blades_static_down"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH" );
-    playfxontag( level.chopper_fx["anim"]["blades_anim_up"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH" );
+    stopfxontag( level.chopper_fx["anim"]["blades_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH" );
+    playfxontag( level.chopper_fx["anim"]["blades_anim_up"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH" );
     wait 1.0;
 
     if ( isdefined( self ) )
     {
-        playfxontag( level.chopper_fx["anim"]["blades_static_up"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH" );
-        self._id_DA9F = "up";
+        playfxontag( level.chopper_fx["anim"]["blades_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH" );
+        self.propsstate = "up";
     }
 }
 
-_id_1AED()
+airshippitchpropsdown()
 {
     self endon( "crashing" );
     self endon( "death" );
-    stopfxontag( level.chopper_fx["anim"]["blades_static_up"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH" );
-    playfxontag( level.chopper_fx["anim"]["blades_anim_down"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH" );
+    stopfxontag( level.chopper_fx["anim"]["blades_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH" );
+    playfxontag( level.chopper_fx["anim"]["blades_anim_down"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH" );
     wait 1.0;
 
     if ( isdefined( self ) )
     {
-        playfxontag( level.chopper_fx["anim"]["blades_static_down"][level._id_C73F[self._id_C740].modelbase], self, "TAG_BLADES_ATTACH" );
-        self._id_DA9F = "down";
+        playfxontag( level.chopper_fx["anim"]["blades_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, "TAG_BLADES_ATTACH" );
+        self.propsstate = "down";
     }
 }
 
-_id_1AEC()
+airshippitchhatchup()
 {
     self endon( "crashing" );
     self endon( "death" );
-    stopfxontag( level.chopper_fx["anim"]["hatch_left_static_down"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415 );
-    playfxontag( level.chopper_fx["anim"]["hatch_left_anim_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415 );
-    stopfxontag( level.chopper_fx["anim"]["hatch_right_static_down"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416 );
-    playfxontag( level.chopper_fx["anim"]["hatch_right_anim_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416 );
+    stopfxontag( level.chopper_fx["anim"]["hatch_left_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl );
+    playfxontag( level.chopper_fx["anim"]["hatch_left_anim_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl );
+    stopfxontag( level.chopper_fx["anim"]["hatch_right_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr );
+    playfxontag( level.chopper_fx["anim"]["hatch_right_anim_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr );
     wait 1.0;
 
     if ( isdefined( self ) )
     {
-        playfxontag( level.chopper_fx["anim"]["hatch_left_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415 );
-        playfxontag( level.chopper_fx["anim"]["hatch_right_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416 );
-        self._id_8C42 = "up";
+        playfxontag( level.chopper_fx["anim"]["hatch_left_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl );
+        playfxontag( level.chopper_fx["anim"]["hatch_right_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr );
+        self.hatchstate = "up";
     }
 }
 
-_id_1AEB()
+airshippitchhatchdown()
 {
     self endon( "crashing" );
     self endon( "death" );
-    stopfxontag( level.chopper_fx["anim"]["hatch_left_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415 );
-    playfxontag( level.chopper_fx["anim"]["hatch_left_anim_down"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415 );
-    stopfxontag( level.chopper_fx["anim"]["hatch_right_static_up"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416 );
-    playfxontag( level.chopper_fx["anim"]["hatch_right_anim_down"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416 );
+    stopfxontag( level.chopper_fx["anim"]["hatch_left_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl );
+    playfxontag( level.chopper_fx["anim"]["hatch_left_anim_down"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl );
+    stopfxontag( level.chopper_fx["anim"]["hatch_right_static_up"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr );
+    playfxontag( level.chopper_fx["anim"]["hatch_right_anim_down"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr );
     wait 1.0;
 
     if ( isdefined( self ) )
     {
-        playfxontag( level.chopper_fx["anim"]["hatch_left_static_down"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11415 );
-        playfxontag( level.chopper_fx["anim"]["hatch_right_static_down"][level._id_C73F[self._id_C740].modelbase], self, level._id_C73F[self._id_C740]._id_11416 );
-        self._id_8C42 = "down";
+        playfxontag( level.chopper_fx["anim"]["hatch_left_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchl );
+        playfxontag( level.chopper_fx["anim"]["hatch_right_static_down"][level.ospreysettings[self.ospreytype].modelbase], self, level.ospreysettings[self.ospreytype].taghatchr );
+        self.hatchstate = "down";
     }
 
     self notify( "hatch_down" );
 }
 
-_id_7DFC( var_0 )
+getbestheight( var_0 )
 {
     self endon( "helicopter_removed" );
     self endon( "heightReturned" );
@@ -517,7 +517,7 @@ _id_7DFC( var_0 )
     else
         var_2 = 850;
 
-    self._id_2A95 = var_2;
+    self.bestheight = var_2;
     var_3 = 200;
     var_4 = 0;
     var_5 = 0;
@@ -572,12 +572,12 @@ _id_7DFC( var_0 )
             var_3 = var_9["position"][2];
     }
 
-    self._id_2A95 = var_3 + 300;
+    self.bestheight = var_3 + 300;
 
     switch ( getdvar( "mapname" ) )
     {
         case "mp_morningwood":
-            self._id_2A95 = self._id_2A95 + 600;
+            self.bestheight = self.bestheight + 600;
             break;
         case "mp_overwatch":
             var_10 = level.spawnpoints;
@@ -594,36 +594,36 @@ _id_7DFC( var_0 )
             }
 
             if ( var_3 < var_11.origin[2] - 100 )
-                self._id_2A95 = var_12.origin[2] + 900;
+                self.bestheight = var_12.origin[2] + 900;
 
             break;
     }
 }
 
-_id_1AE6( var_0, var_1, var_2, var_3, var_4, var_5 )
+airshipflydefense( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     self notify( "airshipFlyDefense" );
     self endon( "airshipFlyDefense" );
     self endon( "helicopter_removed" );
     self endon( "death" );
     self endon( "leaving" );
-    thread _id_7DFC( var_2 );
+    thread getbestheight( var_2 );
     scripts\mp\killstreaks\helicopter::heli_fly_simple_path( var_1 );
-    self._id_C96C = var_2;
+    self.pathgoal = var_2;
     var_6 = self.angles;
     self setyawspeed( 30, 30, 30, 0.3 );
     var_7 = self.origin;
     var_8 = self.angles[1];
     var_9 = self.angles[0];
-    self.timeout = level._id_C73F[self._id_C740].timeout;
+    self.timeout = level.ospreysettings[self.ospreytype].timeout;
     self setvehgoalpos( var_2, 1 );
     var_10 = gettime();
     self waittill( "goal" );
     var_11 = ( gettime() - var_10 ) * 0.001;
     self.timeout = self.timeout - var_11;
-    thread _id_1AEE();
+    thread airshippitchpropsup();
     var_12 = var_2 * ( 1, 1, 0 );
-    var_12 = var_12 + ( 0, 0, self._id_2A95 );
+    var_12 = var_12 + ( 0, 0, self.bestheight );
     self vehicle_setspeed( 25, 10, 10 );
     self setyawspeed( 20, 10, 10, 0.3 );
     self setvehgoalpos( var_12, 1 );
@@ -632,15 +632,15 @@ _id_1AE6( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_11 = ( gettime() - var_10 ) * 0.001;
     self.timeout = self.timeout - var_11;
     self sethoverparams( 65, 50, 50 );
-    _id_C73E( 1, level._id_C73F[self._id_C740]._id_113F0, var_12 );
-    thread _id_A663( var_5 );
+    ospreydropcrateslowimpulse( 1, level.ospreysettings[self.ospreytype].tagdropcrates, var_12 );
+    thread killguysnearcrates( var_5 );
 
     if ( isdefined( var_0 ) )
         var_0 scripts\engine\utility::waittill_any_timeout( self.timeout, "disconnect" );
 
     self waittill( "leaving" );
     self notify( "osprey_leaving" );
-    thread _id_1AED();
+    thread airshippitchpropsdown();
 }
 
 wait_and_delete( var_0 )
@@ -651,7 +651,7 @@ wait_and_delete( var_0 )
     self delete();
 }
 
-_id_A663( var_0 )
+killguysnearcrates( var_0 )
 {
     self endon( "osprey_leaving" );
     self endon( "helicopter_removed" );
@@ -682,13 +682,13 @@ _id_A663( var_0 )
             if ( distancesquared( var_1, var_3.origin ) > 500000 )
                 continue;
 
-            thread _id_1B01( var_3, var_1 );
-            _id_136B2();
+            thread aishootplayer( var_3, var_1 );
+            waitforconfirmation();
         }
     }
 }
 
-_id_1B01( var_0, var_1 )
+aishootplayer( var_0, var_1 )
 {
     self notify( "aiShootPlayer" );
     self endon( "aiShootPlayer" );
@@ -697,7 +697,7 @@ _id_1B01( var_0, var_1 )
     var_0 endon( "death" );
     self setturrettargetent( var_0 );
     self setlookatent( var_0 );
-    thread _id_1155A( var_0 );
+    thread targetdeathwaiter( var_0 );
     var_2 = 6;
     var_3 = 2;
 
@@ -723,7 +723,7 @@ _id_1B01( var_0, var_1 )
     }
 }
 
-_id_1155A( var_0 )
+targetdeathwaiter( var_0 )
 {
     self endon( "abandon_target" );
     self endon( "leaving" );
@@ -732,7 +732,7 @@ _id_1155A( var_0 )
     self notify( "target_killed" );
 }
 
-_id_136B2()
+waitforconfirmation()
 {
     self endon( "helicopter_removed" );
     self endon( "leaving" );
@@ -743,30 +743,30 @@ _id_136B2()
         wait 0.05;
 }
 
-_id_1AE7( var_0, var_1, var_2, var_3, var_4 )
+airshipflygunner( var_0, var_1, var_2, var_3, var_4 )
 {
     self notify( "airshipFlyGunner" );
     self endon( "airshipFlyGunner" );
     self endon( "helicopter_removed" );
     self endon( "death" );
     self endon( "leaving" );
-    thread _id_7DFC( var_2 );
+    thread getbestheight( var_2 );
     scripts\mp\killstreaks\helicopter::heli_fly_simple_path( var_1 );
-    thread scripts\mp\killstreaks\helicopter::heli_leave_on_timeout( level._id_C73F[self._id_C740].timeout );
+    thread scripts\mp\killstreaks\helicopter::heli_leave_on_timeout( level.ospreysettings[self.ospreytype].timeout );
     var_5 = self.angles;
     self setyawspeed( 30, 30, 30, 0.3 );
     var_6 = self.origin;
     var_7 = self.angles[1];
     var_8 = self.angles[0];
-    self.timeout = level._id_C73F[self._id_C740].timeout;
+    self.timeout = level.ospreysettings[self.ospreytype].timeout;
     self setvehgoalpos( var_2, 1 );
     var_9 = gettime();
     self waittill( "goal" );
     var_10 = ( gettime() - var_9 ) * 0.001;
     self.timeout = self.timeout - var_10;
-    thread _id_1AEE();
+    thread airshippitchpropsup();
     var_11 = var_2 * ( 1, 1, 0 );
-    var_11 = var_11 + ( 0, 0, self._id_2A95 );
+    var_11 = var_11 + ( 0, 0, self.bestheight );
     self vehicle_setspeed( 25, 10, 10 );
     self setyawspeed( 20, 10, 10, 0.3 );
     self setvehgoalpos( var_11, 1 );
@@ -774,7 +774,7 @@ _id_1AE7( var_0, var_1, var_2, var_3, var_4 )
     self waittill( "goal" );
     var_10 = ( gettime() - var_9 ) * 0.001;
     self.timeout = self.timeout - var_10;
-    _id_C73D( 1, level._id_C73F[self._id_C740]._id_113F0, var_11 );
+    ospreydropcrates( 1, level.ospreysettings[self.ospreytype].tagdropcrates, var_11 );
     var_12 = 1.0;
 
     if ( isdefined( var_0 ) )
@@ -790,17 +790,17 @@ _id_1AE7( var_0, var_1, var_2, var_3, var_4 )
     var_14 = level.heli_loop_nodes[randomint( level.heli_loop_nodes.size )];
 
     if ( var_13.size )
-        thread scripts\mp\killstreaks\helicopter::_id_8D55( var_13 );
+        thread scripts\mp\killstreaks\helicopter::heli_fly_well( var_13 );
     else
         thread scripts\mp\killstreaks\helicopter::heli_fly_loop_path( var_14 );
 
     self waittill( "leaving" );
-    thread _id_1AED();
+    thread airshippitchpropsdown();
 }
 
-_id_C73E( var_0, var_1, var_2 )
+ospreydropcrateslowimpulse( var_0, var_1, var_2 )
 {
-    thread _id_1AEB();
+    thread airshippitchhatchdown();
     self waittill( "hatch_down" );
     level notify( "escort_airdrop_started", self );
     var_3[0] = thread scripts\mp\killstreaks\airdrop::dropthecrate( undefined, self.droptype, undefined, 0, undefined, self.origin, ( randomint( 10 ), randomint( 10 ), randomint( 10 ) ), undefined, var_1 );
@@ -823,12 +823,12 @@ _id_C73E( var_0, var_1, var_2 )
     wait 0.05;
     self notify( "drop_crate" );
     wait 1.0;
-    thread _id_1AEC();
+    thread airshippitchhatchup();
 }
 
-_id_C73D( var_0, var_1, var_2 )
+ospreydropcrates( var_0, var_1, var_2 )
 {
-    thread _id_1AEB();
+    thread airshippitchhatchdown();
     self waittill( "hatch_down" );
     var_3[0] = thread scripts\mp\killstreaks\airdrop::dropthecrate( undefined, self.droptype, undefined, 0, undefined, self.origin, ( randomint( 10 ), randomint( 10 ), randomint( 10 ) ), undefined, var_1 );
     wait 0.05;
@@ -847,15 +847,15 @@ _id_C73D( var_0, var_1, var_2 )
     self.timeout = self.timeout - 0.05;
     self notify( "drop_crate" );
     wait 1.0;
-    thread _id_1AEC();
+    thread airshippitchhatchup();
 }
 
-_id_6380( var_0 )
+endride( var_0 )
 {
-    if ( isdefined( self._id_6741 ) )
-        self._id_6741 scripts\mp\hud_util::destroyelem();
+    if ( isdefined( self.escort_prompt ) )
+        self.escort_prompt scripts\mp\hud_util::destroyelem();
 
-    self _meth_8258();
+    self remotecamerasoundscapeoff();
     self thermalvisionoff();
     self thermalvisionfofoverlayoff();
     self unlink();
@@ -867,16 +867,16 @@ _id_6380( var_0 )
     self visionsetthermalforplayer( game["thermal_vision"], 0 );
 
     if ( isdefined( var_0 ) )
-        var_0 _meth_83EC( self );
+        var_0 vehicleturretcontroloff( self );
 
     self notify( "heliPlayer_removed" );
     scripts\mp\utility::_switchtoweapon( scripts\engine\utility::getlastweapon() );
     scripts\mp\utility::_takeweapon( "heli_remote_mp" );
 }
 
-_id_6381( var_0 )
+endrideonairshipdone( var_0 )
 {
     self endon( "disconnect" );
     var_0 waittill( "helicopter_done" );
-    _id_6380( var_0 );
+    endride( var_0 );
 }

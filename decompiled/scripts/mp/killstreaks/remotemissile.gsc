@@ -3,12 +3,12 @@
 
 init()
 {
-    level._id_B897 = 14000;
-    level._id_B895 = 7000;
-    level._id_B896 = 1500;
+    level.missileremotelaunchvert = 14000;
+    level.missileremotelaunchhorz = 7000;
+    level.missileremotelaunchtargetdist = 1500;
     level.rockets = [];
     scripts\mp\killstreaks\killstreaks::registerkillstreak( "predator_missile", ::tryusepredatormissile );
-    level.remotekillstreaks["explode"] = loadfx( "vfx/core/expl/aerial_explosion" );
+    level.remotemissile_fx["explode"] = loadfx( "vfx/core/expl/aerial_explosion" );
 }
 
 tryusepredatormissile( var_0, var_1 )
@@ -29,14 +29,14 @@ tryusepredatormissile( var_0, var_1 )
     return 1;
 }
 
-_id_7E01( var_0 )
+getbestspawnpoint( var_0 )
 {
     var_1 = [];
 
     foreach ( var_3 in var_0 )
     {
-        var_3._id_1314F = [];
-        var_3._id_10909 = 0;
+        var_3.validplayers = [];
+        var_3.spawnscore = 0;
     }
 
     foreach ( var_6 in level.players )
@@ -55,8 +55,8 @@ _id_7E01( var_0 )
 
         foreach ( var_3 in var_0 )
         {
-            var_3._id_1314F[var_3._id_1314F.size] = var_6;
-            var_10 = distance2d( var_3._id_1155F.origin, var_6.origin );
+            var_3.validplayers[var_3.validplayers.size] = var_6;
+            var_10 = distance2d( var_3.targetent.origin, var_6.origin );
 
             if ( var_10 <= var_7 )
             {
@@ -65,27 +65,27 @@ _id_7E01( var_0 )
             }
         }
 
-        var_8._id_10909 = var_8._id_10909 + 2;
+        var_8.spawnscore = var_8.spawnscore + 2;
     }
 
     var_13 = var_0[0];
 
     foreach ( var_3 in var_0 )
     {
-        foreach ( var_6 in var_3._id_1314F )
+        foreach ( var_6 in var_3.validplayers )
         {
-            var_3._id_10909 = var_3._id_10909 + 1;
+            var_3.spawnscore = var_3.spawnscore + 1;
 
             if ( bullettracepassed( var_6.origin + ( 0, 0, 32 ), var_3.origin, 0, var_6 ) )
-                var_3._id_10909 = var_3._id_10909 + 3;
+                var_3.spawnscore = var_3.spawnscore + 3;
 
-            if ( var_3._id_10909 > var_13._id_10909 )
+            if ( var_3.spawnscore > var_13.spawnscore )
             {
                 var_13 = var_3;
                 continue;
             }
 
-            if ( var_3._id_10909 == var_13._id_10909 )
+            if ( var_3.spawnscore == var_13.spawnscore )
             {
                 if ( scripts\engine\utility::cointoss() )
                     var_13 = var_3;
@@ -103,27 +103,27 @@ _fire( var_0, var_1 )
     foreach ( var_4 in var_2 )
     {
         if ( isdefined( var_4.target ) )
-            var_4._id_1155F = getent( var_4.target, "targetname" );
+            var_4.targetent = getent( var_4.target, "targetname" );
     }
 
     if ( var_2.size > 0 )
-        var_6 = var_1 _id_7E01( var_2 );
+        var_6 = var_1 getbestspawnpoint( var_2 );
     else
         var_6 = undefined;
 
     if ( isdefined( var_6 ) )
     {
         var_7 = var_6.origin;
-        var_8 = var_6._id_1155F.origin;
+        var_8 = var_6.targetent.origin;
         var_9 = vectornormalize( var_7 - var_8 );
         var_7 = var_9 * 14000 + var_8;
         var_10 = scripts\mp\utility::_magicbullet( "remotemissile_projectile_mp", var_7, var_8, var_1 );
     }
     else
     {
-        var_11 = ( 0, 0, level._id_B897 );
-        var_12 = level._id_B895;
-        var_13 = level._id_B896;
+        var_11 = ( 0, 0, level.missileremotelaunchvert );
+        var_12 = level.missileremotelaunchhorz;
+        var_13 = level.missileremotelaunchtargetdist;
         var_14 = anglestoforward( var_1.angles );
         var_7 = var_1.origin + var_11 + var_14 * var_12 * -1;
         var_8 = var_1.origin + var_14 * var_13;

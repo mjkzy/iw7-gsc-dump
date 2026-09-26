@@ -6,25 +6,25 @@ _id_33FF( var_0, var_1, var_2, var_3 )
     self.asm.footsteps = spawnstruct();
     self.asm.footsteps.foot = "invalid";
     self.asm.footsteps.time = 0;
-    self.asm._id_4C86 = spawnstruct();
-    self.asm._id_7360 = 0;
-    self.asm._id_77C1 = spawnstruct();
-    _id_98A7();
+    self.asm.customdata = spawnstruct();
+    self.asm.frantic = 0;
+    self.asm.gestures = spawnstruct();
+    initnodeyaw_dev();
 }
 
-_id_98A7()
+initnodeyaw_dev()
 {
-    if ( isdefined( anim._id_C05A ) )
+    if ( isdefined( anim.nodeyaws ) )
         return;
 
     var_0 = [];
     var_0["Cover Left"] = 90;
     var_0["Cover Right"] = -90;
-    anim._id_C05A = var_0;
+    anim.nodeyaws = var_0;
     var_0 = [];
     var_0["Cover Left"] = 90;
     var_0["Cover Right"] = 180;
-    anim._id_7365 = var_0;
+    anim.franticnodeyaws = var_0;
 }
 
 _id_10088( var_0, var_1, var_2, var_3 )
@@ -40,15 +40,15 @@ _id_10088( var_0, var_1, var_2, var_3 )
 
 _id_D46D( var_0, var_1, var_2, var_3 )
 {
-    scripts\asm\asm_mp::_id_2364( var_0, var_1, var_2 );
+    scripts\asm\asm_mp::asm_playanimstate( var_0, var_1, var_2 );
 }
 
 reload( var_0, var_1, var_2, var_3 )
 {
     self endon( "reload_terminate" );
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4 );
     scripts\anim\weaponlist::refillclip();
     scripts\asm\asm::asm_fireevent( var_1, "reload_finished" );
 }
@@ -66,7 +66,7 @@ _id_100A9( var_0, var_1, var_2, var_3 )
     return 1;
 }
 
-_id_BEA0( var_0, var_1, var_2, var_3 )
+needtoturn( var_0, var_1, var_2, var_3 )
 {
     var_4 = undefined;
 
@@ -91,13 +91,13 @@ _id_BEA0( var_0, var_1, var_2, var_3 )
             var_5 = var_5 + asin( -3 / var_7 );
     }
 
-    if ( abs( angleclamp180( var_5 ) ) > self._id_129AF )
+    if ( abs( angleclamp180( var_5 ) ) > self.turnthreshold )
         return 1;
 
     return 0;
 }
 
-_id_81DE()
+getturndesiredyaw()
 {
     var_0 = 0.25;
     var_1 = undefined;
@@ -124,9 +124,9 @@ _id_81DE()
     return var_3;
 }
 
-_id_3F0A( var_0, var_1, var_2 )
+chooseturnanim( var_0, var_1, var_2 )
 {
-    var_3 = _id_81DE();
+    var_3 = getturndesiredyaw();
 
     if ( var_3 < 0 )
         var_4 = "right";
@@ -147,11 +147,11 @@ _id_3F0A( var_0, var_1, var_2 )
 
     var_6 = var_4 + "_" + var_5;
     var_7 = scripts\asm\asm::asm_lookupanimfromalias( var_1, var_6 );
-    var_8 = self _meth_8101( var_1, var_7 );
+    var_8 = self getanimentryname( var_1, var_7 );
     return var_7;
 }
 
-_id_116FF( var_0, var_1, var_2, var_3 )
+terminatestartanim( var_0, var_1, var_2, var_3 )
 {
 
 }
@@ -159,20 +159,20 @@ _id_116FF( var_0, var_1, var_2, var_3 )
 _id_D56A( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "_finished" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
     var_5 = self.pathgoalpos;
     self scragentsetorientmode( "face angle abs", self.angles );
-    self _meth_8281( "anim deltas" );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4 );
+    self scragentsetanimmode( "anim deltas" );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4 );
 
     if ( !isdefined( var_5 ) && isdefined( self.pathgoalpos ) )
         self clearpath();
 
-    scripts\asm\asm_mp::_id_237F( "face current" );
+    scripts\asm\asm_mp::asm_settransitionorientmode_legacy( "face current" );
     scripts\asm\asm_mp::_id_237E( "code_move" );
 }
 
-_id_1007E( var_0, var_1, var_2, var_3 )
+shouldsnaptocover_checktype( var_0, var_1, var_2, var_3 )
 {
     var_4 = !scripts\asm\asm_bb::bb_moverequested() && scripts\asm\shared\utility::isatcovernode();
 
@@ -185,30 +185,30 @@ _id_1007E( var_0, var_1, var_2, var_3 )
     if ( !isdefined( var_3 ) )
         return 1;
 
-    return _id_0F3A::_id_9D4C( var_0, var_1, var_2, var_3 );
+    return _id_0F3A::isarrivaltype( var_0, var_1, var_2, var_3 );
 }
 
 _id_CECB( var_0, var_1, var_2, var_3 )
 {
     self endon( var_1 + "finished" );
     var_4 = scripts\asm\asm_bb::bb_getrequestedweapon();
-    var_5 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_5 );
+    var_5 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_5 );
     self notify( "switched_to_sidearm" );
 }
 
 _id_D4B2( var_0, var_1, var_2, var_3 )
 {
     self scragentsetphysicsmode( "noclip" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 1 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 1 );
 }
 
 _id_D4B3( var_0, var_1, var_2, var_3 )
 {
     self scragentsetphysicsmode( "noclip" );
-    var_4 = scripts\asm\asm_mp::asm_getanim( var_0, var_1 );
-    scripts\asm\asm_mp::_id_2365( var_0, var_1, var_2, var_4, 0.001 );
+    var_4 = scripts\asm\asm_mp::asm_getanimindex( var_0, var_1 );
+    scripts\asm\asm_mp::asm_playanimstateindex( var_0, var_1, var_2, var_4, 0.001 );
 }
 
 _id_FFEF( var_0, var_1, var_2, var_3 )
@@ -230,7 +230,7 @@ _id_D4EC( var_0, var_1, var_2, var_3 )
     self scragentsetphysicsmode( "noclip" );
     self scragentsetorientmode( "face angle abs", level.neil.angles );
     wait 0.5;
-    _id_0F3C::_id_CEA8( var_0, var_1, var_2, var_3 );
+    scripts\asm\shared\mp\utility::playanim( var_0, var_1, var_2, var_3 );
 }
 
 _id_116EC( var_0, var_1, var_2, var_3 )

@@ -56,7 +56,7 @@ activate_sonic_ring( var_0 )
     scripts\cp\cp_vo::try_to_play_vo_on_all_players( "boss_phase_5_attack_sonic_ring" );
     level thread start_sonic_ring_timer();
     level thread sonic_ring_wail_all_player_trigger_teleporter( "sonic_ring_fail", "sonic_ring_success" );
-    _id_15F1( var_0.sonic_ring_controlling_struct, var_0.sonic_ring_controlling_ent );
+    activate_trigger( var_0.sonic_ring_controlling_struct, var_0.sonic_ring_controlling_ent );
     activate_controlling_ent( var_0.sonic_ring_controlling_ent, var_0 );
 }
 
@@ -169,7 +169,7 @@ terminate_sonic_ring()
     level notify( "stop_sonic_ring" );
 }
 
-_id_15F1( var_0, var_1 )
+activate_trigger( var_0, var_1 )
 {
     var_2 = getent( var_0.target, "targetname" );
     var_2.original_pos = var_2.origin;

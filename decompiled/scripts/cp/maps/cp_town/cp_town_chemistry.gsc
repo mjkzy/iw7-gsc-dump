@@ -500,7 +500,7 @@ register_element( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8,
     var_22.valuesets.choicef.pressure = var_18;
     var_22.model_coordinates = var_19;
     var_22.model_angles = var_20;
-    var_22._id_10475 = var_21;
+    var_22.soundalias = var_21;
 
     if ( var_3 == "componant" || var_3 == "final" )
     {
@@ -2348,7 +2348,7 @@ radios_activation_function( var_0, var_1 )
 
             if ( scripts\engine\utility::is_true( level.radio_flip ) )
             {
-                var_3 = level.bomb_compound.radio2[level.chem_radio_7_current]._id_10475;
+                var_3 = level.bomb_compound.radio2[level.chem_radio_7_current].soundalias;
                 var_2 playsound( var_3 );
                 level.chem_radio_7_current = level.chem_radio_7_current + 1;
 
@@ -2360,7 +2360,7 @@ radios_activation_function( var_0, var_1 )
             }
             else
             {
-                var_3 = level.bomb_compound.radio1[level.chem_radio_7_current]._id_10475;
+                var_3 = level.bomb_compound.radio1[level.chem_radio_7_current].soundalias;
                 var_2 playsound( var_3 );
                 level.chem_radio_7_current = level.chem_radio_7_current + 1;
 
@@ -2408,7 +2408,7 @@ radios_activation_function( var_0, var_1 )
 
             if ( scripts\engine\utility::is_true( level.radio_flip ) )
             {
-                var_3 = level.bomb_compound.radio1[level.chem_radio_8_current]._id_10475;
+                var_3 = level.bomb_compound.radio1[level.chem_radio_8_current].soundalias;
                 var_2 playsound( var_3 );
                 level.chem_radio_8_current = level.chem_radio_8_current + 1;
 
@@ -2420,7 +2420,7 @@ radios_activation_function( var_0, var_1 )
             }
             else
             {
-                var_3 = level.bomb_compound.radio2[level.chem_radio_8_current]._id_10475;
+                var_3 = level.bomb_compound.radio2[level.chem_radio_8_current].soundalias;
                 var_2 playsound( var_3 );
                 level.chem_radio_8_current = level.chem_radio_8_current + 1;
 
@@ -2884,7 +2884,7 @@ register_compound_vo( var_0, var_1, var_2, var_3 )
     {
         var_4 = level.bomb_compound.radio1.size;
         level.bomb_compound.radio1[var_4] = spawnstruct();
-        level.bomb_compound.radio1[var_4]._id_10475 = var_2;
+        level.bomb_compound.radio1[var_4].soundalias = var_2;
         level.bomb_compound.radio1[var_4].radio = var_1;
         level.bomb_compound.radio1[var_4].tempstring = var_3;
     }
@@ -2892,7 +2892,7 @@ register_compound_vo( var_0, var_1, var_2, var_3 )
     {
         var_4 = level.bomb_compound.radio2.size;
         level.bomb_compound.radio2[var_4] = spawnstruct();
-        level.bomb_compound.radio2[var_4]._id_10475 = var_2;
+        level.bomb_compound.radio2[var_4].soundalias = var_2;
         level.bomb_compound.radio2[var_4].radio = var_1;
         level.bomb_compound.radio2[var_4].tempstring = var_3;
     }
@@ -2902,7 +2902,7 @@ register_intro_chem_vo( var_0, var_1, var_2, var_3 )
 {
     var_4 = level.intro_chem_vo.size;
     level.intro_chem_vo[var_4] = spawnstruct();
-    level.intro_chem_vo[var_4]._id_10475 = var_2;
+    level.intro_chem_vo[var_4].soundalias = var_2;
     level.intro_chem_vo[var_4].order = var_1;
     level.intro_chem_vo[var_4].tempstring = var_3;
 }

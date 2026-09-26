@@ -9,8 +9,8 @@ superslasheragentinit()
 registerscriptedagent()
 {
     scripts\aitypes\bt_util::init();
-    behaviortree\superslasher::_id_DEE8();
-    scripts\asm\superslasher\mp\states::_id_2371();
+    behaviortree\superslasher::registerbehaviortree();
+    scripts\asm\superslasher\mp\states::asm_register();
     thread _id_FAB0();
     level.superslasherspawnspot = ( -4803, 4703, -130 );
     level.superslasherspawnangles = ( 0, -170, 0 );
@@ -87,7 +87,7 @@ setupagent()
     self.trap_killed_by = undefined;
     self.hastraversed = 0;
     self.immune_against_nuke = 1;
-    self._id_9342 = 1;
+    self.immune_against_repulsor = 1;
     self.immune_against_nuke = 1;
     self.aistate = "idle";
     self.movemode = "run";

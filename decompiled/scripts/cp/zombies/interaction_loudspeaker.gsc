@@ -32,7 +32,7 @@ init_loudspeaker_trap()
     level.rave_dance_attract_zone.origin = level.rave_dance_attract_zone.origin + ( 0, 0, -50 );
 
     foreach ( var_5 in var_0 )
-        var_5 thread _id_13611();
+        var_5 thread wait_for_power();
 
     wait 1;
     level.rave_dance_attract_sorter = scripts\engine\utility::getstruct( "rave_dance_sorter", "targetname" );
@@ -40,7 +40,7 @@ init_loudspeaker_trap()
     _id_E1E0();
 }
 
-_id_13611()
+wait_for_power()
 {
     var_0 = scripts\engine\utility::is_true( self.requires_power ) && isdefined( self.power_area );
 

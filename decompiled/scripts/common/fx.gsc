@@ -6,7 +6,7 @@ initfx()
     if ( !scripts\engine\utility::add_init_script( "fx", ::initfx ) )
         return;
 
-    scripts\engine\utility::add_func_ref_MAYBE( "create_triggerfx", ::create_triggerfx );
+    scripts\engine\utility::_id_16DC( "create_triggerfx", ::create_triggerfx );
     thread init_fx_thread();
 }
 
@@ -83,10 +83,12 @@ check_limit_type( var_0, var_1 )
 print_org( var_0, var_1, var_2, var_3 )
 {
     if ( getdvar( "debug" ) == "1" )
-        return;
+    {
+
+    }
 }
 
-_id_C519( var_0, var_1, var_2, var_3 )
+oneshotfx( var_0, var_1, var_2, var_3 )
 {
 
 }

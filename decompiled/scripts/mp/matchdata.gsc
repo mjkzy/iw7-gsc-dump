@@ -19,7 +19,7 @@ init()
         setmatchdata( "commonMatchData", "buildVersion", getbuildversion() );
         setmatchdata( "commonMatchData", "buildNumber", getbuildnumber() );
         setmatchdataid();
-        setmatchdata( "commonMatchData", "isPrivateMatch", scripts\mp\utility::_id_D957() );
+        setmatchdata( "commonMatchData", "isPrivateMatch", scripts\mp\utility::privatematch() );
         setmatchdata( "firstOvertimeRoundIndex", -1 );
 
         if ( scripts\mp\utility::ismlgmatch() )
@@ -27,18 +27,18 @@ init()
     }
 
     level.maxlives = 475;
-    level._id_B4B3 = 26;
-    level._id_B49F = 250;
-    level._id_B4A8 = 64;
-    level._id_B4A9 = 64;
+    level.maxnamelength = 26;
+    level.maxgameevents = 250;
+    level.maxkillstreaks = 64;
+    level.maxkillstreaksavailable = 64;
     level.maxlogclients = 30;
-    level._id_B4B5 = 10;
-    level._id_B4B4 = 10;
+    level.maxnumchallengesperplayer = 10;
+    level.maxnumawardsperplayer = 10;
     level.maxsupersavailable = 50;
     level.maxsupersactivated = 50;
     level.maxsupersexpired = 50;
     level thread gameendlistener();
-    level thread _id_636A();
+    level thread endofgamesummarylogger();
 }
 
 _id_C558()
@@ -51,11 +51,11 @@ _id_C557()
 {
     setmatchdata( "commonMatchData", "utcEndTimeSeconds", getsystemtime() );
     setmatchdata( "commonMatchData", "playerCountEnd", level.players.size );
-    setmatchdata( "globalPlayerXpModifier", int( scripts\mp\rank::_id_7ED9() ) );
+    setmatchdata( "globalPlayerXpModifier", int( scripts\mp\rank::getglobalrankxpmultiplier() ) );
     setmatchdata( "globalWeaponXpModifier", int( scripts\mp\weaponrank::getglobalweaponrankxpmultiplier() ) );
 }
 
-_id_7F93()
+getmatchstarttimeutc()
 {
     return getmatchdata( "commonMatchData", "utcStartTimeSeconds" );
 }
@@ -140,7 +140,7 @@ logkillstreakavailableevent( var_0 )
     var_2 = var_1 + 1;
     setmatchdata( "killstreakAvailableCount", var_2 );
 
-    if ( !canlogclient( self ) || var_1 >= level._id_B4A9 )
+    if ( !canlogclient( self ) || var_1 >= level.maxkillstreaksavailable )
         return;
 
     var_3 = gettimefrommatchstart( gettime() );
@@ -164,7 +164,7 @@ logkillstreakevent( var_0, var_1 )
     var_3 = var_2 + 1;
     setmatchdata( "killstreakCount", var_3 );
 
-    if ( !canlogclient( self ) || var_2 >= level._id_B4A8 )
+    if ( !canlogclient( self ) || var_2 >= level.maxkillstreaks )
         return;
 
     var_4 = gettimefrommatchstart( gettime() );
@@ -191,7 +191,7 @@ loggameevent( var_0, var_1 )
     var_3 = var_2 + 1;
     setmatchdata( "gameEventCount", var_3 );
 
-    if ( var_2 >= level._id_B49F )
+    if ( var_2 >= level.maxgameevents )
         return;
 
     var_4 = gettimefrommatchstart( gettime() );
@@ -211,7 +211,7 @@ loggameevent( var_0, var_1 )
     setmatchdata( "gameEvents", var_2, "eventPos", 2, int( var_1[2] ) );
 }
 
-loginitialstats( var_0, var_1 )
+logkillevent( var_0, var_1 )
 {
     if ( !canloglife( var_0 ) )
         return;
@@ -219,7 +219,7 @@ loginitialstats( var_0, var_1 )
     setmatchdata( "lives", var_0, "modifiers", var_1, 1 );
 }
 
-_id_AFCB( var_0, var_1 )
+logmultikill( var_0, var_1 )
 {
     if ( !canloglife( var_0 ) )
         return;
@@ -246,15 +246,15 @@ logplayerlife()
     if ( isdefined( self.wasti ) )
         var_2 = self.wasti;
 
-    if ( isdefined( self._id_AE6D ) )
-        var_3 = self._id_AE6D;
+    if ( isdefined( self.loadoutindex ) )
+        var_3 = self.loadoutindex;
 
     var_4 = gettimefrommatchstart( var_0 );
-    var_5 = self _meth_81EB( self.clientid, var_1, var_4, var_2, var_3 );
+    var_5 = self logmatchdatalife( self.clientid, var_1, var_4, var_2, var_3 );
     return var_5;
 }
 
-_id_AFD7( var_0, var_1 )
+logplayerxp( var_0, var_1 )
 {
     if ( !canlogclient( self ) )
         return;
@@ -275,7 +275,7 @@ logplayerdeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     else
     {
         var_7 = scripts\mp\utility::getweaponattachmentsbasenames( var_4 );
-        var_7 = scripts\mp\utility::_id_249F( var_7 );
+        var_7 = scripts\mp\utility::attachmentsfilterforstats( var_7 );
     }
 
     var_8 = gettimefrommatchstart( gettime() );
@@ -286,7 +286,7 @@ logplayerdeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     {
         var_9 = self._id_AA47;
         var_10 = scripts\mp\utility::getweaponattachmentsbasenames( var_9 );
-        var_10 = scripts\mp\utility::_id_249F( var_10 );
+        var_10 = scripts\mp\utility::attachmentsfilterforstats( var_10 );
 
         if ( scripts\mp\utility::ispickedupweapon( var_9 ) )
             setmatchdata( "lives", var_0, "victimCurrentWeaponPickedUp", 1 );
@@ -302,7 +302,7 @@ logplayerdeath( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
 
     if ( isplayer( var_1 ) && canlogclient( var_1 ) )
     {
-        var_12 = var_1 scripts\mp\utility::_id_9EE8();
+        var_12 = var_1 scripts\mp\utility::isplayerads();
         var_13 = 0.4226;
         var_14 = scripts\engine\utility::within_fov( self.origin, self.angles, var_1.origin, var_13 );
         var_15 = scripts\engine\utility::within_fov( var_1.origin, var_1.angles, self.origin, var_13 );
@@ -388,7 +388,7 @@ logplayerdata()
 
     setmatchdata( "players", self.clientid, "kills", scripts\mp\utility::getpersstat( "kills" ) );
     setmatchdata( "players", self.clientid, "deaths", scripts\mp\utility::getpersstat( "deaths" ) );
-    self _meth_8572( self.clientid );
+    self logpinghistogram( self.clientid );
     var_0 = 0;
     var_1 = 0;
     var_2 = 0;
@@ -398,7 +398,7 @@ logplayerdata()
         setmatchdata( "players", self.clientid, "weaponStats", var_2, "weapon", var_4.weapon );
         setmatchdata( "players", self.clientid, "weaponStats", var_2, "variantID", var_4.variantid );
 
-        foreach ( var_7, var_6 in var_4._id_10E53 )
+        foreach ( var_7, var_6 in var_4.stats )
         {
             setmatchdata( "players", self.clientid, "weaponStats", var_2, var_7, int( var_6 ) );
 
@@ -415,7 +415,7 @@ logplayerdata()
             break;
     }
 
-    self _meth_859A( self.clientid, var_1, var_0 );
+    self logplayerendmatchdatashotshits( self.clientid, var_1, var_0 );
     var_9 = 0;
 
     if ( isdefined( self.pers["matchdataSuperKills"] ) )
@@ -439,7 +439,7 @@ logplayerdata()
     setmatchdata( "players", self.clientid, "playerXpModifier", int( scripts\mp\rank::getrankxpmultiplier() ) );
 
     if ( level.teambased )
-        setmatchdata( "players", self.clientid, "teamXpModifier", int( scripts\mp\rank::_id_81B6( self.team ) ) );
+        setmatchdata( "players", self.clientid, "teamXpModifier", int( scripts\mp\rank::getteamrankxpmultiplier( self.team ) ) );
 
     setmatchdata( "players", self.clientid, "weaponXpModifier", int( scripts\mp\weaponrank::getweaponrankxpmultiplier() ) );
     level scripts\mp\playerlogic::writesegmentdata( self );
@@ -454,7 +454,7 @@ logplayerdata()
     }
 }
 
-_id_AFD8( var_0 )
+logscoreevent( var_0 )
 {
     if ( scripts\mp\utility::isgameparticipant( self ) == 0 )
         return;
@@ -468,7 +468,7 @@ _id_AFD8( var_0 )
         self.pers["matchdataScoreEventCounts"][var_0] = 1;
 }
 
-_id_636A()
+endofgamesummarylogger()
 {
     level waittill( "game_ended" );
 
@@ -513,16 +513,16 @@ _id_636A()
             var_1 setplayerdata( "common", "round", "weaponXpEarned", 2, 0 );
         }
 
-        if ( isdefined( var_1._id_3C30 ) )
-            var_1 setplayerdata( "common", "round", "challengeNumCompleted", var_1._id_3C30.size );
+        if ( isdefined( var_1.challengescompleted ) )
+            var_1 setplayerdata( "common", "round", "challengeNumCompleted", var_1.challengescompleted.size );
         else
             var_1 setplayerdata( "common", "round", "challengeNumCompleted", 0 );
 
         for ( var_3 = 0; var_3 < 20; var_3++ )
         {
-            if ( isdefined( var_1._id_3C30 ) && isdefined( var_1._id_3C30[var_3] ) && var_1._id_3C30[var_3] != "ch_prestige" && !issubstr( var_1._id_3C30[var_3], "_daily" ) && !issubstr( var_1._id_3C30[var_3], "_weekly" ) )
+            if ( isdefined( var_1.challengescompleted ) && isdefined( var_1.challengescompleted[var_3] ) && var_1.challengescompleted[var_3] != "ch_prestige" && !issubstr( var_1.challengescompleted[var_3], "_daily" ) && !issubstr( var_1.challengescompleted[var_3], "_weekly" ) )
             {
-                var_1 setplayerdata( "common", "round", "challengesCompleted", var_3, var_1._id_3C30[var_3] );
+                var_1 setplayerdata( "common", "round", "challengesCompleted", var_3, var_1.challengescompleted[var_3] );
                 continue;
             }
 
@@ -587,7 +587,7 @@ canloglife( var_0 )
     return var_0 < level.maxlives;
 }
 
-_id_AFDC( var_0, var_1, var_2, var_3 )
+logweaponstat( var_0, var_1, var_2, var_3 )
 {
     if ( !canlogclient( self ) )
         return;
@@ -603,7 +603,7 @@ _id_AFDC( var_0, var_1, var_2, var_3 )
     if ( !isdefined( self.pers["matchdataWeaponStats"][var_4] ) )
     {
         self.pers["matchdataWeaponStats"][var_4] = spawnstruct();
-        self.pers["matchdataWeaponStats"][var_4]._id_10E53 = [];
+        self.pers["matchdataWeaponStats"][var_4].stats = [];
         self.pers["matchdataWeaponStats"][var_4].weapon = var_0;
 
         if ( isdefined( var_3 ) )
@@ -612,18 +612,18 @@ _id_AFDC( var_0, var_1, var_2, var_3 )
             self.pers["matchdataWeaponStats"][var_4].variantid = -1;
     }
 
-    if ( !isdefined( self.pers["matchdataWeaponStats"][var_4]._id_10E53[var_1] ) )
-        self.pers["matchdataWeaponStats"][var_4]._id_10E53[var_1] = var_2;
+    if ( !isdefined( self.pers["matchdataWeaponStats"][var_4].stats[var_1] ) )
+        self.pers["matchdataWeaponStats"][var_4].stats[var_1] = var_2;
     else
-        self.pers["matchdataWeaponStats"][var_4]._id_10E53[var_1] = self.pers["matchdataWeaponStats"][var_4]._id_10E53[var_1] + var_2;
+        self.pers["matchdataWeaponStats"][var_4].stats[var_1] = self.pers["matchdataWeaponStats"][var_4].stats[var_1] + var_2;
 }
 
-_id_AF94( var_0, var_1, var_2 )
+logattachmentstat( var_0, var_1, var_2 )
 {
     if ( !canlogclient( self ) )
         return;
 
-    if ( !scripts\mp\utility::_id_2490( var_0 ) )
+    if ( !scripts\mp\utility::attachmentlogsstats( var_0 ) )
         return;
 
     var_3 = getmatchdata( "players", self.clientid, "attachmentsStats", var_0, var_1 );
@@ -631,7 +631,7 @@ _id_AF94( var_0, var_1, var_2 )
     setmatchdata( "players", self.clientid, "attachmentsStats", var_0, var_1, var_4 );
 }
 
-_id_322A()
+buildweaponrootlist()
 {
     var_0 = [];
     var_1 = 149;
@@ -652,7 +652,7 @@ _id_322A()
     return var_0;
 }
 
-_id_AF99( var_0, var_1 )
+logchallenge( var_0, var_1 )
 {
     if ( !canlogclient( self ) )
         return;
@@ -662,7 +662,7 @@ _id_AF99( var_0, var_1 )
 
     var_2 = getmatchdata( "players", self.clientid, "challengeCount" );
 
-    if ( var_2 < level._id_B4B5 )
+    if ( var_2 < level.maxnumchallengesperplayer )
     {
         setmatchdata( "players", self.clientid, "challenge", var_2, var_0 );
         setmatchdata( "players", self.clientid, "challengeCount", var_2 + 1 );
@@ -678,7 +678,7 @@ _id_AF97( var_0 )
     var_2 = var_1 + 1;
     setmatchdata( "players", self.clientid, "awardCount", var_2 );
 
-    if ( var_1 < level._id_B4B4 )
+    if ( var_1 < level.maxnumawardsperplayer )
         setmatchdata( "players", self.clientid, "awards", var_1, var_0 );
 
     if ( var_0 == "double" )
@@ -713,7 +713,7 @@ logkillsdenied()
     setmatchdata( "players", self.clientid, "killsDenied", self.pers["denied"] );
 }
 
-loginitialspawnposition()
+loginitialstats()
 {
     if ( getdvarint( "mdsd" ) > 0 )
     {
@@ -733,7 +733,7 @@ loginitialspawnposition()
 
 logfinalstats()
 {
-    if ( !self _meth_8592() )
+    if ( !self hasplayerdata() )
         return;
 
     if ( getdvarint( "mdsd" ) > 0 )

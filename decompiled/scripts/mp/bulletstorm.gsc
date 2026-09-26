@@ -5,11 +5,11 @@ _id_3258()
 {
     level.bulletstormshield = [];
     level.bulletstormshield["bubble"] = spawnstruct();
-    level.bulletstormshield["bubble"].createfullscreenimage = ::_id_498C;
+    level.bulletstormshield["bubble"]._id_49B3 = ::_id_498C;
     level.bulletstormshield["bubble"].friendlymodel = "prop_mp_bulletstorm";
     level.bulletstormshield["bubble"].enemymodel = "prop_mp_bulletstorm_enemy";
     level.bulletstormshield["section"] = spawnstruct();
-    level.bulletstormshield["section"].createfullscreenimage = ::_id_4A0F;
+    level.bulletstormshield["section"]._id_49B3 = ::_id_4A0F;
     level.bulletstormshield["section"].friendlymodel = "prop_mp_bulletstorm_v3";
     level.bulletstormshield["section"].enemymodel = "prop_mp_bulletstorm_v3_enemy";
 }
@@ -28,7 +28,7 @@ _id_10D76( var_0 )
     self._id_3253._id_DF67 = self getweaponammostock( self._id_3253._id_4C15 );
     scripts\mp\utility::_takeweapon( self._id_3253._id_4C15 );
     var_1 = _id_811B( 1 );
-    var_2 = self [[ level.bulletstormshield[var_1].createfullscreenimage ]]( var_0 );
+    var_2 = self [[ level.bulletstormshield[var_1]._id_49B3 ]]( var_0 );
     thread _id_139BF( var_1, var_2 );
     thread _id_139BC();
     self._id_FC99 = 1;
@@ -78,10 +78,10 @@ _id_498C( var_0 )
     var_2._id_E749 = 720;
     var_2._id_11A33 = 0;
     var_2._id_4D63 = 250;
-    var_2._id_28AF = "bulletstorm_device_mp";
+    var_2.baseweapon = "bulletstorm_device_mp";
     var_2 setcandamage( 1 );
     var_2 hide();
-    var_2.attachmentrollcount = [];
+    var_2._id_249C = [];
 
     if ( isdefined( self._id_3255 ) )
         var_2._id_AC75 = self._id_3255;

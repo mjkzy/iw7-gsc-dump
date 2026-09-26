@@ -191,9 +191,9 @@ _id_B8E6( var_0 )
     if ( !isdefined( var_0 ) || !isdefined( level.awards ) || !isdefined( level.awards[var_0] ) )
         return;
 
-    if ( !isdefined( self._id_1097C ) || !isdefined( self._id_D8B1 ) )
+    if ( !isdefined( self.spectatingplayerbeforeballcam ) || !isdefined( self._id_D8B1 ) )
     {
-        self._id_1097C = 0;
+        self.spectatingplayerbeforeballcam = 0;
         self._id_D8B1 = 0;
     }
 
@@ -203,18 +203,18 @@ _id_B8E6( var_0 )
         scripts\engine\utility::error( "awardID can't be larger than 255! Must increased bit size for award id stored in ui_spectating_award_event_bitfield" );
 
     var_2 = self._id_D8B1;
-    var_3 = 8 * ( self._id_1097C % 4 );
+    var_3 = 8 * ( self.spectatingplayerbeforeballcam % 4 );
     var_4 = ~( 255 << var_3 );
     var_2 = var_2 & var_4;
     var_5 = var_1 << var_3;
     var_2 = var_2 | var_5;
     self setclientomnvar( "ui_spectating_award_event_bitfield", var_2 );
-    self setclientomnvar( "ui_spectating_award_event_index", self._id_1097C );
+    self setclientomnvar( "ui_spectating_award_event_index", self.spectatingplayerbeforeballcam );
     self._id_D8B1 = var_2;
-    self._id_1097C++;
+    self.spectatingplayerbeforeballcam++;
 
-    if ( self._id_1097C > 99 )
-        self._id_1097C = 0;
+    if ( self.spectatingplayerbeforeballcam > 99 )
+        self.spectatingplayerbeforeballcam = 0;
 }
 
 givemidmatchaward( var_0, var_1, var_2, var_3 )

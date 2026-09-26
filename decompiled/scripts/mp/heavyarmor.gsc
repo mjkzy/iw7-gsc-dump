@@ -22,13 +22,13 @@ subtractheavyarmor( var_0 )
 {
     var_1 = self.heavyarmor;
 
-    if ( scripts\mp\utility::istrue( var_1._id_9344 ) )
+    if ( scripts\mp\utility::istrue( var_1.immunityframe ) )
         return;
 
     if ( var_1.hp > 0 )
     {
         var_1.hp = max( 0, var_1.hp - var_0 );
-        scripts\mp\missions::_id_D991( "ch_heavy_armor_absorb", var_0 );
+        scripts\mp\missions::processchallengedaily( "ch_heavy_armor_absorb", var_0 );
 
         if ( var_1.hp <= 0 )
             thread heavyarmor_break();

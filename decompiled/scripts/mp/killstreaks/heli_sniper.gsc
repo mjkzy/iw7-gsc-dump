@@ -3,9 +3,9 @@
 
 init()
 {
-    scripts\mp\killstreaks\helicopter_guard::_id_AADA();
-    scripts\mp\killstreaks\helicopter_guard::_id_AAD8();
-    scripts\mp\killstreaks\killstreaks::registerkillstreak( "heli_sniper", ::_id_128E8 );
+    scripts\mp\killstreaks\helicopter_guard::lbsupport_setairstartnodes();
+    scripts\mp\killstreaks\helicopter_guard::lbsupport_setairnodemesh();
+    scripts\mp\killstreaks\killstreaks::registerkillstreak( "heli_sniper", ::tryusehelisniper );
     var_0 = spawnstruct();
     var_0.scorepopup = "destroyed_helo_scout";
     var_0.callout = "callout_destroyed_helo_scout";
@@ -14,10 +14,10 @@ init()
     level.heliconfigs["heli_sniper"] = var_0;
 }
 
-_id_128E8( var_0, var_1 )
+tryusehelisniper( var_0, var_1 )
 {
-    var_2 = _id_7E37( self.origin );
-    var_3 = _id_7E34( self.origin );
+    var_2 = getcloseststartnode( self.origin );
+    var_3 = getclosestnode( self.origin );
     var_4 = vectortoangles( var_3.origin - var_2.origin );
 
     if ( isdefined( self.underwater ) && self.underwater )
@@ -25,7 +25,7 @@ _id_128E8( var_0, var_1 )
 
     if ( isdefined( self.isjuggernautlevelcustom ) && self.isjuggernautlevelcustom == 1 )
         return 0;
-    else if ( !isdefined( level._id_1A66 ) || !isdefined( var_2 ) || !isdefined( var_3 ) )
+    else if ( !isdefined( level.air_node_mesh ) || !isdefined( var_2 ) || !isdefined( var_3 ) )
     {
         self iprintlnbold( &"KILLSTREAKS_UNAVAILABLE_IN_LEVEL" );
         return 0;
@@ -33,7 +33,7 @@ _id_128E8( var_0, var_1 )
 
     var_5 = 1;
 
-    if ( _id_68C2() )
+    if ( exceededmaxhelisnipers() )
     {
         self iprintlnbold( &"KILLSTREAKS_AIR_SPACE_TOO_CROWDED" );
         return 0;
@@ -51,7 +51,7 @@ _id_128E8( var_0, var_1 )
     if ( isdefined( self.isreviving ) && self.isreviving )
         return 0;
 
-    var_6 = _id_49D1( self, var_2, var_3, var_4, var_1, var_0 );
+    var_6 = createheli( self, var_2, var_3, var_4, var_1, var_0 );
 
     if ( !isdefined( var_6 ) )
         return 0;
@@ -64,12 +64,12 @@ _id_128E8( var_0, var_1 )
     return 1;
 }
 
-_id_68C2()
+exceededmaxhelisnipers()
 {
     return isdefined( level.lbsniper );
 }
 
-_id_7E37( var_0 )
+getcloseststartnode( var_0 )
 {
     var_1 = undefined;
     var_2 = 999999;
@@ -88,7 +88,7 @@ _id_7E37( var_0 )
     return var_1;
 }
 
-_id_49D1( var_0, var_1, var_2, var_3, var_4, var_5 )
+createheli( var_0, var_1, var_2, var_3, var_4, var_5 )
 {
     var_6 = getent( "airstrikeheight", "targetname" );
     var_7 = var_2.origin;
@@ -108,39 +108,39 @@ _id_49D1( var_0, var_1, var_2, var_3, var_4, var_5 )
         var_7 = var_14["position"] - scripts\mp\utility::gethelipilotmeshoffset() + ( 0, 0, 384 );
 
     var_10 scripts\mp\killstreaks\helicopter::addtolittlebirdlist( "lbSniper" );
-    var_10 thread scripts\mp\killstreaks\helicopter::_id_E111();
-    var_10 thread _id_136B6();
+    var_10 thread scripts\mp\killstreaks\helicopter::removefromlittlebirdlistondeath();
+    var_10 thread waitfordeath();
     var_10.lifeid = var_5;
     var_10.forward = var_8;
-    var_10._id_C973 = var_9;
-    var_10._id_C96C = var_7;
-    var_10._id_C96B = var_1.origin;
-    var_10._id_7003 = var_7[2];
+    var_10.pathstart = var_9;
+    var_10.pathgoal = var_7;
+    var_10.pathend = var_1.origin;
+    var_10.flyheight = var_7[2];
     var_10.maxheight = var_6.origin;
-    var_10._id_C537 = var_1.origin;
-    var_10._id_CB45 = var_10._id_C537 + ( 0, 0, 300 );
-    var_10._id_90F1 = var_10._id_C537 + ( 0, 0, 600 );
-    var_10._id_7338 = var_8[1];
-    var_10._id_273E = var_8[1] + 180;
+    var_10.ongroundpos = var_1.origin;
+    var_10.pickuppos = var_10.ongroundpos + ( 0, 0, 300 );
+    var_10.hoverpos = var_10.ongroundpos + ( 0, 0, 600 );
+    var_10.forwardyaw = var_8[1];
+    var_10.backwardyaw = var_8[1] + 180;
 
-    if ( var_10._id_273E > 360 )
-        var_10._id_273E = var_10._id_273E - 360;
+    if ( var_10.backwardyaw > 360 )
+        var_10.backwardyaw = var_10.backwardyaw - 360;
 
     var_10.helitype = "littlebird";
-    var_10._id_8DA0 = "littlebird";
-    var_10._id_AED3 = var_1._id_C6F9;
-    var_10._id_1CA6 = 1;
-    var_10.attractor = missile_createattractorent( var_10, level._id_8D2E, level._id_8D2D );
-    var_10.isdeserteagle = 0;
-    var_10.maxhealth = level._id_8D73;
+    var_10.heli_type = "littlebird";
+    var_10.locindex = var_1.orgin;
+    var_10.allowsafeeject = 1;
+    var_10.attractor = missile_createattractorent( var_10, level.heli_attract_strength, level.heli_attract_range );
+    var_10.isdestroyed = 0;
+    var_10.maxhealth = level.heli_maxhealth;
     var_10 thread scripts\mp\killstreaks\flares::flares_monitor( 1 );
     var_10 thread scripts\mp\killstreaks\helicopter::heli_damage_monitor( "heli_sniper", 1 );
-    var_10 thread _id_8DB4( var_4 );
+    var_10 thread helideathcleanup( var_4 );
     var_10.owner = var_0;
     var_10.team = var_0.team;
-    var_10 thread _id_AB2F();
+    var_10 thread leaveonownerdisconnect();
     var_10.speed = 100;
-    var_10._id_1E2D = 100;
+    var_10.ammo = 100;
     var_10.followspeed = 40;
     var_10 setcandamage( 1 );
     var_10 setmaxpitchroll( 45, 45 );
@@ -148,15 +148,15 @@ _id_49D1( var_0, var_1, var_2, var_3, var_4, var_5 )
     var_10 setyawspeed( 120, 60 );
     var_10 sethoverparams( 10, 10, 60 );
     var_10 setneargoalnotifydist( 512 );
-    var_10._id_A644 = 0;
+    var_10.killcount = 0;
     var_10.streakname = "heli_sniper";
-    var_10._id_1C79 = 0;
-    var_10._id_C834 = 0;
+    var_10.allowboard = 0;
+    var_10.ownerboarded = 0;
     var_10 hidepart( "tag_wings" );
     return var_10;
 }
 
-_id_7DFC( var_0 )
+getbestheight( var_0 )
 {
     self endon( "death" );
     self endon( "crashing" );
@@ -239,7 +239,7 @@ helipathmemory( var_0, var_1 )
     var_0 endon( "crashing" );
     var_0 endon( "owner_disconnected" );
     var_0 endon( "killstreakExit" );
-    var_2 = _id_7E37( self.origin );
+    var_2 = getcloseststartnode( self.origin );
     level thread scripts\mp\utility::teamplayercardsplash( "used_heli_sniper", self, self.team );
 
     if ( isdefined( var_2.angles ) )
@@ -248,18 +248,18 @@ helipathmemory( var_0, var_1 )
         var_3 = ( 0, 0, 0 );
 
     scripts\engine\utility::allow_usability( 0 );
-    var_4 = var_0._id_7003;
+    var_4 = var_0.flyheight;
 
     if ( isdefined( var_2.neighbors[0] ) )
         var_5 = var_2.neighbors[0];
     else
-        var_5 = _id_7E34( self.origin );
+        var_5 = getclosestnode( self.origin );
 
     var_6 = anglestoforward( self.angles );
     var_7 = var_5.origin * ( 1, 1, 0 ) + ( 0, 0, 1 ) * var_4 + var_6 * -100;
     var_0.targetpos = var_7;
-    var_0._id_4BF7 = var_5;
-    var_8 = _id_BCD7( var_0 );
+    var_0.currentnode = var_5;
+    var_8 = moveplayertochopper( var_0 );
 
     if ( isdefined( var_8 ) && var_8 == "fail" )
     {
@@ -268,12 +268,12 @@ helipathmemory( var_0, var_1 )
     }
     else
     {
-        thread _id_C53A( var_0 );
+        thread onheli( var_0 );
         return var_8;
     }
 }
 
-_id_C53A( var_0 )
+onheli( var_0 )
 {
     level endon( "game_ended" );
     var_0 endon( "death" );
@@ -281,33 +281,33 @@ _id_C53A( var_0 )
     var_0 endon( "owner_disconnected" );
     var_0 endon( "killstreakExit" );
 
-    if ( isdefined( self._id_9382 ) )
-        _id_52CD();
+    if ( isdefined( self.imslist ) )
+        destroycarriedims();
 
-    var_0 thread _id_835D();
+    var_0 thread givecoolassgun();
     var_0 setyawspeed( 1, 1, 1, 0.1 );
     var_0 notify( "picked_up_passenger" );
     scripts\engine\utility::allow_usability( 1 );
     var_0 vehicle_setspeed( var_0.speed, 100, 40 );
     self.onhelisniper = 1;
-    self._id_8DD6 = var_0;
+    self.helisniper = var_0;
     var_0 endon( "owner_death" );
-    var_0 thread _id_DB16();
-    var_0 thread _id_AB2E();
+    var_0 thread pushcorpseonownerdeath();
+    var_0 thread leaveonownerdeath();
     var_0 setvehgoalpos( var_0.targetpos, 1 );
-    var_0 thread _id_8DB3();
+    var_0 thread helicreatelookatent();
     var_0 waittill( "near_goal" );
     var_0 thread helimakedepotwait();
     thread watchearlyexit( var_0 );
     wait 45;
     self notify( "heli_sniper_timeout" );
-    _id_5820( var_0 );
+    dodropff( var_0 );
 }
 
-_id_5820( var_0 )
+dodropff( var_0 )
 {
     var_0 notify( "dropping" );
-    var_0 thread _id_8DD1();
+    var_0 thread helireturntodropsite();
     var_0 waittill( "at_dropoff" );
     var_0 vehicle_setspeed( 60 );
     var_0 setyawspeed( 180, 180, 180, 0.3 );
@@ -316,13 +316,13 @@ _id_5820( var_0 )
     if ( !scripts\mp\utility::isreallyalive( self ) )
         return;
 
-    thread _id_F881();
+    thread settempnofalldamage();
     self stopridingvehicle();
     self allowjump( 1 );
     self setstance( "stand" );
     self.onhelisniper = 0;
-    self._id_8DD6 = undefined;
-    var_0._id_C834 = 0;
+    self.helisniper = undefined;
+    var_0.ownerboarded = 0;
     scripts\mp\utility::_takeweapon( "iw6_gm6helisnipe_mp_gm6scope" );
     self enableweaponswitch();
     scripts\mp\utility::setrecoilscale();
@@ -331,7 +331,7 @@ _id_5820( var_0 )
     if ( !self hasweapon( var_1 ) )
         var_1 = scripts\mp\killstreaks\utility::getfirstprimaryweapon();
 
-    scripts\mp\utility::_id_1136C( var_1 );
+    scripts\mp\utility::switch_to_last_weapon( var_1 );
     wait 1;
 
     if ( isdefined( var_0 ) )
@@ -343,10 +343,10 @@ watchearlyexit( var_0 )
     self endon( "heli_sniper_timeout" );
     var_0 thread scripts\mp\killstreaks\killstreaks::allowridekillstreakplayerexit( "dropping" );
     var_0 waittill( "killstreakExit" );
-    _id_5820( var_0 );
+    dodropff( var_0 );
 }
 
-_id_BCD7( var_0 )
+moveplayertochopper( var_0 )
 {
     self endon( "disconnect" );
     self visionsetnakedforplayer( "black_bw", 0.5 );
@@ -370,18 +370,18 @@ _id_BCD7( var_0 )
             return "fail";
     }
 
-    var_0 _id_24A6();
+    var_0 attachplayertochopper();
 
     if ( !isalive( self ) )
         return "fail";
 
-    level._id_8DD7 = var_0;
+    level.helisnipereyeson = var_0;
     level notify( "update_uplink" );
 }
 
-_id_52CD()
+destroycarriedims()
 {
-    foreach ( var_1 in self._id_9382 )
+    foreach ( var_1 in self.imslist )
     {
         if ( isdefined( var_1.carriedby ) && var_1.carriedby == self )
         {
@@ -398,7 +398,7 @@ _id_52CD()
     }
 }
 
-_id_8DB3()
+helicreatelookatent()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -406,19 +406,19 @@ _id_8DB3()
     self endon( "leaving" );
     self.owner endon( "death" );
     var_0 = self.origin + anglestoright( self.owner.angles ) * 1000;
-    self._id_B00E = spawn( "script_origin", var_0 );
-    self setlookatent( self._id_B00E );
+    self.lookatent = spawn( "script_origin", var_0 );
+    self setlookatent( self.lookatent );
     self setyawspeed( 360, 120 );
 
     for (;;)
     {
         wait 0.25;
         var_0 = self.origin + anglestoright( self.owner.angles ) * 1000;
-        self._id_B00E.origin = var_0;
+        self.lookatent.origin = var_0;
     }
 }
 
-_id_24A6()
+attachplayertochopper()
 {
     self.owner notify( "force_cancel_sentry" );
     self.owner notify( "force_cancel_ims" );
@@ -428,13 +428,13 @@ _id_24A6()
     self.owner ridevehicle( self, 40, 70, 10, 70, 1 );
     self.owner setstance( "crouch" );
     self.owner allowjump( 0 );
-    thread _id_DE3E();
-    self._id_C834 = 1;
+    thread reequiplightarmor();
+    self.ownerboarded = 1;
     self notify( "boarded" );
     self.owner.chopper = self;
 }
 
-_id_8DD1()
+helireturntodropsite()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -446,7 +446,7 @@ _id_8DD1()
     var_2 = undefined;
     var_3 = 0;
 
-    foreach ( var_5 in level._id_1A66 )
+    foreach ( var_5 in level.air_node_mesh )
     {
         if ( !isdefined( var_5.script_parameters ) || !issubstr( var_5.script_parameters, "pickupNode" ) )
             continue;
@@ -477,7 +477,7 @@ _id_8DD1()
     if ( var_3 && !bullettracepassed( self.origin, var_1.origin, 0, self ) )
     {
         self setvehgoalpos( self.origin + ( 0, 0, 2300 ), 1 );
-        _id_137AB( "near_goal", "goal", 5 );
+        waittill_msg_or_timeout( "near_goal", "goal", 5 );
         var_8 = var_1.origin;
         var_8 = var_8 + ( 0, 0, 1500 );
     }
@@ -490,19 +490,19 @@ _id_8DD1()
     }
 
     self setvehgoalpos( var_8, 1 );
-    var_9 = _id_7DFC( var_8 );
+    var_9 = getbestheight( var_8 );
     var_10 = var_8 * ( 1, 1, 0 );
     var_11 = var_10 + ( 0, 0, var_9 );
-    _id_137AB( "near_goal", "goal", 5 );
-    self._id_BCB4 = 0;
+    waittill_msg_or_timeout( "near_goal", "goal", 5 );
+    self.movedlow = 0;
     self setvehgoalpos( var_11 + ( 0, 0, 200 ), 1 );
-    self._id_5D43 = 1;
-    _id_137AB( "near_goal", "goal", 5 );
-    self._id_BCB4 = 1;
+    self.droppingoff = 1;
+    waittill_msg_or_timeout( "near_goal", "goal", 5 );
+    self.movedlow = 1;
     self notify( "at_dropoff" );
 }
 
-_id_137AB( var_0, var_1, var_2 )
+waittill_msg_or_timeout( var_0, var_1, var_2 )
 {
     level endon( "game_ended" );
     self endon( var_0 );
@@ -526,13 +526,13 @@ helimakedepotwait()
         var_0 = self.owner getnormalizedmovement();
 
         if ( var_0[0] >= 0.15 || var_0[1] >= 0.15 || var_0[0] <= -0.15 || var_0[1] <= -0.15 )
-            thread _id_B31F( var_0 );
+            thread manualmove( var_0 );
 
         wait 0.05;
     }
 }
 
-_id_8DB8()
+helifreemovementcontrol()
 {
     self vehicle_setspeed( 80, 60, 20 );
     self setneargoalnotifydist( 8 );
@@ -542,13 +542,13 @@ _id_8DB8()
         var_0 = self.owner getnormalizedmovement();
 
         if ( var_0[0] >= 0.15 || var_0[1] >= 0.15 || var_0[0] <= -0.15 || var_0[1] <= -0.15 )
-            thread _id_B320( var_0 );
+            thread manualmovefree( var_0 );
 
         wait 0.05;
     }
 }
 
-_id_B320( var_0 )
+manualmovefree( var_0 )
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -572,7 +572,7 @@ _id_B320( var_0 )
     self waittill( "goal" );
 }
 
-_id_B31F( var_0 )
+manualmove( var_0 )
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -614,8 +614,8 @@ heliisfacing()
     self notify( "end_death_check" );
     self notify( "leaving" );
 
-    if ( isdefined( self._id_A79F ) )
-        self._id_A79F delete();
+    if ( isdefined( self.ladder ) )
+        self.ladder delete();
 
     if ( isdefined( self.trigger ) )
         self.trigger delete();
@@ -623,26 +623,26 @@ heliisfacing()
     if ( isdefined( self.turret ) )
         self.turret delete();
 
-    if ( isdefined( self._id_BD6D ) )
-        self._id_BD6D scripts\mp\hud_util::destroyelem();
+    if ( isdefined( self.msg ) )
+        self.msg scripts\mp\hud_util::destroyelem();
 
-    if ( isdefined( self._id_1137A ) )
-        self._id_1137A scripts\mp\hud_util::destroyelem();
+    if ( isdefined( self.switchmsg ) )
+        self.switchmsg scripts\mp\hud_util::destroyelem();
 
-    if ( isdefined( self._id_BCCF ) )
-        self._id_BCCF scripts\mp\hud_util::destroyelem();
+    if ( isdefined( self.movemsg ) )
+        self.movemsg scripts\mp\hud_util::destroyelem();
 
     self clearlookatent();
-    level._id_8DD7 = undefined;
+    level.helisnipereyeson = undefined;
     level notify( "update_uplink" );
     self setyawspeed( 220, 220, 220, 0.3 );
     self vehicle_setspeed( 120, 60 );
     self setvehgoalpos( self.origin + ( 0, 0, 1200 ), 1 );
     self waittill( "goal" );
-    var_0 = ( self._id_C96B - self._id_C96C ) * 5000;
+    var_0 = ( self.pathend - self.pathgoal ) * 5000;
     self setvehgoalpos( var_0, 1 );
     self vehicle_setspeed( 300, 75 );
-    self._id_AB32 = 1;
+    self.leaving = 1;
     scripts\engine\utility::waittill_any_timeout( 5, "goal" );
 
     if ( isdefined( level.lbsniper ) && level.lbsniper == self )
@@ -652,7 +652,7 @@ heliisfacing()
     self delete();
 }
 
-_id_8DB4( var_0 )
+helideathcleanup( var_0 )
 {
     level endon( "game_ended" );
     self endon( "leaving" );
@@ -660,8 +660,8 @@ _id_8DB4( var_0 )
     scripts\mp\hostmigration::waittillhostmigrationdone();
     thread scripts\mp\killstreaks\helicopter::lbonkilled();
 
-    if ( isdefined( self._id_A79F ) )
-        self._id_A79F delete();
+    if ( isdefined( self.ladder ) )
+        self.ladder delete();
 
     if ( isdefined( self.trigger ) )
         self.trigger delete();
@@ -669,16 +669,16 @@ _id_8DB4( var_0 )
     if ( isdefined( self.turret ) )
         self.turret delete();
 
-    if ( isdefined( self._id_BD6D ) )
-        self._id_BD6D scripts\mp\hud_util::destroyelem();
+    if ( isdefined( self.msg ) )
+        self.msg scripts\mp\hud_util::destroyelem();
 
-    if ( isdefined( self._id_1137A ) )
-        self._id_1137A scripts\mp\hud_util::destroyelem();
+    if ( isdefined( self.switchmsg ) )
+        self.switchmsg scripts\mp\hud_util::destroyelem();
 
-    if ( isdefined( self._id_BCCF ) )
-        self._id_BCCF scripts\mp\hud_util::destroyelem();
+    if ( isdefined( self.movemsg ) )
+        self.movemsg scripts\mp\hud_util::destroyelem();
 
-    if ( isdefined( self.owner ) && isalive( self.owner ) && self._id_C834 == 1 )
+    if ( isdefined( self.owner ) && isalive( self.owner ) && self.ownerboarded == 1 )
     {
         self.owner stopridingvehicle();
         var_1 = undefined;
@@ -709,8 +709,8 @@ _id_8DB4( var_0 )
 
         var_10 = getdvarint( "scr_team_fftype" );
 
-        if ( isdefined( self._id_A667 ) && isdefined( self._id_A667._id_9E20 ) )
-            self._id_A667 radiusdamage( self.owner.origin, 200, 2600, 2600, self._id_A667 );
+        if ( isdefined( self.killingattacker ) && isdefined( self.killingattacker.isharrier ) )
+            self.killingattacker radiusdamage( self.owner.origin, 200, 2600, 2600, self.killingattacker );
         else if ( isdefined( var_2 ) && var_10 != 2 )
             radiusdamage( self.owner.origin, 200, 2600, 2600, var_2 );
         else if ( var_10 == 2 && isdefined( var_2 ) && scripts\mp\utility::attackerishittingteam( var_2, self.owner ) )
@@ -722,11 +722,11 @@ _id_8DB4( var_0 )
             radiusdamage( self.owner.origin, 200, 2600, 2600 );
 
         self.owner.onhelisniper = 0;
-        self.owner._id_8DD6 = undefined;
+        self.owner.helisniper = undefined;
     }
 }
 
-_id_F881()
+settempnofalldamage()
 {
     if ( !scripts\mp\utility::_hasperk( "specialty_falldamage" ) )
     {
@@ -739,7 +739,7 @@ _id_F881()
     }
 }
 
-_id_DE3E()
+reequiplightarmor()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -764,7 +764,7 @@ _id_DE3E()
     }
 }
 
-_id_A576()
+keepcrouched()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -782,7 +782,7 @@ _id_A576()
     }
 }
 
-_id_835D()
+givecoolassgun()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -810,7 +810,7 @@ _id_835D()
     }
 }
 
-_id_E2B9()
+restockownerammo()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -826,7 +826,7 @@ _id_E2B9()
     }
 }
 
-_id_DB16()
+pushcorpseonownerdeath()
 {
     level endon( "game_ended" );
     self.owner endon( "disconnect" );
@@ -834,14 +834,14 @@ _id_DB16()
     self endon( "crashing" );
     self.owner waittill( "death" );
     self.owner.onhelisniper = 0;
-    self.owner._id_8DD6 = undefined;
-    self._id_C834 = 0;
+    self.owner.helisniper = undefined;
+    self.ownerboarded = 0;
 
     if ( isdefined( self.origin ) )
         physicsexplosionsphere( self.origin, 200, 200, 1 );
 }
 
-_id_AB2F()
+leaveonownerdisconnect()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -852,7 +852,7 @@ _id_AB2F()
     thread heliisfacing();
 }
 
-_id_AB2E()
+leaveonownerdeath()
 {
     level endon( "game_ended" );
     self endon( "death" );
@@ -863,12 +863,12 @@ _id_AB2E()
     thread heliisfacing();
 }
 
-_id_7E34( var_0 )
+getclosestnode( var_0 )
 {
     var_1 = undefined;
     var_2 = 999999;
 
-    foreach ( var_4 in level._id_1A66 )
+    foreach ( var_4 in level.air_node_mesh )
     {
         var_5 = distance( var_4.origin, var_0 );
 
@@ -882,15 +882,15 @@ _id_7E34( var_0 )
     return var_1;
 }
 
-_id_136B6()
+waitfordeath()
 {
     var_0 = self getentitynumber();
     self waittill( "death" );
     level.lbsniper = undefined;
 
-    if ( isdefined( level._id_8DD7 ) )
+    if ( isdefined( level.helisnipereyeson ) )
     {
-        level._id_8DD7 = undefined;
+        level.helisnipereyeson = undefined;
         level notify( "update_uplink" );
     }
 }

@@ -107,7 +107,7 @@ lightarmor_modifydamage( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7,
     {
         if ( var_4 == "MOD_IMPACT" )
         {
-            if ( scripts\mp\weapons::_id_9FA9( var_5 ) || scripts\mp\weapons::isaxeweapon( var_5 ) )
+            if ( scripts\mp\weapons::isthrowingknife( var_5 ) || scripts\mp\weapons::isaxeweapon( var_5 ) )
                 var_11 = 1;
         }
     }

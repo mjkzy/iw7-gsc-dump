@@ -12,7 +12,7 @@ giveplaceable( var_0, var_1 )
     var_2 = createplaceable( var_0 );
     removeperks();
     self.carrieditem = var_2;
-    var_3 = onbeginnewmode( var_0, var_2, 1, var_1 );
+    var_3 = onbegincarrying( var_0, var_2, 1, var_1 );
     self.carrieditem = undefined;
     restoreperks();
     return isdefined( var_2 );
@@ -32,19 +32,19 @@ createplaceable( var_0 )
     var_2.config = var_1;
     var_2.firstplacement = 1;
 
-    if ( isdefined( var_1._id_C4DE ) )
-        var_2 [[ var_1._id_C4DE ]]( var_0 );
+    if ( isdefined( var_1.oncreatedelegate ) )
+        var_2 [[ var_1.oncreatedelegate ]]( var_0 );
 
     var_2 deactivate( var_0 );
     var_2 thread timeout( var_0 );
-    var_2 thread _id_89FA( var_0 );
-    var_2 thread _id_C547( var_0 );
+    var_2 thread handleuse( var_0 );
+    var_2 thread onkillstreakdisowned( var_0 );
     var_2 thread ongameended( var_0 );
     var_2 thread createbombsquadmodel( var_0 );
     return var_2;
 }
 
-_id_89FA( var_0 )
+handleuse( var_0 )
 {
     self endon( "death" );
     level endon( "game_ended" );
@@ -59,11 +59,11 @@ _id_89FA( var_0 )
         if ( isdefined( self getlinkedparent() ) )
             self unlink();
 
-        var_1 onbeginnewmode( var_0, self, 0 );
+        var_1 onbegincarrying( var_0, self, 0 );
     }
 }
 
-onbeginnewmode( var_0, var_1, var_2, var_3 )
+onbegincarrying( var_0, var_1, var_2, var_3 )
 {
     self endon( "death" );
     self endon( "disconnect" );
@@ -143,9 +143,9 @@ oncancel( var_0, var_1 )
 onplaced( var_0 )
 {
     var_1 = level.placeableconfigs[var_0];
-    self.origin = self._id_CC24;
+    self.origin = self.placementorigin;
     self.angles = self.carriedobj.angles;
-    self playsound( var_1._id_CC15 );
+    self playsound( var_1.placedsfx );
     showplacedmodel( var_0 );
 
     if ( isdefined( var_1.onplaceddelegate ) )
@@ -160,12 +160,12 @@ onplaced( var_0 )
     self.isplaced = 1;
     self.firstplacement = undefined;
 
-    if ( isdefined( var_1._id_8C79 ) )
+    if ( isdefined( var_1.headiconheight ) )
     {
         if ( level.teambased )
-            scripts\mp\entityheadicons::setteamheadicon( self.team, ( 0, 0, var_1._id_8C79 ) );
+            scripts\mp\entityheadicons::setteamheadicon( self.team, ( 0, 0, var_1.headiconheight ) );
         else
-            scripts\mp\entityheadicons::setplayerheadicon( var_2, ( 0, 0, var_1._id_8C79 ) );
+            scripts\mp\entityheadicons::setplayerheadicon( var_2, ( 0, 0, var_1.headiconheight ) );
     }
 
     thread handledamage( var_0 );
@@ -186,7 +186,7 @@ onplaced( var_0 )
 
     if ( isdefined( self.shouldsplash ) )
     {
-        level thread scripts\mp\utility::teamplayercardsplash( var_1._id_10A38, var_2 );
+        level thread scripts\mp\utility::teamplayercardsplash( var_1.splashname, var_2 );
         self.shouldsplash = 0;
     }
 
@@ -195,8 +195,8 @@ onplaced( var_0 )
     var_6.playdeathfx = 1;
     var_6.endonstring = "carried";
 
-    if ( isdefined( var_1._id_C55B ) )
-        var_6.deathoverridecallback = var_1._id_C55B;
+    if ( isdefined( var_1.onmovingplatformcollision ) )
+        var_6.deathoverridecallback = var_1.onmovingplatformcollision;
 
     thread scripts\mp\movers::handle_moving_platforms( var_6 );
     thread watchplayerconnected();
@@ -235,18 +235,18 @@ updateplacement( var_0, var_1 )
     var_3 = level.placeableconfigs[var_0];
     var_4 = ( 0, 0, 0 );
 
-    if ( isdefined( var_3._id_CC23 ) )
-        var_4 = ( 0, 0, var_3._id_CC23 );
+    if ( isdefined( var_3.placementoffsetz ) )
+        var_4 = ( 0, 0, var_3.placementoffsetz );
 
     var_5 = self.carriedobj;
 
     for (;;)
     {
         var_6 = var_1 canplayerplacesentry( 1, var_3.placementradius );
-        self._id_CC24 = var_6["origin"];
-        var_5.origin = self._id_CC24 + var_4;
+        self.placementorigin = var_6["origin"];
+        var_5.origin = self.placementorigin + var_4;
         var_5.angles = var_6["angles"];
-        self.canbeplaced = var_1 isonground() && var_6["result"] && abs( self._id_CC24[2] - var_1.origin[2] ) < var_3.placementheighttolerance;
+        self.canbeplaced = var_1 isonground() && var_6["result"] && abs( self.placementorigin[2] - var_1.origin[2] ) < var_3.placementheighttolerance;
 
         if ( isdefined( var_6["entity"] ) )
             self.moving_platform = var_6["entity"];
@@ -305,7 +305,7 @@ modifydamage( var_0, var_1, var_2, var_3, var_4 )
     if ( isdefined( var_6.allowmeleedamage ) && var_6.allowmeleedamage )
         var_5 = scripts\mp\damage::handlemeleedamage( var_1, var_2, var_5 );
 
-    if ( isdefined( var_6._id_1C8F ) && var_6._id_1C8F )
+    if ( isdefined( var_6.allowempdamage ) && var_6.allowempdamage )
         var_5 = scripts\mp\damage::handleempdamage( var_1, var_2, var_5 );
 
     var_5 = scripts\mp\damage::handlemissiledamage( var_1, var_2, var_5 );
@@ -321,10 +321,10 @@ modifydamage( var_0, var_1, var_2, var_3, var_4 )
 handledeathdamage( var_0, var_1, var_2, var_3 )
 {
     var_4 = self.config;
-    var_5 = scripts\mp\damage::onkillstreakkilled( self.streakname, var_0, var_1, var_2, var_3, var_4.scorepopup, var_4._id_52DA );
+    var_5 = scripts\mp\damage::onkillstreakkilled( self.streakname, var_0, var_1, var_2, var_3, var_4.scorepopup, var_4.destroyedvo );
 
-    if ( var_5 && isdefined( var_4._id_C4F3 ) )
-        self [[ var_4._id_C4F3 ]]( self.streakname, var_0, self.owner, var_2 );
+    if ( var_5 && isdefined( var_4.ondestroyeddelegate ) )
+        self [[ var_4.ondestroyeddelegate ]]( self.streakname, var_0, self.owner, var_2 );
 }
 
 handledeath( var_0 )
@@ -360,7 +360,7 @@ oncarrierdeath( var_0, var_1 )
         oncancel( var_0 );
 }
 
-_id_C547( var_0 )
+onkillstreakdisowned( var_0 )
 {
     self endon( "death" );
     level endon( "game_ended" );

@@ -21,7 +21,7 @@ main()
     game["defenders"] = "axis";
     game["allies_outfit"] = "urban";
     game["axis_outfit"] = "woodland";
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     level _id_2FBC();
     thread scripts\mp\animation_suite::animationsuite();
     thread fix_collision();

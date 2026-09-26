@@ -8,7 +8,7 @@ init()
     level thread onplayerconnect();
 
     if ( getdvarint( "cg_mlg_static_cameras", 0 ) != 0 )
-        level thread _id_7F6C();
+        level thread getlevelmlgcams();
 }
 
 createmlgcamobject( var_0, var_1 )
@@ -46,7 +46,7 @@ setlevelmlgcam( var_0, var_1 )
     }
 }
 
-_id_7F6C()
+getlevelmlgcams()
 {
     while ( !isdefined( level.objidpool ) )
         wait 0.05;
@@ -80,15 +80,15 @@ onplayerconnect()
     for (;;)
     {
         level waittill( "connected", var_0 );
-        var_0 thread _id_C541();
-        var_0 thread _id_C540();
-        var_0 thread _id_C5A1();
-        var_0 thread _id_C531();
-        var_0 thread _id_C5A2();
+        var_0 thread onjoinedteam();
+        var_0 thread onjoinedspectators();
+        var_0 thread onspectatingclient();
+        var_0 thread onfreecam();
+        var_0 thread onspectatingmlgcamera();
     }
 }
 
-_id_C541()
+onjoinedteam()
 {
     self endon( "disconnect" );
 
@@ -99,7 +99,7 @@ _id_C541()
     }
 }
 
-_id_C540()
+onjoinedspectators()
 {
     self endon( "disconnect" );
 
@@ -120,7 +120,7 @@ _id_C540()
     }
 }
 
-_id_C5A1()
+onspectatingclient()
 {
     self endon( "disconnect" );
 
@@ -140,14 +140,14 @@ _id_C5A1()
     }
 }
 
-_id_C5A2()
+onspectatingmlgcamera()
 {
     self endon( "disconnect" );
 
     for (;;)
     {
         self waittill( "spectating_mlg_camera" );
-        var_0 = self _meth_858E();
+        var_0 = self getmlgselectedcamera();
 
         if ( self ismlgspectator() || isdefined( self.pers["mlgSpectator"] ) && self.pers["mlgSpectator"] )
         {
@@ -160,7 +160,7 @@ _id_C5A2()
     }
 }
 
-_id_C531()
+onfreecam()
 {
     self endon( "disconnect" );
 
@@ -357,17 +357,17 @@ setspectatepermissions()
     switch ( var_1 )
     {
         case 0:
-            _id_F6C5();
+            setdisabled();
             break;
         case 1:
             self notify( "waitForGameStartSpectate" );
 
             if ( var_2 != "spectator" )
-                _id_F87A( var_2 );
+                setteamorplayeronly( var_2 );
             else if ( isdefined( self.pers["last_team"] ) )
             {
                 var_2 = self.pers["last_team"];
-                _id_F87A( var_2 );
+                setteamorplayeronly( var_2 );
             }
             else if ( scripts\mp\utility::gameflag( "prematch_done" ) )
             {
@@ -376,7 +376,7 @@ setspectatepermissions()
                 else
                     var_2 = "axis";
 
-                _id_F87A( var_2 );
+                setteamorplayeronly( var_2 );
             }
             else
             {
@@ -386,13 +386,13 @@ setspectatepermissions()
 
             break;
         case 2:
-            _id_F71A();
+            setfreelook();
             break;
         case 3:
             if ( var_2 == "spectator" )
-                _id_F71A();
+                setfreelook();
             else
-                _id_F87A( var_2 );
+                setteamorplayeronly( var_2 );
 
             break;
     }
@@ -414,7 +414,7 @@ waitforgamestartspectate()
     thread setspectatepermissions();
 }
 
-_id_F6C5()
+setdisabled()
 {
     if ( level.multiteambased )
     {
@@ -431,7 +431,7 @@ _id_F6C5()
     self allowspectateteam( "none", 0 );
 }
 
-_id_F87A( var_0 )
+setteamorplayeronly( var_0 )
 {
     if ( !level.teambased )
     {
@@ -481,7 +481,7 @@ _id_F87A( var_0 )
     }
 }
 
-_id_F71A()
+setfreelook()
 {
     if ( level.multiteambased )
     {

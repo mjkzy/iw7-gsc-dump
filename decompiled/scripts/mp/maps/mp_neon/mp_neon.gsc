@@ -8,7 +8,7 @@ main()
     scripts\mp\maps\mp_neon\mp_neon_fx::main();
     scripts\mp\load::main();
     scripts\mp\compass::setupminimap( "compass_map_mp_neon" );
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.33 );
     setdvar( "r_umbraMinObjectContribution", 8 );
@@ -223,10 +223,10 @@ spawn_oob_trigger()
         var_1 hide();
         var_2 hide();
         var_3 hide();
-        level._id_C7B3[level._id_C7B3.size] = var_0;
-        level._id_C7B3[level._id_C7B3.size] = var_1;
-        level._id_C7B3[level._id_C7B3.size] = var_2;
-        level._id_C7B3[level._id_C7B3.size] = var_3;
+        level.outofboundstriggers[level.outofboundstriggers.size] = var_0;
+        level.outofboundstriggers[level.outofboundstriggers.size] = var_1;
+        level.outofboundstriggers[level.outofboundstriggers.size] = var_2;
+        level.outofboundstriggers[level.outofboundstriggers.size] = var_3;
     }
 }
 

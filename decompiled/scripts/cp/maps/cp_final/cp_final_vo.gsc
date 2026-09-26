@@ -259,7 +259,7 @@ ww_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
         if ( !isdefined( var_8 ) )
             continue;
 
-        if ( var_8 issplitscreenplayer() && !var_8 isreloading() )
+        if ( var_8 issplitscreenplayer() && !var_8 issplitscreenplayerprimary() )
             continue;
 
         var_9 = scripts\cp\cp_vo::create_vo_data( var_0, var_3, var_5, var_6 );
@@ -302,7 +302,7 @@ play_announcer_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
             return;
     }
 
-    if ( scripts\cp\cp_vo::_id_9D14() )
+    if ( scripts\cp\cp_vo::is_vo_system_paused() )
         return;
 
     level.announcer_vo_playing = 1;
@@ -323,7 +323,7 @@ play_announcer_vo( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
         if ( !isdefined( var_9 ) )
             continue;
 
-        if ( var_9 issplitscreenplayer() && !var_9 isreloading() )
+        if ( var_9 issplitscreenplayer() && !var_9 issplitscreenplayerprimary() )
             continue;
         else
         {
@@ -558,7 +558,7 @@ final_starting_vo()
         {
             if ( var_8 issplitscreenplayer() )
             {
-                if ( var_8 isreloading() )
+                if ( var_8 issplitscreenplayerprimary() )
                 {
                     if ( isdefined( var_8.vo_prefix ) )
                     {
@@ -678,7 +678,7 @@ backstory_vo_handler( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
         return;
 
     clear_up_all_vo( self );
-    scripts\cp\cp_vo::_id_C9CB( [ self ] );
+    scripts\cp\cp_vo::pause_vo_system( [ self ] );
     self.started_backstory_dialogue = 1;
 
     if ( isdefined( level.masterpcinteraction ) )
@@ -700,7 +700,7 @@ backstory_vo_handler( var_0, var_1, var_2, var_3, var_4, var_5, var_6 )
     if ( isdefined( self.backstoryvoarr ) )
         self.backstoryvoarr = scripts\engine\utility::array_remove( self.backstoryvoarr, var_0 );
 
-    scripts\cp\cp_vo::_id_12BE3( [ self ] );
+    scripts\cp\cp_vo::unpause_vo_system( [ self ] );
 
     if ( isdefined( level.masterpcinteraction ) )
         scripts\cp\cp_interaction::add_to_current_interaction_list( level.masterpcinteraction );

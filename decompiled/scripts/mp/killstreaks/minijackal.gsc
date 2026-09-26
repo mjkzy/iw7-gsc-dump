@@ -167,12 +167,12 @@ _id_12889( var_0 )
     decrementminijackalsincoming( self );
     var_10 setnodeploy( 1 );
     var_10 enableaimassist();
-    var_10._id_13CC3 = [];
-    var_10._id_13CC3["hover"] = "minijackal_assault_mp";
-    var_10._id_13CC3["fly"] = var_7;
-    var_10._id_13CC3["land"] = var_10._id_13CC3["hover"];
+    var_10.weapons = [];
+    var_10.weapons["hover"] = "minijackal_assault_mp";
+    var_10.weapons["fly"] = var_7;
+    var_10.weapons["land"] = var_10.weapons["hover"];
     var_10 _meth_84BE( "minijackal_mp" );
-    var_10 _meth_849E( var_10._id_13CC3["fly"] );
+    var_10 _meth_849E( var_10.weapons["fly"] );
     _id_0BCE::_id_A2B2( var_10, undefined, "hover" );
     self _meth_8490( "disable_mode_switching", 1 );
     self _meth_8490( "disable_juke", 1 );
@@ -182,7 +182,7 @@ _id_12889( var_0 )
     self.ignoreme = 0;
     self visionsetkillstreakforplayer( "apex_mp" );
     var_10._id_10E4C = _id_495B();
-    var_10._id_EDD7 = 2250;
+    var_10.script_health = 2250;
     var_10.max_health = 2250;
     var_10._id_11A34 = 0;
     var_10.streakname = var_0.streakname;
@@ -191,7 +191,7 @@ _id_12889( var_0 )
     var_10._id_B8B0 = 4;
     var_10.streakinfo = var_0;
     self._id_B7AA = var_10;
-    var_10 scripts\mp\killstreaks\utility::_id_1843( var_0.streakname, "Killstreak_Ground", var_10.owner, 1 );
+    var_10 scripts\mp\killstreaks\utility::addtoactivekillstreaklist( var_0.streakname, "Killstreak_Ground", var_10.owner, 1 );
     var_10 scripts\mp\killstreaks\utility::_id_FAE4( "minijackal_end", "apex_mp" );
     var_10 thread _id_B9A4( self );
     var_10 thread _id_B9A5( self );
@@ -212,7 +212,7 @@ _id_12889( var_0 )
     level thread scripts\mp\utility::teamplayercardsplash( var_5, self );
     self setclientomnvar( "ui_minijackal_controls", var_8 );
     self setclientomnvar( "ui_killstreak_countdown", gettime() + int( var_6 * 1000 ) );
-    self setclientomnvar( "ui_killstreak_health", var_10._id_EDD7 / var_10.max_health );
+    self setclientomnvar( "ui_killstreak_health", var_10.script_health / var_10.max_health );
     self thermalvisionfofoverlayon();
     self._id_209D = gettime();
     return 1;
@@ -251,20 +251,20 @@ _id_B9AF( var_0 )
     level endon( "game_ended" );
     self endon( "minijackal_end" );
     var_0 notifyonplayercommand( "ks_switch_weapons", "+weapnext" );
-    var_1 = self._id_13CC3["hover"];
+    var_1 = self.weapons["hover"];
 
     for (;;)
     {
         var_0 waittill( "ks_switch_weapons" );
         self _meth_849E( var_1 );
 
-        if ( var_1 == self._id_13CC3["fly"] )
+        if ( var_1 == self.weapons["fly"] )
         {
-            var_1 = self._id_13CC3["hover"];
+            var_1 = self.weapons["hover"];
             continue;
         }
 
-        var_1 = self._id_13CC3["fly"];
+        var_1 = self.weapons["fly"];
     }
 }
 
@@ -294,9 +294,9 @@ _id_B97A( var_0 )
     for (;;)
     {
         var_0 waittill( "ks_lockon" );
-        self _meth_849E( self._id_13CC3["hover"] );
+        self _meth_849E( self.weapons["hover"] );
         var_0 waittill( "ks_lockoff" );
-        self _meth_849E( self._id_13CC3["fly"] );
+        self _meth_849E( self.weapons["fly"] );
     }
 }
 
@@ -334,7 +334,7 @@ _id_B97F( var_0 )
                 var_7 trackmissiletargetinview( var_5, self );
 
             self setscriptablepartstate( "missile_pod_" + ( var_4 + 1 ), "fire", 0 );
-            var_7 thread _id_13A22();
+            var_7 thread watchexplosion();
             var_7 thread scripts\mp\killstreaks\utility::watchsupertrophynotify( var_0 );
             self._id_B8B0--;
             scripts\mp\hostmigration::waitlongdurationwithhostmigrationpause( 0.2 );
@@ -346,7 +346,7 @@ _id_B97F( var_0 )
 
 trackmissiletargetinview( var_0, var_1 )
 {
-    var_2 = scripts\mp\killstreaks\utility::_id_7E92( var_1.owner );
+    var_2 = scripts\mp\killstreaks\utility::getenemytargets( var_1.owner );
     var_3 = undefined;
     var_4 = 999999999;
     var_5 = var_0;
@@ -404,7 +404,7 @@ watchtarget( var_0 )
         var_0 missile_cleartarget();
 }
 
-_id_13A22()
+watchexplosion()
 {
     self waittill( "explode", var_0 );
     playsoundatpos( var_0, "wrist_rocket_explode" );
@@ -455,7 +455,7 @@ _id_B95F( var_0 )
     for (;;)
     {
         self waittill( "damage", var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13, var_14, var_15, var_16, var_17 );
-        var_13 = scripts\mp\utility::_id_13CA1( var_13, var_17 );
+        var_13 = scripts\mp\utility::weaponmap( var_13, var_17 );
 
         if ( isdefined( var_5 ) && var_5.classname != "trigger_hurt" )
         {
@@ -480,13 +480,13 @@ _id_B95F( var_0 )
             }
         }
 
-        self._id_EDD7 = self._id_EDD7 - var_4;
+        self.script_health = self.script_health - var_4;
         self._id_11A34 = self._id_11A34 + var_4;
 
-        if ( self._id_EDD7 < 0 )
-            self._id_EDD7 = 0;
+        if ( self.script_health < 0 )
+            self.script_health = 0;
 
-        var_0 setclientomnvar( "ui_killstreak_health", self._id_EDD7 / self.max_health );
+        var_0 setclientomnvar( "ui_killstreak_health", self.script_health / self.max_health );
 
         if ( isdefined( var_8 ) )
             var_0 _id_4CF1( self, var_8 );
@@ -497,7 +497,7 @@ _id_B95F( var_0 )
             scripts\mp\killstreaks\killstreaks::killstreakhit( var_5, var_13, self, var_8 );
             scripts\mp\damage::logattackerkillstreak( self, var_4, var_5, var_6, var_7, var_8, var_9, var_10, var_11, var_12, var_13 );
 
-            if ( self._id_EDD7 <= 0 )
+            if ( self.script_health <= 0 )
             {
                 var_5 notify( "destroyed_killstreak", var_13 );
                 var_18 = "callout_destroyed_" + self.streakname;
@@ -510,7 +510,7 @@ _id_B95F( var_0 )
             }
         }
 
-        if ( self._id_EDD7 <= 0 )
+        if ( self.script_health <= 0 )
             self notify( "minijackal_end" );
     }
 }
@@ -607,7 +607,7 @@ _id_B961( var_0 )
         var_0 scripts\engine\utility::allow_usability( 1 );
         var_0 scripts\engine\utility::allow_weapon_switch( 1 );
         var_2 = ( gettime() - var_0._id_209D ) / 1000;
-        var_0 scripts\mp\missions::_id_D991( "ch_apex_pilot", int( var_2 ) );
+        var_0 scripts\mp\missions::processchallengedaily( "ch_apex_pilot", int( var_2 ) );
     }
 
     if ( isdefined( self._id_115D6 ) )
@@ -650,8 +650,8 @@ _id_B95E( var_0 )
             var_0 earthquakeforplayer( var_9, 0.5, self.origin, 100 );
             var_10 = 10 + 240 * var_9;
 
-            if ( self._id_EDD7 - var_10 < 150 )
-                var_10 = self._id_EDD7 - 150;
+            if ( self.script_health - var_10 < 150 )
+                var_10 = self.script_health - 150;
         }
     }
 }

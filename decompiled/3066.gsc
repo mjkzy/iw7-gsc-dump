@@ -5,7 +5,7 @@ _id_8987( var_0 )
 {
     if ( !isdefined( var_0 ) || var_0 == 0 )
     {
-        scripts\asm\asm_bb::bb_requestcombatmovetype_facemotion();
+        _id_0C33::bb_requestcombatmovetype_facemotion();
         return;
     }
 
@@ -18,13 +18,13 @@ _id_8987( var_0 )
     switch ( var_0 )
     {
         case 2:
-            scripts\asm\asm_bb::_id_295B();
+            _id_0C33::_id_295B();
             break;
         case 1:
-            scripts\asm\asm_bb::bb_requestcombatmovetype_strafe();
+            _id_0C33::bb_requestcombatmovetype_strafe();
             break;
         default:
-            scripts\asm\asm_bb::bb_requestcombatmovetype_facemotion();
+            _id_0C33::bb_requestcombatmovetype_facemotion();
             break;
     }
 }
@@ -66,7 +66,7 @@ _id_3E49( var_0 )
 
     if ( isdefined( self._id_EF7D ) )
     {
-        self _meth_8484();
+        self clearbtgoal();
         self scragentsetgoalpos( self._id_EF7D );
     }
     else if ( isdefined( self._id_EF7A ) )
@@ -75,7 +75,7 @@ _id_3E49( var_0 )
 
         if ( var_4 > var_3 * var_3 )
         {
-            self _meth_8484();
+            self clearbtgoal();
             self scragentsetgoalentity( self._id_EF7A );
         }
         else
@@ -83,7 +83,7 @@ _id_3E49( var_0 )
     }
     else if ( isdefined( self._id_EF7C ) )
     {
-        self _meth_8484();
+        self clearbtgoal();
         self scragentsetgoalnode( self._id_EF7C );
     }
 
@@ -122,7 +122,7 @@ _id_97FA( var_0 )
     if ( self.health > self.fastcrawlmaxhealth )
         self.health = self.fastcrawlmaxhealth;
 
-    scripts\asm\asm_bb::_id_2979( 1 );
+    _id_0C33::_id_2979( 1 );
     return anim.success;
 }
 
@@ -152,7 +152,7 @@ _id_5813( var_0 )
 
 _id_116F3( var_0 )
 {
-    scripts\asm\asm_bb::_id_2979( 0 );
+    _id_0C33::_id_2979( 0 );
 }
 
 decidemovetype( var_0, var_1 )
@@ -167,7 +167,7 @@ decidemovetype( var_0, var_1 )
 
     if ( self.last_enemy_sight_time < 0 || var_2 - self.last_enemy_sight_time < self.maxtimetostrafewithoutlos )
     {
-        scripts\asm\asm_bb::bb_requestcombatmovetype_strafe();
+        _id_0C33::bb_requestcombatmovetype_strafe();
         return;
     }
 
@@ -175,11 +175,11 @@ decidemovetype( var_0, var_1 )
 
     if ( var_1 < self.strafeifwithindist )
     {
-        scripts\asm\asm_bb::bb_requestcombatmovetype_strafe();
+        _id_0C33::bb_requestcombatmovetype_strafe();
         return;
     }
 
-    scripts\asm\asm_bb::_id_295B();
+    _id_0C33::_id_295B();
 }
 
 _id_9ED8()
@@ -235,7 +235,7 @@ _id_3DE6( var_0 )
         if ( !scripts\engine\utility::is_true( self._id_3320 ) )
         {
             decidemovetype( 0, var_4 );
-            self _meth_8484();
+            self clearbtgoal();
             self scragentsetgoalpos( self.enemy.origin );
         }
 
@@ -249,7 +249,7 @@ _id_3DE6( var_0 )
     if ( var_4 > self.desiredenemydistmax )
     {
         decidemovetype( 1, var_4 );
-        self _meth_8484();
+        self clearbtgoal();
         self scragentsetgoalpos( self.enemy.origin );
         return anim.success;
     }
@@ -272,8 +272,8 @@ _id_3DE6( var_0 )
 
         if ( var_10 > 0 )
         {
-            scripts\asm\asm_bb::bb_requestcombatmovetype_strafe();
-            self _meth_8484();
+            _id_0C33::bb_requestcombatmovetype_strafe();
+            self clearbtgoal();
             self scragentsetgoalpos( var_7 );
             return anim.success;
         }
@@ -328,10 +328,10 @@ getdefaultenemychestpos()
     var_0 = 70;
     var_1 = 15;
 
-    if ( isdefined( self.enemy._id_18F4 ) )
+    if ( isdefined( self.enemy.agent_height ) )
     {
-        var_0 = self.enemy._id_18F4;
-        var_1 = self.enemy._id_18F9;
+        var_0 = self.enemy.agent_height;
+        var_1 = self.enemy.agent_radius;
     }
 
     var_2 = var_0 * 0.75;
@@ -343,7 +343,7 @@ getdefaultenemychestpos()
 updatetarget( var_0 )
 {
     if ( !isdefined( self._id_3404 ) )
-        return scripts\aitypes\combat::_id_12EC2( var_0 );
+        return scripts\aitypes\combat::updatelooktarget( var_0 );
 
     if ( isdefined( self.enemy ) )
     {

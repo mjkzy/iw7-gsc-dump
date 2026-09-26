@@ -7,7 +7,7 @@ main()
     scripts\mp\maps\mp_pixel\gen\mp_pixel_art::main();
     scripts\mp\maps\mp_pixel\mp_pixel_fx::main();
     scripts\mp\load::main();
-    level._id_C7B3 = getentarray( "OutOfBounds", "targetname" );
+    level.outofboundstriggers = getentarray( "OutOfBounds", "targetname" );
     scripts\mp\compass::setupminimap( "compass_map_mp_pixel" );
     setdvar( "r_lightGridEnableTweaks", 1 );
     setdvar( "r_lightGridIntensity", 1.33 );
